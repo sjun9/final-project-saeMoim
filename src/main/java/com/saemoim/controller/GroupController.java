@@ -1,7 +1,9 @@
 package com.saemoim.controller;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.dto.response.MyGroupResponseDto;
 import com.saemoim.dto.response.StatusResponseDto;
+import com.saemoim.service.GroupServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,15 +26,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GroupController {
 
+	private final GroupServiceImpl groupServiceimpl;
+
 	// 모든 모임 조회
 	@GetMapping("/group")
-	public List<MyGroupResponseDto> getGroups() {
-		return null;
+	public Page<GroupResponseDto> getGroups(Pageable pageable) {
+		return groupServiceimpl.getGroups(pageable);
 	}
 
 	// 선택 모임 조회
 	@GetMapping("/groups/{groupId}")
-	public MyGroupResponseDto getGroup(@PathVariable Long groupId) {
+	public GroupResponseDto getGroup(@PathVariable Long groupId) {
 		return null;
 	}
 
@@ -51,7 +56,7 @@ public class GroupController {
 	@PostMapping("/group")
 	public GroupResponseDto createGroup(@Validated @RequestBody GroupRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		return groupServiceimpl.createGroup(requestDto, userDetails.getUser());
 	}
 
 	// 모임 수정

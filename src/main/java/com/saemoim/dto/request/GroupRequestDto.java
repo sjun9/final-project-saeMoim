@@ -1,11 +1,40 @@
 package com.saemoim.dto.request;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
 public class GroupRequestDto {
+	@NotNull
 	private Long categoryId;
+
+	@NotBlank
+	@Size(min = 2, max = 10)
+	private String name;
+
+	@NotBlank
+	@Size(min = 10, max = 500)
 	private String content;
-	private String location;
+
+	@NotBlank
+	private String address;
+
+	@NotBlank
+	private String firstRegion;
+	@NotBlank
+	private String secondRegion;
+
+	@NotBlank
+	private String latitude;
+
+	@NotBlank
+	private String longitude;
+
+	@Min(1)
+	@Max(100)
 	private int recruitNumber;
 }
