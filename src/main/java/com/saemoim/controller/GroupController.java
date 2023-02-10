@@ -96,31 +96,4 @@ public class GroupController {
 		return null;
 	}
 
-	// 모임 즐겨찾기 조회
-	@GetMapping("/groups/wish")
-	public List<MyGroupResponseDto> getWishGroups(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
-	}
-
-	// 모임 즐겨찾기 추가
-	@PostMapping("/groups/{groupId}/wish")
-	public StatusResponseDto wishGroup(@PathVariable Long groupId,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
-	}
-
-	// 모임 즐겨찾기 해제
-	@DeleteMapping("/groups/{groupId}/wish")
-	public StatusResponseDto deleteWishGroup(@PathVariable Long groupId,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
-	}
-
-	// 모임 탈퇴
-	@DeleteMapping("/group/participant/{participantId}")
-	public StatusResponseDto withdrawGroup(@PathVariable Long participantId,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
-	}
-
 }

@@ -30,12 +30,4 @@ public interface GroupService {
 
 	StatusResponseDto closeGroup(Long groupId, String username);
 
-	List<MyGroupResponseDto> getWishGroups(String username);
-
-	StatusResponseDto wishGroup(Long groupId, String username);
-
-	StatusResponseDto deleteWishGroup(Long groupId, String username);
-
-	StatusResponseDto withdrawGroup(Long participantId, String username);
-
 }

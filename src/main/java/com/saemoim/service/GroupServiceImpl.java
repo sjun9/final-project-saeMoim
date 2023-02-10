@@ -36,7 +36,7 @@ public class GroupServiceImpl implements GroupService {
 	private final TagRepository tagRepository;
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public Page<GroupResponseDto> getAllGroups(Pageable pageable) {
 		List<Group> groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
 		List<GroupResponseDto> groupResponseDto = new ArrayList<>();
@@ -61,11 +61,13 @@ public class GroupServiceImpl implements GroupService {
 		return new GroupResponseDto(group, reviewList, tagList);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<MyGroupResponseDto> getMyGroupsByLeader(String username) {
 		return null;
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<MyGroupResponseDto> getMyGroupsByParticipant(String username) {
 		return null;
@@ -92,6 +94,7 @@ public class GroupServiceImpl implements GroupService {
 		return new GroupResponseDto(group, new ArrayList<>(), tags);
 	}
 
+	@Transactional
 	@Override
 	public GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, String username) {
 		// 그룹을 가져오기
@@ -102,38 +105,21 @@ public class GroupServiceImpl implements GroupService {
 
 	}
 
+	@Transactional
 	@Override
 	public StatusResponseDto deleteGroup(Long groupId, String username) {
 		return null;
 	}
 
+	@Transactional
 	@Override
 	public StatusResponseDto openGroup(Long groupId, String username) {
 		return null;
 	}
 
+	@Transactional
 	@Override
 	public StatusResponseDto closeGroup(Long groupId, String username) {
-		return null;
-	}
-
-	@Override
-	public List<MyGroupResponseDto> getWishGroups(String username) {
-		return null;
-	}
-
-	@Override
-	public StatusResponseDto wishGroup(Long groupId, String username) {
-		return null;
-	}
-
-	@Override
-	public StatusResponseDto deleteWishGroup(Long groupId, String username) {
-		return null;
-	}
-
-	@Override
-	public StatusResponseDto withdrawGroup(Long participantId, String username) {
 		return null;
 	}
 }
