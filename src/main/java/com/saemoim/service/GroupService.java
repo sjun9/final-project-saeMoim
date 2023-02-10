@@ -12,7 +12,7 @@ import com.saemoim.dto.response.MyGroupResponseDto;
 import com.saemoim.dto.response.StatusResponseDto;
 
 public interface GroupService {
-	Page<GroupResponseDto> getGroups(Pageable pageable);
+	Page<GroupResponseDto> getAllGroups(Pageable pageable);
 
 	GroupResponseDto getGroup(Long groupId);
 

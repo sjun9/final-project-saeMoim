@@ -33,4 +33,8 @@ public class User extends TimeStamped {
 	@Enumerated(EnumType.STRING)
 	private UserRoleEnum role;
 
+	public boolean isLeader(UserRoleEnum role) {
+		return role.equals(UserRoleEnum.LEADER);
+	}
+
 }

@@ -1,12 +1,8 @@
 package com.saemoim.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.dto.request.GroupRequestDto;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -67,9 +62,6 @@ public class Group extends TimeStamped {
 	private Integer recruitNumber = 0;
 	@Column(nullable = false)
 	private Integer participantCount = 0;
-
-	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Review> reviews = new ArrayList<>();
 
 	public Group(GroupRequestDto request, Category category, User user) {
 		this.user = user;

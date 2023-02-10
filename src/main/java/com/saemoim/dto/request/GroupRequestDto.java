@@ -1,5 +1,7 @@
 package com.saemoim.dto.request;
 
+import java.util.List;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +13,8 @@ import lombok.Getter;
 public class GroupRequestDto {
 	@NotNull
 	private Long categoryId;
+
+	private List<String> tagNames;
 
 	@NotBlank
 	@Size(min = 2, max = 10)

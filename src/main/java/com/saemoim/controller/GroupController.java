@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.saemoim.domain.User;
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.dto.response.MyGroupResponseDto;
 import com.saemoim.dto.response.StatusResponseDto;
+import com.saemoim.exception.ErrorCode;
 import com.saemoim.service.GroupServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -37,13 +39,19 @@ public class GroupController {
 	// 선택 모임 조회
 	@GetMapping("/groups/{groupId}")
 	public GroupResponseDto getGroup(@PathVariable Long groupId) {
-		return null;
+		return groupServiceimpl.getGroup(groupId);
 	}
 
 	// 내가 만든 모임 조회
 	@GetMapping("/leader/group")
 	public List<MyGroupResponseDto> getMyGroupsByLeader(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		// 요청한 사용자가 리더인지 확인
+		User user = userDetails.getUser(); // UserDetailsImpl에서 메서드 추가해야함
+		if (!user.isLeader(user.getRole())) {
+			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+		}
+
+		return groupServiceimpl.getMyGroupsByLeader(userDetails.getUsername());
 	}
 
 	// 참여중인 모임 조회

@@ -4,6 +4,7 @@ import com.saemoim.domain.enums.ApplicationStatusEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,5 +31,6 @@ public class Application extends TimeStamped {
 	private Group group;
 
 	@Column(nullable = false)
+	@Enumerated
 	private ApplicationStatusEnum status;
 }
