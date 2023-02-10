@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class ReportController {
 
 	// 회원 신고 조회
-	@GetMapping("/report")
+	@GetMapping("/admin/report")
 	public List<ReportResponseDto> getReportedUsers() {
 		return null;
 	}
