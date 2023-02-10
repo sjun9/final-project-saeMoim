@@ -1,7 +1,6 @@
 package com.saemoim.service;
 
 import com.saemoim.dto.request.ProfileRequestDto;
-import com.saemoim.dto.request.ReportRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
 import com.saemoim.dto.response.ProfileResponseDto;
@@ -20,5 +19,4 @@ public interface UserService {
 
 	ProfileResponseDto updateProfile(String username, ProfileRequestDto requestDto);
 
-	StatusResponseDto reportUser(Long subjectUserId, ReportRequestDto requestDto, String username);
 }

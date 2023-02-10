@@ -15,7 +15,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "sae_group")
 @Getter
 @NoArgsConstructor
 public class Group extends TimeStamped {
