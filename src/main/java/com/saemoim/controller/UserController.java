@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saemoim.dto.request.ProfileRequestDto;
-import com.saemoim.dto.request.ReportRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
 import com.saemoim.dto.response.ProfileResponseDto;
@@ -56,13 +55,6 @@ public class UserController {
 	@PatchMapping("/profile")
 	public ProfileResponseDto updateProfile(@Validated @RequestBody ProfileRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
-	}
-
-	// 회원 신고
-	@PostMapping("/report/users/{subjectUserId}")
-	public StatusResponseDto reportUser(@PathVariable Long subjectUserId,
-		@Validated @RequestBody ReportRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return null;
 	}
 }
