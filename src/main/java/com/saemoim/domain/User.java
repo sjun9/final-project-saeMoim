@@ -33,6 +33,13 @@ public class User extends TimeStamped {
 	@Enumerated(EnumType.STRING)
 	private UserRoleEnum role;
 
+	public User(String email, String password, String username, UserRoleEnum role) {
+		this.email = email;
+		this.password = password;
+		this.username = username;
+		this.role = role;
+		this.content = "안녕하세요. 잘 부탁드립니다.";
+	}
 	public boolean isLeader(UserRoleEnum role) {
 		return role.equals(UserRoleEnum.LEADER);
 	}
