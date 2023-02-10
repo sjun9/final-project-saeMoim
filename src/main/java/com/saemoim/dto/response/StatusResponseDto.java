@@ -3,12 +3,17 @@ package com.saemoim.dto.response;
 import org.springframework.http.HttpStatus;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class StatusResponseDto {
-	private final HttpStatus httpStatus;
-	private final String message;
+	private HttpStatus httpStatus;
+	private String message;
 
+	public StatusResponseDto(HttpStatus httpStatus, String message) {
+		this.httpStatus = httpStatus;
+		this.message = message;
+	}
 }

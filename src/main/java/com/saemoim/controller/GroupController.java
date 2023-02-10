@@ -2,6 +2,7 @@ package com.saemoim.controller;
 
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.dto.response.MyGroupResponseDto;
 import com.saemoim.dto.response.StatusResponseDto;
+import com.saemoim.security.UserDetailsImpl;
 
 import lombok.RequiredArgsConstructor;
 

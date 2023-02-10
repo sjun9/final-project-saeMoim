@@ -25,6 +25,7 @@ public class User extends TimeStamped {
 	private String password;
 	@Column(nullable = false, unique = true)
 	private String username;
+	// 회원가입 시, content 적는 게 없음. 논의 필요. - 해결
 	@Column(nullable = false)
 	private String content;
 	@Column
@@ -33,4 +34,11 @@ public class User extends TimeStamped {
 	@Enumerated(EnumType.STRING)
 	private UserRoleEnum role;
 
+	public User(String email, String password, String username, UserRoleEnum role) {
+		this.email = email;
+		this.password = password;
+		this.username = username;
+		this.role = role;
+		this.content = "안녕하세요. 잘 부탁드립니다.";
+	}
 }
