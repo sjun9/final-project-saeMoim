@@ -20,10 +20,8 @@ class CategoryRepositoryTest {
 		Category category = Category.builder()
 			.name("맛집")
 			.build();
-
 		//when
 		Category savedCategory = categoryRepository.save(category);
-
 		//then
 		Assertions.assertThat(category).isSameAs(savedCategory);
 	}

@@ -1,7 +1,6 @@
 package com.saemoim.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
-
 	private final CategoryRepository categoryRepository;
 
 	@Transactional(readOnly = true)
@@ -28,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
 		return categoryRepository.findByParentIdIsNull()
 			.stream()
 			.map(c -> c.toCategoryResponseDto(categoryRepository.findByParentIdIsNotNull()))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	@Transactional
@@ -77,6 +75,7 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_CATEGORY.getMessage());
 		}
 
+		//아래 로직은 프론트에서 처리해주기 때문에 필요 없긴함
 		Category category = categoryRepository.findById(categoryId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
 		);
@@ -89,13 +88,14 @@ public class CategoryServiceImpl implements CategoryService {
 	@Transactional
 	@Override
 	public StatusResponseDto deleteCategory(Long categoryId) {
-		Category category = categoryRepository.findById(categoryId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
-		);
-
 		if (categoryRepository.existsByParentId(categoryId)) {
 			throw new IllegalArgumentException(ErrorCode.NOT_EMPTY_CATEGORY.getMessage());
 		}
+
+		//아래 로직은 프론트에서 처리해주기 때문에 필요 없긴함
+		Category category = categoryRepository.findById(categoryId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
+		);
 
 		String categoryName = category.getName();
 		categoryRepository.delete(category);
