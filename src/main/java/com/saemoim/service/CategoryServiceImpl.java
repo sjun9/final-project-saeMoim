@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.saemoim.domain.Category;
 import com.saemoim.dto.request.CategoryRequestDto;
 import com.saemoim.dto.response.CategoryResponseDto;
 import com.saemoim.dto.response.StatusResponseDto;
@@ -18,8 +17,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
-	private final CategoryRepository categoryRepository;
-
 	@Transactional(readOnly = true)
 	@Override
 	public List<CategoryResponseDto> getCategories() {
