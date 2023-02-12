@@ -1,5 +1,8 @@
 package com.saemoim.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.dto.request.GroupRequestDto;
 
@@ -13,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,6 +35,9 @@ public class Group extends TimeStamped {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id")
 	private Category category;
+
+	@OneToMany(mappedBy = "group")
+	private final List<Tag> tags = new ArrayList<>();
 
 	@Column(nullable = false, unique = true)
 	private String name;
@@ -56,16 +63,22 @@ public class Group extends TimeStamped {
 	private GroupStatusEnum status = GroupStatusEnum.OPEN;
 
 	@Column(nullable = false)
-	private Integer wishCount = 0;
+	private int wishCount = 0;
 
 	@Column(nullable = false)
-	private Integer recruitNumber = 0;
+	private int recruitNumber;
 	@Column(nullable = false)
-	private Integer participantCount = 0;
+	private int participantCount = 0;
 
 	public Group(GroupRequestDto request, Category category, User user) {
 		this.user = user;
 		this.category = category;
+
+		for (String name : request.getTagNames()) {
+			Tag tag = new Tag(name, this);
+			this.tags.add(tag);
+		}
+
 		this.name = request.getName();
 		this.content = request.getContent();
 		this.address = request.getAddress();

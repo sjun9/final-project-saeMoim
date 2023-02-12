@@ -1,9 +1,10 @@
 package com.saemoim.controller;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,12 +15,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.saemoim.domain.User;
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.dto.response.MyGroupResponseDto;
 import com.saemoim.dto.response.StatusResponseDto;
-import com.saemoim.exception.ErrorCode;
+import com.saemoim.security.UserDetailsImpl;
 import com.saemoim.service.GroupServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -32,8 +32,8 @@ public class GroupController {
 
 	// 모든 모임 조회
 	@GetMapping("/group")
-	public Page<GroupResponseDto> getGroups(Pageable pageable) {
-		return groupServiceimpl.getGroups(pageable);
+	public Page<GroupResponseDto> getAllGroups(Pageable pageable) {
+		return groupServiceimpl.getAllGroups(pageable);
 	}
 
 	// 선택 모임 조회
@@ -45,19 +45,13 @@ public class GroupController {
 	// 내가 만든 모임 조회
 	@GetMapping("/leader/group")
 	public List<MyGroupResponseDto> getMyGroupsByLeader(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		// 요청한 사용자가 리더인지 확인
-		User user = userDetails.getUser(); // UserDetailsImpl에서 메서드 추가해야함
-		if (!user.isLeader(user.getRole())) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
-		}
-
-		return groupServiceimpl.getMyGroupsByLeader(userDetails.getUsername());
+		return groupServiceimpl.getMyGroupsByLeader(userDetails.getUser().getId());
 	}
 
 	// 참여중인 모임 조회
 	@GetMapping("/participant/group")
 	public List<MyGroupResponseDto> getMyGroupsByParticipant(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		return groupServiceimpl.getMyGroupsByParticipant(userDetails.getUser().getId());
 	}
 
 	// 모임 생성

@@ -29,4 +29,8 @@ public class Review extends TimeStamped {
 
 	@Column(nullable = false)
 	private String content;
+
+	public Long getGroupId() {
+		return this.group.getId();
+	}
 }

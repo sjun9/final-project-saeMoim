@@ -1,21 +1,24 @@
 package com.saemoim.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.saemoim.domain.Group;
-import com.saemoim.domain.Review;
+import com.saemoim.domain.Tag;
 import com.saemoim.domain.enums.GroupStatusEnum;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class GroupResponseDto {
 	private Long id;
-	private List<String> tagNames;
+	private List<String> tags;
 	private String groupName;
 	private Long userId;
 	private String username;
@@ -29,13 +32,13 @@ public class GroupResponseDto {
 	private int wishCount;
 	private int recruitNumber;
 	private int participantCount;
-	private final List<ReviewResponseDto> reviews = new ArrayList<>();
+	private List<ReviewResponseDto> reviews;
 	private LocalDateTime createdAt;
 	private LocalDateTime modifiedAt;
 
-	public GroupResponseDto(Group group, List<Review> reviews, List<String> tags) {
+	public GroupResponseDto(Group group, List<ReviewResponseDto> reviews) {
 		this.id = group.getId();
-		this.tagNames = tags;
+		this.tags = group.getTags().stream().map(Tag::getName).toList();
 		this.groupName = group.getName();
 		this.userId = group.getUser().getId();
 		this.username = group.getUser().getUsername();
@@ -51,9 +54,6 @@ public class GroupResponseDto {
 		this.participantCount = group.getParticipantCount();
 		this.createdAt = group.getCreatedAt();
 		this.modifiedAt = group.getModifiedAt();
-
-		for (Review review : reviews) {
-			this.reviews.add(new ReviewResponseDto(review));
-		}
+		this.reviews = reviews;
 	}
 }

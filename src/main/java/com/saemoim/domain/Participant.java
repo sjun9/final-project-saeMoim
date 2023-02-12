@@ -26,4 +26,7 @@ public class Participant extends TimeStamped {
 	@JoinColumn(name = "group_id")
 	private Group group;
 
+	public Long getGroupId() {
+		return this.group.getId();
+	}
 }

@@ -26,7 +26,7 @@ public class User extends TimeStamped {
 	@Column(nullable = false, unique = true)
 	private String username;
 	@Column(nullable = false)
-	private String content;
+	private String content = "안녕하세요. 잘 부탁드립니다."; // 이렇게 하면 디폴트값으로 들어갑니다.
 	@Column
 	private int reportCount;
 	@Column(nullable = false)
@@ -38,8 +38,9 @@ public class User extends TimeStamped {
 		this.password = password;
 		this.username = username;
 		this.role = role;
-		this.content = "안녕하세요. 잘 부탁드립니다.";
+		// this.content = "안녕하세요. 잘 부탁드립니다.";
 	}
+
 	public boolean isLeader(UserRoleEnum role) {
 		return role.equals(UserRoleEnum.LEADER);
 	}

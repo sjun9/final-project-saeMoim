@@ -1,9 +1,9 @@
 package com.saemoim.service;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.saemoim.domain.User;
 import com.saemoim.dto.request.GroupRequestDto;
@@ -16,9 +16,9 @@ public interface GroupService {
 
 	GroupResponseDto getGroup(Long groupId);
 
-	List<MyGroupResponseDto> getMyGroupsByLeader(String username);
+	List<MyGroupResponseDto> getMyGroupsByLeader(Long userId);
 
-	List<MyGroupResponseDto> getMyGroupsByParticipant(String username);
+	List<MyGroupResponseDto> getMyGroupsByParticipant(Long userId);
 
 	GroupResponseDto createGroup(GroupRequestDto requestDto, User user);
 
