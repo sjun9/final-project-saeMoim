@@ -75,20 +75,7 @@ public class GroupServiceImpl implements GroupService {
 		List<MyGroupResponseDto> myGroupResponseDtoList = new ArrayList<>();
 
 		List<Group> groups = groupRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
-		List<Long> groupIdList = groups
-			.stream()
-			.map(Group::getId)
-			.toList();
-
-		List<Participant> participants = participantRepository.findAllParticipants(groupIdList);
-
-		for (Group group : groups) {
-			List<ParticipantResponseDto> participantResponseDtoList = participants.stream()
-				.filter(p -> p.getGroupId().equals(group.getId()))
-				.map(ParticipantResponseDto::new)
-				.toList();
-			myGroupResponseDtoList.add(new MyGroupResponseDto(group, participantResponseDtoList));
-		}
+		addMyGroupResponseDtoList(myGroupResponseDtoList, groups);
 
 		return myGroupResponseDtoList;
 	}
@@ -103,8 +90,15 @@ public class GroupServiceImpl implements GroupService {
 			.map(Participant::getGroup)
 			.toList();
 
+		addMyGroupResponseDtoList(myGroupResponseDtoList, groups);
+		return myGroupResponseDtoList;
+	}
+
+	private void addMyGroupResponseDtoList(List<MyGroupResponseDto> myGroupResponseDtoList, List<Group> groups) {
+		List<Long> groupIdList = groups.stream().map(Group::getId).toList();
+
 		List<Participant> participants = participantRepository.findAllParticipants(
-			groups.stream().map(Group::getId).toList());
+			groupIdList);
 
 		for (Group group : groups) {
 			List<ParticipantResponseDto> participantResponseDtoList = participants.stream()
@@ -113,7 +107,6 @@ public class GroupServiceImpl implements GroupService {
 				.toList();
 			myGroupResponseDtoList.add(new MyGroupResponseDto(group, participantResponseDtoList));
 		}
-		return myGroupResponseDtoList;
 	}
 
 	@Override
