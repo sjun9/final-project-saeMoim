@@ -17,14 +17,15 @@ public enum ErrorCode {
 	INVALID_PASSWORD("비밀번호가 틀렸습니다."),
 	INVALID_USER("접근 권한이 없는 사용자입니다."),
 
-	// requesst
+	// 카테고리
+	DUPLICATED_CATEGORY("중복된 카테고리 입니다."),
+	NOT_EMPTY_CATEGORY("비어있지 않은 카테고리는 삭제할 수 없습니다."),
+	NOT_EXIST_CATEGORY("카테고리가 존재하지 않습니다."),
+	NOT_PARENT_CATEGORY("기본 카테고리 밑에 생성할 수 있습니다."),
+
 	NOT_READABLE_JSON("올바르지 않은 JSON 형식입니다."),
 	NOT_SUPPORTED_HTTP_MEDIA_TYPE("지원하지 않는 Content-Type 입니다."),
 	NOT_ACCEPTABLE_HTTP_MEDIA_TYPE("지원하지 않는 Accept 입니다."),
-
-	// 카테고리
-	NOT_FOUND_CATEGORY("해당 카테고리는 존재하지 않습니다."),
-	NOT_CHILD_CATEGORY("하위 카테고리를 선택해주세요."),
 
 	// 모임
 	NOT_FOUND_GROUP("해당 모임은 존재하지 않습니다."),
