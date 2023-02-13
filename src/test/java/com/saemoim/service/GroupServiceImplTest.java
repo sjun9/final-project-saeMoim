@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
 import com.saemoim.domain.User;
+import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
@@ -35,7 +36,7 @@ class GroupServiceImplTest {
 	private GroupServiceImpl groupService;
 
 	@Test
-	@DisplayName("그룹생성")
+	@DisplayName("모임생성")
 	void createGroup() {
 		// given
 		GroupRequestDto request = GroupRequestDto.builder()
@@ -63,4 +64,52 @@ class GroupServiceImplTest {
 		verify(categoryRepository).findById(anyLong());
 		verify(groupRepository).save(any(Group.class));
 	}
+
+	@Test
+	@DisplayName("모임수정")
+	void updateGroup() {
+		// given
+		GroupRequestDto request = GroupRequestDto.builder()
+			.categoryId(1L)
+			.tagNames(new ArrayList<>())
+			.address("djemfotm")
+			.firstRegion("d")
+			.secondRegion("22")
+			.latitude("soqkq")
+			.longitude("ddddd")
+			.name("nana")
+			.content("contenddddddddddddddddt")
+			.recruitNumber(3)
+			.build();
+		User user = new User("email", "pass", "john", UserRoleEnum.LEADER);
+		Group group = Group.builder().id(1L).user(user).name("name").build();
+		Category category = Category.builder().parentId(1L).name("named").build();
+		Group mockGroup = mock(Group.class);
+
+		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
+
+		// when
+		GroupResponseDto response = groupService.updateGroup(group.getId(), request, user.getUsername());
+
+		// then
+		assertThat(response.getGroupName()).isEqualTo(group.getName());
+	}
+
+	@Test
+	@DisplayName("모임열기")
+	void openGroup() {
+		// given
+		var user = new User("email", "pass", "name", UserRoleEnum.LEADER);
+		var group = Group.builder().status(GroupStatusEnum.CLOSE).user(user).build();
+
+		when(groupRepository.findById(group.getId())).thenReturn(Optional.of(group));
+
+		// when
+		groupService.openGroup(group.getId(), user.getUsername());
+
+		// then
+		assertThat(group.getStatus()).isEqualTo(GroupStatusEnum.OPEN);
+	}
+
 }
