@@ -9,7 +9,6 @@ import com.saemoim.domain.User;
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.dto.response.MyGroupResponseDto;
-import com.saemoim.dto.response.StatusResponseDto;
 
 public interface GroupService {
 	Page<GroupResponseDto> getAllGroups(Pageable pageable);
@@ -24,10 +23,10 @@ public interface GroupService {
 
 	GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, String username);
 
-	StatusResponseDto deleteGroup(Long groupId, String username);
+	void deleteGroup(Long groupId, String username);
 
-	StatusResponseDto openGroup(Long groupId, String username);
+	void openGroup(Long groupId, String username);
 
-	StatusResponseDto closeGroup(Long groupId, String username);
+	void closeGroup(Long groupId, String username);
 
 }

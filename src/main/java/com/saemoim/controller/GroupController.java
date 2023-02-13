@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
+import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.MyGroupResponseDto;
-import com.saemoim.dto.response.StatusResponseDto;
 import com.saemoim.security.UserDetailsImpl;
 import com.saemoim.service.GroupServiceImpl;
 
@@ -66,28 +68,31 @@ public class GroupController {
 	public GroupResponseDto updateGroup(@PathVariable Long groupId,
 		@Validated @RequestBody GroupRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		return groupServiceImpl.updateGroup(groupId, requestDto, userDetails.getUsername());
 	}
 
 	// 모임 삭제
 	@DeleteMapping("/groups/{groupId}")
-	public StatusResponseDto deleteGroup(@PathVariable Long groupId,
+	public ResponseEntity<MessageResponseDto> deleteGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		groupServiceImpl.deleteGroup(groupId, userDetails.getUsername());
+		return new ResponseEntity<>(new MessageResponseDto("삭제 성공"), HttpStatus.OK);
 	}
 
 	// 모임 열기
 	@PatchMapping("/groups/{groupId}/open")
-	public StatusResponseDto openGroup(@PathVariable Long groupId,
+	public ResponseEntity<MessageResponseDto> openGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		groupServiceImpl.openGroup(groupId, userDetails.getUsername());
+		return new ResponseEntity<>(new MessageResponseDto("모임 Open"), HttpStatus.OK);
 	}
 
 	// 모임 닫기
 	@PatchMapping("/groups/{groupId}/close")
-	public StatusResponseDto closeGroup(@PathVariable Long groupId,
+	public ResponseEntity<MessageResponseDto> closeGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		groupServiceImpl.closeGroup(groupId, userDetails.getUsername());
+		return new ResponseEntity<>(new MessageResponseDto("모임 Close"), HttpStatus.OK);
 	}
 
 }

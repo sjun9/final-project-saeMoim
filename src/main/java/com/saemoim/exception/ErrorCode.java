@@ -29,8 +29,9 @@ public enum ErrorCode {
 
 	// 모임
 	NOT_FOUND_GROUP("해당 모임은 존재하지 않습니다."),
-
-	INTERNAL_SERVER_ERROR("서버 오류");
+	INTERNAL_SERVER_ERROR("서버 오류"),
+	ALREADY_OPEN("이미 열려있는 모임입니다."),
+	ALREADY_CLOSE("이미 닫혀있는 모임입니다.");
 
 	private final String message;
 }

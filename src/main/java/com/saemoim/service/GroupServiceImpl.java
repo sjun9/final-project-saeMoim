@@ -14,12 +14,12 @@ import com.saemoim.domain.Group;
 import com.saemoim.domain.Participant;
 import com.saemoim.domain.Review;
 import com.saemoim.domain.User;
+import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.dto.response.MyGroupResponseDto;
 import com.saemoim.dto.response.ParticipantResponseDto;
 import com.saemoim.dto.response.ReviewResponseDto;
-import com.saemoim.dto.response.StatusResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
@@ -43,7 +43,7 @@ public class GroupServiceImpl implements GroupService {
 		List<Group> groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
 		List<Long> allGroupIdList = groups.stream().map(Group::getId).toList();
 		List<Review> reviews = reviewRepository.findAllReviewsByGroupId(allGroupIdList);
-
+		// api 분리
 		List<GroupResponseDto> groupResponseDto = new ArrayList<>();
 		for (Group group : groups) {
 			List<ReviewResponseDto> reviewList = reviews.stream()
@@ -98,7 +98,7 @@ public class GroupServiceImpl implements GroupService {
 		List<Long> groupIdList = groups.stream().map(Group::getId).toList();
 
 		List<Participant> participants = participantRepository.findAllParticipants(groupIdList);
-
+		// api 분리
 		for (Group group : groups) {
 			List<ParticipantResponseDto> participantResponseDtoList = participants.stream()
 				.filter(p -> p.getGroup().getId().equals(group.getId()))
@@ -124,32 +124,71 @@ public class GroupServiceImpl implements GroupService {
 		return new GroupResponseDto(group, new ArrayList<>());
 	}
 
-	@Transactional
 	@Override
+	@Transactional
 	public GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, String username) {
-		// 그룹을 가져오기
-		// 그룹을 가져오면 태그리스트를 갖고옴 원투매니 했지롱
-		return null;
+		// 카테고리 존재 확인
+		Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
+		);
+		if (category.getParentId() == null) {
+			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
+		}
+		Group group = groupRepository.findById(groupId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
+		);
+		if (group.getUser().getUsername().equals(username)) {
+			group.update(requestDto, category, group.getUser());
+			groupRepository.save(group);
+		} else
+			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+
+		return new GroupResponseDto(group, new ArrayList<>());
+	}
+
+	@Override
+	@Transactional
+	public void deleteGroup(Long groupId, String username) {
+		Group group = groupRepository.findById(groupId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
+		);
+		if (group.getUser().getUsername().equals(username)) {
+			groupRepository.delete(group);
+		} else {
+			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+		}
+	}
+
+	@Override
+	@Transactional
+	public void openGroup(Long groupId, String username) {
+		Group group = groupRepository.findById(groupId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
+		);
+		if (group.getStatus().equals(GroupStatusEnum.OPEN)) {
+			throw new IllegalArgumentException(ErrorCode.ALREADY_OPEN.getMessage());
+		}
+		if (group.getUser().getUsername().equals(username))
+			group.updateStatusToOpen();
+
+		else {
+			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+		}
 	}
 
 	@Transactional
 	@Override
-	public StatusResponseDto deleteGroup(Long groupId, String username) {
-		// 그룹도 지우고
-		// 참가자도 지우고
-		// 태그도 지우고 -> 연결되어있으니까 한번에 지워지겠지?
-		return null;
-	}
-
-	@Transactional
-	@Override
-	public StatusResponseDto openGroup(Long groupId, String username) {
-		return null;
-	}
-
-	@Transactional
-	@Override
-	public StatusResponseDto closeGroup(Long groupId, String username) {
-		return null;
+	public void closeGroup(Long groupId, String username) {
+		Group group = groupRepository.findById(groupId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
+		);
+		if (group.getStatus().equals(GroupStatusEnum.CLOSE)) {
+			throw new IllegalArgumentException(ErrorCode.ALREADY_CLOSE.getMessage());
+		}
+		if (group.getUser().getUsername().equals(username))
+			group.updateStatusToClose();
+		else {
+			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+		}
 	}
 }
