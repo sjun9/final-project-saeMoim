@@ -25,8 +25,9 @@ public class User extends TimeStamped {
 	private String password;
 	@Column(nullable = false, unique = true)
 	private String username;
+	// 회원가입 시, content 적는 게 없음. 논의 필요. - 해결
 	@Column(nullable = false)
-	private String content = "안녕하세요. 잘 부탁드립니다."; // 이렇게 하면 디폴트값으로 들어갑니다.
+	private String content;
 	@Column
 	private int banCount;
 	@Column(nullable = false)
@@ -38,7 +39,8 @@ public class User extends TimeStamped {
 		this.password = password;
 		this.username = username;
 		this.role = role;
-		// this.content = "안녕하세요. 잘 부탁드립니다.";
+		this.content = "안녕하세요. 잘 부탁드립니다.";
+		this.banCount = 0;
 	}
 
 	public boolean isLeader(UserRoleEnum role) {

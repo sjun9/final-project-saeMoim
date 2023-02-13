@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.saemoim.dto.response.ApplicationResponseDto;
-import com.saemoim.dto.response.StatusResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,14 +20,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Transactional
 	@Override
-	public StatusResponseDto applyGroup(Long groupId, String username) {
-		return null;
+	public void applyGroup(Long groupId, String username) {
+
 	}
 
 	@Transactional
 	@Override
-	public StatusResponseDto cancelApplication(Long applicationId, String username) {
-		return null;
+	public void cancelApplication(Long applicationId, String username) {
+
 	}
 
 	@Transactional(readOnly = true)
@@ -39,6 +38,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Transactional
 	@Override
+	public void permitApplication(Long applicationId, String username) {
+
 	public StatusResponseDto permitApplication(Long applicationId, String username) {
 		// 어플리케이션 상태 변화 + 파티시펀트 값 추가 두개를 해야하니 연
 		// participant서비스에서 생성하는 메서드를 여기서 호출.
@@ -49,7 +50,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Transactional
 	@Override
-	public StatusResponseDto rejectApplication(Long applicationId, String username) {
-		return null;
+	public void rejectApplication(Long applicationId, String username) {
+
 	}
 }
