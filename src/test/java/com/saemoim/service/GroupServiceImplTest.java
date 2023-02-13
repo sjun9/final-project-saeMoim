@@ -51,7 +51,7 @@ class GroupServiceImplTest {
 			.recruitNumber(3)
 			.build();
 		User user = new User("dddd", "ddd", "name", UserRoleEnum.LEADER);
-		Category category = Category.builder().id(1L).layer(1).parentId(1L).name("named").build();
+		Category category = Category.builder().parentId(1L).name("named").build();
 		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
 
 		// when
