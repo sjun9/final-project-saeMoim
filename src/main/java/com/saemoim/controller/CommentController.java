@@ -13,6 +13,7 @@ import com.saemoim.dto.request.CommentRequestDto;
 import com.saemoim.dto.response.CommentResponseDto;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.security.UserDetailsImpl;
+import com.saemoim.service.CommentService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,10 +21,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CommentController {
 
+	private final CommentService commentService;
 	// 댓글 작성
 	@PostMapping("/posts/{postId}/comment")
 	public CommentResponseDto createComment(@PathVariable Long postId,
 		@Validated @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+		commentService.createComment(postId, requestDto, userDetails.getUser());
+
 		return null;
 	}
 

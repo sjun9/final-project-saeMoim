@@ -56,6 +56,7 @@ public class WebSecurityConfig {
 		http.authorizeHttpRequests()
 			.requestMatchers("/sign-up").permitAll()
 			.requestMatchers("/sign-in").permitAll()
+			.requestMatchers("/posts/{postId}/comment").hasAnyRole("USER")
 			.requestMatchers("/admin/**").hasAnyRole("ADMIN")
 			.and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 			// .anyRequest().authenticated();	// 모든 요청에 대해 인증. 당장 사용하지 않으므로 주석 처리
