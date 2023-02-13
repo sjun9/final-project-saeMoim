@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 	private final CategoryRepository categoryRepository;
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public List<CategoryResponseDto> getCategories() {
@@ -75,7 +75,6 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_CATEGORY.getMessage());
 		}
 
-		//아래 로직은 프론트에서 처리해주기 때문에 필요 없긴함
 		Category category = categoryRepository.findById(categoryId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
 		);
@@ -92,7 +91,6 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new IllegalArgumentException(ErrorCode.NOT_EMPTY_CATEGORY.getMessage());
 		}
 
-		//아래 로직은 프론트에서 처리해주기 때문에 필요 없긴함
 		Category category = categoryRepository.findById(categoryId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
 		);
