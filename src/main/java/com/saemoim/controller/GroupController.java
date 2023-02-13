@@ -28,37 +28,37 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GroupController {
 
-	private final GroupServiceImpl groupServiceimpl;
+	private final GroupServiceImpl groupServiceImpl;
 
 	// 모든 모임 조회
 	@GetMapping("/group")
 	public Page<GroupResponseDto> getAllGroups(Pageable pageable) {
-		return groupServiceimpl.getAllGroups(pageable);
+		return groupServiceImpl.getAllGroups(pageable);
 	}
 
 	// 선택 모임 조회
 	@GetMapping("/groups/{groupId}")
 	public GroupResponseDto getGroup(@PathVariable Long groupId) {
-		return groupServiceimpl.getGroup(groupId);
+		return groupServiceImpl.getGroup(groupId);
 	}
 
 	// 내가 만든 모임 조회
 	@GetMapping("/leader/group")
 	public List<MyGroupResponseDto> getMyGroupsByLeader(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return groupServiceimpl.getMyGroupsByLeader(userDetails.getUser().getId());
+		return groupServiceImpl.getMyGroupsByLeader(userDetails.getUser());
 	}
 
 	// 참여중인 모임 조회
 	@GetMapping("/participant/group")
 	public List<MyGroupResponseDto> getMyGroupsByParticipant(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return groupServiceimpl.getMyGroupsByParticipant(userDetails.getUser().getId());
+		return groupServiceImpl.getMyGroupsByParticipant(userDetails.getUser());
 	}
 
 	// 모임 생성
 	@PostMapping("/group")
 	public GroupResponseDto createGroup(@Validated @RequestBody GroupRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return groupServiceimpl.createGroup(requestDto, userDetails.getUser());
+		return groupServiceImpl.createGroup(requestDto, userDetails.getUser());
 	}
 
 	// 모임 수정

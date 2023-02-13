@@ -61,7 +61,7 @@ public class GroupServiceImpl implements GroupService {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		List<ReviewResponseDto> reviewList = reviewRepository.findAllByGroupIdOrderByCreatedAt(groupId)
+		List<ReviewResponseDto> reviewList = reviewRepository.findAllByGroupOrderByCreatedAtDesc(group)
 			.stream()
 			.map(ReviewResponseDto::new)
 			.toList();
@@ -70,11 +70,11 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<MyGroupResponseDto> getMyGroupsByLeader(Long userId) {  // 리더아이디
+	public List<MyGroupResponseDto> getMyGroupsByLeader(User user) {  // 리더아이디
 
 		List<MyGroupResponseDto> myGroupResponseDtoList = new ArrayList<>();
 
-		List<Group> groups = groupRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+		List<Group> groups = groupRepository.findAllByUserOrderByCreatedAtDesc(user);
 		addMyGroupResponseDtoList(myGroupResponseDtoList, groups);
 
 		return myGroupResponseDtoList;
@@ -82,10 +82,10 @@ public class GroupServiceImpl implements GroupService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<MyGroupResponseDto> getMyGroupsByParticipant(Long userId) {  // 참가자아이디
+	public List<MyGroupResponseDto> getMyGroupsByParticipant(User user) {  // 참가자아이디
 		List<MyGroupResponseDto> myGroupResponseDtoList = new ArrayList<>();
 
-		List<Group> groups = participantRepository.findByUserId(userId)
+		List<Group> groups = participantRepository.findAllByUserOrderByCreatedAtDesc(user)
 			.stream()
 			.map(Participant::getGroup)
 			.toList();
@@ -97,12 +97,11 @@ public class GroupServiceImpl implements GroupService {
 	private void addMyGroupResponseDtoList(List<MyGroupResponseDto> myGroupResponseDtoList, List<Group> groups) {
 		List<Long> groupIdList = groups.stream().map(Group::getId).toList();
 
-		List<Participant> participants = participantRepository.findAllParticipants(
-			groupIdList);
+		List<Participant> participants = participantRepository.findAllParticipants(groupIdList);
 
 		for (Group group : groups) {
 			List<ParticipantResponseDto> participantResponseDtoList = participants.stream()
-				.filter(p -> p.getGroupId().equals(group.getId()))
+				.filter(p -> p.getGroup().getId().equals(group.getId()))
 				.map(ParticipantResponseDto::new)
 				.toList();
 			myGroupResponseDtoList.add(new MyGroupResponseDto(group, participantResponseDtoList));
@@ -114,10 +113,10 @@ public class GroupServiceImpl implements GroupService {
 	public GroupResponseDto createGroup(GroupRequestDto requestDto, User user) {
 		// 카테고리 존재 확인
 		Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_CATEGORY.getMessage())
+			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
 		);
 		if (category.getParentId() == null) {
-			throw new IllegalArgumentException(ErrorCode.NOT_CHILD_CATEGORY.getMessage());
+			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
 		Group group = new Group(requestDto, category, user);
 		groupRepository.save(group);
