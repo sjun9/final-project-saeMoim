@@ -25,4 +25,9 @@ public class Tag {
 
 	@Column(nullable = false)
 	private String name;
+
+	public Tag(String name, Group group) {
+		this.group = group;
+		this.name = name;
+	}
 }

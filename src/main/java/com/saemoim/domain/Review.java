@@ -21,7 +21,7 @@ public class Review extends TimeStamped {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private User User;
+	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "group_id")
@@ -29,4 +29,16 @@ public class Review extends TimeStamped {
 
 	@Column(nullable = false)
 	private String content;
+
+	public Long getGroupId() {
+		return this.group.getId();
+	}
+
+	public Long getUserId() {
+		return this.user.getId();
+	}
+
+	public String getUsername() {
+		return this.user.getUsername();
+	}
 }

@@ -2,15 +2,17 @@ package com.saemoim.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
-import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.MyGroupResponseDto;
 
 public interface GroupService {
-	List<MyGroupResponseDto> getGroups();
+	Page<GroupResponseDto> getAllGroups(Pageable pageable);
 
-	MyGroupResponseDto getGroup(Long groupId);
+	GroupResponseDto getGroup(Long groupId);
 
 	List<MyGroupResponseDto> getMyGroupsByLeader(String username);
 
@@ -20,10 +22,10 @@ public interface GroupService {
 
 	GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, String username);
 
-	MessageResponseDto deleteGroup(Long groupId, String username);
+	void deleteGroup(Long groupId, String username);
 
-	MessageResponseDto openGroup(Long groupId, String username);
+	void openGroup(Long groupId, String username);
 
-	MessageResponseDto closeGroup(Long groupId, String username);
+	void closeGroup(Long groupId, String username);
 
 }
