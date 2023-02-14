@@ -1,5 +1,6 @@
 package com.saemoim.service;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -13,10 +14,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.saemoim.domain.Application;
 import com.saemoim.domain.Group;
+import com.saemoim.domain.Participant;
 import com.saemoim.domain.User;
+import com.saemoim.domain.enums.ApplicationStatusEnum;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.repository.ApplicationRepository;
 import com.saemoim.repository.GroupRepository;
+import com.saemoim.repository.ParticipantRepository;
 import com.saemoim.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,6 +32,8 @@ class ApplicationServiceImplTest {
 	private UserRepository userRepository;
 	@Mock
 	private GroupRepository groupRepository;
+	@Mock
+	private ParticipantRepository participantRepository;
 	@InjectMocks
 	private ApplicationServiceImpl applicationService;
 
@@ -99,10 +105,48 @@ class ApplicationServiceImplTest {
 	}
 
 	@Test
+	@DisplayName("신청수락")
 	void permitApplication() {
+		// given
+		var applicationId = 1L;
+		var username = "leader";
+		Group group = Group.builder().id(1L).user(new User("e", "p", "leader", UserRoleEnum.LEADER)).build();
+		User user = User.builder().id(1L).username("pati").build();
+		Application application = Application.builder()
+			.group(group)
+			.user(user)
+			.build();
+
+		when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
+		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
+		when(userRepository.findById(1L)).thenReturn(Optional.of(application.getUser()));
+		// when
+		applicationService.permitApplication(applicationId, username);
+		// then
+		verify(applicationRepository).save(any(Application.class));
+		verify(participantRepository).save(any(Participant.class));
+		assertThat(application.getStatus()).isEqualTo(ApplicationStatusEnum.PERMIT);
 	}
 
 	@Test
+	@DisplayName("신청거절")
 	void rejectApplication() {
+		// given
+		var applicationId = 1L;
+		var username = "leader";
+		Group group = Group.builder().id(1L).user(new User("e", "p", "leader", UserRoleEnum.LEADER)).build();
+		User user = User.builder().username("pati").build();
+		Application application = Application.builder().status(ApplicationStatusEnum.WAIT)
+			.group(group)
+			.user(user)
+			.build();
+
+		when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
+		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
+		// when
+		applicationService.rejectApplication(applicationId, username);
+		// then
+		verify(applicationRepository).save(any(Application.class));
+		assertThat(application.getStatus()).isEqualTo(ApplicationStatusEnum.REJECT);
 	}
 }
