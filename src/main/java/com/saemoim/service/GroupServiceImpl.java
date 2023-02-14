@@ -107,7 +107,7 @@ public class GroupServiceImpl implements GroupService {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		if (group.getUsername().equals(username)) {
+		if (group.isLeader(username)) {
 			group.update(requestDto, category, group.getUser());
 			groupRepository.save(group);
 		} else
@@ -122,7 +122,7 @@ public class GroupServiceImpl implements GroupService {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		if (group.getUsername().equals(username)) {
+		if (group.isLeader(username)) {
 			groupRepository.delete(group);
 		} else {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
@@ -138,7 +138,7 @@ public class GroupServiceImpl implements GroupService {
 		if (group.getStatus().equals(GroupStatusEnum.OPEN)) {
 			throw new IllegalArgumentException(ErrorCode.ALREADY_OPEN.getMessage());
 		}
-		if (group.getUsername().equals(username))
+		if (group.isLeader(username))
 			group.updateStatusToOpen();
 
 		else {
@@ -155,7 +155,7 @@ public class GroupServiceImpl implements GroupService {
 		if (group.getStatus().equals(GroupStatusEnum.CLOSE)) {
 			throw new IllegalArgumentException(ErrorCode.ALREADY_CLOSE.getMessage());
 		}
-		if (group.getUsername().equals(username))
+		if (group.isLeader(username))
 			group.updateStatusToClose();
 		else {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());

@@ -23,19 +23,22 @@ public enum ErrorCode {
 	NOT_EXIST_CATEGORY("카테고리가 존재하지 않습니다."),
 	NOT_PARENT_CATEGORY("기본 카테고리 밑에 생성할 수 있습니다."),
 
+	// 블랙리스트
 	DUPLICATED_BLACKLIST("이미 블랙리스트에 등록되어 있습니다."),
 	NOT_EXIST_BLACKLIST("해당 블랙리스트가 존재하지 않습니다."),
-
-	NOT_READABLE_JSON("올바르지 않은 JSON 형식입니다."),
-	NOT_SUPPORTED_HTTP_MEDIA_TYPE("지원하지 않는 Content-Type 입니다."),
-	NOT_ACCEPTABLE_HTTP_MEDIA_TYPE("지원하지 않는 Accept 입니다."),
 
 	// 모임
 	NOT_FOUND_GROUP("해당 모임은 존재하지 않습니다."),
 	INTERNAL_SERVER_ERROR("서버 오류"),
 	ALREADY_OPEN("이미 열려있는 모임입니다."),
 	ALREADY_CLOSE("이미 닫혀있는 모임입니다."),
-	NOT_FOUND_REVIEW("해당 후기는 존재하지 않습니다.");
+	DUPLICATED_APPLICATION("이미 신청되었습니다."),
+	NOT_FOUND_APPLICATION("해당 신청은 존재하지 않습니다."),
+	NOT_FOUND_REVIEW("해당 후기는 존재하지 않습니다."),
+
+	NOT_READABLE_JSON("올바르지 않은 JSON 형식입니다."),
+	NOT_SUPPORTED_HTTP_MEDIA_TYPE("지원하지 않는 Content-Type 입니다."),
+	NOT_ACCEPTABLE_HTTP_MEDIA_TYPE("지원하지 않는 Accept 입니다.");
 
 	private final String message;
 }
