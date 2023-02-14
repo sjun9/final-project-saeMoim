@@ -21,11 +21,12 @@ import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.ProfileResponseDto;
-import com.saemoim.dto.response.SignInResponseDto;
+import com.saemoim.dto.response.TokenResponseDto;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.security.UserDetailsImpl;
 import com.saemoim.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -33,7 +34,6 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserService userService;
-	private final JwtUtil jwtUtil;
 
 	// 회원 가입
 	@PostMapping("/sign-up")
@@ -47,13 +47,10 @@ public class UserController {
 	public ResponseEntity<MessageResponseDto> signIn(@RequestBody SignInRequestDto requestDto) {
 		// 로그인 성공 시
 		// 토큰 발급
-
-		SignInResponseDto signInResponseDto = userService.signIn(requestDto);
-		// 토큰 발급 - 이름(이메일) 과 권한 필요
-		String token = jwtUtil.createToken(signInResponseDto.getEmail(), signInResponseDto.getRole());
-		// 토큰 header 에 넣기
+		TokenResponseDto tokenResponseDto = userService.signIn(requestDto);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add(JwtUtil.AUTHORIZATION_HEADER, token);
+		headers.set(JwtUtil.AUTHORIZATION_HEADER, tokenResponseDto.getAccessToken());
+		headers.set(JwtUtil.REFRESH_TOKEN_HEADER, tokenResponseDto.getRefreshToken());
 		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 
 		return new ResponseEntity<>(new MessageResponseDto("로그인 완료"), headers, HttpStatus.OK);
@@ -85,5 +82,18 @@ public class UserController {
 	public ProfileResponseDto updateProfile(@Validated @RequestBody ProfileRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return null;
+	}
+
+	// 리프레쉬 토큰 재발급
+	@PostMapping("/reissue")
+	public ResponseEntity<MessageResponseDto> reissue(HttpServletRequest request) {
+		TokenResponseDto tokenResponseDto = userService.reissueToken(
+			request.getHeader(JwtUtil.AUTHORIZATION_HEADER),
+			request.getHeader(JwtUtil.REFRESH_TOKEN_HEADER));
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(JwtUtil.AUTHORIZATION_HEADER, tokenResponseDto.getAccessToken());
+		headers.set(JwtUtil.REFRESH_TOKEN_HEADER, tokenResponseDto.getRefreshToken());
+		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+		return new ResponseEntity<>(new MessageResponseDto("토큰 재발급 완료"), headers, HttpStatus.OK);
 	}
 }

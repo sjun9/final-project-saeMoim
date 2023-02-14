@@ -32,6 +32,8 @@ dependencies {
 
     implementation 'mysql:mysql-connector-java'
     implementation 'com.google.code.gson:gson:2.9.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {

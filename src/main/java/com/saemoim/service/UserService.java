@@ -4,12 +4,12 @@ import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
 import com.saemoim.dto.response.ProfileResponseDto;
-import com.saemoim.dto.response.SignInResponseDto;
+import com.saemoim.dto.response.TokenResponseDto;
 
 public interface UserService {
 	void signUp(SignUpRequestDto requestDto);
 
-	SignInResponseDto signIn(SignInRequestDto requestDto);
+	TokenResponseDto signIn(SignInRequestDto requestDto);
 
 	void logout(String username);
 
@@ -19,4 +19,7 @@ public interface UserService {
 
 	ProfileResponseDto updateProfile(String username, ProfileRequestDto requestDto);
 
+	TokenResponseDto reissueToken(String accessToken, String refreshToken);
+
+	String issueRefreshToken(String username, String accessToken);
 }
