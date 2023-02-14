@@ -34,6 +34,7 @@ public enum ErrorCode {
 	ALREADY_CLOSE("이미 닫혀있는 모임입니다."),
 	DUPLICATED_APPLICATION("이미 신청되었습니다."),
 	NOT_FOUND_APPLICATION("해당 신청은 존재하지 않습니다."),
+	NOT_FOUND_REVIEW("해당 후기는 존재하지 않습니다."),
 
 	NOT_READABLE_JSON("올바르지 않은 JSON 형식입니다."),
 	NOT_SUPPORTED_HTTP_MEDIA_TYPE("지원하지 않는 Content-Type 입니다."),
