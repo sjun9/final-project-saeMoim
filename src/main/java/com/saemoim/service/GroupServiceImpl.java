@@ -1,6 +1,5 @@
 package com.saemoim.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -21,6 +20,7 @@ import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
 import com.saemoim.repository.ParticipantRepository;
+import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,14 +31,13 @@ public class GroupServiceImpl implements GroupService {
 	private final GroupRepository groupRepository;
 	private final CategoryRepository categoryRepository;
 	private final ParticipantRepository participantRepository;
+	private final UserRepository userRepository;
 
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GroupResponseDto> getAllGroups(Pageable pageable) {
 		List<Group> groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
-		List<GroupResponseDto> groupResponseDto = new ArrayList<>();
-		groups.forEach(group -> groupResponseDto.add(new GroupResponseDto(group)));
-		return new PageImpl<>(groupResponseDto);
+		return new PageImpl<>(groups.stream().map(GroupResponseDto::new).toList());
 	}
 
 	@Override
@@ -52,30 +51,36 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<MyGroupResponseDto> getMyGroupsByLeader(User user) {
-		List<MyGroupResponseDto> myGroupResponseDtoList = new ArrayList<>();
+	public List<MyGroupResponseDto> getMyGroupsByLeader(String username) {
+		User user = userRepository.findByUsername(username).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
 		List<Group> groups = groupRepository.findAllByUserOrderByCreatedAtDesc(user);
-		groups.forEach(group -> myGroupResponseDtoList.add(new MyGroupResponseDto(group)));
 
-		return myGroupResponseDtoList;
+		return groups.stream().map(MyGroupResponseDto::new).toList();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<MyGroupResponseDto> getMyGroupsByParticipant(User user) {
-		List<MyGroupResponseDto> myGroupResponseDtoList = new ArrayList<>();
+	public List<MyGroupResponseDto> getMyGroupsByParticipant(String username) {
+		User user = userRepository.findByUsername(username).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
 
 		List<Group> groups = participantRepository.findAllByUserOrderByCreatedAtDesc(user)
 			.stream()
 			.map(Participant::getGroup)
 			.toList();
-		groups.forEach(group -> myGroupResponseDtoList.add(new MyGroupResponseDto(group)));
-		return myGroupResponseDtoList;
+
+		return groups.stream().map(MyGroupResponseDto::new).toList();
 	}
 
 	@Override
 	@Transactional
-	public GroupResponseDto createGroup(GroupRequestDto requestDto, User user) {
+	public GroupResponseDto createGroup(GroupRequestDto requestDto, String username) {
+		User user = userRepository.findByUsername(username).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
 		// 카테고리 존재 확인
 		Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
@@ -102,7 +107,7 @@ public class GroupServiceImpl implements GroupService {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		if (group.getUser().getUsername().equals(username)) {
+		if (group.getUsername().equals(username)) {
 			group.update(requestDto, category, group.getUser());
 			groupRepository.save(group);
 		} else
@@ -117,7 +122,7 @@ public class GroupServiceImpl implements GroupService {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		if (group.getUser().getUsername().equals(username)) {
+		if (group.getUsername().equals(username)) {
 			groupRepository.delete(group);
 		} else {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
@@ -133,7 +138,7 @@ public class GroupServiceImpl implements GroupService {
 		if (group.getStatus().equals(GroupStatusEnum.OPEN)) {
 			throw new IllegalArgumentException(ErrorCode.ALREADY_OPEN.getMessage());
 		}
-		if (group.getUser().getUsername().equals(username))
+		if (group.getUsername().equals(username))
 			group.updateStatusToOpen();
 
 		else {
@@ -150,7 +155,7 @@ public class GroupServiceImpl implements GroupService {
 		if (group.getStatus().equals(GroupStatusEnum.CLOSE)) {
 			throw new IllegalArgumentException(ErrorCode.ALREADY_CLOSE.getMessage());
 		}
-		if (group.getUser().getUsername().equals(username))
+		if (group.getUsername().equals(username))
 			group.updateStatusToClose();
 		else {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());

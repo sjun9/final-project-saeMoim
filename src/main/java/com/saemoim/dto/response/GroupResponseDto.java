@@ -39,8 +39,8 @@ public class GroupResponseDto {
 		this.id = group.getId();
 		this.tags = group.getTags().stream().map(Tag::getName).toList();
 		this.groupName = group.getName();
-		this.userId = group.getUser().getId();
-		this.username = group.getUser().getUsername();
+		this.userId = group.getUserId();
+		this.username = group.getUsername();
 		this.content = group.getContent();
 		this.address = group.getAddress();
 		this.firstRegion = group.getFirstRegion();

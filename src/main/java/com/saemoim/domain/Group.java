@@ -113,6 +113,14 @@ public class Group extends TimeStamped {
 		this.recruitNumber = request.getRecruitNumber();
 	}
 
+	public String getUsername() {
+		return this.user.getUsername();
+	}
+
+	public Long getUserId() {
+		return this.user.getId();
+	}
+
 	public void updateStatusToOpen() {
 		this.status = GroupStatusEnum.OPEN;
 	}

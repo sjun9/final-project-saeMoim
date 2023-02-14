@@ -56,7 +56,7 @@ class GroupServiceImplTest {
 		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
 
 		// when
-		GroupResponseDto response = groupService.createGroup(request, user);
+		GroupResponseDto response = groupService.createGroup(request, user.getUsername());
 
 		// then
 		assertThat(response.getGroupName()).isEqualTo("name");

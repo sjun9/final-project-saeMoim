@@ -29,4 +29,12 @@ public class Participant extends TimeStamped {
 	public Long getGroupId() {
 		return this.group.getId();
 	}
+
+	public Long getUserId() {
+		return this.user.getId();
+	}
+
+	public String getUsername() {
+		return this.user.getUsername();
+	}
 }

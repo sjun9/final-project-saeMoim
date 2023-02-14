@@ -43,11 +43,6 @@ public class User extends TimeStamped {
 		this.banCount = 0;
 	}
 
-	public boolean isLeader(UserRoleEnum role) {
-		return role.equals(UserRoleEnum.LEADER);
-	}
-
-
 	public void plusBanCount() {
 		this.banCount++;
 	}

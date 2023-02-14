@@ -12,7 +12,7 @@ public class ParticipantResponseDto {
 	private String username;
 
 	public ParticipantResponseDto(Participant participant) {
-		this.userId = participant.getUser().getId();
-		this.username = participant.getUser().getUsername();
+		this.userId = participant.getUserId();
+		this.username = participant.getUsername();
 	}
 }
