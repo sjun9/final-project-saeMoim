@@ -1,5 +1,7 @@
 package com.saemoim.domain;
 
+import com.saemoim.dto.request.ReviewRequestDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,6 +31,12 @@ public class Review extends TimeStamped {
 
 	@Column(nullable = false)
 	private String content;
+
+	public Review(ReviewRequestDto requestDto, Group group, User user) {
+		this.user = user;
+		this.group = group;
+		this.content = requestDto.getComment();
+	}
 
 	public Long getGroupId() {
 		return this.group.getId();

@@ -38,7 +38,7 @@ public class ReviewController {
 	public ReviewResponseDto createReview(@PathVariable Long groupId,
 		@Validated @RequestBody ReviewRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		return reviewServiceImpl.createReview(groupId, requestDto, userDetails.getUsername());
 	}
 
 	// 모임 후기 수정
