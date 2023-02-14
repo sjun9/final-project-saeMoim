@@ -11,6 +11,7 @@ public enum ErrorCode {
 	DUPLICATED_USERNAME("중복된 username 입니다"),
 	DUPLICATED_EMAIL("중복된 email 입니다"),
 	NOT_FOUND_USER("회원을 찾을 수 없습니다."),
+	NOT_FOUND_POST("해당 게시글을 찾을 수 없습니다."),
 	INVALID_PASSWORD("비밀번호가 틀렸습니다."),
 
 	DUPLICATED_CATEGORY("중복된 카테고리 입니다."),

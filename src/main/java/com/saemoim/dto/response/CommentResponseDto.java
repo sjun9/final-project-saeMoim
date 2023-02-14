@@ -14,4 +14,11 @@ public class CommentResponseDto {
 	private String username;
 	private LocalDateTime createdAt;
 	private LocalDateTime modifiedAt;
+
+	public CommentResponseDto(String writer, String comment1, LocalDateTime createdAt1, LocalDateTime modifiedAt1) {
+		this.username = writer;
+		this.comment = comment1;
+		this.createdAt = createdAt1;
+		this.modifiedAt = modifiedAt1;
+	}
 }

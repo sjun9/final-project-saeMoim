@@ -17,4 +17,15 @@ public class PostResponseDto {
 	private LocalDateTime createdAt;
 	private LocalDateTime modifiedAt;
 	private List<CommentResponseDto> comments;
+
+	public PostResponseDto(Long id, String title, String username, String content, LocalDateTime createdAt,
+		LocalDateTime modifiedAt, List<CommentResponseDto> commentResponseDtos) {
+		this.id = id;
+		this.title = title;
+		this.username = username;
+		this.content = content;
+		this.createdAt = createdAt;
+		this.modifiedAt = modifiedAt;
+
+	}
 }

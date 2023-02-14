@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.saemoim.dto.request.PostRequestDto;
 import com.saemoim.dto.response.MessageResponseDto;
+import com.saemoim.dto.response.PostListResponseDto;
 import com.saemoim.dto.response.PostResponseDto;
 import com.saemoim.security.UserDetailsImpl;
+import com.saemoim.service.PostService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,16 +26,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostController {
 
+	private final PostService postService;
 	// 전체 게시글 조회
 	@GetMapping("/post")
-	public List<PostResponseDto> getAllPosts() {
-		return null;
+	public List<PostListResponseDto> getAllPosts() {
+		return postService.getAllPosts();
 	}
 
 	// 선택한 게시글 조회
 	@GetMapping("/posts/{postId}")
 	public PostResponseDto getPost(@PathVariable Long postId) {
-		return null;
+		return postService.getPost(postId);
 	}
 
 	// 게시글 생성
