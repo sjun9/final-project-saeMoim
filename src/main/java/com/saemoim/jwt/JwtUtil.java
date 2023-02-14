@@ -3,6 +3,7 @@ package com.saemoim.jwt;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,7 +43,9 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtUtil {
 
 	public static final String AUTHORIZATION_HEADER = "Authorization";
+	public static final String REFRESH_TOKEN_HEADER = "Refresh_Token";
 	public static final String AUTHORIZATION_KEY = "auth";
+	public static final String AUTHORIZATION_ID = "Id";
 	private static final String BEARER_PREFIX = "Bearer ";
 	private static final long TOKEN_TIME = 60 * 60 * 1000L;
 
@@ -62,23 +65,23 @@ public class JwtUtil {
 		key = Keys.hmacShaKeyFor(bytes);
 	}
 
-	public String resolveToken(HttpServletRequest request){
+	public Optional<String> resolveToken(HttpServletRequest request) {
 
 		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 
-		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)){
-			return bearerToken.substring(7);    // String Index = 7접두사 빼고 반환
+		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+			return Optional.of(bearerToken.substring(7));    // String Index = 7접두사 빼고 반환
 		}
-		return null;
+		return Optional.empty();
 	}
 
-
-	public String createToken(String username, UserRoleEnum role) {
+	public String createToken(Long id, String username, UserRoleEnum role) {
 		Date date = new Date();
 
 		return BEARER_PREFIX +
 			Jwts.builder()
 				.setSubject(username)
+				.claim(AUTHORIZATION_ID, id)
 				.claim(AUTHORIZATION_KEY, role)
 				.setExpiration(new Date(date.getTime() + TOKEN_TIME))
 				.setIssuedAt(date)
@@ -110,8 +113,8 @@ public class JwtUtil {
 	}
 
 	// 인증 객체 생성
-	public Authentication createAuthentication(String username) {
-		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+	public Authentication createAuthentication(String username, Long id, UserRoleEnum role) {
+		UserDetails userDetails = userDetailsService.loadUserInfoByJwt(username, id, role);
 		return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 	}
 }

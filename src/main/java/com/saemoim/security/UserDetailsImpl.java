@@ -7,44 +7,34 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
-
 
 public class UserDetailsImpl implements UserDetails {
 
-	private final User user;	// 인증된 유저 객체
-	private final String username;
-	private final String password;
+	private final String username;    // 인증된 유저 객체
+	private final Long id;
+	private final UserRoleEnum role;
 
-	public UserDetailsImpl(User user, String username, String password){
-		this.user = user;
+	private final Collection<GrantedAuthority> authorities = new ArrayList<>();
+
+	public UserDetailsImpl(String username, Long id, UserRoleEnum role) {
 		this.username = username;
-		this.password = password;
+		this.id = id;
+		this.role = role;
+		authorities.add(new SimpleGrantedAuthority(role.getAuthority()));
 	}
-
-	public User getUser() {
-		return user;
-	}
-
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		UserRoleEnum role = user.getRole();
-		String authority = role.getAuthority();
-
-		SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
-		Collection<GrantedAuthority> authorities = new ArrayList<>();
-		authorities.add(simpleGrantedAuthority);
-
 		return authorities;
 	}
 
+	public Long getId() {
+		return this.id;
+	}
 
-
-	@Override
-	public String getPassword() {
-		return this.password;
+	public UserRoleEnum getRole() {
+		return this.role;
 	}
 
 	@Override
@@ -53,22 +43,27 @@ public class UserDetailsImpl implements UserDetails {
 	}
 
 	@Override
+	public String getPassword() {
+		return null;
+	}
+
+	@Override
 	public boolean isAccountNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return false;
+		return true;
 	}
 }

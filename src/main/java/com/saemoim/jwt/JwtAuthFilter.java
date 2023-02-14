@@ -1,6 +1,10 @@
 package com.saemoim.jwt;
 
+import static com.saemoim.jwt.JwtUtil.AUTHORIZATION_ID;
+import static com.saemoim.jwt.JwtUtil.AUTHORIZATION_KEY;
+
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -9,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.exception.ExceptionResponseDto;
 
 import io.jsonwebtoken.Claims;
@@ -30,22 +35,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws
 		ServletException, IOException {
 
-		String token = jwtUtil.resolveToken(request);
+		Optional<String> token = jwtUtil.resolveToken(request);
 
-		if (token != null) {
-			if (!jwtUtil.validateToken(token)) {
+		if (token.isPresent()) {
+			if (!jwtUtil.validateToken(String.valueOf(token))) {
 				jwtExceptionHandler(response, "Token Error", HttpStatus.UNAUTHORIZED);
 				return;
 			}
-			Claims info = jwtUtil.getUserInfoFromToken(token);
-			setAuthentication(info.getSubject());
+			Claims info = jwtUtil.getUserInfoFromToken(String.valueOf(token));
+			setAuthentication(info.getSubject(), (Long)info.get(AUTHORIZATION_ID),
+				(UserRoleEnum)info.get(AUTHORIZATION_KEY));
 		}
 		filterChain.doFilter(request, response);
 	}
 
-	public void setAuthentication(String username) {
+	public void setAuthentication(String username, Long id, UserRoleEnum role) {
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
-		Authentication authentication = jwtUtil.createAuthentication(username);
+		Authentication authentication = jwtUtil.createAuthentication(username, id, role);
 		context.setAuthentication(authentication);
 
 		SecurityContextHolder.setContext(context);
