@@ -58,7 +58,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		Application application = applicationRepository.findById(applicationId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_APPLICATION.getMessage())
 		);
-		if (!application.isRightUserWhoApllied(user.getUsername())) {
+		if (!application.isRightUserWhoApllied(username)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
 		applicationRepository.delete(application);
