@@ -121,6 +121,10 @@ public class Group extends TimeStamped {
 		return this.user.getId();
 	}
 
+	public boolean isLeader(String username) {
+		return this.getUsername().equals(username);
+	}
+
 	public void updateStatusToOpen() {
 		this.status = GroupStatusEnum.OPEN;
 	}

@@ -2,6 +2,7 @@ package com.saemoim.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.saemoim.dto.response.ApplicationResponseDto;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.security.UserDetailsImpl;
+import com.saemoim.service.ApplicationServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,31 +23,35 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ApplicationController {
 
+	private final ApplicationServiceImpl applicationService;
+
 	// 참가자가 신청한 모임내역 조회
 	@GetMapping("/application")
 	public List<ApplicationResponseDto> getMyApplications(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		return applicationService.getMyApplications(userDetails.getUsername());
 	}
 
 	// 참가자가 모임 신청
 	@PostMapping("/groups/{groupId}/application")
 	public ResponseEntity<MessageResponseDto> applyGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		applicationService.applyGroup(groupId, userDetails.getUsername());
+		return new ResponseEntity<>(new MessageResponseDto("모임 신청 완료"), HttpStatus.OK);
 	}
 
 	// 참가자가 모임 신청 취소
 	@DeleteMapping("application/{applicationId}")
 	public ResponseEntity<MessageResponseDto> cancelApplication(@PathVariable Long applicationId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		applicationService.cancelApplication(applicationId, userDetails.getUsername());
+		return new ResponseEntity<>(new MessageResponseDto("모임 신청 취소 완료"), HttpStatus.OK);
 	}
 
 	// 리더가 신청받은 모임내역 조회
 	@GetMapping("/groups/{groupId}/application")
 	public List<ApplicationResponseDto> getApplications(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		return applicationService.getApplications(groupId, userDetails.getUsername());
 	}
 
 	// 리더가 모임 신청 승인

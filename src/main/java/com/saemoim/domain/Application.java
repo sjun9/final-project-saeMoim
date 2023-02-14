@@ -25,7 +25,7 @@ public class Application extends TimeStamped {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private User User;
+	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "group_id")
@@ -34,4 +34,30 @@ public class Application extends TimeStamped {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private ApplicationStatusEnum status;
+
+	public Application(User user, Group group) {
+		this.user = user;
+		this.group = group;
+		this.status = ApplicationStatusEnum.WAIT;
+	}
+
+	public Long getGroupId() {
+		return this.group.getId();
+	}
+
+	public String getGroupName() {
+		return this.group.getName();
+	}
+
+	public Long getUserId() {
+		return this.user.getId();
+	}
+
+	public String getUsername() {
+		return this.user.getUsername();
+	}
+
+	public boolean isRightUserWhoApllied(String username) {
+		return this.getUsername().equals(username);
+	}
 }
