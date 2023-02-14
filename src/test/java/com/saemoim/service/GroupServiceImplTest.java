@@ -97,6 +97,21 @@ class GroupServiceImplTest {
 	}
 
 	@Test
+	@DisplayName("모임삭제")
+	void deleteGroup() {
+		// given
+		User user = new User("email", "pass", "john", UserRoleEnum.LEADER);
+		Group group = Group.builder().id(1L).user(user).name("name").build();
+
+		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
+		// when
+		groupService.deleteGroup(group.getId(), user.getUsername());
+
+		// then
+		verify(groupRepository).delete(group);
+	}
+
+	@Test
 	@DisplayName("모임열기")
 	void openGroup() {
 		// given
@@ -110,6 +125,22 @@ class GroupServiceImplTest {
 
 		// then
 		assertThat(group.getStatus()).isEqualTo(GroupStatusEnum.OPEN);
+	}
+
+	@Test
+	@DisplayName("모임닫기")
+	void closeGroup() {
+		// given
+		var user = new User("email", "pass", "name", UserRoleEnum.LEADER);
+		var group = Group.builder().status(GroupStatusEnum.OPEN).user(user).build();
+
+		when(groupRepository.findById(group.getId())).thenReturn(Optional.of(group));
+
+		// when
+		groupService.closeGroup(group.getId(), user.getUsername());
+
+		// then
+		assertThat(group.getStatus()).isEqualTo(GroupStatusEnum.CLOSE);
 	}
 
 }
