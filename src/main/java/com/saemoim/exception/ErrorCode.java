@@ -16,6 +16,7 @@ public enum ErrorCode {
 	NOT_FOUND_USER("회원을 찾을 수 없습니다."),
 	INVALID_PASSWORD("비밀번호가 틀렸습니다."),
 	INVALID_USER("접근 권한이 없는 사용자입니다."),
+	BANNED_USER("정지된 사용자입니다."),
 
 	// 카테고리
 	DUPLICATED_CATEGORY("중복된 카테고리 입니다."),

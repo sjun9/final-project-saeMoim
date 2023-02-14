@@ -58,6 +58,10 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalAccessError(ErrorCode.INVALID_PASSWORD.getMessage());
 		}
 
+		if (user.getRole().equals(UserRoleEnum.REPORT)) {
+			throw new IllegalArgumentException(ErrorCode.BANNED_USER.getMessage());
+		}
+
 		String accessToken = jwtUtil.createAccessToken(user.getUsername(), user.getId(), user.getRole());
 		String refreshToken = issueRefreshToken(user.getUsername(), accessToken);
 
@@ -78,6 +82,10 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.findByUsername(username).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
+
+		if (user.getRole().equals(UserRoleEnum.REPORT)) {
+			throw new IllegalArgumentException(ErrorCode.BANNED_USER.getMessage());
+		}
 
 		if (redisUtil.isExists(refreshTokenValue)) {
 			if (!redisUtil.getData(refreshTokenValue).equals(accessTokenValue)) {
@@ -107,8 +115,14 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public void logout(String username) {
+	public void logout(String refreshToken) {
+		String refreshTokenValue = jwtUtil.resolveToken(refreshToken).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
+		);
 
+		if (redisUtil.isExists(refreshTokenValue)) {
+			redisUtil.deleteData(refreshTokenValue);
+		}
 	}
 
 	@Transactional

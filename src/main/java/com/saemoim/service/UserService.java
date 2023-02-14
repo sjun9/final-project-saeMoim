@@ -11,7 +11,7 @@ public interface UserService {
 
 	TokenResponseDto signIn(SignInRequestDto requestDto);
 
-	void logout(String username);
+	void logout(String refreshToken);
 
 	void withdraw(String username);
 
