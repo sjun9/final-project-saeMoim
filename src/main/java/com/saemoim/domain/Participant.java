@@ -26,6 +26,11 @@ public class Participant extends TimeStamped {
 	@JoinColumn(name = "group_id")
 	private Group group;
 
+	public Participant(User user, Group group) {
+		this.user = user;
+		this.group = group;
+	}
+
 	public Long getGroupId() {
 		return this.group.getId();
 	}
