@@ -48,13 +48,23 @@ public class ReviewServiceImpl implements ReviewService {
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 		Review review = new Review(requestDto, group, user);
+		reviewRepository.save(review);
 		return new ReviewResponseDto(review);
 	}
 
 	@Transactional
 	@Override
 	public ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto requestDto, String username) {
-		return null;
+		Review review = reviewRepository.findById(reviewId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_REVIEW.getMessage())
+		);
+		if (review.isReviewWriter(username)) {
+			review.update(requestDto);
+			reviewRepository.save(review);
+			return new ReviewResponseDto(review);
+		} else {
+			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+		}
 	}
 
 	@Transactional

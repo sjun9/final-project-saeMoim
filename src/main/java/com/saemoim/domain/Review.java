@@ -35,7 +35,7 @@ public class Review extends TimeStamped {
 	public Review(ReviewRequestDto requestDto, Group group, User user) {
 		this.user = user;
 		this.group = group;
-		this.content = requestDto.getComment();
+		this.content = requestDto.getContent();
 	}
 
 	public Long getGroupId() {
@@ -48,5 +48,13 @@ public class Review extends TimeStamped {
 
 	public String getUsername() {
 		return this.user.getUsername();
+	}
+
+	public void update(ReviewRequestDto requestDto) {
+		this.content = requestDto.getContent();
+	}
+
+	public boolean isReviewWriter(String username) {
+		return this.user.getUsername().equals(username);
 	}
 }
