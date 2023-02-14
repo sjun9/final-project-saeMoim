@@ -11,24 +11,25 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.jwt.JwtAuthFilter;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.security.CustomAccessDeniedHandler;
 import com.saemoim.security.CustomAuthenticationEntryPoint;
-import com.saemoim.security.UserDetailsServiceImpl;
+import com.saemoim.security.CustomAuthenticationFailureHandler;
 
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity	// @Secured 어노테이션 활성화
+@EnableMethodSecurity    // @Secured 어노테이션 활성화
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
 	private final JwtUtil jwtUtil;
-	private final UserDetailsServiceImpl userDetailsService;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
@@ -39,10 +40,15 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	public WebSecurityCustomizer webSecurityCustomizer(){
+	public WebSecurityCustomizer webSecurityCustomizer() {
 		// static resources ( css, js, images 등 ) 자원에 대한 접근 허용
 		return (web -> web.ignoring()
 			.requestMatchers(PathRequest.toStaticResources().atCommonLocations()));
+	}
+
+	@Bean
+	public AuthenticationFailureHandler authenticationFailureHandler() {
+		return new CustomAuthenticationFailureHandler();
 	}
 
 	@Bean
@@ -56,13 +62,13 @@ public class WebSecurityConfig {
 		http.authorizeHttpRequests()
 			.requestMatchers("/sign-up").permitAll()
 			.requestMatchers("/sign-in").permitAll()
-			.requestMatchers("/posts/{postId}/comment").hasAnyRole("USER")
-			.requestMatchers("/admin/**").hasAnyRole("ADMIN")
+			.requestMatchers("/reissue").permitAll()
+			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString())
 			.and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
-			// .anyRequest().authenticated();	// 모든 요청에 대해 인증. 당장 사용하지 않으므로 주석 처리
+		// .anyRequest().authenticated();	// 모든 요청에 대해 인증. 당장 사용하지 않으므로 주석 처리
 
 		http.formLogin().disable();
-			// .loginPage("/로그인form url").permitAll();
+		// .loginPage("/로그인form url").permitAll();
 
 		// http.addFilterBefore(new CustomSecurityFilter(userDetailsService, passwordEncoder()),
 		// 	UsernamePasswordAuthenticationFilter.class);
@@ -72,6 +78,6 @@ public class WebSecurityConfig {
 		http.exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint);
 		http.exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);
 
-		return http.build();	// 상기 설정들을 빌드하여 리턴
+		return http.build();    // 상기 설정들을 빌드하여 리턴
 	}
 }

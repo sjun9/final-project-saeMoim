@@ -1,9 +1,13 @@
 package com.saemoim.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,6 +18,7 @@ import com.saemoim.dto.request.ReviewRequestDto;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.ReviewResponseDto;
 import com.saemoim.security.UserDetailsImpl;
+import com.saemoim.service.ReviewServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,12 +26,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReviewController {
 
+	private final ReviewServiceImpl reviewServiceImpl;
+
+	// 모임 후기 조회
+	@GetMapping("/groups/{groupId}/review")
+	public List<ReviewResponseDto> getReviews(@PathVariable Long groupId) {
+		return reviewServiceImpl.getReviews(groupId);
+	}
+
 	// 모임 후기 작성
 	@PostMapping("/groups/{groupId}/review")
 	public ReviewResponseDto createReview(@PathVariable Long groupId,
 		@Validated @RequestBody ReviewRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		return reviewServiceImpl.createReview(groupId, requestDto, userDetails.getUsername());
 	}
 
 	// 모임 후기 수정
@@ -34,13 +47,14 @@ public class ReviewController {
 	public ReviewResponseDto updateReview(@PathVariable Long reviewId,
 		@Validated @RequestBody ReviewRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		return reviewServiceImpl.updateReview(reviewId, requestDto, userDetails.getUsername());
 	}
 
 	// 모임 후기 삭제
 	@DeleteMapping("/reviews/{reviewId}")
 	public ResponseEntity<MessageResponseDto> deleteReview(@PathVariable Long reviewId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		reviewServiceImpl.deleteReview(reviewId, userDetails.getUsername());
+		return new ResponseEntity<>(new MessageResponseDto("후기 삭제 성공"), HttpStatus.OK);
 	}
 }
