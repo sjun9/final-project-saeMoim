@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.MyGroupResponseDto;
 import com.saemoim.security.UserDetailsImpl;
+import com.saemoim.service.WishServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,10 +21,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WishController {
 
+	private final WishServiceImpl wishService;
+
 	// 모임 즐겨찾기 조회
 	@GetMapping("/groups/wish")
 	public List<MyGroupResponseDto> getWishGroups(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		return wishService.getWishGroups(userDetails.getUsername());
 	}
 
 	// 모임 즐겨찾기 추가
