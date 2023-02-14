@@ -58,14 +58,16 @@ public class ApplicationController {
 	@PutMapping("/applications/{applicationId}/permit")
 	public ResponseEntity<MessageResponseDto> permitApplication(@PathVariable Long applicationId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		applicationService.permitApplication(applicationId, userDetails.getUsername());
+		return new ResponseEntity<>(new MessageResponseDto("신청 승인 완료"), HttpStatus.OK);
 	}
 
 	// 리더가 모임 신청 거절
 	@PutMapping("/applications/{applicationId}/reject")
 	public ResponseEntity<MessageResponseDto> rejectApplication(@PathVariable Long applicationId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		applicationService.rejectApplication(applicationId, userDetails.getUsername());
+		return new ResponseEntity<>(new MessageResponseDto("신청 거절 완료"), HttpStatus.OK);
 	}
 
 }

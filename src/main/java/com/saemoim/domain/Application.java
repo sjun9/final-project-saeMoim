@@ -64,4 +64,12 @@ public class Application extends TimeStamped {
 	public boolean isRightUserWhoApllied(String username) {
 		return this.getUsername().equals(username);
 	}
+
+	public void permit() {
+		this.status = ApplicationStatusEnum.PERMIT;
+	}
+
+	public void reject() {
+		this.status = ApplicationStatusEnum.REJECT;
+	}
 }

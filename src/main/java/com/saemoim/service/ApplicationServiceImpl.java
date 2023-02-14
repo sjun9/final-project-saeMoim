@@ -7,11 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.saemoim.domain.Application;
 import com.saemoim.domain.Group;
+import com.saemoim.domain.Participant;
 import com.saemoim.domain.User;
 import com.saemoim.dto.response.ApplicationResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.ApplicationRepository;
 import com.saemoim.repository.GroupRepository;
+import com.saemoim.repository.ParticipantRepository;
 import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private final ApplicationRepository applicationRepository;
 	private final UserRepository userRepository;
 	private final GroupRepository groupRepository;
+	private final ParticipantRepository participantRepository;
 
 	@Transactional(readOnly = true)
 	@Override
@@ -81,16 +84,39 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Transactional
 	@Override
 	public void permitApplication(Long applicationId, String username) {
+		Application application = applicationRepository.findById(applicationId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_APPLICATION.getMessage())
+		);
+		Group group = groupRepository.findById(application.getGroupId()).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
+		);
+		if (!group.isLeader(username)) {
+			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+		}
+		application.permit();
+		applicationRepository.save(application);
 
-		// 어플리케이션 상태 변화 + 파티시펀트 값 추가 두개를 해야하니 연
-		// participant서비스에서 생성하는 메서드를 여기서 호출.
-		// 연관관계가 안맺어져 있음
-		// 모임에서 모임참가자랑 원투매니를 맺어
+		// 모임 참여자 추가
+		User user = userRepository.findById(application.getUserId()).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
+		Participant participant = new Participant(user, group);
+		participantRepository.save(participant);
 	}
 
 	@Transactional
 	@Override
 	public void rejectApplication(Long applicationId, String username) {
-
+		Application application = applicationRepository.findById(applicationId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_APPLICATION.getMessage())
+		);
+		Group group = groupRepository.findById(application.getGroupId()).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
+		);
+		if (!group.isLeader(username)) {
+			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+		}
+		application.reject();
+		applicationRepository.save(application);
 	}
 }
