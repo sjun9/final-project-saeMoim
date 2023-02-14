@@ -70,6 +70,13 @@ public class ReviewServiceImpl implements ReviewService {
 	@Transactional
 	@Override
 	public void deleteReview(Long reviewId, String username) {
-
+		Review review = reviewRepository.findById(reviewId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_REVIEW.getMessage())
+		);
+		if (review.isReviewWriter(username)) {
+			reviewRepository.delete(review);
+		} else {
+			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+		}
 	}
 }

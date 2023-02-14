@@ -55,9 +55,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Transactional
 	@Override
 	public void cancelApplication(Long applicationId, String username) {
-		User user = userRepository.findByUsername(username).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
 		Application application = applicationRepository.findById(applicationId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_APPLICATION.getMessage())
 		);
