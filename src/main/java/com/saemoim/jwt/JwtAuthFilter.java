@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saemoim.domain.enums.UserRoleEnum;
+import com.saemoim.exception.ErrorCode;
 import com.saemoim.exception.ExceptionResponseDto;
 
 import io.jsonwebtoken.Claims;
@@ -35,16 +36,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws
 		ServletException, IOException {
 
-		Optional<String> token = jwtUtil.resolveToken(request);
+		Optional<String> token = jwtUtil.resolveToken(request.getHeader(JwtUtil.AUTHORIZATION_HEADER));
 
 		if (token.isPresent()) {
-			if (!jwtUtil.validateToken(String.valueOf(token))) {
-				jwtExceptionHandler(response, "Token Error", HttpStatus.UNAUTHORIZED);
+			if (!jwtUtil.validateToken(token.get())) {
+				jwtExceptionHandler(response, ErrorCode.INVALID_TOKEN.getMessage(), HttpStatus.UNAUTHORIZED);
 				return;
 			}
-			Claims info = jwtUtil.getUserInfoFromToken(String.valueOf(token));
-			setAuthentication(info.getSubject(), (Long)info.get(AUTHORIZATION_ID),
-				(UserRoleEnum)info.get(AUTHORIZATION_KEY));
+			Claims info = jwtUtil.getUserInfoFromToken(token.get());
+			setAuthentication(info.getSubject(), Long.valueOf((String)info.get(AUTHORIZATION_ID)),
+				UserRoleEnum.valueOf((String)info.get(AUTHORIZATION_KEY)));
 		}
 		filterChain.doFilter(request, response);
 	}

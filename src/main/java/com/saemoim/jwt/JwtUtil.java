@@ -23,7 +23,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,7 +46,8 @@ public class JwtUtil {
 	public static final String AUTHORIZATION_KEY = "auth";
 	public static final String AUTHORIZATION_ID = "Id";
 	private static final String BEARER_PREFIX = "Bearer ";
-	private static final long TOKEN_TIME = 60 * 60 * 1000L;
+	private static final long TOKEN_TIME = 20 * 60 * 1000L;
+	public static final long REFRESH_TOKEN_TIME = 60 * 60 * 1000L;
 
 	private final UserDetailsServiceImpl userDetailsService;
 
@@ -60,22 +60,18 @@ public class JwtUtil {
 
 	@PostConstruct
 	public void init() {
-
 		byte[] bytes = Base64.getDecoder().decode(secretKey);
 		key = Keys.hmacShaKeyFor(bytes);
 	}
 
-	public Optional<String> resolveToken(HttpServletRequest request) {
-
-		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-
+	public Optional<String> resolveToken(String bearerToken) {
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
 			return Optional.of(bearerToken.substring(7));    // String Index = 7접두사 빼고 반환
 		}
 		return Optional.empty();
 	}
 
-	public String createToken(Long id, String username, UserRoleEnum role) {
+	public String createAccessToken(String username, Long id, UserRoleEnum role) {
 		Date date = new Date();
 
 		return BEARER_PREFIX +
@@ -84,6 +80,18 @@ public class JwtUtil {
 				.claim(AUTHORIZATION_ID, id)
 				.claim(AUTHORIZATION_KEY, role)
 				.setExpiration(new Date(date.getTime() + TOKEN_TIME))
+				.setIssuedAt(date)
+				.signWith(key, signatureAlgorithm)
+				.compact();
+	}
+
+	public String createRefreshToken(String username) {
+		Date date = new Date();
+
+		return BEARER_PREFIX +
+			Jwts.builder()
+				.setSubject(username)
+				.setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
 				.setIssuedAt(date)
 				.signWith(key, signatureAlgorithm)
 				.compact();
