@@ -12,19 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
 import com.saemoim.domain.Participant;
-import com.saemoim.domain.Review;
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.dto.response.MyGroupResponseDto;
-import com.saemoim.dto.response.ParticipantResponseDto;
-import com.saemoim.dto.response.ReviewResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
 import com.saemoim.repository.ParticipantRepository;
-import com.saemoim.repository.ReviewRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,24 +30,14 @@ public class GroupServiceImpl implements GroupService {
 
 	private final GroupRepository groupRepository;
 	private final CategoryRepository categoryRepository;
-	private final ReviewRepository reviewRepository;
 	private final ParticipantRepository participantRepository;
 
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GroupResponseDto> getAllGroups(Pageable pageable) {
 		List<Group> groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
-		List<Long> allGroupIdList = groups.stream().map(Group::getId).toList();
-		List<Review> reviews = reviewRepository.findAllReviewsByGroupId(allGroupIdList);
-		// api 분리
 		List<GroupResponseDto> groupResponseDto = new ArrayList<>();
-		for (Group group : groups) {
-			List<ReviewResponseDto> reviewList = reviews.stream()
-				.filter(r -> r.getGroupId().equals(group.getId()))
-				.map(ReviewResponseDto::new)
-				.toList();
-			groupResponseDto.add(new GroupResponseDto(group, reviewList));
-		}
+		groups.forEach(group -> groupResponseDto.add(new GroupResponseDto(group)));
 		return new PageImpl<>(groupResponseDto);
 	}
 
@@ -61,51 +47,30 @@ public class GroupServiceImpl implements GroupService {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		List<ReviewResponseDto> reviewList = reviewRepository.findAllByGroupOrderByCreatedAtDesc(group)
-			.stream()
-			.map(ReviewResponseDto::new)
-			.toList();
-		return new GroupResponseDto(group, reviewList);
+		return new GroupResponseDto(group);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<MyGroupResponseDto> getMyGroupsByLeader(User user) {  // 리더아이디
-
+	public List<MyGroupResponseDto> getMyGroupsByLeader(User user) {
 		List<MyGroupResponseDto> myGroupResponseDtoList = new ArrayList<>();
-
 		List<Group> groups = groupRepository.findAllByUserOrderByCreatedAtDesc(user);
-		addMyGroupResponseDtoList(myGroupResponseDtoList, groups);
+		groups.forEach(group -> myGroupResponseDtoList.add(new MyGroupResponseDto(group)));
 
 		return myGroupResponseDtoList;
 	}
 
-	@Transactional(readOnly = true)
 	@Override
-	public List<MyGroupResponseDto> getMyGroupsByParticipant(User user) {  // 참가자아이디
+	@Transactional(readOnly = true)
+	public List<MyGroupResponseDto> getMyGroupsByParticipant(User user) {
 		List<MyGroupResponseDto> myGroupResponseDtoList = new ArrayList<>();
 
 		List<Group> groups = participantRepository.findAllByUserOrderByCreatedAtDesc(user)
 			.stream()
 			.map(Participant::getGroup)
 			.toList();
-
-		addMyGroupResponseDtoList(myGroupResponseDtoList, groups);
+		groups.forEach(group -> myGroupResponseDtoList.add(new MyGroupResponseDto(group)));
 		return myGroupResponseDtoList;
-	}
-
-	private void addMyGroupResponseDtoList(List<MyGroupResponseDto> myGroupResponseDtoList, List<Group> groups) {
-		List<Long> groupIdList = groups.stream().map(Group::getId).toList();
-
-		List<Participant> participants = participantRepository.findAllParticipants(groupIdList);
-		// api 분리
-		for (Group group : groups) {
-			List<ParticipantResponseDto> participantResponseDtoList = participants.stream()
-				.filter(p -> p.getGroup().getId().equals(group.getId()))
-				.map(ParticipantResponseDto::new)
-				.toList();
-			myGroupResponseDtoList.add(new MyGroupResponseDto(group, participantResponseDtoList));
-		}
 	}
 
 	@Override
@@ -121,7 +86,7 @@ public class GroupServiceImpl implements GroupService {
 		Group group = new Group(requestDto, category, user);
 		groupRepository.save(group);
 
-		return new GroupResponseDto(group, new ArrayList<>());
+		return new GroupResponseDto(group);
 	}
 
 	@Override
@@ -143,7 +108,7 @@ public class GroupServiceImpl implements GroupService {
 		} else
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 
-		return new GroupResponseDto(group, new ArrayList<>());
+		return new GroupResponseDto(group);
 	}
 
 	@Override

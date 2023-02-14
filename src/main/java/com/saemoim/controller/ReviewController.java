@@ -1,9 +1,12 @@
 package com.saemoim.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,12 +17,21 @@ import com.saemoim.dto.request.ReviewRequestDto;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.ReviewResponseDto;
 import com.saemoim.security.UserDetailsImpl;
+import com.saemoim.service.ReviewServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 public class ReviewController {
+
+	private final ReviewServiceImpl reviewServiceImpl;
+
+	// 모임 후기 조회
+	@GetMapping("/groups/{groupId}/review")
+	public List<ReviewResponseDto> getReviews(@PathVariable Long groupId) {
+		return reviewServiceImpl.getReviews(groupId);
+	}
 
 	// 모임 후기 작성
 	@PostMapping("/groups/{groupId}/review")

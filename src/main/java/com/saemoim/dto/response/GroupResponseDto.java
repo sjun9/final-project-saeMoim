@@ -32,11 +32,10 @@ public class GroupResponseDto {
 	private int wishCount;
 	private int recruitNumber;
 	private int participantCount;
-	private List<ReviewResponseDto> reviews;
 	private LocalDateTime createdAt;
 	private LocalDateTime modifiedAt;
 
-	public GroupResponseDto(Group group, List<ReviewResponseDto> reviews) {
+	public GroupResponseDto(Group group) {
 		this.id = group.getId();
 		this.tags = group.getTags().stream().map(Tag::getName).toList();
 		this.groupName = group.getName();
@@ -54,6 +53,5 @@ public class GroupResponseDto {
 		this.participantCount = group.getParticipantCount();
 		this.createdAt = group.getCreatedAt();
 		this.modifiedAt = group.getModifiedAt();
-		this.reviews = reviews;
 	}
 }
