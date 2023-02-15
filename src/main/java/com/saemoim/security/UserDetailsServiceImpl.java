@@ -22,10 +22,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
 		User user = userRepository.findByEmail(userEmail)
 			.orElseThrow(() -> new UsernameNotFoundException(ErrorCode.NOT_FOUND_USER.getMessage()));
-		return new UserDetailsImpl(user.getUsername(), user.getId(), user.getRole());
+		return new UserDetailsImpl(user.getId(), user.getUsername(), user.getRole());
 	}
 
-	public UserDetails loadUserInfoByJwt(String username, Long id, UserRoleEnum role) {
-		return new UserDetailsImpl(username, id, role);
+	public UserDetails loadUserInfoByJwt(Long id, String username, UserRoleEnum role) {
+		return new UserDetailsImpl(id, username, role);
 	}
 }

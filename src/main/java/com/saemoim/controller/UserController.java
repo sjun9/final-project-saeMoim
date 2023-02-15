@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
+import com.saemoim.dto.request.WithdrawRequestDto;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
@@ -71,8 +72,14 @@ public class UserController {
 
 	// 회원 탈퇴
 	@DeleteMapping("/withdrawal")
-	public ResponseEntity<MessageResponseDto> withdraw(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+	public ResponseEntity<MessageResponseDto> withdraw(@RequestBody WithdrawRequestDto requestDto,
+		HttpServletRequest request,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		userService.withdraw(requestDto, userDetails.getId(), request.getHeader(JwtUtil.REFRESH_TOKEN_HEADER));
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(JwtUtil.AUTHORIZATION_HEADER, "");
+		headers.set(JwtUtil.REFRESH_TOKEN_HEADER, "");
+		return new ResponseEntity<>(new MessageResponseDto("회원탈퇴 완료"), headers, HttpStatus.OK);
 	}
 
 	// 프로필 조회
