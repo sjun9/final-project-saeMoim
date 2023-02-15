@@ -17,9 +17,9 @@ public class UserDetailsImpl implements UserDetails {
 
 	private final Collection<GrantedAuthority> authorities = new ArrayList<>();
 
-	public UserDetailsImpl(String username, Long id, UserRoleEnum role) {
-		this.username = username;
+	public UserDetailsImpl(Long id, String username, UserRoleEnum role) {
 		this.id = id;
+		this.username = username;
 		this.role = role;
 		authorities.add(new SimpleGrantedAuthority(role.getAuthority()));
 	}

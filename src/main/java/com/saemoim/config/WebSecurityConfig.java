@@ -63,6 +63,8 @@ public class WebSecurityConfig {
 			.requestMatchers("/sign-up").permitAll()
 			.requestMatchers("/sign-in").permitAll()
 			.requestMatchers("/reissue").permitAll()
+			.requestMatchers("/log-out").permitAll()
+			.requestMatchers("/withdraw").permitAll()
 			.requestMatchers("/email").permitAll()
 			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString())
 			.and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
