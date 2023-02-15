@@ -132,4 +132,12 @@ public class Group extends TimeStamped {
 	public void updateStatusToClose() {
 		this.status = GroupStatusEnum.CLOSE;
 	}
+
+	public void addWishCount() {
+		this.wishCount++;
+	}
+
+	public void subtractWishCount() {
+		this.wishCount--;
+	}
 }
