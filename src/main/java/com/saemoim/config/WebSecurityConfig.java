@@ -66,8 +66,8 @@ public class WebSecurityConfig {
 			.requestMatchers("/log-out").permitAll()
 			.requestMatchers("/withdraw").permitAll()
 			.requestMatchers("/email").permitAll()
-			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString())
-			.requestMatchers("/comments/**").hasAnyRole(UserRoleEnum.USER.toString())
+			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())
+			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString(), UserRoleEnum.ROOT.toString())
 			.and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 		// .anyRequest().authenticated();	// 모든 요청에 대해 인증. 당장 사용하지 않으므로 주석 처리
 

@@ -37,4 +37,23 @@ public class Post extends TimeStamped {
 	@Column(nullable = false)
 	private String content;
 
+	public Post(Group group, String title, String content, User user) {
+		this.group = group;
+		this.title = title;
+		this.content = content;
+		this.user = user;
+	}
+
+	public void update(String title, String content) {
+		this.title = title;
+		this.content = content;
+	}
+
+	public Long getUserId() {
+		return this.user.getId();
+	}
+
+	public boolean isWriter(Long userId) {
+		return this.user.getId().equals(userId);
+	}
 }

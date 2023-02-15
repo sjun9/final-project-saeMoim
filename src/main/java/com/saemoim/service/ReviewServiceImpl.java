@@ -86,4 +86,14 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
 	}
+
+	@Transactional
+	@Override
+	public void deleteReviewByAdmin(Long reviewId) {
+		Review review = reviewRepository.findById(reviewId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_REVIEW.getMessage())
+		);
+
+		reviewRepository.delete(review);
+	}
 }

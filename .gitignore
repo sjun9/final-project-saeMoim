@@ -25,6 +25,8 @@ bin/
 *.iml
 *.ipr
 **/application.properties
+**/mail.properties
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+

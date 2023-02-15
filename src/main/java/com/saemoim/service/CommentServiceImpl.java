@@ -1,21 +1,10 @@
 package com.saemoim.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.saemoim.domain.Comment;
-import com.saemoim.domain.Post;
-import com.saemoim.domain.User;
 import com.saemoim.dto.request.CommentRequestDto;
 import com.saemoim.dto.response.CommentResponseDto;
-import com.saemoim.exception.ErrorCode;
-import com.saemoim.repository.CommentRepository;
-import com.saemoim.repository.PostRepository;
-import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 

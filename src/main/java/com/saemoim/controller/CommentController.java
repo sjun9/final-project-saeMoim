@@ -1,17 +1,11 @@
 package com.saemoim.controller;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +13,7 @@ import com.saemoim.dto.request.CommentRequestDto;
 import com.saemoim.dto.response.CommentResponseDto;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.security.UserDetailsImpl;
-import com.saemoim.service.CommentService;
+import com.saemoim.service.CommentServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,9 +21,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CommentController {
 
-	private final CommentService commentService;
+	private final CommentServiceImpl commentService;
 	// 댓글 작성
-	@PostMapping("/comments/{postId}")
+	@PostMapping("/posts/{postId}/comment")
 	public CommentResponseDto createComment(@PathVariable Long postId,
 		@Validated @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
@@ -55,7 +49,6 @@ public class CommentController {
 	// 댓글 조회
 	@GetMapping("/comments/{postId}")
 	public List<CommentResponseDto> getComments(@PathVariable Long postId) {
-
 		return commentService.getComments(postId);
 	}
 

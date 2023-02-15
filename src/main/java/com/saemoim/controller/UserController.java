@@ -1,6 +1,7 @@
 package com.saemoim.controller;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import com.saemoim.dto.request.WithdrawRequestDto;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
+import com.saemoim.dto.response.UserResponseDto;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.security.UserDetailsImpl;
 import com.saemoim.service.UserService;
@@ -80,6 +82,12 @@ public class UserController {
 		headers.set(JwtUtil.AUTHORIZATION_HEADER, "");
 		headers.set(JwtUtil.REFRESH_TOKEN_HEADER, "");
 		return new ResponseEntity<>(new MessageResponseDto("회원탈퇴 완료"), headers, HttpStatus.OK);
+	}
+
+	// 전체 회원 조회
+	@GetMapping("/admin/user")
+	public List<UserResponseDto> getAllUsers() {
+		return userService.getAllUsers();
 	}
 
 	// 프로필 조회
