@@ -14,4 +14,19 @@ class ParticipantRepositoryTest {
 	void findAllByUser_IdOrderByCreatedAtDesc() {
 		participantRepository.findAllByUser_IdOrderByCreatedAtDesc(null);
 	}
+
+	@Test
+	void findAllByGroup_IdOrderByCreatedAtDesc() {
+		participantRepository.findAllByGroup_IdOrderByCreatedAtDesc(null);
+	}
+
+	@Test
+	void testFindAllByUser_IdOrderByCreatedAtDesc() {
+		participantRepository.findAllByUser_IdOrderByCreatedAtDesc(null);
+	}
+
+	@Test
+	void findByGroup_IdAndUser_Id() {
+		participantRepository.findByGroup_IdAndUser_Id(null, null);
+	}
 }

@@ -41,9 +41,9 @@ public class Review extends TimeStamped {
 	@Column(nullable = false)
 	private String content;
 
-	public Review(ReviewRequestDto requestDto, Group group, User user) {
-		this.user = user;
-		this.group = group;
+	public Review(ReviewRequestDto requestDto, Participant participant) {
+		this.user = participant.getUser();
+		this.group = participant.getGroup();
 		this.content = requestDto.getContent();
 	}
 

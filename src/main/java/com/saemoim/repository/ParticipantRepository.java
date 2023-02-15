@@ -5,14 +5,12 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.saemoim.domain.Group;
 import com.saemoim.domain.Participant;
-import com.saemoim.domain.User;
 
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
-	List<Participant> findAllByGroupOrderByCreatedAtDesc(Group group);
+	List<Participant> findAllByGroup_IdOrderByCreatedAtDesc(Long groupId);
 
 	List<Participant> findAllByUser_IdOrderByCreatedAtDesc(Long userId);
 
-	Optional<Participant> findByGroupAndUser(Group group, User user);
+	Optional<Participant> findByGroup_IdAndUser_Id(Long groupId, Long userId);
 }

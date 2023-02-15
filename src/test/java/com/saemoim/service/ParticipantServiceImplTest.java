@@ -15,18 +15,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.saemoim.domain.Group;
 import com.saemoim.domain.Participant;
 import com.saemoim.domain.User;
-import com.saemoim.repository.GroupRepository;
 import com.saemoim.repository.ParticipantRepository;
-import com.saemoim.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ParticipantServiceImplTest {
 	@Mock
 	private ParticipantRepository participantRepository;
-	@Mock
-	private GroupRepository groupRepository;
-	@Mock
-	private UserRepository userRepository;
+
 	@InjectMocks
 	private ParticipantServiceImpl participantService;
 
@@ -35,14 +30,11 @@ class ParticipantServiceImplTest {
 	void getParticipants() {
 		// given
 		var groupId = 1L;
-		var group = Group.builder().build();
-		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
-
 		// when
 		participantService.getParticipants(groupId);
 
 		// then
-		verify(participantRepository).findAllByGroupOrderByCreatedAtDesc(group);
+		verify(participantRepository).findAllByGroup_IdOrderByCreatedAtDesc(groupId);
 	}
 
 	@Test
@@ -54,9 +46,7 @@ class ParticipantServiceImplTest {
 		var user = User.builder().build();
 		var group = Group.builder().build();
 		var participant = new Participant(user, group);
-		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
-		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-		when(participantRepository.findByGroupAndUser(any(Group.class), any(User.class))).thenReturn(
+		when(participantRepository.findByGroup_IdAndUser_Id(anyLong(), anyLong())).thenReturn(
 			Optional.of(participant));
 
 		// when
