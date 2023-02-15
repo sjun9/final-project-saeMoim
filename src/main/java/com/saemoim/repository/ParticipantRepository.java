@@ -12,7 +12,7 @@ import com.saemoim.domain.User;
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
 	List<Participant> findAllByGroupOrderByCreatedAtDesc(Group group);
 
-	List<Participant> findAllByUserOrderByCreatedAtDesc(User user);
+	List<Participant> findAllByUser_IdOrderByCreatedAtDesc(Long userId);
 
 	Optional<Participant> findByGroupAndUser(Group group, User user);
 }
