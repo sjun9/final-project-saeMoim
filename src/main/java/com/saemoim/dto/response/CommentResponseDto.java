@@ -2,6 +2,10 @@ package com.saemoim.dto.response;
 
 import java.time.LocalDateTime;
 
+import com.saemoim.domain.Comment;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

@@ -1,10 +1,20 @@
 package com.saemoim.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.saemoim.domain.Comment;
+import com.saemoim.domain.Post;
+import com.saemoim.domain.User;
 import com.saemoim.dto.request.CommentRequestDto;
 import com.saemoim.dto.response.CommentResponseDto;
+import com.saemoim.exception.ErrorCode;
+import com.saemoim.repository.CommentRepository;
+import com.saemoim.repository.PostRepository;
+import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,10 +28,11 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	@Transactional
 	public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, Long userId) {
-		Post savedPost = postRepository.findById(postId).orElseThrow(()-> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
+		Post post = postRepository.findById(postId).orElseThrow(()-> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
 		User user = userRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
 		String content = requestDto.getComment();
-		Comment comment = new Comment(savedPost, content, user);
+
+		Comment comment = new Comment(user, post,content);
 		Comment savedComment = commentRepository.save(comment);
 
 		return new CommentResponseDto(savedComment);
@@ -32,7 +43,7 @@ public class CommentServiceImpl implements CommentService {
 	public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, Long userId) {
 		Comment savedComment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_COMMENT.getMessage()));
-		if (savedComment.getUser().getId().equals(userId)) {
+		if (savedComment.isWriter(userId)) {
 			String comment = requestDto.getComment();
 			savedComment.update(comment);
 
@@ -45,11 +56,11 @@ public class CommentServiceImpl implements CommentService {
 	@Transactional
 	@Override
 	public void deleteComment(Long commentId, Long userId) {
-		Comment savedComment = commentRepository.findById(commentId)
+		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_COMMENT.getMessage()));
 
-		if (userId.equals(savedComment.getUser().getId())) {
-			commentRepository.delete(savedComment);
+		if (comment.isWriter(userId)) {
+			commentRepository.delete(comment);
 		}else {
 			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
 		}
@@ -64,7 +75,6 @@ public class CommentServiceImpl implements CommentService {
 		for (Comment comment : comments) {
 			responseDtoList.add(new CommentResponseDto(comment));
 		}
-
 		return responseDtoList;
 	}
 }

@@ -35,13 +35,17 @@ public class Comment extends TimeStamped {
 	@Column(nullable = false)
 	private String comment;
 
-	public Comment(Post savedPost, String content, User user) {
-		this.post = savedPost;
-		this.comment = content;
+	public Comment(User user, Post post, String content) {
 		this.user = user;
+		this.post = post;
+		this.comment = content;
 	}
 
 	public void update(String comment) {
 		this.comment = comment;
+	}
+
+	public boolean isWriter(Long userId) {
+		return this.user.getId().equals(userId);
 	}
 }

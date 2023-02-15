@@ -34,8 +34,6 @@ public enum ErrorCode {
 
 	// 댓글
 	NOT_FOUND_COMMENT("해당 댓글을 찾을 수 없습니다."),
-	NOT_MATCH_USER("삭제 및 수정은 작성자만 가능 합니다."),
-
 	// 모임
 	NOT_FOUND_GROUP("해당 모임은 존재하지 않습니다."),
 	INTERNAL_SERVER_ERROR("서버 오류"),
