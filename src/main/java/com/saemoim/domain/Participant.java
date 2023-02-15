@@ -23,7 +23,7 @@ public class Participant extends TimeStamped {
 
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "userId")
 	private User user;
 
 	@OnDelete(action = OnDeleteAction.CASCADE)
