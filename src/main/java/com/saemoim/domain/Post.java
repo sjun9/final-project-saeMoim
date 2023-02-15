@@ -48,4 +48,12 @@ public class Post extends TimeStamped {
 		this.title = title;
 		this.content = content;
 	}
+
+	public Long getUserId() {
+		return this.user.getId();
+	}
+
+	public boolean isWriter(Long userId) {
+		return this.user.getId().equals(userId);
+	}
 }

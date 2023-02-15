@@ -29,7 +29,7 @@ public class CommentServiceImpl implements CommentService {
 	@Transactional
 	public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, Long userId) {
 		// 게시글 유무 확인
-		Post savedPost = postRepository.findById(postId).orElseThrow(()-> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
+		Post savedPost = postRepository.findById(postId).orElseThrow(()-> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
 		// 요청받은 댓글 내용 꺼내기
 		String content = requestDto.getComment();
 		// Comment savedComment = commentRepository.save(new Comment(savedPost, content, user));
