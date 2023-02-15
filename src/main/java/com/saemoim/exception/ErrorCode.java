@@ -13,7 +13,7 @@ public enum ErrorCode {
 	// 유저
 	DUPLICATED_USERNAME("중복된 username 입니다"),
 	DUPLICATED_EMAIL("중복된 email 입니다"),
-	NOT_FOUND_USER("회원을 찾을 수 없습니다."),
+	NOT_FOUND_USER("사용자를 찾을 수 없습니다."),
 	INVALID_PASSWORD("비밀번호가 틀렸습니다."),
 	INVALID_USER("접근 권한이 없는 사용자입니다."),
 	BANNED_USER("정지된 사용자입니다."),
