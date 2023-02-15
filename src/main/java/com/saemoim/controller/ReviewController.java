@@ -26,12 +26,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReviewController {
 
-	private final ReviewServiceImpl reviewServiceImpl;
+	private final ReviewServiceImpl reviewService;
 
 	// 모임 후기 조회
 	@GetMapping("/groups/{groupId}/review")
 	public List<ReviewResponseDto> getReviews(@PathVariable Long groupId) {
-		return reviewServiceImpl.getReviews(groupId);
+		return reviewService.getReviews(groupId);
 	}
 
 	// 모임 후기 작성
@@ -39,7 +39,7 @@ public class ReviewController {
 	public ReviewResponseDto createReview(@PathVariable Long groupId,
 		@Validated @RequestBody ReviewRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return reviewServiceImpl.createReview(groupId, requestDto, userDetails.getId());
+		return reviewService.createReview(groupId, requestDto, userDetails.getId());
 	}
 
 	// 모임 후기 수정
@@ -47,14 +47,21 @@ public class ReviewController {
 	public ReviewResponseDto updateReview(@PathVariable Long reviewId,
 		@Validated @RequestBody ReviewRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return reviewServiceImpl.updateReview(reviewId, requestDto, userDetails.getUsername());
+		return reviewService.updateReview(reviewId, requestDto, userDetails.getUsername());
 	}
 
 	// 모임 후기 삭제
 	@DeleteMapping("/reviews/{reviewId}")
 	public ResponseEntity<MessageResponseDto> deleteReview(@PathVariable Long reviewId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		reviewServiceImpl.deleteReview(reviewId, userDetails.getUsername());
+		reviewService.deleteReview(reviewId, userDetails.getUsername());
+		return new ResponseEntity<>(new MessageResponseDto("후기 삭제 성공"), HttpStatus.OK);
+	}
+
+	//관리자 후기 삭제
+	@DeleteMapping("/admin/review/{reviewId}")
+	public ResponseEntity<MessageResponseDto> deleteReviewByAdmin(@PathVariable Long reviewId) {
+		reviewService.deleteReviewByAdmin(reviewId);
 		return new ResponseEntity<>(new MessageResponseDto("후기 삭제 성공"), HttpStatus.OK);
 	}
 }

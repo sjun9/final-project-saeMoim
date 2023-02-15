@@ -28,6 +28,9 @@ public enum ErrorCode {
 	DUPLICATED_BLACKLIST("이미 블랙리스트에 등록되어 있습니다."),
 	NOT_EXIST_BLACKLIST("해당 블랙리스트가 존재하지 않습니다."),
 
+	// 게시글
+	NOT_EXIST_POST("해당 게시글이 존재하지 않습니다."),
+
 	// 모임
 	NOT_FOUND_GROUP("해당 모임은 존재하지 않습니다."),
 	INTERNAL_SERVER_ERROR("서버 오류"),
