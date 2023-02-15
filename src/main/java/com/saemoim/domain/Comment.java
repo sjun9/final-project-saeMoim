@@ -1,5 +1,7 @@
 package com.saemoim.domain;
 
+import java.util.Optional;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,5 +31,16 @@ public class Comment extends TimeStamped {
 
 	@Column(nullable = false)
 	private String comment;
+
+	public Comment(Post savedPost, String content, User user) {
+	this.post = savedPost;
+	this.comment = content;
+	this.User = user;
+	}
+
+	public void update(String comment) {
+		this.comment = comment;
+	}
+
 
 }

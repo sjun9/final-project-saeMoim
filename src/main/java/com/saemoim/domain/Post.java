@@ -21,7 +21,7 @@ public class Post extends TimeStamped {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private User User;
+	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "group_id")
@@ -32,12 +32,10 @@ public class Post extends TimeStamped {
 	@Column(nullable = false)
 	private String content;
 
-	public Post(Long groupId, String title, String content, String username) {
-	// 뭔가 꼬였다
-	/*
-		1. 받아오는 건 groupId 인데 객체를 입력해야 하는 아이러니한 상황
-		2. 서비스단에서 group을 group 아이디로 조회하고 그걸 넣어야 하나?
-		3. 그냥 group id 째로 인풋하면 안 되는건가?
-	 */
+	public Post(Group group, String title, String content, User user) {
+		this.group = group;
+		this.title = title;
+		this.content = content;
+		this.user = user;
 	}
 }

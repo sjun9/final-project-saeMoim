@@ -43,13 +43,15 @@ public class PostController {
 	@PostMapping("/groups/{groupId}/post")
 	public PostResponseDto createPost(@PathVariable Long groupId, @Validated @RequestBody PostRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		return postService.createPost(groupId,requestDto,userDetails.getId());
 	}
 
 	// 게시글 수정
 	@PutMapping("/posts/{postId}")
 	public PostResponseDto updatePost(@PathVariable Long postId,
 		@Validated @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+
 		return null;
 	}
 

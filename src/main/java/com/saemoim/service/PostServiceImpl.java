@@ -9,14 +9,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.saemoim.domain.Comment;
+import com.saemoim.domain.Group;
 import com.saemoim.domain.Post;
+import com.saemoim.domain.User;
 import com.saemoim.dto.request.PostRequestDto;
 import com.saemoim.dto.response.CommentResponseDto;
 import com.saemoim.dto.response.PostListResponseDto;
 import com.saemoim.dto.response.PostResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.CommentRepository;
+import com.saemoim.repository.GroupRepository;
 import com.saemoim.repository.PostRepository;
+import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +30,9 @@ public class PostServiceImpl implements PostService {
 
 	private final PostRepository postRepository;
 	private final CommentRepository commentRepository;
-
+	private final UserRepository userRepository;
+	private final GroupRepository groupRepository;
+	// 전체 게시글 조회
 	@Transactional(readOnly = true)
 	@Override
 	public List<PostListResponseDto> getAllPosts() {
@@ -45,7 +51,7 @@ public class PostServiceImpl implements PostService {
 		}
 		return postListResponseDto;
 	}
-
+	// 특정 게시글 조회
 	@Transactional(readOnly = true)
 	@Override
 	public PostResponseDto getPost(Long postId) {
@@ -59,34 +65,25 @@ public class PostServiceImpl implements PostService {
 		LocalDateTime createdAt = post.getCreatedAt();
 		LocalDateTime modifiedAt = post.getModifiedAt();
 
-		List<Comment> comments = commentRepository.findAllByPostId(postId);
-		List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
-
-		for (Comment comment : comments) {
-			String writer = comment.getUser().getUsername();
-			String comment1 = comment.getComment();
-			LocalDateTime createdAt1 = comment.getCreatedAt();
-			LocalDateTime modifiedAt1 = comment.getModifiedAt();
-
-			CommentResponseDto commentResponseDto = new CommentResponseDto(writer, comment1, createdAt1, modifiedAt1);
-			commentResponseDtos.add(commentResponseDto);
-		}
-		return new PostResponseDto(id, title, username, content, createdAt, modifiedAt, commentResponseDtos);
+		return new PostResponseDto(id, title, username, content, createdAt, modifiedAt);
 	}
 
 	@Transactional
 	@Override
-	public PostResponseDto createPost(Long groupId, PostRequestDto requestDto, String username) {
+	public PostResponseDto createPost(Long groupId, PostRequestDto requestDto, Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
+		Group group = groupRepository.findById(groupId).orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage()));
 		String title = requestDto.getTitle();
 		String content = requestDto.getContent();
+		Post savedPost = postRepository.save(new Post(group, title, content, user));
 
-		postRepository.save(new Post(groupId, title, content, username));
-		return null;
+		return new PostResponseDto(savedPost);
 	}
 
 	@Transactional
 	@Override
-	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, String username) {
+	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId) {
+		Post savedPost = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
 		return null;
 	}
 
