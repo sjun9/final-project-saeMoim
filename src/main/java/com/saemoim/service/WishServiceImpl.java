@@ -22,8 +22,8 @@ public class WishServiceImpl implements WishService {
 
 	@Transactional
 	@Override
-	public List<MyGroupResponseDto> getWishGroups(String username) {
-		User user = userRepository.findByUsername(username).orElseThrow(
+	public List<MyGroupResponseDto> getWishGroups(Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 		List<Wish> wishes = wishRepository.findAllByUserOrderByCreatedAtDesc(user);
@@ -32,13 +32,13 @@ public class WishServiceImpl implements WishService {
 
 	@Transactional
 	@Override
-	public void wishGroup(Long groupId, String username) {
+	public void wishGroup(Long groupId, Long userId) {
 
 	}
 
 	@Transactional
 	@Override
-	public void deleteWishGroup(Long groupId, String username) {
+	public void deleteWishGroup(Long groupId, Long userId) {
 
 	}
 }

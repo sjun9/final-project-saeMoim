@@ -28,14 +28,14 @@ public class ApplicationController {
 	// 참가자가 신청한 모임내역 조회
 	@GetMapping("/application")
 	public List<ApplicationResponseDto> getMyApplications(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return applicationService.getMyApplications(userDetails.getUsername());
+		return applicationService.getMyApplications(userDetails.getId());
 	}
 
 	// 참가자가 모임 신청
 	@PostMapping("/groups/{groupId}/application")
 	public ResponseEntity<MessageResponseDto> applyGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		applicationService.applyGroup(groupId, userDetails.getUsername());
+		applicationService.applyGroup(groupId, userDetails.getId());
 		return new ResponseEntity<>(new MessageResponseDto("모임 신청 완료"), HttpStatus.OK);
 	}
 
