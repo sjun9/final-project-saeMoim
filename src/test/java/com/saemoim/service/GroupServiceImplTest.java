@@ -24,6 +24,7 @@ import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
+import com.saemoim.repository.TagRepository;
 
 @ExtendWith(MockitoExtension.class)
 class GroupServiceImplTest {
@@ -33,6 +34,8 @@ class GroupServiceImplTest {
 
 	@Mock
 	private CategoryRepository categoryRepository;
+	@Mock
+	private TagRepository tagRepository;
 
 	@InjectMocks
 	private GroupServiceImpl groupService;
@@ -52,6 +55,20 @@ class GroupServiceImplTest {
 
 		// then
 		verify(groupRepository).findAllByCategoryOrderByCreatedAtDesc(category);
+	}
+
+	@Test
+	@DisplayName("태그로모임조회")
+	void getGroupsByTag() {
+		// given
+		var pageable = PageRequest.of(1, 4, Sort.by(Sort.Direction.DESC, "id"));
+		var tagName = "tag";
+
+		// when
+		groupService.getGroupsByTag(tagName, pageable);
+
+		// then
+		verify(tagRepository).findAllByName(tagName);
 	}
 
 	@Test

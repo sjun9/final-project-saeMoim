@@ -16,6 +16,8 @@ public interface GroupService {
 
 	Page<GroupResponseDto> getGroupsByCategory(Long categoryId, Pageable pageable);
 
+	Page<GroupResponseDto> getGroupsByTag(String tagName, Pageable pageable);
+
 	List<MyGroupResponseDto> getMyGroupsByLeader(Long userId);
 
 	List<MyGroupResponseDto> getMyGroupsByParticipant(Long userId);

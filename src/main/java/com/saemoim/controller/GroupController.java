@@ -2,7 +2,6 @@ package com.saemoim.controller;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +33,8 @@ public class GroupController {
 
 	// 모든 모임 조회
 	@GetMapping("/group")
-	public Page<GroupResponseDto> getAllGroups(Pageable pageable) {
-		return groupService.getAllGroups(pageable);
+	public List<GroupResponseDto> getAllGroups(Pageable pageable) {
+		return groupService.getAllGroups(pageable).getContent();
 	}
 
 	// 선택 모임 조회
@@ -46,8 +45,14 @@ public class GroupController {
 
 	// 특정 카테고리 모임 조회
 	@GetMapping("categories/{categoryId}/group")
-	public Page<GroupResponseDto> getGroupsByCategory(@PathVariable Long categoryId, Pageable pageable) {
-		return groupService.getGroupsByCategory(categoryId, pageable);
+	public List<GroupResponseDto> getGroupsByCategory(@PathVariable Long categoryId, Pageable pageable) {
+		return groupService.getGroupsByCategory(categoryId, pageable).getContent();
+	}
+
+	// 특정 태그 모임 조회
+	@GetMapping("tags/{tagName}/group")
+	public List<GroupResponseDto> getGroupsByTag(@PathVariable String tagName, Pageable pageable) {
+		return groupService.getGroupsByTag(tagName, pageable).getContent();
 	}
 
 	// 내가 만든 모임 조회

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
 import com.saemoim.domain.Participant;
+import com.saemoim.domain.Tag;
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.dto.request.GroupRequestDto;
@@ -20,6 +21,7 @@ import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
 import com.saemoim.repository.ParticipantRepository;
+import com.saemoim.repository.TagRepository;
 import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -30,14 +32,15 @@ public class GroupServiceImpl implements GroupService {
 
 	private final GroupRepository groupRepository;
 	private final CategoryRepository categoryRepository;
-	private final ParticipantRepository participantRepository;
+	private final ParticipantRepository participantRepository; // 원투매니
 	private final UserRepository userRepository;
+	private final TagRepository tagRepository;
 
 	@Override
 	@Transactional(readOnly = true)
 	public Page<GroupResponseDto> getAllGroups(Pageable pageable) {
-		List<Group> groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
-		return new PageImpl<>(groups.stream().map(GroupResponseDto::new).toList());
+		List<Group> groups = groupRepository.findAllByOrderByCreatedAtDesc();
+		return new PageImpl<>(groups.stream().map(GroupResponseDto::new).toList(), pageable, groups.size());
 	}
 
 	@Override
@@ -49,6 +52,7 @@ public class GroupServiceImpl implements GroupService {
 		return new GroupResponseDto(group);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Page<GroupResponseDto> getGroupsByCategory(Long categoryId, Pageable pageable) {
 		Category category = categoryRepository.findById(categoryId).orElseThrow(
@@ -58,7 +62,15 @@ public class GroupServiceImpl implements GroupService {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
 		List<Group> groups = groupRepository.findAllByCategoryOrderByCreatedAtDesc(category);
-		return new PageImpl<>(groups.stream().map(GroupResponseDto::new).toList());
+		return new PageImpl<>(groups.stream().map(GroupResponseDto::new).toList(), pageable, groups.size());
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public Page<GroupResponseDto> getGroupsByTag(String tagName, Pageable pageable) {
+		List<Tag> tags = tagRepository.findAllByName(tagName);
+		List<Group> groups = tags.stream().map(Tag::getGroup).toList();
+		return new PageImpl<>(groups.stream().map(GroupResponseDto::new).toList(), pageable, groups.size());
 	}
 
 	@Override
