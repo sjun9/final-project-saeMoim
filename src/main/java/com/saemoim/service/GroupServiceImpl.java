@@ -50,6 +50,18 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	public Page<GroupResponseDto> getGroupsByCategory(Long categoryId, Pageable pageable) {
+		Category category = categoryRepository.findById(categoryId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
+		);
+		if (category.getParentId() == null) {
+			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
+		}
+		List<Group> groups = groupRepository.findAllByCategoryOrderByCreatedAtDesc(category);
+		return new PageImpl<>(groups.stream().map(GroupResponseDto::new).toList());
+	}
+
+	@Override
 	@Transactional(readOnly = true)
 	public List<MyGroupResponseDto> getMyGroupsByLeader(Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(
