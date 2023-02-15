@@ -5,9 +5,9 @@ import java.util.List;
 import com.saemoim.dto.response.ApplicationResponseDto;
 
 public interface ApplicationService {
-	List<ApplicationResponseDto> getMyApplications(String username);
+	List<ApplicationResponseDto> getMyApplications(Long userId);
 
-	void applyGroup(Long groupId, String username);
+	void applyGroup(Long groupId, Long userId);
 
 	void cancelApplication(Long applicationId, String username);
 

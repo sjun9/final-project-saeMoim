@@ -9,6 +9,6 @@ public interface ReportService {
 
 	List<ReportResponseDto> getReportedUsers();
 
-	void reportUser(Long subjectUserId, ReportRequestDto requestDto, String username);
+	void reportUser(Long subjectUserId, ReportRequestDto requestDto, Long userId);
 
 }

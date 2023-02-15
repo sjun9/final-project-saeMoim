@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
 		);
 
 		String username = jwtUtil.getUserInfoFromToken(refreshTokenValue).getSubject();
-		User user = userRepository.findByUsername(username).orElseThrow(
+		User user = userRepository.findById(username).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 
