@@ -3,10 +3,11 @@ package com.saemoim.service;
 import java.util.List;
 
 import com.saemoim.dto.request.PostRequestDto;
+import com.saemoim.dto.response.PostListResponseDto;
 import com.saemoim.dto.response.PostResponseDto;
 
 public interface PostService {
-	List<PostResponseDto> getAllPosts();
+	List<PostListResponseDto> getAllPosts();
 
 	PostResponseDto getPost(Long postId);
 
@@ -15,4 +16,6 @@ public interface PostService {
 	PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId);
 
 	void deletePost(Long postId, Long userId);
+
+	void deletePostByAdmin(Long postId);
 }

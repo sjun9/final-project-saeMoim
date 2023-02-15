@@ -1,7 +1,7 @@
 package com.saemoim.domain.enums;
 
 public enum UserRoleEnum {
-	USER(Authority.USER), REPORT(Authority.REPORT), ADMIN(Authority.ADMIN);
+	USER(Authority.USER), REPORT(Authority.REPORT), ADMIN(Authority.ADMIN), ROOT(Authority.ROOT);
 
 	private final String authority;
 
@@ -17,5 +17,6 @@ public enum UserRoleEnum {
 		public static final String USER = "ROLE_USER";
 		public static final String REPORT = "ROLE_REPORT";
 		public static final String ADMIN = "ROLE_ADMIN";
+		public static final String ROOT = "ROLE_ROOT";
 	}
 }

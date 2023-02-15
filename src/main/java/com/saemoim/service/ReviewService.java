@@ -13,4 +13,6 @@ public interface ReviewService {
 	ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto requestDto, String username);
 
 	void deleteReview(Long reviewId, String username);
+
+	void deleteReviewByAdmin(Long reviewId);
 }
