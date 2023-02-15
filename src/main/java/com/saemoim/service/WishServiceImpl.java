@@ -14,19 +14,19 @@ import lombok.RequiredArgsConstructor;
 public class WishServiceImpl implements WishService {
 	@Transactional
 	@Override
-	public List<MyGroupResponseDto> getWishGroups(String username) {
+	public List<MyGroupResponseDto> getWishGroups(Long userId) {
 		return null;
 	}
 
 	@Transactional
 	@Override
-	public void wishGroup(Long groupId, String username) {
+	public void wishGroup(Long groupId, Long userId) {
 
 	}
 
 	@Transactional
 	@Override
-	public void deleteWishGroup(Long groupId, String username) {
+	public void deleteWishGroup(Long groupId, Long userId) {
 
 	}
 }

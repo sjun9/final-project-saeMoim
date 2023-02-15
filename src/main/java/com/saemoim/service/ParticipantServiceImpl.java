@@ -36,7 +36,7 @@ public class ParticipantServiceImpl implements ParticipantService {
 
 	@Transactional
 	@Override
-	public void withdrawGroup(Long participantId, String username) {
+	public void withdrawGroup(Long participantId, Long userId) {
 
 	}
 }

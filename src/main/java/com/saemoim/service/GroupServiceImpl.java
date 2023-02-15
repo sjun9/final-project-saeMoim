@@ -51,8 +51,8 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<MyGroupResponseDto> getMyGroupsByLeader(String username) {
-		User user = userRepository.findByUsername(username).orElseThrow(
+	public List<MyGroupResponseDto> getMyGroupsByLeader(Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 		List<Group> groups = groupRepository.findAllByUserOrderByCreatedAtDesc(user);
@@ -62,8 +62,8 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<MyGroupResponseDto> getMyGroupsByParticipant(String username) {
-		User user = userRepository.findByUsername(username).orElseThrow(
+	public List<MyGroupResponseDto> getMyGroupsByParticipant(Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 
@@ -77,8 +77,8 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional
-	public GroupResponseDto createGroup(GroupRequestDto requestDto, String username) {
-		User user = userRepository.findByUsername(username).orElseThrow(
+	public GroupResponseDto createGroup(GroupRequestDto requestDto, Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 		// 카테고리 존재 확인

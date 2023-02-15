@@ -13,19 +13,19 @@ import lombok.RequiredArgsConstructor;
 public class CommentServiceImpl implements CommentService {
 	@Transactional
 	@Override
-	public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, String username) {
+	public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, Long userId) {
 		return null;
 	}
 
 	@Transactional
 	@Override
-	public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, String username) {
+	public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, Long userId) {
 		return null;
 	}
 
 	@Transactional
 	@Override
-	public void deleteComment(Long commentId, String username) {
+	public void deleteComment(Long commentId, Long userId) {
 
 	}
 }
