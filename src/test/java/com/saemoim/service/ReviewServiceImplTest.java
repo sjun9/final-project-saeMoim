@@ -1,7 +1,11 @@
 package com.saemoim.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
@@ -97,6 +101,19 @@ class ReviewServiceImplTest {
 		when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
 		// when
 		reviewService.deleteReview(id, username);
+		// then
+		verify(reviewRepository).delete(review);
+	}
+
+	@Test
+	@DisplayName("관리자 후기삭제")
+	void deleteReviewByAdmin() {
+		// given
+		Review review = mock(Review.class);
+
+		when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
+		// when
+		reviewService.deleteReviewByAdmin(anyLong());
 		// then
 		verify(reviewRepository).delete(review);
 	}

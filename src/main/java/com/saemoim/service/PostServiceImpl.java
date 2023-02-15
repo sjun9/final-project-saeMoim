@@ -1,26 +1,12 @@
 package com.saemoim.service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.saemoim.domain.Comment;
-import com.saemoim.domain.Group;
-import com.saemoim.domain.Post;
-import com.saemoim.domain.User;
 import com.saemoim.dto.request.PostRequestDto;
-import com.saemoim.dto.response.CommentResponseDto;
-import com.saemoim.dto.response.PostListResponseDto;
 import com.saemoim.dto.response.PostResponseDto;
-import com.saemoim.exception.ErrorCode;
-import com.saemoim.repository.CommentRepository;
-import com.saemoim.repository.GroupRepository;
-import com.saemoim.repository.PostRepository;
-import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +17,7 @@ public class PostServiceImpl implements PostService {
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final GroupRepository groupRepository;
+
 	// 전체 게시글 조회
 	@Transactional(readOnly = true)
 	@Override
@@ -109,5 +96,15 @@ public class PostServiceImpl implements PostService {
 			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
 		}
 
+	}
+
+	@Transactional
+	@Override
+	public void deletePostByAdmin(Long postId) {
+		Post post = postRepository.findById(postId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage())
+		);
+
+		postRepository.delete(post);
 	}
 }

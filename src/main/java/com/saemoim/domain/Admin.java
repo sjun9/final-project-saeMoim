@@ -4,6 +4,8 @@ import com.saemoim.domain.enums.UserRoleEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,5 +24,12 @@ public class Admin {
 	@Column(nullable = false)
 	private String password;
 	@Column(nullable = false)
-	private final UserRoleEnum role = UserRoleEnum.ADMIN;
+	@Enumerated(EnumType.STRING)
+	private UserRoleEnum role;
+
+	public Admin(String username, String password) {
+		this.username = username;
+		this.password = password;
+		this.role = UserRoleEnum.ADMIN;
+	}
 }

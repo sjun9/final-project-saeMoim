@@ -1,5 +1,7 @@
 package com.saemoim.service;
 
+import java.util.List;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,7 @@ import com.saemoim.dto.request.SignUpRequestDto;
 import com.saemoim.dto.request.WithdrawRequestDto;
 import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
+import com.saemoim.dto.response.UserResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.redis.RedisUtil;
@@ -134,6 +137,12 @@ public class UserServiceImpl implements UserService {
 		deleteRefreshToken(refreshToken);
 
 		userRepository.delete(user);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<UserResponseDto> getAllUsers() {
+		return userRepository.findAll().stream().map(UserResponseDto::new).toList();
 	}
 
 	@Transactional(readOnly = true)
