@@ -7,4 +7,5 @@ public interface AdminService {
 
 	TokenResponseDto signInByAdmin(AdminRequestDto requestDto);
 
+	void createAdmin(AdminRequestDto requestDto);
 }

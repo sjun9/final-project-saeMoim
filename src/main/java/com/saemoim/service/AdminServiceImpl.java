@@ -21,6 +21,7 @@ public class AdminServiceImpl implements AdminService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtUtil jwtUtil;
 
+	@Transactional
 	@Override
 	public TokenResponseDto signInByAdmin(AdminRequestDto requestDto) {
 		Admin admin = adminRepository.findByUsername(requestDto.getUsername()).orElseThrow(
@@ -35,6 +36,7 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Transactional
+	@Override
 	public void createAdmin(AdminRequestDto requestDto) {
 
 		if (adminRepository.existsByUsername(requestDto.getUsername())) {
