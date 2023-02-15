@@ -46,6 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			Claims info = jwtUtil.getUserInfoFromToken(token.get());
 			setAuthentication(Long.valueOf(info.getSubject()), String.valueOf(info.get(AUTHORIZATION_NAME)),
 				UserRoleEnum.valueOf((String)info.get(AUTHORIZATION_KEY)));
+
 		}
 		filterChain.doFilter(request, response);
 	}
