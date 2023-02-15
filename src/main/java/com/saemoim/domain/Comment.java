@@ -35,4 +35,13 @@ public class Comment extends TimeStamped {
 	@Column(nullable = false)
 	private String comment;
 
+	public Comment(Post savedPost, String content, User user) {
+		this.post = savedPost;
+		this.comment = content;
+		this.user = user;
+	}
+
+	public void update(String comment) {
+		this.comment = comment;
+	}
 }

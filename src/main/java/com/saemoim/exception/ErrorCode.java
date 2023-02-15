@@ -43,7 +43,10 @@ public enum ErrorCode {
 
 	NOT_READABLE_JSON("올바르지 않은 JSON 형식입니다."),
 	NOT_SUPPORTED_HTTP_MEDIA_TYPE("지원하지 않는 Content-Type 입니다."),
-	NOT_ACCEPTABLE_HTTP_MEDIA_TYPE("지원하지 않는 Accept 입니다.");
+	NOT_ACCEPTABLE_HTTP_MEDIA_TYPE("지원하지 않는 Accept 입니다."),
 
+	// 댓글
+	NOT_FOUND_COMMENT("해당 댓글을 찾을 수 없습니다."),
+	NOT_MATCH_USER("삭제 및 수정은 작성자만 가능 합니다.");
 	private final String message;
 }
