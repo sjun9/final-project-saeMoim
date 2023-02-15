@@ -47,20 +47,20 @@ public class GroupController {
 	// 내가 만든 모임 조회
 	@GetMapping("/leader/group")
 	public List<MyGroupResponseDto> getMyGroupsByLeader(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return groupServiceImpl.getMyGroupsByLeader(userDetails.getUsername());
+		return groupServiceImpl.getMyGroupsByLeader(userDetails.getId());
 	}
 
 	// 참여중인 모임 조회
 	@GetMapping("/participant/group")
 	public List<MyGroupResponseDto> getMyGroupsByParticipant(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return groupServiceImpl.getMyGroupsByParticipant(userDetails.getUsername());
+		return groupServiceImpl.getMyGroupsByParticipant(userDetails.getId());
 	}
 
 	// 모임 생성
 	@PostMapping("/group")
 	public GroupResponseDto createGroup(@Validated @RequestBody GroupRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return groupServiceImpl.createGroup(requestDto, userDetails.getUsername());
+		return groupServiceImpl.createGroup(requestDto, userDetails.getId());
 	}
 
 	// 모임 수정

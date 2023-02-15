@@ -22,7 +22,7 @@ public class ReportServiceImpl implements ReportService {
 
 	@Transactional
 	@Override
-	public void reportUser(Long subjectUserId, ReportRequestDto requestDto, String username) {
+	public void reportUser(Long subjectUserId, ReportRequestDto requestDto, Long userId) {
 
 	}
 

@@ -7,5 +7,5 @@ import com.saemoim.dto.response.ParticipantResponseDto;
 public interface ParticipantService {
 	List<ParticipantResponseDto> getParticipants(Long groupId);
 
-	void withdrawGroup(Long participantId, String username);
+	void withdrawGroup(Long participantId, Long userId);
 }

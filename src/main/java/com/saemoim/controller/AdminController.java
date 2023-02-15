@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/admin")
 public class AdminController {
+	// 어드민 로그인도..
 
 	// 전체 회원 조회
 	@GetMapping("/user")

@@ -43,11 +43,11 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Transactional
 	@Override
-	public ReviewResponseDto createReview(Long groupId, ReviewRequestDto requestDto, String username) {
+	public ReviewResponseDto createReview(Long groupId, ReviewRequestDto requestDto, Long userId) {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		User user = userRepository.findByUsername(username).orElseThrow(
+		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 		// 참여자인지 확인하는 로직 필요

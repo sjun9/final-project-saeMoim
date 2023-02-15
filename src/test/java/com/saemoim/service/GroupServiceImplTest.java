@@ -51,12 +51,12 @@ class GroupServiceImplTest {
 			.content("contenddddddddddddddddt")
 			.recruitNumber(3)
 			.build();
-		User user = new User("dddd", "ddd", "name", UserRoleEnum.LEADER);
+		User user = new User("dddd", "ddd", "name", UserRoleEnum.USER);
 		Category category = Category.builder().parentId(1L).name("named").build();
 		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
 
 		// when
-		GroupResponseDto response = groupService.createGroup(request, user.getUsername());
+		GroupResponseDto response = groupService.createGroup(request, user.getId());
 
 		// then
 		assertThat(response.getGroupName()).isEqualTo("name");
@@ -81,7 +81,7 @@ class GroupServiceImplTest {
 			.content("contenddddddddddddddddt")
 			.recruitNumber(3)
 			.build();
-		User user = new User("email", "pass", "john", UserRoleEnum.LEADER);
+		User user = new User("email", "pass", "john", UserRoleEnum.USER);
 		Group group = Group.builder().id(1L).user(user).name("name").build();
 		Category category = Category.builder().parentId(1L).name("named").build();
 		Group mockGroup = mock(Group.class);
@@ -100,7 +100,7 @@ class GroupServiceImplTest {
 	@DisplayName("모임삭제")
 	void deleteGroup() {
 		// given
-		User user = new User("email", "pass", "john", UserRoleEnum.LEADER);
+		User user = new User("email", "pass", "john", UserRoleEnum.USER);
 		Group group = Group.builder().id(1L).user(user).name("name").build();
 
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
@@ -115,7 +115,7 @@ class GroupServiceImplTest {
 	@DisplayName("모임열기")
 	void openGroup() {
 		// given
-		var user = new User("email", "pass", "name", UserRoleEnum.LEADER);
+		var user = new User("email", "pass", "name", UserRoleEnum.USER);
 		var group = Group.builder().status(GroupStatusEnum.CLOSE).user(user).build();
 
 		when(groupRepository.findById(group.getId())).thenReturn(Optional.of(group));
@@ -131,7 +131,7 @@ class GroupServiceImplTest {
 	@DisplayName("모임닫기")
 	void closeGroup() {
 		// given
-		var user = new User("email", "pass", "name", UserRoleEnum.LEADER);
+		var user = new User("email", "pass", "name", UserRoleEnum.USER);
 		var group = Group.builder().status(GroupStatusEnum.OPEN).user(user).build();
 
 		when(groupRepository.findById(group.getId())).thenReturn(Optional.of(group));

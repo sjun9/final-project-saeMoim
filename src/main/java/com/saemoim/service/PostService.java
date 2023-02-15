@@ -10,9 +10,9 @@ public interface PostService {
 
 	PostResponseDto getPost(Long postId);
 
-	PostResponseDto createPost(Long groupId, PostRequestDto requestDto, String username);
+	PostResponseDto createPost(Long groupId, PostRequestDto requestDto, Long userId);
 
-	PostResponseDto updatePost(Long postId, PostRequestDto requestDto, String username);
+	PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId);
 
-	void deletePost(Long postId, String username);
+	void deletePost(Long postId, Long userId);
 }

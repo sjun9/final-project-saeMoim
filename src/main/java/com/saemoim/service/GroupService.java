@@ -14,11 +14,11 @@ public interface GroupService {
 
 	GroupResponseDto getGroup(Long groupId);
 
-	List<MyGroupResponseDto> getMyGroupsByLeader(String username);
+	List<MyGroupResponseDto> getMyGroupsByLeader(Long userId);
 
-	List<MyGroupResponseDto> getMyGroupsByParticipant(String username);
+	List<MyGroupResponseDto> getMyGroupsByParticipant(Long userId);
 
-	GroupResponseDto createGroup(GroupRequestDto requestDto, String username);
+	GroupResponseDto createGroup(GroupRequestDto requestDto, Long userId);
 
 	GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, String username);
 
