@@ -2,6 +2,7 @@ package com.saemoim.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -51,14 +52,14 @@ public class PostController {
 	public PostResponseDto updatePost(@PathVariable Long postId,
 		@Validated @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-
-		return null;
+		return postService.updatePost(postId,requestDto, userDetails.getId());
 	}
 
 	// 게시글 삭제
 	@DeleteMapping("/posts/{postId}")
 	public ResponseEntity<MessageResponseDto> deletePost(@PathVariable Long postId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		postService.deletePost(postId, userDetails.getId());
+		return new ResponseEntity<>(new MessageResponseDto("삭제 성공"), HttpStatus.OK);
 	}
 }

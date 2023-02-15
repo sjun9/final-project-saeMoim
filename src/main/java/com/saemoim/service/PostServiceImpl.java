@@ -29,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 public class PostServiceImpl implements PostService {
 
 	private final PostRepository postRepository;
-	private final CommentRepository commentRepository;
 	private final UserRepository userRepository;
 	private final GroupRepository groupRepository;
 	// 전체 게시글 조회
@@ -38,6 +37,8 @@ public class PostServiceImpl implements PostService {
 	public List<PostListResponseDto> getAllPosts() {
 
 		List<Post> postList = postRepository.findAll();
+
+
 		List<PostListResponseDto> postListResponseDto = new ArrayList<>();
 		for (Post post : postList) {
 			Long postId = post.getId();
@@ -84,12 +85,29 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId) {
 		Post savedPost = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
-		return null;
+
+		if(savedPost.getUser().getId().equals(userId)){
+			String title = requestDto.getTitle();
+			String content = requestDto.getContent();
+
+			savedPost.update(title, content);
+		}else {
+			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
+		}
+
+		return new PostResponseDto(savedPost);
 	}
 
 	@Transactional
 	@Override
-	public void deletePost(Long postId, String username) {
+	public void deletePost(Long postId, Long userId) {
+		Post savedPost = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
+
+		if(savedPost.getUser().getId().equals(userId)){
+			postRepository.delete(savedPost);
+		}else {
+			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
+		}
 
 	}
 }
