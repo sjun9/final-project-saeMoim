@@ -2,6 +2,7 @@ package com.saemoim.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,18 +21,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ParticipantController {
 
-	private final ParticipantServiceImpl participantServiceImpl;
+	private final ParticipantServiceImpl participantService;
 
 	// 특정 모임의 참여자 조회
 	@GetMapping("/group/{groupId}/participant")
 	public List<ParticipantResponseDto> getParticipants(@PathVariable Long groupId) {
-		return participantServiceImpl.getParticipants(groupId);
+		return participantService.getParticipants(groupId);
 	}
 
 	// 모임 탈퇴
-	@DeleteMapping("/group/participant/{participantId}")
-	public ResponseEntity<MessageResponseDto> withdrawGroup(@PathVariable Long participantId,
+	@DeleteMapping("/group/{groupId}/participant")
+	public ResponseEntity<MessageResponseDto> withdrawGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+		participantService.withdrawGroup(groupId, userDetails.getId());
+		return new ResponseEntity<>(new MessageResponseDto("모임 탈퇴 완료"), HttpStatus.OK);
 	}
 }

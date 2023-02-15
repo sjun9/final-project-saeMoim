@@ -13,13 +13,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignUpRequestDto {
-	// @Pattern()
-	// 이메일 인증 기능은 추후에, 일단 돌아가는 것부터 확인
-
+	@Email
 	private String email;
+
+	@Size(min = 8, max = 15)
+	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()])[A-Za-z0-9!@#$%^&*()]*$")
 	private String password;
-	// 닉네임 임.
+
+	@Size(min = 2, max = 10)
 	private String username;
-
-
 }

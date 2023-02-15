@@ -1,6 +1,7 @@
 package com.saemoim.domain;
 
-import java.util.Optional;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,10 +22,12 @@ public class Comment extends TimeStamped {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private User User;
+	private User user;
 
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "post_id")
 	private Post post;
@@ -32,7 +35,4 @@ public class Comment extends TimeStamped {
 	@Column(nullable = false)
 	private String comment;
 
-	public Comment(Post savedPost, String commentRequest, User user) {
-
-	}
 }

@@ -27,19 +27,19 @@ public class PostServiceImpl implements PostService {
 
 	@Transactional
 	@Override
-	public PostResponseDto createPost(Long groupId, PostRequestDto requestDto, String username) {
+	public PostResponseDto createPost(Long groupId, PostRequestDto requestDto, Long userId) {
 		return null;
 	}
 
 	@Transactional
 	@Override
-	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, String username) {
+	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId) {
 		return null;
 	}
 
 	@Transactional
 	@Override
-	public void deletePost(Long postId, String username) {
+	public void deletePost(Long postId, Long userId) {
 
 	}
 }

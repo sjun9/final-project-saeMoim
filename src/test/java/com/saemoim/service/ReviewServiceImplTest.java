@@ -53,14 +53,14 @@ class ReviewServiceImplTest {
 		// given
 		var groupId = 1L;
 		var request = ReviewRequestDto.builder().content("내용").build();
-		var username = "name";
+		var userId = 1L;
 		var group = Group.builder().build();
 		var user = new User("e", "p", "name", UserRoleEnum.USER);
 
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
-		when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
+		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 		// when
-		reviewService.createReview(groupId, request, username);
+		reviewService.createReview(groupId, request, userId);
 		// then
 		verify(reviewRepository).save(any(Review.class));
 	}
@@ -76,7 +76,7 @@ class ReviewServiceImplTest {
 			.user(new User("e", "p", "name", UserRoleEnum.USER))
 			.content("아냐")
 			.build();
-		
+
 		when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
 
 		// when

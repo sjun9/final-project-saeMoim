@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
+import com.saemoim.dto.request.WithdrawRequestDto;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
@@ -60,15 +61,25 @@ public class UserController {
 	// Authentication = 인증객체의 principal 부분의 값을 가져옴
 	// principal 에는 userDetails 가 있고, 이것은 user, username, password 가 들어있다.)
 	// 로그아웃
-	@PostMapping("/logout")
-	public ResponseEntity<MessageResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+	@PostMapping("/log-out")
+	public ResponseEntity<MessageResponseDto> logout(HttpServletRequest request) {
+		userService.logout(request.getHeader(JwtUtil.REFRESH_TOKEN_HEADER));
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(JwtUtil.AUTHORIZATION_HEADER, "");
+		headers.set(JwtUtil.REFRESH_TOKEN_HEADER, "");
+		return new ResponseEntity<>(new MessageResponseDto("로그아웃 완료"), headers, HttpStatus.OK);
 	}
 
 	// 회원 탈퇴
 	@DeleteMapping("/withdrawal")
-	public ResponseEntity<MessageResponseDto> withdraw(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return null;
+	public ResponseEntity<MessageResponseDto> withdraw(@RequestBody WithdrawRequestDto requestDto,
+		HttpServletRequest request,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		userService.withdraw(requestDto, userDetails.getId(), request.getHeader(JwtUtil.REFRESH_TOKEN_HEADER));
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(JwtUtil.AUTHORIZATION_HEADER, "");
+		headers.set(JwtUtil.REFRESH_TOKEN_HEADER, "");
+		return new ResponseEntity<>(new MessageResponseDto("회원탈퇴 완료"), headers, HttpStatus.OK);
 	}
 
 	// 프로필 조회
