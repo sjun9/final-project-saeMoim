@@ -139,7 +139,6 @@ class CategoryServiceImplTest {
 
 		when(categoryRepository.existsByName(anyString())).thenReturn(false);
 		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(categoryMock));
-		doNothing().when(categoryMock).updateCategory(anyString());
 		//when
 		categoryService.updateCategory(parentId, requestDto);
 		//then
