@@ -29,8 +29,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ApplicationResponseDto> getMyApplications(String username) {
-		User user = userRepository.findByUsername(username).orElseThrow(
+	public List<ApplicationResponseDto> getMyApplications(Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 		List<Application> applications = applicationRepository.findAllByUserOrderByCreatedAtDesc(user);
@@ -39,11 +39,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Transactional
 	@Override
-	public void applyGroup(Long groupId, String username) {
+	public void applyGroup(Long groupId, Long userId) {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		User user = userRepository.findByUsername(username).orElseThrow(
+		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 		if (applicationRepository.existsByUserAndGroup(user, group)) {

@@ -41,12 +41,12 @@ class ApplicationServiceImplTest {
 	@DisplayName("내가 신청한 내역 조회")
 	void getMyApplications() {
 		// given
-		var username = "name";
+		var userId = 1L;
 		var user = new User("email", "pass", "name", UserRoleEnum.USER);
-		when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
+		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
 		// when
-		applicationService.getMyApplications(username);
+		applicationService.getMyApplications(userId);
 
 		// then
 		verify(applicationRepository).findAllByUserOrderByCreatedAtDesc(user);
@@ -56,13 +56,15 @@ class ApplicationServiceImplTest {
 	@DisplayName("모임참여신청")
 	void applyGroup() {
 		// given
-		var group = Group.builder().id(1L).name("group").build();
+		var userId = 1L;
+		var groupId = 1L;
+		var group = Group.builder().name("group").build();
 		var user = new User("email", "pass", "name", UserRoleEnum.USER);
-		when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
+		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
 		when(applicationRepository.existsByUserAndGroup(any(User.class), any(Group.class))).thenReturn(false);
 		// when
-		applicationService.applyGroup(group.getId(), user.getUsername());
+		applicationService.applyGroup(groupId, userId);
 
 		// then
 		verify(applicationRepository).save(any(Application.class));
@@ -77,7 +79,7 @@ class ApplicationServiceImplTest {
 		var user = new User("email", "pass", "name", UserRoleEnum.USER);
 		var application = Application.builder().id(1L).user(user).build();
 
-		when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
+		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 		when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
 		// when
 		applicationService.cancelApplication(applicationId, username);
@@ -93,7 +95,7 @@ class ApplicationServiceImplTest {
 		// given
 		var groupId = 1L;
 		var username = "nana";
-		var group = Group.builder().user(new User("e", "p", "nana", UserRoleEnum.LEADER)).build();
+		var group = Group.builder().user(new User("e", "p", "nana", UserRoleEnum.USER)).build();
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
 
 		// when
@@ -110,7 +112,7 @@ class ApplicationServiceImplTest {
 		// given
 		var applicationId = 1L;
 		var username = "leader";
-		Group group = Group.builder().id(1L).user(new User("e", "p", "leader", UserRoleEnum.LEADER)).build();
+		Group group = Group.builder().id(1L).user(new User("e", "p", "leader", UserRoleEnum.USER)).build();
 		User user = User.builder().id(1L).username("pati").build();
 		Application application = Application.builder()
 			.group(group)
@@ -134,7 +136,7 @@ class ApplicationServiceImplTest {
 		// given
 		var applicationId = 1L;
 		var username = "leader";
-		Group group = Group.builder().id(1L).user(new User("e", "p", "leader", UserRoleEnum.LEADER)).build();
+		Group group = Group.builder().id(1L).user(new User("e", "p", "leader", UserRoleEnum.USER)).build();
 		User user = User.builder().username("pati").build();
 		Application application = Application.builder().status(ApplicationStatusEnum.WAIT)
 			.group(group)

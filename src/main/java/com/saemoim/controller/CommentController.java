@@ -38,7 +38,7 @@ public class CommentController {
 	public CommentResponseDto updateComment(@PathVariable Long commentId,
 		@Validated @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-		commentService.updateComment(commentId, requestDto, userDetails.getUsername());
+		commentService.updateComment(commentId, requestDto, userDetails.getId());
 		return null;
 	}
 

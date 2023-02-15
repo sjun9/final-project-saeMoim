@@ -1,6 +1,7 @@
 package com.saemoim.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -38,11 +39,11 @@ public class CommentServiceImpl implements CommentService {
 
 	@Transactional
 	@Override
-	public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, String username) {
+	public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, Long userId) {
 
 		Comment savedComment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new IllegalArgumentException("임의 값 지정 수정 필요"));
-		if (username.equals(savedComment.getUser().getUsername())) {
+		if (Objects.equals(userId, savedComment.getUser().getId())) {
 			String comment = requestDto.getComment();
 			savedComment.update(comment);
 		}else {
@@ -53,12 +54,12 @@ public class CommentServiceImpl implements CommentService {
 
 	@Transactional
 	@Override
-	public void deleteComment(Long commentId, String username) {
+	public void deleteComment(Long commentId, Long userId) {
 
 		Comment savedComment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new IllegalArgumentException("임의 값 지정 수정 필요"));
 
-		if (username.equals(savedComment.getUser().getUsername())) {
+		if (userId.equals(savedComment.getUser().getId())) {
 			commentRepository.delete(savedComment);
 		}else {
 			throw new IllegalArgumentException("임의 값 지정 수정 필요");

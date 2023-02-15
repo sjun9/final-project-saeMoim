@@ -9,6 +9,7 @@ import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
+import com.saemoim.dto.request.WithdrawRequestDto;
 import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
 import com.saemoim.exception.ErrorCode;
@@ -58,8 +59,12 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalAccessError(ErrorCode.INVALID_PASSWORD.getMessage());
 		}
 
-		String accessToken = jwtUtil.createAccessToken(user.getUsername(), user.getId(), user.getRole());
-		String refreshToken = issueRefreshToken(user.getUsername(), accessToken);
+		if (user.getRole().equals(UserRoleEnum.REPORT)) {
+			throw new IllegalArgumentException(ErrorCode.BANNED_USER.getMessage());
+		}
+
+		String accessToken = jwtUtil.createAccessToken(user.getId(), user.getUsername(), user.getRole());
+		String refreshToken = issueRefreshToken(user.getId(), accessToken);
 
 		return new TokenResponseDto(accessToken, refreshToken);
 	}
@@ -74,10 +79,14 @@ public class UserServiceImpl implements UserService {
 			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
 		);
 
-		String username = jwtUtil.getUserInfoFromToken(refreshTokenValue).getSubject();
-		User user = userRepository.findByUsername(username).orElseThrow(
+		Long userId = Long.valueOf(jwtUtil.getUserInfoFromToken(refreshTokenValue).getSubject());
+		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
+
+		if (user.getRole().equals(UserRoleEnum.REPORT)) {
+			throw new IllegalArgumentException(ErrorCode.BANNED_USER.getMessage());
+		}
 
 		if (redisUtil.isExists(refreshTokenValue)) {
 			if (!redisUtil.getData(refreshTokenValue).equals(accessTokenValue)) {
@@ -87,14 +96,14 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage());
 		}
 
-		return new TokenResponseDto(jwtUtil.createAccessToken(username, user.getId(), user.getRole()),
-			issueRefreshToken(username, accessToken));
+		return new TokenResponseDto(jwtUtil.createAccessToken(userId, user.getUsername(), user.getRole()),
+			issueRefreshToken(userId, accessToken));
 	}
 
 	@Transactional
 	@Override
-	public String issueRefreshToken(String username, String accessToken) {
-		String refreshToken = jwtUtil.createRefreshToken(username);
+	public String issueRefreshToken(Long userId, String accessToken) {
+		String refreshToken = jwtUtil.createRefreshToken(userId);
 		String refreshTokenValue = refreshToken.substring(7);
 		String accessTokenValue = jwtUtil.resolveToken(accessToken).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
@@ -107,14 +116,24 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public void logout(String username) {
-
+	public void logout(String refreshToken) {
+		deleteRefreshToken(refreshToken);
 	}
 
 	@Transactional
 	@Override
-	public void withdraw(String username) {
+	public void withdraw(WithdrawRequestDto requestDto, Long userId, String refreshToken) {
+		User user = userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
 
+		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+			throw new IllegalAccessError(ErrorCode.INVALID_PASSWORD.getMessage());
+		}
+
+		deleteRefreshToken(refreshToken);
+
+		userRepository.delete(user);
 	}
 
 	@Transactional(readOnly = true)
@@ -125,7 +144,18 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public ProfileResponseDto updateProfile(String username, ProfileRequestDto requestDto) {
+	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto) {
 		return null;
+	}
+
+	@Transactional
+	public void deleteRefreshToken(String refreshToken) {
+		String refreshTokenValue = jwtUtil.resolveToken(refreshToken).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
+		);
+
+		if (redisUtil.isExists(refreshTokenValue)) {
+			redisUtil.deleteData(refreshTokenValue);
+		}
 	}
 }

@@ -8,7 +8,7 @@ import com.saemoim.dto.response.ReviewResponseDto;
 public interface ReviewService {
 	List<ReviewResponseDto> getReviews(Long groupId);
 
-	ReviewResponseDto createReview(Long groupId, ReviewRequestDto requestDto, String username);
+	ReviewResponseDto createReview(Long groupId, ReviewRequestDto requestDto, Long userId);
 
 	ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto requestDto, String username);
 

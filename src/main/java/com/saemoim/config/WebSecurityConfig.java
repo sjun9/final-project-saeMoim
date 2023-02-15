@@ -63,8 +63,15 @@ public class WebSecurityConfig {
 			.requestMatchers("/sign-up").permitAll()
 			.requestMatchers("/sign-in").permitAll()
 			.requestMatchers("/reissue").permitAll()
+			.requestMatchers("/log-out").permitAll()
+			.requestMatchers("/withdraw").permitAll()
+			.requestMatchers("/email").permitAll()
 			.requestMatchers("/group").hasAnyRole(UserRoleEnum.USER.toString())
 			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString())
+			.requestMatchers("/admin/**").permitAll()	// 테스트를 위한 임시 허용 - 추후 삭제 필요
+			.requestMatchers("/groups/**").permitAll()
+			.requestMatchers("/posts/**").permitAll()
+			.requestMatchers("/post").permitAll()
 			.and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 		// .anyRequest().authenticated();	// 모든 요청에 대해 인증. 당장 사용하지 않으므로 주석 처리
 

@@ -10,9 +10,9 @@ public interface BlackListService {
 
 	void addBlacklist(Long userId);
 
-	void imposePermanentBan(Long userId);
+	void imposePermanentBan(Long blacklistId);
 
-	void deleteBlacklist(Long userId);
+	void deleteBlacklist(Long blacklistId);
 
 	void scheduledBlacklist();
 }

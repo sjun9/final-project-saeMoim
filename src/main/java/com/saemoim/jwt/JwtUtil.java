@@ -44,7 +44,7 @@ public class JwtUtil {
 	public static final String AUTHORIZATION_HEADER = "Authorization";
 	public static final String REFRESH_TOKEN_HEADER = "Refresh_Token";
 	public static final String AUTHORIZATION_KEY = "auth";
-	public static final String AUTHORIZATION_ID = "Id";
+	public static final String AUTHORIZATION_NAME = "Name";
 	private static final String BEARER_PREFIX = "Bearer ";
 	private static final long TOKEN_TIME = 20 * 60 * 1000L;
 	public static final long REFRESH_TOKEN_TIME = 60 * 60 * 1000L;
@@ -71,26 +71,26 @@ public class JwtUtil {
 		return Optional.empty();
 	}
 
-	public String createAccessToken(String username, Long id, UserRoleEnum role) {
+	public String createAccessToken(Long id, String username, UserRoleEnum role) {
 		Date date = new Date();
 
 		return BEARER_PREFIX +
 			Jwts.builder()
-				.setSubject(username)
-				.claim(AUTHORIZATION_ID, id)
-				.claim(AUTHORIZATION_KEY, role)
+				.setSubject(String.valueOf(id))
+				.claim(AUTHORIZATION_NAME, username)
+				.claim(AUTHORIZATION_KEY, String.valueOf(role))
 				.setExpiration(new Date(date.getTime() + TOKEN_TIME))
 				.setIssuedAt(date)
 				.signWith(key, signatureAlgorithm)
 				.compact();
 	}
 
-	public String createRefreshToken(String username) {
+	public String createRefreshToken(Long userId) {
 		Date date = new Date();
 
 		return BEARER_PREFIX +
 			Jwts.builder()
-				.setSubject(username)
+				.setSubject(String.valueOf(userId))
 				.setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
 				.setIssuedAt(date)
 				.signWith(key, signatureAlgorithm)
@@ -121,8 +121,8 @@ public class JwtUtil {
 	}
 
 	// 인증 객체 생성
-	public Authentication createAuthentication(String username, Long id, UserRoleEnum role) {
-		UserDetails userDetails = userDetailsService.loadUserInfoByJwt(username, id, role);
+	public Authentication createAuthentication(Long id, String username, UserRoleEnum role) {
+		UserDetails userDetails = userDetailsService.loadUserInfoByJwt(id, username, role);
 		return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 	}
 }

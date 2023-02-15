@@ -1,7 +1,7 @@
 package com.saemoim.jwt;
 
-import static com.saemoim.jwt.JwtUtil.AUTHORIZATION_ID;
 import static com.saemoim.jwt.JwtUtil.AUTHORIZATION_KEY;
+import static com.saemoim.jwt.JwtUtil.AUTHORIZATION_NAME;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -44,15 +44,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 				return;
 			}
 			Claims info = jwtUtil.getUserInfoFromToken(token.get());
-			setAuthentication(info.getSubject(), Long.valueOf((String)info.get(AUTHORIZATION_ID)),
+			setAuthentication(Long.valueOf(info.getSubject()), String.valueOf(info.get(AUTHORIZATION_NAME)),
 				UserRoleEnum.valueOf((String)info.get(AUTHORIZATION_KEY)));
+
 		}
 		filterChain.doFilter(request, response);
 	}
 
-	public void setAuthentication(String username, Long id, UserRoleEnum role) {
+	public void setAuthentication(Long id, String username, UserRoleEnum role) {
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
-		Authentication authentication = jwtUtil.createAuthentication(username, id, role);
+		Authentication authentication = jwtUtil.createAuthentication(id, username, role);
 		context.setAuthentication(authentication);
 
 		SecurityContextHolder.setContext(context);
