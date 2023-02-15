@@ -21,11 +21,11 @@ public class UserDetailsImpl implements UserDetails {
 		this.id = id;
 		this.username = username;
 		this.role = role;
-		authorities.add(new SimpleGrantedAuthority(role.getAuthority()));
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
+		authorities.add(new SimpleGrantedAuthority(this.role.getAuthority()));
 		return authorities;
 	}
 

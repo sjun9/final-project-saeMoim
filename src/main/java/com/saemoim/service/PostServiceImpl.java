@@ -5,14 +5,19 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.saemoim.domain.Post;
 import com.saemoim.dto.request.PostRequestDto;
 import com.saemoim.dto.response.PostResponseDto;
+import com.saemoim.exception.ErrorCode;
+import com.saemoim.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
+	private final PostRepository postRepository;
+
 	@Transactional(readOnly = true)
 	@Override
 	public List<PostResponseDto> getAllPosts() {
@@ -41,5 +46,15 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public void deletePost(Long postId, Long userId) {
 
+	}
+
+	@Transactional
+	@Override
+	public void deletePostByAdmin(Long postId) {
+		Post post = postRepository.findById(postId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage())
+		);
+
+		postRepository.delete(post);
 	}
 }

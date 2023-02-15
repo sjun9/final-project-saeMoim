@@ -1,15 +1,11 @@
 package com.saemoim.service;
 
-import java.util.List;
-
-import com.saemoim.dto.response.UserResponseDto;
+import com.saemoim.dto.request.AdminRequestDto;
+import com.saemoim.dto.response.TokenResponseDto;
 
 public interface AdminService {
 
-	List<UserResponseDto> getAllUsers();
+	TokenResponseDto signInByAdmin(AdminRequestDto requestDto);
 
-	void deletePostByAdmin(Long postId);
-
-	void deleteReviewByAdmin(Long reviewId);
-
+	void createAdmin(AdminRequestDto requestDto);
 }
