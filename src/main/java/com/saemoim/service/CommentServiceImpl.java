@@ -1,8 +1,7 @@
 package com.saemoim.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +14,7 @@ import com.saemoim.dto.response.CommentResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.CommentRepository;
 import com.saemoim.repository.PostRepository;
+import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,52 +24,57 @@ public class CommentServiceImpl implements CommentService {
 
 	private final PostRepository postRepository;
 	private final CommentRepository commentRepository;
-
+	private final UserRepository userRepository;
 	@Override
 	@Transactional
 	public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, Long userId) {
-		// 게시글 유무 확인
-		Post savedPost = postRepository.findById(postId).orElseThrow(()-> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
-		// 요청받은 댓글 내용 꺼내기
+		Post post = postRepository.findById(postId).orElseThrow(()-> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
+		User user = userRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
 		String content = requestDto.getComment();
-		// Comment savedComment = commentRepository.save(new Comment(savedPost, content, user));
-		//return new CommentResponseDto(savedComment);
-		return null;
-	}
 
-	@Transactional
-	@Override
-	public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, Long userId) {
+		Comment comment = new Comment(user, post,content);
+		Comment savedComment = commentRepository.save(comment);
 
-		Comment savedComment = commentRepository.findById(commentId)
-			.orElseThrow(() -> new IllegalArgumentException("임의 값 지정 수정 필요"));
-		if (Objects.equals(userId, savedComment.getUser().getId())) {
-			String comment = requestDto.getComment();
-			savedComment.update(comment);
-		}else {
-			throw new IllegalArgumentException("임의 값 지정 수정 필요");
-		}
 		return new CommentResponseDto(savedComment);
 	}
 
 	@Transactional
 	@Override
-	public void deleteComment(Long commentId, Long userId) {
-
+	public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, Long userId) {
 		Comment savedComment = commentRepository.findById(commentId)
-			.orElseThrow(() -> new IllegalArgumentException("임의 값 지정 수정 필요"));
+			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_COMMENT.getMessage()));
+		if (savedComment.isWriter(userId)) {
+			String comment = requestDto.getComment();
+			savedComment.update(comment);
 
-		if (userId.equals(savedComment.getUser().getId())) {
-			commentRepository.delete(savedComment);
+			return new CommentResponseDto(savedComment);
 		}else {
-			throw new IllegalArgumentException("임의 값 지정 수정 필요");
+			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
 		}
+	}
 
+	@Transactional
+	@Override
+	public void deleteComment(Long commentId, Long userId) {
+		Comment comment = commentRepository.findById(commentId)
+			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_COMMENT.getMessage()));
+
+		if (comment.isWriter(userId)) {
+			commentRepository.delete(comment);
+		}else {
+			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
+		}
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<CommentResponseDto> findAllComment(Long postId) {
-		return null;
+	public List<CommentResponseDto> getComments(Long postId) {
+		List<Comment> comments = commentRepository.findAllByPostId(postId);
+		List<CommentResponseDto> responseDtoList = new ArrayList<>();
+
+		for (Comment comment : comments) {
+			responseDtoList.add(new CommentResponseDto(comment));
+		}
+		return responseDtoList;
 	}
 }
