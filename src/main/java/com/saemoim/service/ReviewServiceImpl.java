@@ -1,17 +1,23 @@
 package com.saemoim.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.saemoim.domain.Participant;
 import com.saemoim.domain.Review;
+import com.saemoim.domain.ReviewLike;
+import com.saemoim.domain.User;
 import com.saemoim.dto.request.ReviewRequestDto;
+import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.ReviewResponseDto;
 import com.saemoim.exception.ErrorCode;
+import com.saemoim.repository.LikeRepository;
 import com.saemoim.repository.ParticipantRepository;
 import com.saemoim.repository.ReviewRepository;
+import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +27,8 @@ public class ReviewServiceImpl implements ReviewService {
 
 	private final ReviewRepository reviewRepository;
 	private final ParticipantRepository participantRepository;
+	private final LikeRepository likeRepository;
+	private final UserRepository userRepository;
 
 	@Transactional(readOnly = true)
 	@Override
@@ -79,4 +87,24 @@ public class ReviewServiceImpl implements ReviewService {
 
 		reviewRepository.delete(review);
 	}
+	@Transactional
+	@Override
+	public void reviewLike(Long reviewId, Long userId) {
+
+		if ( !isLikePresent(reviewId, userId)) {
+			Review review = reviewRepository.findById(reviewId)
+				.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_REVIEW.getMessage()));
+			User user = userRepository.findById(userId)
+				.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
+
+			likeRepository.save(new ReviewLike(review, user));
+		}else
+			likeRepository.deleteByReview_IdAndUser_Id(reviewId, userId);
+	}
+
+	@Transactional(readOnly = true)
+	public boolean isLikePresent(Long reviewId, Long userId) {
+		return likeRepository.existsByReview_IdAndUser_Id(reviewId, userId);
+	}
+
 }
