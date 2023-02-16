@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class ReportController {
 	private final ReportServiceImpl reportService;
 
-	// 관리자가 신고 조회
+	// 관리자가 신고된 사용자 조회
 	@GetMapping("/admin/report")
 	public List<ReportResponseDto> getReportedUsers() {
 		return reportService.getReportedUsers();
@@ -39,8 +40,8 @@ public class ReportController {
 		return new ResponseEntity<>(new MessageResponseDto("사용자 신고 완료"), HttpStatus.OK);
 	}
 
-	// 관리자가 신고 삭제
-	@PostMapping("/admin/report/{reportId}")
+	// 관리자가 신고내역 삭제
+	@DeleteMapping("/admin/report/{reportId}")
 	public ResponseEntity<MessageResponseDto> deleteReport(@PathVariable Long reportId) {
 		reportService.deleteReport(reportId);
 		return new ResponseEntity<>(new MessageResponseDto("신고 삭제 완료"), HttpStatus.OK);
