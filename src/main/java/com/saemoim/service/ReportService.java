@@ -9,6 +9,7 @@ public interface ReportService {
 
 	List<ReportResponseDto> getReportedUsers();
 
-	void reportUser(Long subjectUserId, ReportRequestDto requestDto, Long userId);
+	void reportUser(Long subjectUserId, ReportRequestDto requestDto, String reporterName);
 
+	void deleteReport(Long reportId);
 }
