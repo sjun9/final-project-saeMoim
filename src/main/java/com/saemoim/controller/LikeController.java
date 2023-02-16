@@ -26,7 +26,7 @@ public class LikeController {
 		return new ResponseEntity<>(new MessageResponseDto("좋아요 성공"), HttpStatus.OK);
 	}
 	// 게시글 좋아요 취소
-	@PostMapping("/post/{postId}")
+	@PostMapping("/post/{postId}/unlike")
 	public ResponseEntity<MessageResponseDto> deleteLike(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 		likeService.deleteLike(postId,userDetails.getId());
 		return new ResponseEntity<>(new MessageResponseDto("좋아요 취소"), HttpStatus.OK);

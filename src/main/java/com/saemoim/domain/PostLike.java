@@ -3,6 +3,7 @@ package com.saemoim.domain;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -31,6 +32,7 @@ public class PostLike {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Post post;
 
+	@Column(nullable = false)
 	private Long userId;
 
 	public PostLike(Post post, Long userId) {

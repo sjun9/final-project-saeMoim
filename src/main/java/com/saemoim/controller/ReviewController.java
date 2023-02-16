@@ -64,7 +64,4 @@ public class ReviewController {
 		reviewService.deleteReviewByAdmin(reviewId);
 		return new ResponseEntity<>(new MessageResponseDto("후기 삭제 성공"), HttpStatus.OK);
 	}
-
-
-
 }
