@@ -58,7 +58,7 @@ class ReportServiceImplTest {
 		String reporterName = "jun";
 		User subjectUser = mock(User.class);
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(subjectUser));
-		when(reportRepository.existsByReporterAndSubject(reporterName, subjectUser)).thenReturn(false);
+		when(reportRepository.existsByReporterNameAndSubject(reporterName, subjectUser)).thenReturn(false);
 
 		//when
 		reportService.reportUser(anyLong(), requestDto, reporterName);
