@@ -1,5 +1,8 @@
 package com.saemoim.domain;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -17,22 +20,21 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReviewLike {
+public class PostLike {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JoinColumn(name = "review_id", nullable = false)
+	@OnDelete(action= OnDeleteAction.CASCADE)
+	@JoinColumn(name = "post_id", nullable = false)
 	@ManyToOne(fetch = FetchType.LAZY)
-	private Review review;
+	private Post post;
 
-	@JoinColumn(name = "user_id", nullable = false)
-	@ManyToOne(fetch = FetchType.LAZY)
-	private User user;
+	private Long userId;
 
-	public ReviewLike(Review review, User user) {
-		this.review = review;
-		this.user = user;
+	public PostLike(Post post, Long userId) {
+		this.post = post;
+		this.userId = userId;
 	}
 }

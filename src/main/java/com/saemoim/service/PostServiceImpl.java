@@ -15,6 +15,7 @@ import com.saemoim.dto.response.PostListResponseDto;
 import com.saemoim.dto.response.PostResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.GroupRepository;
+import com.saemoim.repository.LikeRepository;
 import com.saemoim.repository.PostRepository;
 import com.saemoim.repository.UserRepository;
 
@@ -27,6 +28,7 @@ public class PostServiceImpl implements PostService {
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final GroupRepository groupRepository;
+	private final LikeRepository likeRepository;
 
 	// 전체 게시글 조회
 	@Transactional(readOnly = true)
@@ -53,7 +55,7 @@ public class PostServiceImpl implements PostService {
 	// 특정 게시글 조회
 	@Transactional(readOnly = true)
 	@Override
-	public PostResponseDto getPost(Long postId) {
+	public PostResponseDto getPost(Long postId, Long userId) {
 		Post post = postRepository.findById(postId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
 
@@ -63,8 +65,20 @@ public class PostServiceImpl implements PostService {
 		String content = post.getContent();
 		LocalDateTime createdAt = post.getCreatedAt();
 		LocalDateTime modifiedAt = post.getModifiedAt();
+		int likeCount = post.getLikeCount();
 
-		return new PostResponseDto(id, title, username, content, createdAt, modifiedAt);
+		boolean isLikeChecked = likeRepository.existsByPost_IdAndUser_Id(postId, userId);
+
+		return PostResponseDto.builder()
+			.title(title)
+			.id(id)
+			.username(username)
+			.content(content)
+			.createdAt(createdAt)
+			.modifiedAt(modifiedAt)
+			.likeCount(likeCount)
+			.isLikeChecked(isLikeChecked)
+			.build();
 	}
 
 	@Transactional
@@ -103,6 +117,7 @@ public class PostServiceImpl implements PostService {
 
 		if(savedPost.isWriter(userId)){
 			postRepository.delete(savedPost);
+
 		}else {
 			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
 		}

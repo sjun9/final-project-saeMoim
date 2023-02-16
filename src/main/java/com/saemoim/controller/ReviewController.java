@@ -64,14 +64,7 @@ public class ReviewController {
 		reviewService.deleteReviewByAdmin(reviewId);
 		return new ResponseEntity<>(new MessageResponseDto("후기 삭제 성공"), HttpStatus.OK);
 	}
-	// 후기 좋아요
-	@PostMapping("/reviews/{reviewId}/like")
-	public ResponseEntity<MessageResponseDto> reviewLike(@PathVariable Long reviewId,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		reviewService.reviewLike(reviewId, userDetails.getId());
 
-		return new ResponseEntity<>(new MessageResponseDto("좋아요"), HttpStatus.OK);
-	}
 
 
 }
