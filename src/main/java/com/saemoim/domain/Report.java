@@ -28,7 +28,21 @@ public class Report extends TimeStamped {
 	private User subject;
 
 	@Column(nullable = false)
-	private String reporter;
+	private String reporterName;
 	@Column(nullable = false)
 	private String content;
+
+	public Long getSubjectId() {
+		return this.subject.getId();
+	}
+
+	public String getSubjectUsername() {
+		return this.subject.getUsername();
+	}
+
+	public Report(User subject, String reporterName, String content) {
+		this.subject = subject;
+		this.reporterName = reporterName;
+		this.content = content;
+	}
 }
