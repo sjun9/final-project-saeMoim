@@ -76,10 +76,7 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<MyGroupResponseDto> getMyGroupsByLeader(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
-		List<Group> groups = groupRepository.findAllByUserOrderByCreatedAtDesc(user);
+		List<Group> groups = groupRepository.findAllByUser_IdOrderByCreatedAtDesc(userId);
 
 		return groups.stream().map(MyGroupResponseDto::new).toList();
 	}
@@ -87,11 +84,7 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<MyGroupResponseDto> getMyGroupsByParticipant(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
-
-		List<Group> groups = participantRepository.findAllByUserOrderByCreatedAtDesc(user)
+		List<Group> groups = participantRepository.findAllByUser_IdOrderByCreatedAtDesc(userId)
 			.stream()
 			.map(Participant::getGroup)
 			.toList();
