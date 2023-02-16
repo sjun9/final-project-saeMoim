@@ -25,7 +25,7 @@ public class LikeServiceImpl implements LikeService{
 	@Transactional
 	public void addLike(Long postId, Long userId) {
 
-		if (likeRepository.existsByPost_IdAndUser_Id(postId, userId)) {
+		if (likeRepository.existsByPost_IdAndUserId(postId, userId)) {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_LIKE.getMessage());
 		} else {
 			Post post = postRepository.findById(postId)
@@ -38,11 +38,11 @@ public class LikeServiceImpl implements LikeService{
 	@Override
 	@Transactional
 	public void deleteLike(Long postId, Long userId) {
-		if (likeRepository.existsByPost_IdAndUser_Id(postId, userId)) {
+		if (likeRepository.existsByPost_IdAndUserId(postId, userId)) {
 			Post post = postRepository.findById(postId)
 				.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
 			post.minusLikeCount();
-			likeRepository.deleteByPost_IdAndUser_Id(postId, userId);
+			likeRepository.deleteByPost_IdAndUserId(postId, userId);
 		}else {
 			throw new IllegalArgumentException(ErrorCode.ALREADY_DELETED.getMessage());
 		}

@@ -67,7 +67,7 @@ public class PostServiceImpl implements PostService {
 		LocalDateTime modifiedAt = post.getModifiedAt();
 		int likeCount = post.getLikeCount();
 
-		boolean isLikeChecked = likeRepository.existsByPost_IdAndUser_Id(postId, userId);
+		boolean isLikeChecked = likeRepository.existsByPost_IdAndUserId(postId, userId);
 
 		return PostResponseDto.builder()
 			.title(title)

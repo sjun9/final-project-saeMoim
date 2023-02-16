@@ -6,18 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.saemoim.domain.Participant;
-import com.saemoim.domain.Post;
 import com.saemoim.domain.Review;
-import com.saemoim.domain.PostLike;
-import com.saemoim.domain.User;
 import com.saemoim.dto.request.ReviewRequestDto;
 import com.saemoim.dto.response.ReviewResponseDto;
 import com.saemoim.exception.ErrorCode;
-import com.saemoim.repository.LikeRepository;
 import com.saemoim.repository.ParticipantRepository;
-import com.saemoim.repository.PostRepository;
 import com.saemoim.repository.ReviewRepository;
-import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -85,5 +79,4 @@ public class ReviewServiceImpl implements ReviewService {
 
 		reviewRepository.delete(review);
 	}
-
 }
