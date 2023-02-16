@@ -29,10 +29,8 @@ import com.saemoim.repository.UserRepository;
 class ReportServiceImplTest {
 	@InjectMocks
 	private ReportServiceImpl reportService;
-
 	@Mock
 	private ReportRepository reportRepository;
-
 	@Mock
 	private UserRepository userRepository;
 
@@ -58,7 +56,7 @@ class ReportServiceImplTest {
 		String reporterName = "jun";
 		User subjectUser = mock(User.class);
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(subjectUser));
-		when(reportRepository.existsByReporterAndSubject(reporterName, subjectUser)).thenReturn(false);
+		when(reportRepository.existsByReporterNameAndSubject(reporterName, subjectUser)).thenReturn(false);
 
 		//when
 		reportService.reportUser(anyLong(), requestDto, reporterName);

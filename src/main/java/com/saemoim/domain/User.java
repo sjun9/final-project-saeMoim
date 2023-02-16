@@ -54,4 +54,8 @@ public class User extends TimeStamped {
 	public void updateStatus(UserRoleEnum role) {
 		this.role = role;
 	}
+
+	public boolean isBanned() {
+		return this.role.equals(UserRoleEnum.REPORT);
+	}
 }
