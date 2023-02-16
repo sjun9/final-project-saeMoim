@@ -34,7 +34,7 @@ public class ReportServiceImpl implements ReportService {
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 
-		if (reportRepository.existsByReporterAndSubject(reporterName, subjectUser)) {
+		if (reportRepository.existsByReporterNameAndSubject(reporterName, subjectUser)) {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_REPORT.getMessage());
 		}
 
