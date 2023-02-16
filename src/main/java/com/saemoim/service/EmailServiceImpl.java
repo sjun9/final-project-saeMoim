@@ -25,6 +25,7 @@ public class EmailServiceImpl implements EmailService {
 	private String authCode;
 	private String tempPassword;
 
+	// 회원가입 시 메일 발송
 	public void createCode() {
 
 		Random random = new Random();
@@ -60,6 +61,14 @@ public class EmailServiceImpl implements EmailService {
 		return message;
 	}
 
+	@Override
+	public String sendEmail(String toEmail) throws MessagingException {
+		MimeMessage emailForm = createEmailForm(toEmail);
+		emailSender.send(emailForm);
+		return authCode;
+	}
+
+	// 비밀번호 찾기 시 메일 발송
 	public void createTempPassword() {
 		UUID uid = UUID.randomUUID();
 		tempPassword = uid.toString().substring(0, 10);
@@ -74,20 +83,13 @@ public class EmailServiceImpl implements EmailService {
 		String content = "안녕하세요. 새모임 임시 비밀번호를 발급해드립니다.\n 회원님의 임시 비밀번호는 " + tempPassword + " 입니다.\n" +
 			"로그인 후에 비밀번호를 변경해주세요.";
 
-		MimeMessage message = emailSender.createMimeMessage();    // 마임 메세지 -
-		message.addRecipients(MimeMessage.RecipientType.TO, toEmail);    //
-		message.setSubject(title);    // 메일 제목
-		message.setFrom(fromEmail);    // 메일을 보내는 주체(이메일) 설정
-		message.setText(content);    // 메일 내용 설정. "utf-8" , "html" 등으로 추가 설정 가능
+		MimeMessage message = emailSender.createMimeMessage();
+		message.addRecipients(MimeMessage.RecipientType.TO, toEmail);
+		message.setSubject(title);
+		message.setFrom(fromEmail);
+		message.setText(content);
 
 		return message;
-	}
-
-	@Override
-	public String sendEmail(String toEmail) throws MessagingException {
-		MimeMessage emailForm = createEmailForm(toEmail);
-		emailSender.send(emailForm);
-		return authCode;
 	}
 
 	@Transactional
