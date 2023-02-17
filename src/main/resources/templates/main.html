@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/13a08ca775.js" crossorigin="anonymous"></script>
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="../static/main/main.css">
+
+  </head>
+
+<body>
+  <div class="modal">
+    <div class="modal_body">
+      <input type="text" placeholder="제목을 입력해주세요" required />
+      <input type="text" placeholder="카테고리" required />
+      <input type="text" placeholder="이미지 업로드" required />
+      <input type="text" placeholder="소개" required />
+      <p>여기에 지도추가???</p>
+      <input type="button" value="새 모임 추가" onclick="newMoim()">
+    </div>
+  </div>
+    <div class="app-container">
+        <div class="sidebar">
+          <div class="sidebar-header">
+            <div class="app-icon">
+              <h1 style="display: inline;">SAEMOIM</h1>
+              <img src="../static/images/bird.png" alt="" style="display: inline;">
+            </div>
+          </div>
+          <ul class="sidebar-list">
+            <li class="sidebar-list-item active" id="side-find">
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <span>Find</span>
+              </a>
+            </li>
+            <li class="sidebar-list-item" id="side-mypage">
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart">
+                  <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                  <path d="M22 12A10 10 0 0 0 12 2v10z" />
+                </svg>
+                <span>MyPage</span>
+              </a>
+            </li>
+            <li class="sidebar-list-item" id="side-profile">
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-inbox">
+                  <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                  <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+                </svg>
+                <span>MyProfile</span>
+              </a>
+            </li>
+            <li class="sidebar-list-item" id="side-chat">
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+                <span>Chat</span>
+              </a>
+            </li>
+          </ul>
+          <div class="account-info">
+            <div class="account-info-picture">
+              <img src="https://images.unsplash.com/photo-1527736947477-2790e28f3443?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTE2fHx3b21hbnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60" alt="Account">
+            </div>
+            <div class="account-info-name">이곳에 이름 출력</div>
+            <img class="account-info-more" src="../static/images/logout.png" alt="" onclick="logout()">
+          </div>
+        </div>
+
+        
+        <div class="app-content find active" id="side-find-content">
+          <div class="app-content-header">
+            <h1 class="app-content-headerText">모임 찾기</h1>
+            <button class="app-content-headerButton btn-open-popup">새 모임 추가하기</button>
+          </div>
+          <div class="app-content-actions">
+            <input class="search-bar" placeholder="Search..." type="text">
+            <div class="app-content-actions-wrapper">
+              <div class="filter-button-wrapper">
+                <button class="action-button filter jsFilter"><span>Filter</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                  </svg></button>
+                <div class="filter-menu">
+                  <label>카테고리</label>
+                  <select>
+                    <option>전체보기</option>
+                    <option>여행</option>
+                    <option>맛집투어</option>
+                    <option>운동</option>
+                    <option>원데이클래스</option>
+                  </select>
+                  <label>Status</label>
+                  <select>
+                    <option>All Status</option>
+                    <option>Active</option>
+                    <option>Disabled</option>
+                  </select>
+                  <div class="filter-menu-buttons">
+                    <button class="filter-button reset">
+                      Reset
+                    </button>
+                    <button class="filter-button apply">
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="app-content-section gridView" id="find-content">
+            
+            <div class="products-row" onclick="alert('hello')">
+              <div class="product-cell image">
+                <img src="../static/images/main-running.jpg" alt="">
+                <span>한강정기러닝동호회[초보가능, 상시모집]</span>
+              </div>
+              <div class="product-cell category"><span class="cell-label">카테고리:</span>Decoration</div>
+              <div class="product-cell status-cell">
+                <span class="cell-label">모임상태:</span>
+                <span class="status active">Active</span>
+              </div>
+              <div class="product-cell sales"><span class="cell-label">참가인원:</span>61</div>
+              <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>56</div>
+              <div class="product-cell price"><span class="cell-label">후기수:</span>360</div>
+            </div>
+            <div class="products-row">
+              <div class="product-cell image">
+                <img src="../static/images/main-baking.jpg" alt="">
+                <span>베이킹 원데이클래스 재료비만 들고오세요~</span>
+              </div>
+              <div class="product-cell category"><span class="cell-label">카테고리:</span>Bedroom</div>
+              <div class="product-cell status-cell">
+                <span class="cell-label">모임상태:</span>
+                <span class="status disabled">Disabled</span>
+              </div>
+              <div class="product-cell sales"><span class="cell-label">참가인원:</span>41</div>
+              <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>66</div>
+              <div class="product-cell price"><span class="cell-label">후기수:</span>260</div>
+            </div>
+            <div class="products-row">
+              <div class="product-cell image">
+                <img src="../static/images/main-chicken.jpg" alt="">
+                <span>홍대 사시는분 간단하게 치맥ㄱ???</span>
+              </div>
+              <div class="product-cell category"><span class="cell-label">카테고리:</span>Furniture</div>
+              <div class="product-cell status-cell">
+                <span class="cell-label">모임상태:</span>
+                <span class="status active">Active</span>
+              </div>
+              <div class="product-cell sales"><span class="cell-label">참가인원:</span>32</div>
+              <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>40</div>
+              <div class="product-cell price"><span class="cell-label">후기수:</span>350</div>
+            </div>
+            <div class="products-row">
+              <div class="product-cell image">
+                <img src="../static/images/main-english.jpg" alt="">
+                <span>영어회화 스터디 모집합니다</span>
+              </div>
+              <div class="product-cell category"><span class="cell-label">카테고리:</span>Bathroom</div>
+              <div class="product-cell status-cell">
+                <span class="cell-label">모임상태:</span>
+                <span class="status disabled">Disabled</span>
+              </div>
+              <div class="product-cell sales"><span class="cell-label">참가인원:</span>22</div>
+              <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>44</div>
+              <div class="product-cell price"><span class="cell-label">후기수:</span>160</div>
+            </div>
+          </div>
+        </div>
+        <div class="app-content mypage" id="side-mypage-content">
+          <div class="app-content-header">
+            <h1 class="app-content-headerText">마이페이지</h1>
+          </div>
+          <div style="overflow-y: scroll;">
+            <h3 style="font-size: 30px;">내가 개설한 모임</h3>
+            <div class="app-content-section gridView" style="overflow: hidden;">
+              <div class="products-row">
+                <div class="product-cell image">
+                  <img src="../static/images/main-running.jpg" alt="">
+                  <span>한강정기러닝동호회[초보가능, 상시모집]</span>
+                </div>
+                <div class="product-cell category"><span class="cell-label">카테고리:</span>Decoration</div>
+                <div class="product-cell status-cell">
+                  <span class="cell-label">모임상태:</span>
+                  <span class="status active">Active</span>
+                </div>
+                <div class="product-cell sales"><span class="cell-label">참가인원:</span>61</div>
+                <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>56</div>
+                <div class="product-cell price"><span class="cell-label">후기수:</span>360</div>
+              </div>
+              <div class="products-row">
+                <div class="product-cell image">
+                  <img src="../static/images/main-baking.jpg" alt="">
+                  <span>베이킹 원데이클래스 재료비만 들고오세요~</span>
+                </div>
+                <div class="product-cell category"><span class="cell-label">카테고리:</span>Bedroom</div>
+                <div class="product-cell status-cell">
+                  <span class="cell-label">모임상태:</span>
+                  <span class="status disabled">Disabled</span>
+                </div>
+                <div class="product-cell sales"><span class="cell-label">참가인원:</span>41</div>
+                <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>66</div>
+                <div class="product-cell price"><span class="cell-label">후기수:</span>260</div>
+              </div>
+              <div class="products-row">
+                <div class="product-cell image">
+                  <img src="../static/images/main-chicken.jpg" alt="">
+                  <span>홍대 사시는분 간단하게 치맥ㄱ???</span>
+                </div>
+                <div class="product-cell category"><span class="cell-label">카테고리:</span>Furniture</div>
+                <div class="product-cell status-cell">
+                  <span class="cell-label">모임상태:</span>
+                  <span class="status active">Active</span>
+                </div>
+                <div class="product-cell sales"><span class="cell-label">참가인원:</span>32</div>
+                <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>40</div>
+                <div class="product-cell price"><span class="cell-label">후기수:</span>350</div>
+              </div>
+            </div>
+            <h3 style="font-size: 30px;">내가 참여한 모임</h3>
+            <div class="app-content-section gridView" style="overflow: hidden;">
+              <div class="products-row">
+                <div class="product-cell image">
+                  <img src="../static/images/main-chicken.jpg" alt="">
+                  <span>홍대 사시는분 간단하게 치맥ㄱ???</span>
+                </div>
+                <div class="product-cell category"><span class="cell-label">카테고리:</span>Furniture</div>
+                <div class="product-cell status-cell">
+                  <span class="cell-label">모임상태:</span>
+                  <span class="status active">Active</span>
+                </div>
+                <div class="product-cell sales"><span class="cell-label">참가인원:</span>32</div>
+                <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>40</div>
+                <div class="product-cell price"><span class="cell-label">후기수:</span>350</div>
+              </div>
+              <div class="products-row">
+                <div class="product-cell image">
+                  <img src="../static/images/main-chicken.jpg" alt="">
+                  <span>홍대 사시는분 간단하게 치맥ㄱ???</span>
+                </div>
+                <div class="product-cell category"><span class="cell-label">카테고리:</span>Furniture</div>
+                <div class="product-cell status-cell">
+                  <span class="cell-label">모임상태:</span>
+                  <span class="status active">Active</span>
+                </div>
+                <div class="product-cell sales"><span class="cell-label">참가인원:</span>32</div>
+                <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>40</div>
+                <div class="product-cell price"><span class="cell-label">후기수:</span>350</div>
+              </div>
+              <div class="products-row">
+                <div class="product-cell image">
+                  <img src="../static/images/main-running.jpg" alt="">
+                  <span>한강정기러닝동호회[초보가능, 상시모집]</span>
+                </div>
+                <div class="product-cell category"><span class="cell-label">카테고리:</span>Decoration</div>
+                <div class="product-cell status-cell">
+                  <span class="cell-label">모임상태:</span>
+                  <span class="status active">Active</span>
+                </div>
+                <div class="product-cell sales"><span class="cell-label">참가인원:</span>61</div>
+                <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>56</div>
+                <div class="product-cell price"><span class="cell-label">후기수:</span>360</div>
+              </div>
+              <div class="products-row">
+                <div class="product-cell image">
+                  <img src="../static/images/main-baking.jpg" alt="">
+                  <span>베이킹 원데이클래스 재료비만 들고오세요~</span>
+                </div>
+                <div class="product-cell category"><span class="cell-label">카테고리:</span>Bedroom</div>
+                <div class="product-cell status-cell">
+                  <span class="cell-label">모임상태:</span>
+                  <span class="status disabled">Disabled</span>
+                </div>
+                <div class="product-cell sales"><span class="cell-label">참가인원:</span>41</div>
+                <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>66</div>
+                <div class="product-cell price"><span class="cell-label">후기수:</span>260</div>
+              </div>
+              <div class="products-row">
+                <div class="product-cell image">
+                  <img src="../static/images/main-chicken.jpg" alt="">
+                  <span>홍대 사시는분 간단하게 치맥ㄱ???</span>
+                </div>
+                <div class="product-cell category"><span class="cell-label">카테고리:</span>Furniture</div>
+                <div class="product-cell status-cell">
+                  <span class="cell-label">모임상태:</span>
+                  <span class="status active">Active</span>
+                </div>
+                <div class="product-cell sales"><span class="cell-label">참가인원:</span>32</div>
+                <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>40</div>
+                <div class="product-cell price"><span class="cell-label">후기수:</span>350</div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <div class="app-content profile" id="side-profile-content">
+          <div class="app-content-header">
+            <h1 class="app-content-headerText">마이프로필</h1>
+          </div>
+          <div class="app-content-section">
+            <div>개인프로필 간단하게 띄우고 프로필</div>
+            <div>비번 수정기능 추가</div>
+          </div>
+        </div>
+        <div class="app-content chat" id="side-chat-content">
+          <div class="app-content-header">
+            <h1 class="app-content-headerText">채팅 목록</h1>
+          </div>
+          <div style="overflow-y: scroll;">
+            <div class="app-content-section gridView" style="overflow: hidden;">
+              <div class="products-row" onclick="gotochat()">
+                <div class="product-cell image" style="text-align: center;">
+                  <img src="../static/images/bill_gates.jpg" alt="" style="max-width: 150px;">
+                  <div>ㅇㅇㅇ 님과의 대화방</div>
+                </div>
+              </div>
+              <div class="products-row" onclick="gotochat()">
+                <div class="product-cell image" style="text-align: center;">
+                  <img src="../static/images/steve_jobs.jpg" alt="" style="max-width: 150px;">
+                  <div>ㅇㅇㅇ 님과의 대화방</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+</body>
+
+<script>
+
+  const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
+  const appContents = document.querySelectorAll(".app-content");
+
+  let newMoimTemp = 
+  `
+  <div class="products-row">
+    <div class="product-cell image">
+      <img src="../static/images/main-english.jpg" alt="">
+      <span>새 모임</span>
+    </div>
+    <div class="product-cell category"><span class="cell-label">카테고리:</span>Bathroom</div>
+    <div class="product-cell status-cell">
+      <span class="cell-label">모임상태:</span>
+      <span class="status disabled">Disabled</span>
+    </div>
+    <div class="product-cell sales"><span class="cell-label">참가인원:</span>22</div>
+    <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>44</div>
+    <div class="product-cell price"><span class="cell-label">후기수:</span>160</div>
+  </div>
+  `;
+
+  sidebarListItems.forEach((sidebarListItem) => {
+    sidebarListItem.addEventListener('click',()=>{
+      sidebarListItems.forEach( (selectedItem) => selectedItem.classList.remove('active'));
+      appContents.forEach( (appContent) => appContent.classList.remove('active'));
+      sidebarListItem.classList.add('active');
+    })
+  })
+
+
+  document.querySelector("#side-find").addEventListener("click", () => {
+    document.querySelector("#side-find-content").classList.add("active");
+  })
+  document.querySelector("#side-mypage").addEventListener("click", () => {
+    document.querySelector("#side-mypage-content").classList.add("active");
+  })
+  document.querySelector("#side-profile").addEventListener("click", () => {
+    document.querySelector("#side-profile-content").classList.add("active");
+  })
+  document.querySelector("#side-chat").addEventListener("click", () => {
+    document.querySelector("#side-chat-content").classList.add("active");
+  })
+
+
+  document.querySelector(".jsFilter").addEventListener("click", function () {
+    document.querySelector(".filter-menu").classList.toggle("active");
+  });
+
+  // modal
+  const body = document.querySelector('body');
+  const modal = document.querySelector('.modal');
+  const btnOpenPopup = document.querySelector('.btn-open-popup');
+
+  function showModal() {
+    modal.classList.toggle('show');
+
+    if (modal.classList.contains('show')) {
+      body.style.overflow = 'hidden';
+    }
+  }
+
+  function modalEscape(event) {
+    if (event.target === modal) {
+      modal.classList.toggle('show');
+
+      if (!modal.classList.contains('show')) {
+        body.style.overflow = 'auto';
+      }
+    }
+  }
+
+  btnOpenPopup.addEventListener('click', showModal);
+  modal.addEventListener('click', modalEscape);
+
+
+
+  function newMoim() {
+    alert('새 모임 추가 완료!') // 완료시 출력
+    location.reload();
+    // $("#find-content").append(newMoimTemp);
+  }
+
+  
+  function gotochat() {
+    alert('채팅 기록을 불러옵니다.')
+    window.open('./chattingPage.html');
+  }
+
+  function logout() {
+    alert('로그아웃');
+  }
+    
+</script>
+
+</html>
