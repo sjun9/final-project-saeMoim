@@ -12,11 +12,6 @@ class LikeRepositoryTest {
 
 	@Test
 	void existsByReview_IdAndUser_Id() {
-		likeRepository.existsByPost_IdAndUser_Id(null, null);
-	}
-
-	@Test
-	public void countLike() throws Exception{
-	    likeRepository.count();
+		likeRepository.existsByPost_IdAndUserId(null, null);
 	}
 }

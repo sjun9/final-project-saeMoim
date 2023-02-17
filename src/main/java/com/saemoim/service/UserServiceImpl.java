@@ -1,6 +1,7 @@
 package com.saemoim.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -91,7 +92,7 @@ public class UserServiceImpl implements UserService {
 			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
 		);
 
-		Long userId = Long.valueOf(jwtUtil.getUserInfoFromToken(refreshTokenValue).getSubject());
+		Long userId = Long.valueOf(jwtUtil.getSubjectFromToken(refreshTokenValue));
 		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
@@ -174,12 +175,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	private void deleteRefreshToken(String refreshToken) {
-		String refreshTokenValue = jwtUtil.resolveToken(refreshToken).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
-		);
+		Optional<String> refreshTokenValue = jwtUtil.resolveToken(refreshToken);
 
-		if (redisUtil.isExists(refreshTokenValue)) {
-			redisUtil.deleteData(refreshTokenValue);
+		if (refreshTokenValue.isPresent()) {
+			if (redisUtil.isExists(refreshTokenValue.get())) {
+				redisUtil.deleteData(refreshTokenValue.get());
+			}
 		}
 	}
 

@@ -1,10 +1,19 @@
 package com.saemoim.controller;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +35,11 @@ import com.saemoim.annotation.WithCustomMockUser;
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.CurrentPasswordRequestDto;
+import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
+import com.saemoim.dto.request.UsernameRequestDto;
 import com.saemoim.dto.request.WithdrawRequestDto;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.ProfileResponseDto;
@@ -64,6 +75,42 @@ class UserControllerTest {
 			.with(csrf()));
 		//then
 		resultActions.andExpect(status().isOk()).andExpect(jsonPath("message").value("회원가입 완료"));
+	}
+
+	@Test
+	@WithCustomMockUser
+	@DisplayName("이메일 중복 검사")
+	void checkEmailDuplication() throws Exception {
+		//given
+		EmailRequestDto requestDto = EmailRequestDto.builder()
+			.email("aaaaa@naver.com")
+			.build();
+		doNothing().when(userService).checkEmailDuplication(any(EmailRequestDto.class));
+		//when
+		ResultActions resultActions = mockMvc.perform(post("/sign-up/email")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(new Gson().toJson(requestDto))
+			.with(csrf()));
+		//then
+		resultActions.andExpect(status().isOk()).andExpect(jsonPath("message").value("이메일 중복 검사 완료"));
+	}
+
+	@Test
+	@WithCustomMockUser
+	@DisplayName("이름 중복 검사")
+	void checkUsernameDuplication() throws Exception {
+		//given
+		UsernameRequestDto requestDto = UsernameRequestDto.builder()
+			.username("장성준")
+			.build();
+		doNothing().when(userService).checkUsernameDuplication(any(UsernameRequestDto.class));
+		//when
+		ResultActions resultActions = mockMvc.perform(post("/sign-up/username")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(new Gson().toJson(requestDto))
+			.with(csrf()));
+		//then
+		resultActions.andExpect(status().isOk()).andExpect(jsonPath("message").value("이름 중복 검사 완료"));
 	}
 
 	@Test
