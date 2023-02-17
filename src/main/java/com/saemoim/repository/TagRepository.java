@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.saemoim.domain.Tag;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
-	List<Tag> findAllByGroupId(Long groupId);
+	List<Tag> findAllByName(String username);
 }

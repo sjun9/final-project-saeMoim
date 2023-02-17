@@ -34,7 +34,7 @@ public class User extends TimeStamped {
 	@Column(nullable = false)
 	private String content;
 	@Column
-	private int banCount;
+	private Integer banCount;
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private UserRoleEnum role;

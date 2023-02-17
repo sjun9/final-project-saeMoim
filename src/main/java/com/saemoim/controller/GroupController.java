@@ -2,7 +2,6 @@ package com.saemoim.controller;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saemoim.dto.request.GroupRequestDto;
@@ -30,37 +30,55 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GroupController {
 
-	private final GroupServiceImpl groupServiceImpl;
+	private final GroupServiceImpl groupService;
 
 	// 모든 모임 조회
 	@GetMapping("/group")
-	public Page<GroupResponseDto> getAllGroups(Pageable pageable) {
-		return groupServiceImpl.getAllGroups(pageable);
+	public List<GroupResponseDto> getAllGroups(Pageable pageable) {
+		return groupService.getAllGroups(pageable).getContent();
 	}
 
 	// 선택 모임 조회
 	@GetMapping("/groups/{groupId}")
 	public GroupResponseDto getGroup(@PathVariable Long groupId) {
-		return groupServiceImpl.getGroup(groupId);
+		return groupService.getGroup(groupId);
+	}
+
+	// 특정 카테고리 모임 조회
+	@GetMapping("/group/categories/{categoryId}")
+	public List<GroupResponseDto> getGroupsByCategory(@PathVariable Long categoryId, Pageable pageable) {
+		return groupService.getGroupsByCategory(categoryId, pageable).getContent();
+	}
+
+	// 특정 태그 모임 조회
+	@GetMapping("/group/tag")
+	public List<GroupResponseDto> getGroupsByTag(@RequestParam String tagName, Pageable pageable) {
+		return groupService.getGroupsByTag(tagName, pageable).getContent();
+	}
+
+	// 모임 이름으로 검색
+	@GetMapping("/groups")
+	public List<GroupResponseDto> searchGroups(@RequestParam String groupName, Pageable pageable) {
+		return groupService.searchGroups(groupName, pageable).getContent();
 	}
 
 	// 내가 만든 모임 조회
 	@GetMapping("/leader/group")
 	public List<MyGroupResponseDto> getMyGroupsByLeader(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return groupServiceImpl.getMyGroupsByLeader(userDetails.getId());
+		return groupService.getMyGroupsByLeader(userDetails.getId());
 	}
 
 	// 참여중인 모임 조회
 	@GetMapping("/participant/group")
 	public List<MyGroupResponseDto> getMyGroupsByParticipant(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return groupServiceImpl.getMyGroupsByParticipant(userDetails.getId());
+		return groupService.getMyGroupsByParticipant(userDetails.getId());
 	}
 
 	// 모임 생성
 	@PostMapping("/group")
 	public GroupResponseDto createGroup(@Validated @RequestBody GroupRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return groupServiceImpl.createGroup(requestDto, userDetails.getId());
+		return groupService.createGroup(requestDto, userDetails.getId());
 	}
 
 	// 모임 수정
@@ -68,14 +86,14 @@ public class GroupController {
 	public GroupResponseDto updateGroup(@PathVariable Long groupId,
 		@Validated @RequestBody GroupRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return groupServiceImpl.updateGroup(groupId, requestDto, userDetails.getUsername());
+		return groupService.updateGroup(groupId, requestDto, userDetails.getUsername());
 	}
 
 	// 모임 삭제
 	@DeleteMapping("/groups/{groupId}")
 	public ResponseEntity<MessageResponseDto> deleteGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		groupServiceImpl.deleteGroup(groupId, userDetails.getUsername());
+		groupService.deleteGroup(groupId, userDetails.getUsername());
 		return new ResponseEntity<>(new MessageResponseDto("삭제 성공"), HttpStatus.OK);
 	}
 
@@ -83,7 +101,7 @@ public class GroupController {
 	@PatchMapping("/groups/{groupId}/open")
 	public ResponseEntity<MessageResponseDto> openGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		groupServiceImpl.openGroup(groupId, userDetails.getUsername());
+		groupService.openGroup(groupId, userDetails.getUsername());
 		return new ResponseEntity<>(new MessageResponseDto("모임 Open"), HttpStatus.OK);
 	}
 
@@ -91,7 +109,7 @@ public class GroupController {
 	@PatchMapping("/groups/{groupId}/close")
 	public ResponseEntity<MessageResponseDto> closeGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		groupServiceImpl.closeGroup(groupId, userDetails.getUsername());
+		groupService.closeGroup(groupId, userDetails.getUsername());
 		return new ResponseEntity<>(new MessageResponseDto("모임 Close"), HttpStatus.OK);
 	}
 
