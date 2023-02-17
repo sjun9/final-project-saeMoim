@@ -26,6 +26,7 @@ public enum ErrorCode {
 	NOT_EMPTY_CATEGORY("비어있지 않은 카테고리는 삭제할 수 없습니다."),
 	NOT_EXIST_CATEGORY("카테고리가 존재하지 않습니다."),
 	NOT_PARENT_CATEGORY("기본 카테고리 밑에 생성할 수 있습니다."),
+	NOT_CHILD_CATEGORY("하위 카테고리 밑에 생성할 수 있습니다."),
 
 	// 신고
 	DUPLICATED_REPORT("이미 신고한 사용자 입니다."),

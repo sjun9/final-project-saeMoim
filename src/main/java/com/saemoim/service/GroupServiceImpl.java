@@ -1,7 +1,9 @@
 package com.saemoim.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -59,13 +61,31 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Transactional(readOnly = true)
-	@Override
+	public List<GroupResponseDto> getGroupByPopularity() {
+		List<Group> groups = groupRepository.findAll();
+		PriorityQueue<GroupResponseDto> queue = new PriorityQueue<>();
+		for (Group group : groups) {
+			if (queue.size() > 4) {
+				if (queue.peek().getWishCount() < group.getWishCount()) {
+					queue.poll();
+					queue.add(new GroupResponseDto(group));
+				}
+			} else {
+				queue.add(new GroupResponseDto(group));
+			}
+		}
+		List<GroupResponseDto> list = new ArrayList<>(queue);
+		list.sort(Collections.reverseOrder());
+		return list;
+	}
+
+	@Transactional(readOnly = true)
 	public Slice<GroupResponseDto> getGroupsByCategory(Long categoryId, Pageable pageable) {
 		Category category = categoryRepository.findById(categoryId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
 		);
 		if (category.getParentId() == null) {
-			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage()); // 에러메세지 다른걸로
+			throw new IllegalArgumentException(ErrorCode.NOT_CHILD_CATEGORY.getMessage()); // 에러메세지 다른걸로
 		}
 		List<Group> groups = groupRepository.findAllByCategoryOrderByCreatedAtDesc(category);
 		boolean hasNext = false;
@@ -78,7 +98,6 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Transactional(readOnly = true)
-	@Override
 	public Slice<GroupResponseDto> getGroupsByTag(String tagName, Pageable pageable) {
 		List<Tag> tags = tagRepository.findAllByName(tagName);
 		List<Group> groups = new ArrayList<>(tags.stream().map(Tag::getGroup).toList());
@@ -92,7 +111,6 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Transactional(readOnly = true)
-	@Override
 	public Slice<GroupResponseDto> searchGroups(String groupName, Pageable pageable) {
 		List<Group> groups = groupRepository.findAllByNameContainingOrderByCreatedAtDesc(groupName);
 		boolean hasNext = false;
@@ -103,7 +121,6 @@ public class GroupServiceImpl implements GroupService {
 		return new SliceImpl<>(groups.stream().map(GroupResponseDto::new).toList(), pageable, hasNext);
 	}
 
-	@Override
 	@Transactional(readOnly = true)
 	public List<MyGroupResponseDto> getMyGroupsByLeader(Long userId) {
 		List<Group> groups = groupRepository.findAllByUser_IdOrderByCreatedAtDesc(userId);
@@ -111,7 +128,6 @@ public class GroupServiceImpl implements GroupService {
 		return groups.stream().map(MyGroupResponseDto::new).toList();
 	}
 
-	@Override
 	@Transactional(readOnly = true)
 	public List<MyGroupResponseDto> getMyGroupsByParticipant(Long userId) {
 		List<Group> groups = participantRepository.findAllByUser_IdOrderByCreatedAtDesc(userId)

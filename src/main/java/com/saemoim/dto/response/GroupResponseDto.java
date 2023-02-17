@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class GroupResponseDto {
+public class GroupResponseDto implements Comparable<GroupResponseDto> {
 	private Long id;
 	private List<String> tags;
 	private String groupName;
@@ -29,7 +29,7 @@ public class GroupResponseDto {
 	private String latitude;
 	private String longitude;
 	private GroupStatusEnum status;
-	private int wishCount;
+	private Integer wishCount;
 	private int recruitNumber;
 	private int participantCount;
 	private LocalDateTime createdAt;
@@ -53,5 +53,16 @@ public class GroupResponseDto {
 		this.participantCount = group.getParticipantCount();
 		this.createdAt = group.getCreatedAt();
 		this.modifiedAt = group.getModifiedAt();
+	}
+
+	@Override
+	public int compareTo(GroupResponseDto o) {
+		if (this.wishCount < o.getWishCount()) {
+			return -1;
+		} else if (this.wishCount.equals(o.getWishCount())) {
+			return 0;
+		} else {
+			return 1;
+		}
 	}
 }
