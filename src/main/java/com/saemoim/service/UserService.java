@@ -2,6 +2,7 @@ package com.saemoim.service;
 
 import java.util.List;
 
+import com.saemoim.dto.request.CurrentPasswordRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
@@ -23,9 +24,12 @@ public interface UserService {
 
 	ProfileResponseDto getProfile(Long userId);
 
-	ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto);
+	ProfileResponseDto getMyProfile(Long id, CurrentPasswordRequestDto passwordRequestDto);
+
+	void updateProfile(Long userId, ProfileRequestDto requestDto);
 
 	TokenResponseDto reissueToken(String accessToken, String refreshToken);
 
 	String issueRefreshToken(Long userId, String accessToken);
+
 }

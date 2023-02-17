@@ -103,7 +103,7 @@ public class EmailServiceImpl implements EmailService {
 		emailSender.send(emailForm);
 
 		String encodingTempPwd = passwordEncoder.encode(tempPassword);
-		user.updatePassword(encodingTempPwd);
+		user.updatePasswordToTemp(encodingTempPwd);
 		userRepository.save(user);
 	}
 }

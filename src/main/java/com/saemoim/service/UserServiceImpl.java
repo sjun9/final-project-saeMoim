@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
+import com.saemoim.dto.request.CurrentPasswordRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
@@ -148,13 +149,34 @@ public class UserServiceImpl implements UserService {
 	@Transactional(readOnly = true)
 	@Override
 	public ProfileResponseDto getProfile(Long userId) {
-		return null;
+		User user = userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
+		return new ProfileResponseDto(user);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public ProfileResponseDto getMyProfile(Long userId, CurrentPasswordRequestDto passwordRequestDto) {
+		User user = userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
+		if (passwordEncoder.matches(passwordRequestDto.getPassword(), user.getPassword())) {
+			return new ProfileResponseDto(user);
+		} else {
+			throw new IllegalArgumentException(ErrorCode.INVALID_PASSWORD.getMessage());
+		}
 	}
 
 	@Transactional
 	@Override
-	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto) {
-		return null;
+	public void updateProfile(Long userId, ProfileRequestDto requestDto) {
+		User user = userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
+		String changedPassword = passwordEncoder.encode(requestDto.getPassword());
+		user.updateProfile(requestDto, changedPassword);
+		userRepository.save(user);
 	}
 
 	@Transactional

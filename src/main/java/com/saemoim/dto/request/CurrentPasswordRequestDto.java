@@ -3,8 +3,6 @@ package com.saemoim.dto.request;
 import lombok.Getter;
 
 @Getter
-public class ProfileRequestDto {
+public class CurrentPasswordRequestDto {
 	private String password;
-	private String content;
-
 }
