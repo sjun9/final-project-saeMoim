@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saemoim.dto.request.CurrentPasswordRequestDto;
+import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
+import com.saemoim.dto.request.UsernameRequestDto;
 import com.saemoim.dto.request.WithdrawRequestDto;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.ProfileResponseDto;
@@ -44,6 +46,22 @@ public class UserController {
 	public ResponseEntity<MessageResponseDto> signUp(@Validated @RequestBody SignUpRequestDto requestDto) {
 		userService.signUp(requestDto);
 		return new ResponseEntity<>(new MessageResponseDto("회원가입 완료"), HttpStatus.OK);
+	}
+
+	// 이메일 중복 확인
+	@PostMapping("/sign-up/email")
+	public ResponseEntity<MessageResponseDto> checkEmailDuplication(
+		@Validated @RequestBody EmailRequestDto requestDto) {
+		userService.checkEmailDuplication(requestDto);
+		return new ResponseEntity<>(new MessageResponseDto("이메일 중복 검사 완료"), HttpStatus.OK);
+	}
+
+	// 이름 중복 확인
+	@PostMapping("/sign-up/username")
+	public ResponseEntity<MessageResponseDto> checkUsernameDuplication(
+		@Validated @RequestBody UsernameRequestDto requestDto) {
+		userService.checkUsernameDuplication(requestDto);
+		return new ResponseEntity<>(new MessageResponseDto("이름 중복 검사 완료"), HttpStatus.OK);
 	}
 
 	// 로그인
