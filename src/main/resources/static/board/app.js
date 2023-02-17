@@ -95,6 +95,10 @@ const render = (page) => {
 };
 render(page);
 
+
+
+
+
 function openBody(event) {
   // 모달창에 해당 클릭이벤트 id 글 뿌려줌
  }
@@ -112,3 +116,104 @@ function openBody(event) {
   alert('작성 완료!');
   location.reload();
  }
+
+
+/**
+* 댓글 관련 기능
+*/
+
+
+
+ function fn_comment(code){
+    
+  $.ajax({
+      type:'POST',
+      url : "<c:url value='/board/addComment.do'/>",
+      data:$("#commentForm").serialize(),
+      success : function(data){
+          if(data=="success")
+          {
+              getCommentList();
+              $("#comment").val("");
+          }
+      },
+      error:function(request,status,error){
+          //alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+     }
+      
+  });
+}
+
+/**
+* 초기 페이지 로딩시 댓글 불러오기
+*/
+$(function(){
+  
+  getCommentList();
+  
+});
+
+/**
+* 댓글 불러오기(Ajax)
+*/
+function getCommentList(){
+  
+  $.ajax({
+      type:'GET',
+      url : "<c:url value='/board/commentList.do'/>",
+      dataType : "json",
+      data:$("#commentForm").serialize(),
+      contentType: "application/x-www-form-urlencoded; charset=UTF-8", 
+      success : function(data){
+          
+          var html = "";
+          var cCnt = data.length;
+          
+          if(data.length > 0){
+              
+              for(i=0; i<data.length; i++){
+                  html += "<div>";
+                  html += "<div><table class='table'><h6><strong>"+data[i].writer+"</strong></h6>";
+                  html += data[i].comment + "<tr><td></td></tr>";
+                  html += "</table></div>";
+                  html += "</div>";
+              }
+              
+          } else {
+              
+              html += "<div>";
+              html += "<div><table class='table'><h6><strong>등록된 댓글이 없습니다.</strong></h6>";
+              html += "</table></div>";
+              html += "</div>";
+              
+          }
+          
+          $("#cCnt").html(cCnt);
+          $("#commentList").html(html);
+          
+      },
+      error:function(request,status,error){
+          
+     }
+      
+  });
+}
+
+
+
+// 댓글 수정
+function gotoEditComment(event) {
+  const original_comment = event.currentTarget.parentNode.previousSibling.previousSibling.innerText;
+  console.log(event.currentTarget.parentNode.previousSibling)
+  event.currentTarget.parentNode.previousSibling.value = original_comment;
+  event.currentTarget.parentNode.classList.toggle('button_hide');
+  event.currentTarget.parentNode.nextSibling.classList.toggle('button_hide');
+  event.currentTarget.parentNode.previousSibling.classList.toggle('button_hide');
+  event.currentTarget.parentNode.previousSibling.previousSibling.classList.toggle('button_hide');
+}
+function gotoDeleteComment(event) {
+  event.currentTarget.parentNode.classList.toggle('button_hide');
+  event.currentTarget.parentNode.previousSibling.classList.toggle('button_hide');
+  event.currentTarget.parentNode.previousSibling.previousSibling.classList.toggle('button_hide');
+  event.currentTarget.parentNode.previousSibling.previousSibling.previousSibling.classList.toggle('button_hide');
+}

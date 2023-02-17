@@ -131,3 +131,7 @@
   .userzone__user__name {
     margin-left: 10px;
   }
+
+  .button_hide {
+    display: none;
+  }

@@ -76,48 +76,96 @@
     </div>
 
     <!-- read post Modal -->
-<div class="modal fade" id="readPostModal" tabindex="-1" aria-labelledby="readPostModalLabel" aria-hidden="true">
+<div class="modal fade" id="readPostModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="readPostModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered ">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="readPostModalLabel">글 제목</h1>
+        <h1 class="modal-title fs-5" id="readPostModalLabel">게시물 제목 게시물 제목 게시물 제목 게시물 제목 게시물 제목</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div style="width: auto; height: 400px; text-align: center;">
-          글내용, 이미지
+          <img src="../static/images/spine.jpg" alt="" style="max-width: 1000px; margin: 20px 0;">
+          <p>30분에 한번씩 일어나서 만세 스트레칭 해주십쇼<br>우리의 척추는 소중합니다</p>
         </div>
-        <div class="crudzone">
-          <h1 style="margin-top: 100px;">OOO 글 댓글부분</h1>
-          <!-- Button trigger modal -->
-          <article class="article">
-            <!-- 댓글 10개씩 -->
-            <ul class="comments">
-              <li class="contentWrap">
-                <div class="content__header">
-                  <span class="content__header__id">${id}</span>
-                  <span class="content__header__title" onclick="openBody(event)" data-bs-toggle="modal" data-bs-target="#readPostModal">게시물 제목</span>
-                  <span class="content__header__author">작성자</span>
-                  <span class="content__header__date">2022.01.01</span>
-                </div>
-              </li>
-              <li class="contentWrap">
-                <div class="content__header">
-                  <span class="content__header__id">${id}</span>
-                  <span class="content__header__title" onclick="openBody(event)" data-bs-toggle="modal" data-bs-target="#readPostModal">게시물 제목</span>
-                  <span class="content__header__author">작성자</span>
-                  <span class="content__header__date">2022.01.01</span>
-                </div>
-              </li>
-            </ul>
-            <!-- 댓글 페이징 버튼 -->
-            <div class="comments-buttons"></div>
-          </article>
+        <div class="container">
+          <form id="commentForm" name="commentForm" method="post">
+          <br><br>
+              <div>
+                  <div>
+                      <span><strong>Comments</strong></span> <span id="cCnt"></span>
+                  </div>
+                  <table class="table">                    
+                      <tr>
+                          <td style="padding: 8px 0;">
+                              <textarea style="width: 100%" rows="3" cols="30" id="comment" name="comment" placeholder="댓글을 입력하세요"></textarea>
+                              <br>
+                              <div>
+                                  <a href='#' onClick="fn_comment('${result.code }')" class="btn pull-right btn-success">등록</a>
+                              </div>
+                          </td>
+                      </tr>
+                  </table>
+              </div>
+              <input type="hidden" id="b_code" name="b_code" value="${result.code }" />        
+          </form>
+      </div>
+      <div class="container">
+          <form id="commentListForm" name="commentListForm" method="post">
+              <div id="commentList">
+                  <table class='table'>
+                    <h6><strong>12312123</strong></h6>
+                    <p style="overflow: hidden; word-wrap: break-word;">램줃랴ㅕ주댤쟏루쟈뎌ㅜㅑ줗럇2주34ㅎ샤2ㅜㄷ4ㅎ랴ㅓ2ㅠ34ㅑㅠㅓwhefoaiwf<br>oefawoefijoqefjiqwoiefjoqiejfpqoeufhpawiuefhpw9uefh9awe3hfa9p2u8frp2938rfyp2938rf29p38yrfp2983qayr2890yrhf20a938ry2038rya23r823r9a29prah293rha2p93rah29p3ruhy29p3rhyp92q3urhy928yhrf839477hy39ty98e4yt2893ryh293rhy28oa3ryor2o83rho283ruhy2389ryho283rhy2387raaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdf</p>
+                    <tr><td></td></tr>
+                    <textarea class="button_hide" style="width: 100%" rows="3" cols="30" id="comment" name="comment"></textarea>
+                    <div class="edit_delete">
+                      <button type="button" class="btn btn-danger" style="float: right;">삭제</button>
+                      <button type="button" onclick="gotoEditComment(event)" class="btn btn-secondary" style="float: right; margin-right: 8px;">수정</button>
+                    </div>
+                    <div class="cancel_submit button_hide">
+                      <button type="button" class="btn btn-success" style="float: right;">수정</button>
+                      <button type="button" onclick="gotoDeleteComment(event)" class="btn btn-secondary" style="float: right; margin-right: 8px;">취소</button>
+                    </div>
+                  </table>
+
+
+
+
+
+                  <table class='table'>
+                    <h6><strong>12312123</strong></h6>
+                    <p style="overflow: hidden; word-wrap: break-word;">asdfasdfaowfoawiefhowaiehfaowihfoaiwhefoaiwf<br>oefawoefijoqefjiqwoiefjoqiejfpqoeufhpawiuefhpw9uefh9awe3hfa9p2u8frp2938rfyp2938rf29p38yrfp2983qayr2890yrhf20a938ry2038rya23r823r9a29prah293rha2p93rah29p3ruhy29p3rhyp92q3urhy928yhrf839477hy39ty98e4yt2893ryh293rhy28oa3ryor2o83rho283ruhy2389ryho283rhy2387raaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdf</p>
+                    <tr><td></td></tr>
+                    <textarea class="button_hide" style="width: 100%" rows="3" cols="30" id="comment" name="comment"></textarea>
+                    <div class="edit_delete">
+                      <button type="button" class="btn btn-danger" style="float: right;">삭제</button>
+                      <button type="button" onclick="gotoEditComment(event)" class="btn btn-secondary" style="float: right; margin-right: 8px;">수정</button>
+                    </div>
+                    <div class="cancel_submit button_hide">
+                      <button type="button" class="btn btn-success" style="float: right;">수정</button>
+                      <button type="button" onclick="gotoDeleteComment(event)" class="btn btn-secondary" style="float: right; margin-right: 8px;">취소</button>
+                    </div>
+                  </table>
+                  <table class='table'>
+                    <h6><strong>12312123</strong></h6>
+                    <p style="overflow: hidden; word-wrap: break-word;">asdfasdfaowfoawiefhowaiehfaowihfoaiwhefoaiwf<br>oefawoefijoqefjiqwoiefjoqiejfpqoeufhpawiuefhpw9uefh9awe3hfa9p2u8frp2938rfyp2938rf29p38yrfp2983qayr2890yrhf20a938ry2038rya23r823r9a29prah293rha2p93rah29p3ruhy29p3rhyp92q3urhy928yhrf839477hy39ty98e4yt2893ryh293rhy28oa3ryor2o83rho283ruhy2389ryho283rhy2387raaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdf</p>
+                    <tr><td></td></tr>
+                    <textarea class="button_hide" style="width: 100%" rows="3" cols="30" id="comment" name="comment"></textarea>
+                    <div class="edit_delete">
+                      <button type="button" class="btn btn-danger" style="float: right;">삭제</button>
+                      <button type="button" onclick="gotoEditComment(event)" class="btn btn-secondary" style="float: right; margin-right: 8px;">수정</button>
+                    </div>
+                    <div class="cancel_submit button_hide">
+                      <button type="button" class="btn btn-success" style="float: right;">수정</button>
+                      <button type="button" onclick="gotoDeleteComment(event)" class="btn btn-secondary" style="float: right; margin-right: 8px;">취소</button>
+                    </div>
+                  </table>
+              </div>
+          </form>
       </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
