@@ -1,9 +1,16 @@
 package com.saemoim.service;
 
 import java.util.Random;
+import java.util.UUID;
 
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.saemoim.domain.User;
+import com.saemoim.exception.ErrorCode;
+import com.saemoim.repository.UserRepository;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -12,9 +19,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 	private final JavaMailSender emailSender;
 	private String authCode;
+	private String tempPassword;
 
+	// 회원가입 시 메일 발송
 	public void createCode() {
 
 		Random random = new Random();
@@ -55,5 +66,44 @@ public class EmailServiceImpl implements EmailService {
 		MimeMessage emailForm = createEmailForm(toEmail);
 		emailSender.send(emailForm);
 		return authCode;
+	}
+
+	// 비밀번호 찾기 시 메일 발송
+	public void createTempPassword() {
+		UUID uid = UUID.randomUUID();
+		tempPassword = uid.toString().substring(0, 10);
+	}
+
+	public MimeMessage createTempPasswordEmailForm(String email) throws MessagingException {
+		createTempPassword();
+
+		String fromEmail = "dpevent@naver.com";
+		String toEmail = email;
+		String title = "새모임 임시 비밀번호 안내 이메일입니다.";
+		String content = "안녕하세요. 새모임 임시 비밀번호를 발급해드립니다.\n 회원님의 임시 비밀번호는 " + tempPassword + " 입니다.\n" +
+			"로그인 후에 비밀번호를 변경해주세요.";
+
+		MimeMessage message = emailSender.createMimeMessage();
+		message.addRecipients(MimeMessage.RecipientType.TO, toEmail);
+		message.setSubject(title);
+		message.setFrom(fromEmail);
+		message.setText(content);
+
+		return message;
+	}
+
+	@Transactional
+	@Override
+	public void sendTempPasswordAndChangePassword(String email) throws MessagingException {
+		User user = userRepository.findByEmail(email).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
+
+		MimeMessage emailForm = createTempPasswordEmailForm(email);
+		emailSender.send(emailForm);
+
+		String encodingTempPwd = passwordEncoder.encode(tempPassword);
+		user.updatePassword(encodingTempPwd);
+		userRepository.save(user);
 	}
 }

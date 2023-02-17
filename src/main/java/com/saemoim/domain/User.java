@@ -54,4 +54,8 @@ public class User extends TimeStamped {
 	public void updateStatus(UserRoleEnum role) {
 		this.role = role;
 	}
+
+	public void updatePassword(String password) {
+		this.password = password;
+	}
 }
