@@ -1,13 +1,8 @@
 package com.saemoim.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,9 +20,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
+import com.saemoim.dto.request.CurrentPasswordRequestDto;
+import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
 import com.saemoim.dto.request.WithdrawRequestDto;
+import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
 import com.saemoim.dto.response.UserResponseDto;
 import com.saemoim.jwt.JwtUtil;
@@ -147,6 +145,55 @@ class UserServiceImplTest {
 		List<UserResponseDto> responseDtoList = userService.getAllUsers();
 		//then
 		assertThat(responseDtoList.get(0).getUsername()).isEqualTo("장성준");
+	}
+
+	@Test
+	@DisplayName("사용자 프로필 조회")
+	void getProfile() {
+		// given
+		var userId = 1L;
+		var user = mock(User.class);
+		when(user.getUsername()).thenReturn("name");
+		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+		// when
+		ProfileResponseDto response = userService.getProfile(userId);
+		// then
+		assertThat(response.getUsername()).isEqualTo("name");
+	}
+
+	@Test
+	@DisplayName("내 정보 조회")
+	void getMyProfile() {
+		// given
+		var userId = 1L;
+		var passwordRequest = mock(CurrentPasswordRequestDto.class);
+		User user = mock(User.class);
+		when(user.getUsername()).thenReturn("name");
+		when(user.getPassword()).thenReturn("encoding");
+		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+		when(passwordRequest.getPassword()).thenReturn("pass");
+		when(passwordEncoder.matches(passwordRequest.getPassword(), user.getPassword())).thenReturn(true);
+		// when
+		ProfileResponseDto response = userService.getMyProfile(userId, passwordRequest);
+		// then
+		assertThat(response.getUsername()).isEqualTo("name");
+	}
+
+	@Test
+	@DisplayName("내 정보 수정")
+	void updateProfile() {
+		// given
+		var userId = 1L;
+		var request = mock(ProfileRequestDto.class);
+		var user = mock(User.class);
+		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+		when(request.getPassword()).thenReturn("pass");
+		// when
+		userService.updateProfile(userId, request);
+
+		// then
+		verify(userRepository).save(user);
+		verify(user).updateProfile(request, passwordEncoder.encode(request.getPassword()));
 	}
 
 	@Test
