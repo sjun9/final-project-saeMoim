@@ -10,5 +10,5 @@ import com.saemoim.domain.User;
 public interface ReportRepository extends JpaRepository<Report, Long> {
 	List<Report> findAllByOrderByCreatedAt();
 
-	boolean existsByReporterNameAndSubject(String reporter, User subject);
+	boolean existsByReporterNameAndSubject(String reporterName, User subject);
 }
