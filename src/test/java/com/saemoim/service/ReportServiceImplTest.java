@@ -29,10 +29,8 @@ import com.saemoim.repository.UserRepository;
 class ReportServiceImplTest {
 	@InjectMocks
 	private ReportServiceImpl reportService;
-
 	@Mock
 	private ReportRepository reportRepository;
-
 	@Mock
 	private UserRepository userRepository;
 

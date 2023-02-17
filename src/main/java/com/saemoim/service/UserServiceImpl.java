@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalAccessError(ErrorCode.INVALID_PASSWORD.getMessage());
 		}
 
-		if (user.getRole().equals(UserRoleEnum.REPORT)) {
+		if (user.isBanned()) {
 			throw new IllegalArgumentException(ErrorCode.BANNED_USER.getMessage());
 		}
 
@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 
-		if (user.getRole().equals(UserRoleEnum.REPORT)) {
+		if (user.isBanned()) {
 			throw new IllegalArgumentException(ErrorCode.BANNED_USER.getMessage());
 		}
 
@@ -102,20 +102,6 @@ public class UserServiceImpl implements UserService {
 
 		return new TokenResponseDto(jwtUtil.createAccessToken(userId, user.getUsername(), user.getRole()),
 			issueRefreshToken(userId, accessToken));
-	}
-
-	@Transactional
-	@Override
-	public String issueRefreshToken(Long userId, String accessToken) {
-		String refreshToken = jwtUtil.createRefreshToken(userId);
-		String refreshTokenValue = refreshToken.substring(7);
-		String accessTokenValue = jwtUtil.resolveToken(accessToken).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
-		);
-
-		redisUtil.setData(refreshTokenValue, accessTokenValue, JwtUtil.REFRESH_TOKEN_TIME);
-
-		return refreshToken;
 	}
 
 	@Transactional
@@ -179,8 +165,7 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 	}
 
-	@Transactional
-	public void deleteRefreshToken(String refreshToken) {
+	private void deleteRefreshToken(String refreshToken) {
 		String refreshTokenValue = jwtUtil.resolveToken(refreshToken).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
 		);
@@ -188,5 +173,17 @@ public class UserServiceImpl implements UserService {
 		if (redisUtil.isExists(refreshTokenValue)) {
 			redisUtil.deleteData(refreshTokenValue);
 		}
+	}
+
+	private String issueRefreshToken(Long userId, String accessToken) {
+		String refreshToken = jwtUtil.createRefreshToken(userId);
+		String refreshTokenValue = refreshToken.substring(7);
+		String accessTokenValue = jwtUtil.resolveToken(accessToken).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
+		);
+
+		redisUtil.setData(refreshTokenValue, accessTokenValue, JwtUtil.REFRESH_TOKEN_TIME);
+
+		return refreshToken;
 	}
 }
