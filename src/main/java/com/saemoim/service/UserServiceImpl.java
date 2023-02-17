@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.CurrentPasswordRequestDto;
+import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
+import com.saemoim.dto.request.UsernameRequestDto;
 import com.saemoim.dto.request.WithdrawRequestDto;
 import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
@@ -35,22 +37,28 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public void signUp(SignUpRequestDto requestDto) {
-		String email = requestDto.getEmail();
-		String password = passwordEncoder.encode(requestDto.getPassword());
-		String username = requestDto.getUsername();    // 유일한 닉네임임.
-		UserRoleEnum role = UserRoleEnum.USER;
+		User user = User.builder()
+			.email(requestDto.getEmail())
+			.password(passwordEncoder.encode(requestDto.getPassword()))
+			.username(requestDto.getUsername())
+			.role(UserRoleEnum.USER)
+			.build();
 
-		// 중복 가입 검증
-		if (userRepository.existsByEmail(email)) {
+		userRepository.save(user);
+	}
+
+	@Override
+	public void checkEmailDuplication(EmailRequestDto requestDto) {
+		if (userRepository.existsByEmail(requestDto.getEmail())) {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_EMAIL.getMessage());
 		}
+	}
 
-		if (userRepository.existsByUsername(username)) {
+	@Override
+	public void checkUsernameDuplication(UsernameRequestDto requestDto) {
+		if (userRepository.existsByUsername(requestDto.getUsername())) {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_USERNAME.getMessage());
 		}
-
-		User user = new User(email, password, username, role);
-		userRepository.save(user);
 	}
 
 	@Transactional
