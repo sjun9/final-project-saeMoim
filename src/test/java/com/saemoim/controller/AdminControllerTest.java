@@ -44,10 +44,14 @@ class AdminControllerTest {
 
 	@Test
 	@DisplayName("관리자 로그인")
-	@WithCustomMockUser(role = UserRoleEnum.ADMIN)
+	@WithCustomMockUser
 	void signInByAdmin() throws Exception {
 		//given
 		TokenResponseDto responseDto = mock(TokenResponseDto.class);
+		AdminRequestDto requestDto = AdminRequestDto.builder()
+			.password("asdf1234!")
+			.username("장성준")
+			.build();
 
 		when(responseDto.getAccessToken()).thenReturn("aaaaa");
 		when(adminService.signInByAdmin(any(AdminRequestDto.class))).thenReturn(responseDto);
@@ -56,7 +60,7 @@ class AdminControllerTest {
 			MockMvcRequestBuilders.post("/admin/sign-in")
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(csrf())
-				.content(new Gson().toJson(any(AdminRequestDto.class))));//then
+				.content(new Gson().toJson(requestDto)));//then
 		//then
 		verify(adminService).signInByAdmin(any(AdminRequestDto.class));
 		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", "aaaaa"))
@@ -65,17 +69,21 @@ class AdminControllerTest {
 
 	@Test
 	@DisplayName("관리자 계정 생성")
-	@WithCustomMockUser(role = UserRoleEnum.ROOT)
+	@WithCustomMockUser
 	void createAdmin() throws Exception {
 		//given
 		MessageResponseDto responseDto = new MessageResponseDto("관리자 계정 생성 완료");
+		AdminRequestDto requestDto = AdminRequestDto.builder()
+			.username("장성준")
+			.password("asdf1234!")
+			.build();
 
 		doNothing().when(adminService).createAdmin(any(AdminRequestDto.class));
 		//when
 		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/admin")
 			.contentType(MediaType.APPLICATION_JSON)
 			.with(csrf())
-			.content(new Gson().toJson(any(AdminRequestDto.class))));//then
+			.content(new Gson().toJson(requestDto)));//then
 		//then
 		resultActions.andExpect(status().isOk())
 			.andExpect(jsonPath("message").value(responseDto.getMessage()));
@@ -84,7 +92,7 @@ class AdminControllerTest {
 	//수정 필요
 	@Test
 	@DisplayName("관리자 토큰 연장")
-	@WithCustomMockUser(role = UserRoleEnum.ADMIN)
+	@WithCustomMockUser
 	void reissueAdmin() throws Exception {
 		//given
 		String accessToken = "aaaaa";
