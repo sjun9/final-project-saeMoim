@@ -21,9 +21,11 @@ public class CategoryServiceImpl implements CategoryService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<CategoryResponseDto> getCategories() {
-		return categoryRepository.findByParentIdIsNull()
-			.stream()
-			.map(c -> c.toCategoryResponseDto(categoryRepository.findByParentIdIsNotNull()))
+		List<Category> categories = categoryRepository.findAll();
+		List<Category> childCategories = categories.stream().filter(c -> c.getParentId() != null).toList();
+		return categories.stream()
+			.filter(c -> c.getParentId() == null)
+			.map(c -> new CategoryResponseDto(c, childCategories))
 			.toList();
 	}
 

@@ -38,12 +38,8 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public void signUp(SignUpRequestDto requestDto) {
-		User user = User.builder()
-			.email(requestDto.getEmail())
-			.password(passwordEncoder.encode(requestDto.getPassword()))
-			.username(requestDto.getUsername())
-			.role(UserRoleEnum.USER)
-			.build();
+		User user = new User(requestDto.getEmail(), passwordEncoder.encode(requestDto.getPassword()),
+			requestDto.getUsername(), UserRoleEnum.USER);
 
 		userRepository.save(user);
 	}
