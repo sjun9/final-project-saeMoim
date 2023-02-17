@@ -2,6 +2,7 @@ package com.saemoim.service;
 
 import java.util.List;
 
+import com.saemoim.dto.request.CurrentPasswordRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;

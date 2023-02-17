@@ -1,22 +1,11 @@
 package com.saemoim.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.matches;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,21 +20,22 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import com.google.gson.Gson;
 import com.saemoim.annotation.WithCustomMockUser;
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
+import com.saemoim.dto.request.CurrentPasswordRequestDto;
+import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
 import com.saemoim.dto.request.WithdrawRequestDto;
+import com.saemoim.dto.response.MessageResponseDto;
+import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
 import com.saemoim.dto.response.UserResponseDto;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.service.UserServiceImpl;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = UserController.class)
@@ -131,7 +121,7 @@ class UserControllerTest {
 		doNothing().when(userService).withdraw(requestDto, 1L, "refreshToken");
 		//when
 		ResultActions resultActions = mockMvc.perform(delete("/withdrawal")
-			.header(JwtUtil.REFRESH_TOKEN_HEADER,"refreshToken")
+			.header(JwtUtil.REFRESH_TOKEN_HEADER, "refreshToken")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(new Gson().toJson(requestDto))
 			.with(csrf()));
@@ -164,6 +154,76 @@ class UserControllerTest {
 		ResultActions resultActions = mockMvc.perform(get("/admin/user"));
 		//then
 		resultActions.andExpect(jsonPath("$[0]['username']").value("장성준"));
+	}
+
+	@Test
+	@WithCustomMockUser
+	@DisplayName("회원 프로필 조회")
+	void getProfile() throws Exception {
+		//given
+		User user = User.builder()
+			.id(1L)
+			.banCount(0)
+			.content("asdfasfsdfsaf")
+			.email("aaaaa@naver.com")
+			.password("aaasdf1234!")
+			.role(UserRoleEnum.ADMIN)
+			.username("장성준")
+			.build();
+
+		ProfileResponseDto response = new ProfileResponseDto(user);
+
+		when(userService.getProfile(anyLong())).thenReturn(response);
+		//when
+		ResultActions resultActions = mockMvc.perform(get("/profile/users/{userId}", 1L));
+		//then
+		resultActions.andExpect(jsonPath("$['username']").value("장성준"));
+	}
+
+	@Test
+	@WithCustomMockUser
+	@DisplayName("내 정보 조회")
+	void getMyProfile() throws Exception {
+		// given
+		var request = CurrentPasswordRequestDto.builder().password("aaasdf1234!").build();
+		User user = User.builder()
+			.id(1L)
+			.banCount(0)
+			.content("asdfasfsdfsaf")
+			.email("aaaaa@naver.com")
+			.password("aaasdf1234!")
+			.role(UserRoleEnum.ADMIN)
+			.username("장성준")
+			.build();
+		ProfileResponseDto response = new ProfileResponseDto(user);
+
+		when(userService.getMyProfile(anyLong(), any(CurrentPasswordRequestDto.class))).thenReturn(response);
+
+		// when
+		ResultActions resultActions = mockMvc.perform(get("/profile")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(new Gson().toJson(request))
+			.with(csrf()));
+
+		// then
+		resultActions.andExpect(jsonPath("$['username']").value("장성준"));
+	}
+
+	@Test
+	@WithCustomMockUser
+	@DisplayName("내 정보 수정")
+	void updateProfile() throws Exception {
+		// given
+		var request = new ProfileRequestDto();
+		MessageResponseDto responseDto = new MessageResponseDto("회원 정보 수정 완료");
+		doNothing().when(userService).updateProfile(anyLong(), any(ProfileRequestDto.class));
+		// when
+		ResultActions resultActions = mockMvc.perform(put("/profile")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(new Gson().toJson(request)).with(csrf()));
+		// then
+		resultActions.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+
 	}
 
 	@Test

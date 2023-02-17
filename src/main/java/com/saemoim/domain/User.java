@@ -1,6 +1,7 @@
 package com.saemoim.domain;
 
 import com.saemoim.domain.enums.UserRoleEnum;
+import com.saemoim.dto.request.ProfileRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,7 +58,7 @@ public class User extends TimeStamped {
 
 	public boolean isBanned() {
 		return this.role.equals(UserRoleEnum.REPORT);
-  	}
+	}
 
 	public void updatePasswordToTemp(String password) {
 		this.password = password;
