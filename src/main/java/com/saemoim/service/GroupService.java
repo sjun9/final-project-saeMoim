@@ -2,21 +2,23 @@ package com.saemoim.service;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.dto.response.MyGroupResponseDto;
 
 public interface GroupService {
-	Page<GroupResponseDto> getAllGroups(Pageable pageable);
+	Slice<GroupResponseDto> getAllGroups(Pageable pageable);
 
 	GroupResponseDto getGroup(Long groupId);
 
-	Page<GroupResponseDto> getGroupsByCategory(Long categoryId, Pageable pageable);
+	Slice<GroupResponseDto> getGroupsByCategory(Long categoryId, Pageable pageable);
 
-	Page<GroupResponseDto> getGroupsByTag(String tagName, Pageable pageable);
+	Slice<GroupResponseDto> getGroupsByTag(String tagName, Pageable pageable);
+
+	Slice<GroupResponseDto> searchGroups(String groupName, Pageable pageable);
 
 	List<MyGroupResponseDto> getMyGroupsByLeader(Long userId);
 

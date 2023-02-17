@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saemoim.dto.request.GroupRequestDto;
@@ -44,15 +45,21 @@ public class GroupController {
 	}
 
 	// 특정 카테고리 모임 조회
-	@GetMapping("categories/{categoryId}/group")
+	@GetMapping("/group/categories/{categoryId}")
 	public List<GroupResponseDto> getGroupsByCategory(@PathVariable Long categoryId, Pageable pageable) {
 		return groupService.getGroupsByCategory(categoryId, pageable).getContent();
 	}
 
 	// 특정 태그 모임 조회
-	@GetMapping("tags/{tagName}/group")
-	public List<GroupResponseDto> getGroupsByTag(@PathVariable String tagName, Pageable pageable) {
+	@GetMapping("/group/tag")
+	public List<GroupResponseDto> getGroupsByTag(@RequestParam String tagName, Pageable pageable) {
 		return groupService.getGroupsByTag(tagName, pageable).getContent();
+	}
+
+	// 모임 이름으로 검색
+	@GetMapping("/groups")
+	public List<GroupResponseDto> searchGroups(@RequestParam String groupName, Pageable pageable) {
+		return groupService.searchGroups(groupName, pageable).getContent();
 	}
 
 	// 내가 만든 모임 조회
