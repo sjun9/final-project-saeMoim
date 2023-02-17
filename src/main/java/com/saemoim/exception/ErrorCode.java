@@ -24,6 +24,10 @@ public enum ErrorCode {
 	NOT_EXIST_CATEGORY("카테고리가 존재하지 않습니다."),
 	NOT_PARENT_CATEGORY("기본 카테고리 밑에 생성할 수 있습니다."),
 
+	// 신고
+	DUPLICATED_REPORT("이미 신고한 사용자 입니다."),
+	NOT_FOUND_REPORT("신고 내용이 존재하지 않습니다."),
+
 	// 블랙리스트
 	DUPLICATED_BLACKLIST("이미 블랙리스트에 등록되어 있습니다."),
 	NOT_EXIST_BLACKLIST("해당 블랙리스트가 존재하지 않습니다."),
@@ -34,6 +38,10 @@ public enum ErrorCode {
 
 	// 댓글
 	NOT_FOUND_COMMENT("해당 댓글을 찾을 수 없습니다."),
+
+	// 좋아요
+	DUPLICATED_LIKE("이미 '좋아요'를 누르셨습니다."),
+	ALREADY_DELETED("이미 '좋아요'가 취소되었습니다."),
 	// 모임
 	NOT_FOUND_GROUP("해당 모임은 존재하지 않습니다."),
 	INTERNAL_SERVER_ERROR("서버 오류"),

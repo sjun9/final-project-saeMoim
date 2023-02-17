@@ -9,7 +9,7 @@ import com.saemoim.dto.response.PostResponseDto;
 public interface PostService {
 	List<PostListResponseDto> getAllPosts();
 
-	PostResponseDto getPost(Long postId);
+	PostResponseDto getPost(Long postId, Long userId);
 
 	PostResponseDto createPost(Long groupId, PostRequestDto requestDto, Long userId);
 

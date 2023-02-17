@@ -36,8 +36,9 @@ public class PostController {
 
 	// 선택한 게시글 조회
 	@GetMapping("/posts/{postId}")
-	public PostResponseDto getPost(@PathVariable Long postId) {
-		return postService.getPost(postId);
+	public PostResponseDto getPost(@PathVariable Long postId ,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+		return postService.getPost(postId, userDetails.getId());
 	}
 
 	// 게시글 생성

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
+import com.saemoim.dto.request.CurrentPasswordRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
@@ -62,7 +63,7 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalAccessError(ErrorCode.INVALID_PASSWORD.getMessage());
 		}
 
-		if (user.getRole().equals(UserRoleEnum.REPORT)) {
+		if (user.isBanned()) {
 			throw new IllegalArgumentException(ErrorCode.BANNED_USER.getMessage());
 		}
 
@@ -87,7 +88,7 @@ public class UserServiceImpl implements UserService {
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 
-		if (user.getRole().equals(UserRoleEnum.REPORT)) {
+		if (user.isBanned()) {
 			throw new IllegalArgumentException(ErrorCode.BANNED_USER.getMessage());
 		}
 
@@ -101,20 +102,6 @@ public class UserServiceImpl implements UserService {
 
 		return new TokenResponseDto(jwtUtil.createAccessToken(userId, user.getUsername(), user.getRole()),
 			issueRefreshToken(userId, accessToken));
-	}
-
-	@Transactional
-	@Override
-	public String issueRefreshToken(Long userId, String accessToken) {
-		String refreshToken = jwtUtil.createRefreshToken(userId);
-		String refreshTokenValue = refreshToken.substring(7);
-		String accessTokenValue = jwtUtil.resolveToken(accessToken).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
-		);
-
-		redisUtil.setData(refreshTokenValue, accessTokenValue, JwtUtil.REFRESH_TOKEN_TIME);
-
-		return refreshToken;
 	}
 
 	@Transactional
@@ -148,17 +135,37 @@ public class UserServiceImpl implements UserService {
 	@Transactional(readOnly = true)
 	@Override
 	public ProfileResponseDto getProfile(Long userId) {
-		return null;
+		User user = userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
+		return new ProfileResponseDto(user);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public ProfileResponseDto getMyProfile(Long userId, CurrentPasswordRequestDto passwordRequestDto) {
+		User user = userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
+		if (passwordEncoder.matches(passwordRequestDto.getPassword(), user.getPassword())) {
+			return new ProfileResponseDto(user);
+		} else {
+			throw new IllegalArgumentException(ErrorCode.INVALID_PASSWORD.getMessage());
+		}
 	}
 
 	@Transactional
 	@Override
-	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto) {
-		return null;
+	public void updateProfile(Long userId, ProfileRequestDto requestDto) {
+		User user = userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
+		String changedPassword = passwordEncoder.encode(requestDto.getPassword());
+		user.updateProfile(requestDto, changedPassword);
+		userRepository.save(user);
 	}
 
-	@Transactional
-	public void deleteRefreshToken(String refreshToken) {
+	private void deleteRefreshToken(String refreshToken) {
 		String refreshTokenValue = jwtUtil.resolveToken(refreshToken).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
 		);
@@ -166,5 +173,17 @@ public class UserServiceImpl implements UserService {
 		if (redisUtil.isExists(refreshTokenValue)) {
 			redisUtil.deleteData(refreshTokenValue);
 		}
+	}
+
+	private String issueRefreshToken(Long userId, String accessToken) {
+		String refreshToken = jwtUtil.createRefreshToken(userId);
+		String refreshTokenValue = refreshToken.substring(7);
+		String accessTokenValue = jwtUtil.resolveToken(accessToken).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
+		);
+
+		redisUtil.setData(refreshTokenValue, accessTokenValue, JwtUtil.REFRESH_TOKEN_TIME);
+
+		return refreshToken;
 	}
 }

@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,12 +23,12 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin")
+@RequestMapping
 public class AdminController {
 	private final AdminServiceImpl adminService;
 
-	@PostMapping("/sign-in")
-	public ResponseEntity<MessageResponseDto> signInByAdmin(AdminRequestDto requestDto) {
+	@PostMapping("/admin/sign-in")
+	public ResponseEntity<MessageResponseDto> signInByAdmin(@RequestBody AdminRequestDto requestDto) {
 		TokenResponseDto tokenResponseDto = adminService.signInByAdmin(requestDto);
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(JwtUtil.AUTHORIZATION_HEADER, tokenResponseDto.getAccessToken());
@@ -36,13 +37,13 @@ public class AdminController {
 		return new ResponseEntity<>(new MessageResponseDto("관리자 로그인 완료"), headers, HttpStatus.OK);
 	}
 
-	@PostMapping
-	public ResponseEntity<MessageResponseDto> createAdmin(AdminRequestDto requestDto) {
+	@PostMapping("/admin")
+	public ResponseEntity<MessageResponseDto> createAdmin(@RequestBody AdminRequestDto requestDto) {
 		adminService.createAdmin(requestDto);
 		return new ResponseEntity<>(new MessageResponseDto("관리자 계정 생성 완료"), HttpStatus.OK);
 	}
 
-	@PostMapping("/reissue")
+	@PostMapping("/admin/reissue")
 	public ResponseEntity<MessageResponseDto> reissueAdmin(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		String accessToken = adminService.issueToken(userDetails.getId(), userDetails.getUsername(),
 			userDetails.getRole());
