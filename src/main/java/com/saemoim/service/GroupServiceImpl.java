@@ -91,6 +91,7 @@ public class GroupServiceImpl implements GroupService {
 
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Slice<GroupResponseDto> searchGroups(String groupName, Pageable pageable) {
 		List<Group> groups = groupRepository.findAllByNameContainingOrderByCreatedAtDesc(groupName);
