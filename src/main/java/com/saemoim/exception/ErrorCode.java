@@ -18,6 +18,9 @@ public enum ErrorCode {
 	INVALID_USER("접근 권한이 없는 사용자입니다."),
 	BANNED_USER("정지된 사용자입니다."),
 
+	DUPLICATED_ADMIN("중복된 관리자 아이디 입니다"),
+	NOT_EXIST_ADMIN("해당 관리자가 존재하지 않습니다"),
+
 	// 카테고리
 	DUPLICATED_CATEGORY("중복된 카테고리 입니다."),
 	NOT_EMPTY_CATEGORY("비어있지 않은 카테고리는 삭제할 수 없습니다."),

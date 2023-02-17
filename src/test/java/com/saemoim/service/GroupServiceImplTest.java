@@ -12,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
@@ -22,6 +24,7 @@ import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
+import com.saemoim.repository.TagRepository;
 
 @ExtendWith(MockitoExtension.class)
 class GroupServiceImplTest {
@@ -31,9 +34,42 @@ class GroupServiceImplTest {
 
 	@Mock
 	private CategoryRepository categoryRepository;
+	@Mock
+	private TagRepository tagRepository;
 
 	@InjectMocks
 	private GroupServiceImpl groupService;
+
+	@Test
+	@DisplayName("카테고리로모임조회")
+	void getGroupsByCategory() {
+		// given
+		var categoryId = 2L;
+		var pageable = PageRequest.of(1, 4, Sort.by(Sort.Direction.DESC, "id"));
+		var category = Category.builder().parentId(1L).build();
+
+		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+
+		// when
+		groupService.getGroupsByCategory(categoryId, pageable);
+
+		// then
+		verify(groupRepository).findAllByCategoryOrderByCreatedAtDesc(category);
+	}
+
+	@Test
+	@DisplayName("태그로모임조회")
+	void getGroupsByTag() {
+		// given
+		var pageable = PageRequest.of(1, 4, Sort.by(Sort.Direction.DESC, "id"));
+		var tagName = "tag";
+
+		// when
+		groupService.getGroupsByTag(tagName, pageable);
+
+		// then
+		verify(tagRepository).findAllByName(tagName);
+	}
 
 	@Test
 	@DisplayName("모임생성")
@@ -84,7 +120,6 @@ class GroupServiceImplTest {
 		User user = new User("email", "pass", "john", UserRoleEnum.USER);
 		Group group = Group.builder().id(1L).user(user).name("name").build();
 		Category category = Category.builder().parentId(1L).name("named").build();
-		Group mockGroup = mock(Group.class);
 
 		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));

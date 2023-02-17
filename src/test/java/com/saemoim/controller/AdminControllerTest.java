@@ -8,9 +8,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,8 +31,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.google.gson.Gson;
 import com.saemoim.annotation.WithCustomMockUser;
+import com.saemoim.domain.Admin;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.AdminRequestDto;
+import com.saemoim.dto.response.AdminResponseDto;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
 import com.saemoim.service.AdminServiceImpl;
@@ -68,6 +74,22 @@ class AdminControllerTest {
 	}
 
 	@Test
+	@DisplayName("관리자 목록 조회")
+	@WithCustomMockUser
+	void getAdmins() throws Exception {
+		//given
+		List<AdminResponseDto> list = new ArrayList<>();
+		list.add(new AdminResponseDto(new Admin("admin", "password")));
+
+		when(adminService.getAdmins()).thenReturn(list);
+		//when
+		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/admin"));
+		//then
+		resultActions.andExpect(status().isOk())
+			.andExpect(jsonPath("$[0]['adminName']").value("admin"));
+	}
+
+	@Test
 	@DisplayName("관리자 계정 생성")
 	@WithCustomMockUser
 	void createAdmin() throws Exception {
@@ -87,6 +109,22 @@ class AdminControllerTest {
 		//then
 		resultActions.andExpect(status().isOk())
 			.andExpect(jsonPath("message").value(responseDto.getMessage()));
+	}
+
+	@Test
+	@DisplayName("관리자 목록 조회")
+	@WithCustomMockUser
+	void deleteAdmin() throws Exception {
+		//given
+		Long adminId = 1L;
+
+		doNothing().when(adminService).deleteAdmin(adminId);
+		//when
+		ResultActions resultActions = mockMvc.perform(delete("/admin/{adminId}", adminId)
+			.with(csrf()));
+		//then
+		resultActions.andExpect(status().isOk())
+			.andExpect(jsonPath("message").value("관리자 계정 삭제 완료"));
 	}
 
 	//수정 필요

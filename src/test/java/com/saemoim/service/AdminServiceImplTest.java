@@ -8,6 +8,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -59,6 +61,18 @@ class AdminServiceImplTest {
 	}
 
 	@Test
+	@DisplayName("관리자 목록 조회")
+	void getAdmins() {
+		//given
+		List<Admin> list = new ArrayList<>();
+		when(adminRepository.findAll()).thenReturn(list);
+		//when
+		adminService.getAdmins();
+		//then
+		verify(adminRepository).findAll();
+	}
+
+	@Test
 	@DisplayName("관리자 계정 생성")
 	void createAdmin() {
 		//given
@@ -70,6 +84,19 @@ class AdminServiceImplTest {
 		adminService.createAdmin(requestDto);
 		//then
 		verify(adminRepository).save(any(Admin.class));
+	}
+
+	@Test
+	@DisplayName("관리자 계정 삭제")
+	void deleteAdmin() {
+		//given
+		Long adminId = 1L;
+
+		when(adminRepository.existsById(adminId)).thenReturn(false);
+		//when
+		adminService.deleteAdmin(adminId);
+		//then
+		verify(adminRepository).deleteById(adminId);
 	}
 
 	@Test

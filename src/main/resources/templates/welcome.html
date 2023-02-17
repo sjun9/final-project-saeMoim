@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    
+    <link rel="stylesheet" href="../static/welcome/welcomeSigninup.css">
+    <link rel="stylesheet" href="../static/welcome/welcome.css">
+    
+</head>
+<body>
+      <!-- 첫화면 -->
+  <section class="et-hero-tabs" id="topSection">
+    
+    <!-- bird -->
+    <div class="cloudsbox">
+        <div class="cloudsbox__container">
+            <div class="cloudsbox__cloud anim1">
+                <div class="bird bird1"></div>
+            </div>
+        </div>
+        <div class="cloudsbox__container">
+            <div class="cloudsbox__cloud anim2">
+                <div class="bird bird2"></div>
+            </div>
+        </div>
+        <div class="cloudsbox__container">
+            <div class="cloudsbox__cloud anim3">
+                <div class="bird bird3"></div>
+            </div>
+        </div>
+        <div class="cloudsbox__container">
+            <div class="cloudsbox__cloud anim4">
+                <div class="bird bird4"></div>
+            </div>
+        </div>
+        <div class="cloudsbox__container">
+            <div class="cloudsbox__cloud anim5">
+                <div class="bird bird5"></div>
+            </div>
+        </div>
+    </div>      
+
+    <!-- login -->
+  <section class="user toggleRemove remove">
+    <div class="user_options-container">
+      <div class="user_options-text">
+        <div class="user_options-unregistered">
+          <h2 class="user_unregistered-title">계정이 없으신가요?</h2>
+          <p class="user_unregistered-text">간단한 회원가입으로 새 모임에 참여해보세요.</p>
+          <button class="user_unregistered-signup" id="signup-button">회원가입</button>
+        </div>
+  
+        <div class="user_options-registered">
+          <h2 class="user_registered-title">계정이 이미 있으신가요?</h2>
+          <p class="user_registered-text">다양한 모임들이 당신을 기다리고있습니다.</p>
+          <button class="user_registered-login" id="login-button">로그인</button>
+        </div>
+      </div>
+      
+      <div class="user_options-forms" id="user_options-forms">
+        <div class="user_forms-login">
+          <h2 class="forms_title" style="text-align: left;">로그인</h2>
+          <form class="forms_form">
+            <fieldset class="forms_fieldset">
+              <div class="forms_field">
+                <input type="email" placeholder="Email" class="forms_field-input" required autofocus />
+              </div>
+              <div class="forms_field">
+                <input type="password" placeholder="Password" class="forms_field-input" required />
+              </div>
+            </fieldset>
+            <div class="forms_buttons">
+              <button type="button" class="forms_buttons-forgot">비밀번호를 잊으셨나요?</button>
+              <input type="submit" value="로그인" class="forms_buttons-action" onclick="location.href='./main.html'">
+            </div>
+          </form>
+        </div>
+        <div class="user_forms-signup">
+          <h2 class="forms_title" style="text-align: left;">회원가입</h2>
+          <form class="forms_form">
+            <fieldset class="forms_fieldset">
+              <div class="forms_field">
+                <input type="text" placeholder="Full Name" class="forms_field-input" required />
+              </div>
+              <div class="forms_field">
+                <input type="email" placeholder="Email" class="forms_field-input" style="width: 84%; float: left;" required />
+                <input type="submit" value="인증" class="forms_buttons-action" style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;">
+              </div>
+              <div class="forms_field">
+                <input type="email" placeholder="Authentication Code" class="forms_field-input" style="width: 84%; float: left;" required />
+                <input type="submit" value="인증" class="forms_buttons-action" style="display: inline; float: right; width: 15%; height: 31px; padding: 0px; text-align: center;">
+              </div>
+              <div class="forms_field">
+                <input type="password" placeholder="Password" class="forms_field-input" required />
+              </div>
+            </fieldset>
+            <div class="forms_buttons">
+              <input type="submit" value="가입하기" class="forms_buttons-action">
+            </div>
+          </form>
+        </div>
+      </div>
+      
+    </div>
+    <button class="user_goback" id="goback_button" onclick="goback()">뒤로가기</button>
+    </section>
+
+
+<!-- 제목 -->
+    <div class="et-hero-tabs-title toggleRemove">
+        <img class="main-icon" src="../images/bird.png" alt="">
+        <h1 class="et-hero-tabs-h1">SAEMOIM</h1>
+    </div>
+    <div class="et-hero-tabs-content toggleRemove">
+        <h3 class="et-hero-tabs-content-h3">새로운 모임을 찾는 새들의 모임</h3>
+        <p class="et-hero-tabs-content-p">모임 관리, 추억 공유, 실시간 소통까지 한번에</p>
+    </div>
+    <div class="et-hero-tabs-button toggleRemove">
+        <button class="user_goback" style="top: 10%" onclick="gotoLogin()"><span>새 모임 시작하기</span></button>
+    </div>
+    <div class="et-hero-tabs-container toggleRemove">
+      <a class="et-hero-tab" href="#tab-es6">모임</a>
+      <a class="et-hero-tab" href="#tab-flexbox">블랙리스트</a>
+      <a class="et-hero-tab" href="#tab-react">게시판</a>
+      <a class="et-hero-tab" href="#tab-angular">채팅</a>
+      <a class="et-hero-tab" href="#tab-other">팀 소개</a>
+      <span class="et-hero-tab-slider"></span>
+    </div>
+  </section>
+
+  <!-- scroll -->
+  <main class="et-main">
+    <section class="et-slide" id="tab-es6">
+        <div class="et-slide-wrap">
+            <h1>모임</h1>
+            <h3>활발한 만남을 위한 모임 관련 기능</h3>
+            <p>모임 생성, 카테고리, 즐겨찾기, 제목 및 해쉬태그 검색, 참여모임 조회, 모임 후기 등</p>
+        </div>
+    </section>
+    <section class="et-slide" id="tab-flexbox">
+        <div class="et-slide-wrap">
+            <h1>블랙리스트</h1>
+            <h3>스트레스 없는 모임을 위한 계정 차단 기능</h3>
+            <p>신고 횟수 3회 누적 시 로그인 차단</p>
+        </div>
+    </section>
+    <section class="et-slide" id="tab-react">
+        <div class="et-slide-wrap">
+            <h1>게시판</h1>
+            <h3>모임 별 게시판으로 즐거운 추억공유</h3>
+            <p>사진 업로드와 댓글 기능</p>
+        </div>
+    </section>
+    <section class="et-slide" id="tab-angular">
+        <div class="et-slide-wrap">
+            <h1>채팅기능</h1>
+            <h3>실시간 단톡방으로 편리한 실시간 소통</h3>
+            <p>채팅내역 저장으로 끊기지 않는 대화</p>
+        </div>
+    </section>
+    <section class="et-slide" id="tab-other">
+        <div class="et-slide-wrap">
+            <h1 style="margin-top: -80px; margin-bottom: 50px;">최종프로젝트 5조</h1>
+            <div style="text-align: left;">
+                <h3>이송언, 장성준, 김현중, 이지섭, 정한얼</h3>
+            </div>
+            <div style="margin-top: 50px;">
+                <a href="https://github.com/8essong30/final-project-saeMoim" target="_blank">
+                    <img class="github-icon" src="../static/images/github.png" alt="github icon" style="margin-right: 15px;">
+                </a>
+                <a href="https://held-stork-8aa.notion.site/677fdf3414674d918cabd0a65cd09046" target="_blank">
+                    <img class="notion-icon" src="../static/images/notion.png" alt="">
+                </a>
+            </div>
+        </div>
+        <div class="gototop-wrap">
+            <button class="custom-btn btn-14" onclick="goToTop()">상단으로 올라가기</button>
+        </div>
+    </section>
+  </main>
+</body>
+
+<script src="../static/welcome/welcome.js"></script>
+<script src="../static/welcome/welcomeSigninup.js"></script>
+
+</html>
