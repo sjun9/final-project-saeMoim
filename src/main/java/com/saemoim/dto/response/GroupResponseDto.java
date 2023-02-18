@@ -1,6 +1,5 @@
 package com.saemoim.dto.response;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.saemoim.domain.Group;
@@ -32,8 +31,8 @@ public class GroupResponseDto implements Comparable<GroupResponseDto> {
 	private Integer wishCount;
 	private int recruitNumber;
 	private int participantCount;
-	private LocalDateTime createdAt;
-	private LocalDateTime modifiedAt;
+	private String createdAt;
+	private String modifiedAt;
 
 	public GroupResponseDto(Group group) {
 		this.id = group.getId();
@@ -51,8 +50,8 @@ public class GroupResponseDto implements Comparable<GroupResponseDto> {
 		this.wishCount = group.getWishCount();
 		this.recruitNumber = group.getRecruitNumber();
 		this.participantCount = group.getParticipantCount();
-		this.createdAt = group.getCreatedAt();
-		this.modifiedAt = group.getModifiedAt();
+		this.createdAt = group.getCreatedAt().toString();
+		this.modifiedAt = group.getModifiedAt().toString();
 	}
 
 	@Override

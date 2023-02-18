@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -61,6 +62,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Transactional(readOnly = true)
+	@Cacheable(value = "popularGroup")
 	public List<GroupResponseDto> getGroupByPopularity() {
 		List<Group> groups = groupRepository.findAll();
 		PriorityQueue<GroupResponseDto> queue = new PriorityQueue<>();
