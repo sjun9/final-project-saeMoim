@@ -68,6 +68,7 @@ public class WebSecurityConfig {
 			.requestMatchers("/withdraw").permitAll()
 			.requestMatchers("/admin/sign-in").permitAll()
 			.requestMatchers("/email/**").permitAll()
+			.requestMatchers("/category").permitAll()
 			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/groups/**").permitAll()
 			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())

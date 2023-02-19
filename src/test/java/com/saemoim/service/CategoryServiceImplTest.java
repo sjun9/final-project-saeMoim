@@ -49,11 +49,9 @@ class CategoryServiceImplTest {
 			.build();
 		List<Category> list = new ArrayList<>();
 		list.add(category);
-		List<Category> childList = new ArrayList<>();
-		childList.add(childCategory);
+		list.add(childCategory);
 
-		when(categoryRepository.findByParentIdIsNull()).thenReturn(list);
-		when(categoryRepository.findByParentIdIsNotNull()).thenReturn(childList);
+		when(categoryRepository.findAll()).thenReturn(list);
 
 		//when
 		List<CategoryResponseDto> responseDtoList = categoryService.getCategories();

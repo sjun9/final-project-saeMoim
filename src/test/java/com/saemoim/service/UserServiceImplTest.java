@@ -57,11 +57,8 @@ class UserServiceImplTest {
 	@DisplayName("회원 가입")
 	void signUp() {
 		//given
-		SignUpRequestDto requestDto = SignUpRequestDto.builder()
-			.email("aaaaa@naver.com")
-			.password("asdf1234!")
-			.username("장성준")
-			.build();
+		SignUpRequestDto requestDto = new SignUpRequestDto("aaaaa@naver.com", "asdf1234!", "장성준");
+
 		when(passwordEncoder.encode(anyString())).thenReturn("aaaa");
 		//when
 		userService.signUp(requestDto);
