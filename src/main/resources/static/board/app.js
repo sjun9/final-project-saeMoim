@@ -217,3 +217,8 @@ function gotoDeleteComment(event) {
   event.currentTarget.parentNode.previousSibling.previousSibling.classList.toggle('button_hide');
   event.currentTarget.parentNode.previousSibling.previousSibling.previousSibling.classList.toggle('button_hide');
 }
+
+function gotochat() {
+  alert('채팅 기록을 불러옵니다. 추후 구현 예정')
+  window.open('./chattingPage.html');
+}

@@ -20,6 +20,11 @@
   --filter-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
+.app-content h3 {
+  font-weight: bold !important;
+  font-size: 23px !important;
+}
+
 body,
 html {
   margin: 0;
@@ -175,9 +180,18 @@ a:visited {
 .app-icon {
   color: var(--sidebar-main-color);
 }
+.app-icon h1 {
+  font-size: 2em;
+  margin-block-start: 0.67em;
+  margin-block-end: 0.67em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+  vertical-align: bottom;
+}
 .app-icon img {
-  width: 55px;
-  height: 55px;
+  width: 55px !important;
+  height: 55px !important;
 }
 
 .app-content {
@@ -562,44 +576,18 @@ a:visited {
   }
 }
 
-.modal {
-  position: absolute;
-  z-index: 1;
-
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 100%;
-
-  display: none;
-
-  background-color: rgba(0, 0, 0, 0.4);
+.modal-body img {
+  max-width: 500px;
+  margin-bottom: 20px;
 }
 
-.modal.show {
-  display: block;
-}
-
-.modal_body {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-
-  width: 50vw;
-  height: 70vh;
-
-  padding: 40px;
-
+.moimDetailModalBody {
   text-align: center;
+}
 
-  background-color: rgb(255, 255, 255);
-  border-radius: 10px;
-  box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
-
-  transform: translateX(-50%) translateY(-50%);
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
+.moimDetailModal_reviews {
+  margin: 20px 0;
+}
+.moimDetailModal_review {
+  margin: 10px 0;
 }
