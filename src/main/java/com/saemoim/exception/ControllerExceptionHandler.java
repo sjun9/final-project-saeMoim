@@ -1,5 +1,6 @@
 package com.saemoim.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class ControllerExceptionHandler {
 
-	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ExceptionHandler(DataIntegrityViolationException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponseDto handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 		return new ExceptionResponseDto(HttpStatus.BAD_REQUEST, e.getAllErrors().get(0).getDefaultMessage());

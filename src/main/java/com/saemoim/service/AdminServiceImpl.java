@@ -31,7 +31,7 @@ public class AdminServiceImpl implements AdminService {
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 		if (!passwordEncoder.matches(requestDto.getPassword(), admin.getPassword())) {
-			throw new IllegalAccessError(ErrorCode.INVALID_PASSWORD.getMessage());
+			throw new IllegalArgumentException(ErrorCode.INVALID_PASSWORD.getMessage());
 		}
 
 		String accessToken = issueToken(admin.getId(), admin.getUsername(), admin.getRole());

@@ -44,6 +44,12 @@ public class GroupController {
 		return groupService.getGroup(groupId);
 	}
 
+	// 인기 모임 조회
+	@GetMapping("/group/popular")
+	public List<GroupResponseDto> getGroupByPopularity() {
+		return groupService.getGroupByPopularity();
+	}
+
 	// 특정 카테고리 모임 조회
 	@GetMapping("/group/categories/{categoryId}")
 	public List<GroupResponseDto> getGroupsByCategory(@PathVariable Long categoryId, Pageable pageable) {
