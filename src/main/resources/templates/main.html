@@ -67,7 +67,18 @@
             </div>
             <div class="mb-3">
               <label for="newPost-image" class="col-form-label">카테고리</label>
-              <input type="text" class="form-control" id="newMoim-category">
+              <input type="text" class="form-control" id="newMoim-category" readonly>
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                  카테고리 선택
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                  <li><a class="dropdown-item" href="#">여행</a></li>
+                  <li><a class="dropdown-item" href="#">맛집투어</a></li>
+                  <li><a class="dropdown-item" href="#">운동</a></li>
+                  <li><a class="dropdown-item" href="#">원데이클래스</a></li>
+                </ul>
+              </div>
             </div>
             <div class="mb-3">
               <label for="newPost-image" class="col-form-label">이미지 업로드</label>

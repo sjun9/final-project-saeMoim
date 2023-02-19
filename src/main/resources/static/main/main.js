@@ -80,6 +80,14 @@ modal.addEventListener('click', modalEscape);
 //   location.reload();
 // }
 
+const categories = document.querySelectorAll('.dropdown-item')
+categories.forEach( (category) => {
+  category.addEventListener('click', changeValue)
+})
+
+function changeValue(event) {
+  document.querySelector('#newMoim-category').value = event.target.innerText
+}
 
 function gotochat() {
   alert('채팅 기록을 불러옵니다. 추후 구현 예정')
