@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.jwt.JwtAuthFilter;
@@ -28,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @EnableMethodSecurity    // @Secured 어노테이션 활성화
 @RequiredArgsConstructor
-public class WebSecurityConfig {
+public class WebSecurityConfig implements WebMvcConfigurer {
 
 	private final JwtUtil jwtUtil;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -61,6 +63,7 @@ public class WebSecurityConfig {
 
 		// 내용 추가 필요함. 로그인 페이지, 회원가입 페이지 등
 		http.authorizeHttpRequests()
+			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 			.requestMatchers("/sign-up").permitAll()
 			.requestMatchers("/sign-in").permitAll()
 			.requestMatchers("/reissue").permitAll()
@@ -69,6 +72,9 @@ public class WebSecurityConfig {
 			.requestMatchers("/admin/sign-in").permitAll()
 			.requestMatchers("/email/**").permitAll()
 			.requestMatchers("/category").permitAll()
+			.requestMatchers(HttpMethod.GET, "/leader/**").permitAll()
+			.requestMatchers(HttpMethod.GET, "/participant/**").permitAll()
+			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/groups/**").permitAll()
 			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())
@@ -88,5 +94,12 @@ public class WebSecurityConfig {
 		http.exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);
 
 		return http.build();    // 상기 설정들을 빌드하여 리턴
+	}
+
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+			.allowedMethods("GET", "POST", "DELETE", "PUT", "OPTIONS") // 허용할 HTTP method
+			.exposedHeaders("Authorization"); // 콘솔에서 헤더가 찍히게 해주는데 왜??
 	}
 }

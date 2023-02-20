@@ -20,7 +20,6 @@ import com.saemoim.domain.User;
 import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
-import com.saemoim.dto.response.MyGroupResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
@@ -67,7 +66,7 @@ public class GroupServiceImpl implements GroupService {
 		List<Group> groups = groupRepository.findAll();
 		PriorityQueue<GroupResponseDto> queue = new PriorityQueue<>();
 		for (Group group : groups) {
-			if (queue.size() > 4) {
+			if (queue.size() > 3) {
 				if (queue.peek().getWishCount() < group.getWishCount()) {
 					queue.poll();
 					queue.add(new GroupResponseDto(group));
@@ -124,20 +123,20 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<MyGroupResponseDto> getMyGroupsByLeader(Long userId) {
+	public List<GroupResponseDto> getMyGroupsByLeader(Long userId) {
 		List<Group> groups = groupRepository.findAllByUser_IdOrderByCreatedAtDesc(userId);
 
-		return groups.stream().map(MyGroupResponseDto::new).toList();
+		return groups.stream().map(GroupResponseDto::new).toList();
 	}
 
 	@Transactional(readOnly = true)
-	public List<MyGroupResponseDto> getMyGroupsByParticipant(Long userId) {
+	public List<GroupResponseDto> getMyGroupsByParticipant(Long userId) {
 		List<Group> groups = participantRepository.findAllByUser_IdOrderByCreatedAtDesc(userId)
 			.stream()
 			.map(Participant::getGroup)
 			.toList();
 
-		return groups.stream().map(MyGroupResponseDto::new).toList();
+		return groups.stream().map(GroupResponseDto::new).toList();
 	}
 
 	@Override

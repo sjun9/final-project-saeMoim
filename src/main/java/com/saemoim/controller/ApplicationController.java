@@ -26,7 +26,7 @@ public class ApplicationController {
 	private final ApplicationServiceImpl applicationService;
 
 	// 참가자가 신청한 모임내역 조회
-	@GetMapping("/application")
+	@GetMapping("/participant/application")
 	public List<ApplicationResponseDto> getMyApplications(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return applicationService.getMyApplications(userDetails.getId());
 	}
@@ -48,10 +48,9 @@ public class ApplicationController {
 	}
 
 	// 리더가 신청받은 모임내역 조회
-	@GetMapping("/groups/{groupId}/application")
-	public List<ApplicationResponseDto> getApplications(@PathVariable Long groupId,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return applicationService.getApplications(groupId, userDetails.getUsername());
+	@GetMapping("/leader/application")
+	public List<ApplicationResponseDto> getApplications(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return applicationService.getApplications(userDetails.getUsername());
 	}
 
 	// 리더가 모임 신청 승인
