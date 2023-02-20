@@ -31,3 +31,71 @@ goback = () => {
 
   document.querySelector(".user").classList.toggle("remove");
 }
+
+// 지금 안 됨..;;
+ function checkUsernameDuplication(){
+    const settings = {
+  "url": "http://localhost:8080/sign-up/username",
+  "method": "POST",
+  "timeout": 0,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "data": JSON.stringify({
+    "username": $('#username').val()
+  }),
+};
+
+$.ajax(settings).done(function (response) {
+  alert("사용 가능한 닉네임 입니다.")
+  console.log(response).fail(function(response){
+    if(response.responseJSON.httpStatus === 'BAD_REQUEST'){
+      alert("중복되는 닉네임 입니다.")
+    }else{
+      alert("서버에 문제가 발생 했습니다. 잠시 후 다시 시도 해주세요.")
+    }
+  });
+});
+
+
+
+}
+
+function login(){
+  const settings = {
+    "url": "http://localhost:8080/sign-in",
+    "method": "POST",
+    "timeout": 0,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "data": JSON.stringify({
+      "email": $('#signin-email').val(),
+      "password": $('#signin-password').val()
+    }),
+  };
+  
+  $.ajax(settings).done(function (response, status, xhr) {
+    console.log(response);
+    console.log(xhr.getResponseHeader('Authorization'))
+    
+    alert("로그인 성공");
+    
+    localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
+    // localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
+
+    // window.location = './main.html'
+    
+    
+
+  }).fail(function(response){
+    console.log(response.JSON)
+    
+    if(response.responseJSON.httpStatus === 'BAD_REQUEST'){
+      alert("이메일과 비밀번호를 다시 확인 해주세요.")
+    }else{
+      alert("서버에 문제가 발생 했습니다. 잠시 후 재시도 해주세요.")
+    }
+  });
+}
+

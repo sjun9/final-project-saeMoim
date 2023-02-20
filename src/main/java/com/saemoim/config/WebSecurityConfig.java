@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.jwt.JwtAuthFilter;
@@ -28,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @EnableMethodSecurity    // @Secured 어노테이션 활성화
 @RequiredArgsConstructor
-public class WebSecurityConfig {
+public class WebSecurityConfig implements WebMvcConfigurer {
 
 	private final JwtUtil jwtUtil;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -61,7 +63,8 @@ public class WebSecurityConfig {
 
 		// 내용 추가 필요함. 로그인 페이지, 회원가입 페이지 등
 		http.authorizeHttpRequests()
-			.requestMatchers("/sign-up").permitAll()
+			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+			.requestMatchers("/comments").permitAll()
 			.requestMatchers("/sign-in").permitAll()
 			.requestMatchers("/reissue").permitAll()
 			.requestMatchers("/log-out").permitAll()
@@ -88,5 +91,12 @@ public class WebSecurityConfig {
 		http.exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);
 
 		return http.build();    // 상기 설정들을 빌드하여 리턴
+	}
+
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+			.allowedMethods("GET", "POST", "PUT", "OPTIONS")
+			.exposedHeaders("Authorization", "Refresh_Token");	//exposedHeader 을 설정해야만 스크립트에서 'Authorization' 을 꺼낼 수 있음.
 	}
 }
