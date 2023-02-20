@@ -82,9 +82,9 @@ function login(){
     alert("로그인 성공");
     
     localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
-    // localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
+    localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
 
-    // window.location = './main.html'
+    window.location = './main.html'
     
     
 
