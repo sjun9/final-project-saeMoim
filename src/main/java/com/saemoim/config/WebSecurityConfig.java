@@ -65,6 +65,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		http.authorizeHttpRequests()
 			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 			.requestMatchers("/sign-up").permitAll()
+			.requestMatchers("/comments").permitAll()
 			.requestMatchers("/sign-in").permitAll()
 			.requestMatchers("/reissue").permitAll()
 			.requestMatchers("/log-out").permitAll()
@@ -72,9 +73,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 			.requestMatchers("/admin/sign-in").permitAll()
 			.requestMatchers("/email/**").permitAll()
 			.requestMatchers("/category").permitAll()
-			.requestMatchers(HttpMethod.GET, "/leader/**").permitAll()
-			.requestMatchers(HttpMethod.GET, "/participant/**").permitAll()
-			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
+			.requestMatchers("/**").permitAll()
+			.requestMatchers(HttpMethod.GET, "/leader/**").hasAnyRole(UserRoleEnum.USER.toString())
+			.requestMatchers(HttpMethod.GET, "/participant/**").hasAnyRole(UserRoleEnum.USER.toString())
 			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/groups/**").permitAll()
 			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())
@@ -100,6 +101,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
 			.allowedMethods("GET", "POST", "DELETE", "PUT", "OPTIONS") // 허용할 HTTP method
-			.exposedHeaders("Authorization"); // 콘솔에서 헤더가 찍히게 해주는데 왜??
+			.exposedHeaders("Authorization",
+				"Refresh_Token");    //exposedHeader 을 설정해야만 스크립트에서 'Authorization' 을 꺼낼 수 있음.
 	}
 }

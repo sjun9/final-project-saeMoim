@@ -53,7 +53,7 @@ public class AdminController {
 		return new ResponseEntity<>(new MessageResponseDto("관리자 계정 생성 완료"), HttpStatus.OK);
 	}
 
-	@DeleteMapping("/admin/{adminId}")
+	@DeleteMapping("/admins/{adminId}")
 	public ResponseEntity<MessageResponseDto> deleteAdmin(@PathVariable Long adminId) {
 		adminService.deleteAdmin(adminId);
 		return new ResponseEntity<>(new MessageResponseDto("관리자 계정 삭제 완료"), HttpStatus.OK);

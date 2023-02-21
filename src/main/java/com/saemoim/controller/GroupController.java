@@ -63,7 +63,7 @@ public class GroupController {
 	}
 
 	// 모임 이름으로 검색
-	@GetMapping("/groups")
+	@GetMapping("/group/name")
 	public List<GroupResponseDto> searchGroups(@RequestParam String groupName, Pageable pageable) {
 		return groupService.searchGroups(groupName, pageable).getContent();
 	}

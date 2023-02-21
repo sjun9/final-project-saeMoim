@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="../static/welcome/welcomeSigninup.css">
     <link rel="stylesheet" href="../static/welcome/welcome.css">
 
+
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+
 </head>
 <body>
 <!-- 첫화면 -->
@@ -68,53 +71,57 @@
                     <form class="forms_form">
                         <fieldset class="forms_fieldset">
                             <div class="forms_field">
-                                <input type="email" placeholder="Email" class="forms_field-input" required autofocus/>
+                                <input type="email" placeholder="Email" class="forms_field-input" id="signin-email"
+                                       required autofocus/>
                             </div>
                             <div class="forms_field">
-                                <input type="password" placeholder="Password" class="forms_field-input" required/>
+                                <input type="password" placeholder="Password" class="forms_field-input"
+                                       id="signin-password" required/>
                             </div>
                         </fieldset>
                         <div class="forms_buttons">
                             <button type="button" class="forms_buttons-forgot">비밀번호를 잊으셨나요?</button>
-                            <input type="submit" value="로그인" class="forms_buttons-action"
-                                   onclick="location.href='./main.html'">
+                            <input type="button" value="로그인" class="forms_buttons-action" onclick="login()">
                         </div>
                     </form>
                 </div>
+
                 <div class="user_forms-signup">
                     <h2 class="forms_title" style="text-align: left;">회원가입</h2>
-                    <form class="forms_form">
-                        <fieldset class="forms_fieldset">
-                            <div class="forms_field">
-                                <input type="text" placeholder="닉네임" class="forms_field-input"
-                                       style="width: 84%; float: left;" required/>
-                                <input type="submit" value="중복확인" class="forms_buttons-action"
-                                       style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;">
-                            </div>
-                            <div class="forms_field">
-                                <input type="email" placeholder="Email" class="forms_field-input"
-                                       style="width: 84%; float: left;" required/>
-                                <input type="submit" value="인증코드" class="forms_buttons-action"
-                                       style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;">
-                            </div>
-                            <div class="forms_field">
-                                <input type="email" placeholder="Authentication Code" class="forms_field-input"
-                                       style="width: 84%; float: left;" required/>
-                                <input type="submit" value="코드확인" class="forms_buttons-action"
-                                       style="display: inline; float: right; width: 15%; height: 31px; padding: 0px; text-align: center;">
-                            </div>
-                            <div class="forms_field">
-                                <input type="password" placeholder="비밀번호" class="forms_field-input" required/>
-                            </div>
-                            <div class="forms_field">
-                                <input type="password" placeholder="비밀번호 확인" class="forms_field-input" required/>
-                            </div>
-                        </fieldset>
-                        <div class="forms_buttons">
-                            <input type="submit" value="가입하기" class="forms_buttons-action">
+                    <fieldset class="forms_fieldset">
+                        <div class="forms_field">
+                            <input id="username" type="text" placeholder="닉네임" class="forms_field-input"
+                                   style="width: 84%; float: left;"/>
+                            <input type="button" value="중복확인" class="forms_buttons-action"
+                                   onclick="checkUsernameDuplication()"
+                                   style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;">
                         </div>
-                    </form>
+                        <div class="forms_field">
+                            <input id="signup-email" type="email" placeholder="Email" class="forms_field-input"
+                                   style="width: 84%; float: left;"/>
+                            <input type="submit" value="인증코드" class="forms_buttons-action"
+                                   style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;">
+                        </div>
+                        <div class="forms_field">
+                            <input id="email-authorization-code" type="email" placeholder="Authentication Code"
+                                   class="forms_field-input" style="width: 84%; float: left;"/>
+                            <input type="submit" value="코드확인" class="forms_buttons-action"
+                                   style="display: inline; float: right; width: 15%; height: 31px; padding: 0px; text-align: center;">
+                        </div>
+                        <div class="forms_field">
+                            <input id="password" type="password" placeholder="비밀번호" class="forms_field-input"/>
+                        </div>
+                        <div class="forms_field">
+                            <input id="password-validation" type="password" placeholder="비밀번호 확인"
+                                   class="forms_field-input"/>
+                        </div>
+                    </fieldset>
+                    <div class="forms_buttons">
+                        <input type="submit" value="가입하기" class="forms_buttons-action">
+                    </div>
+
                 </div>
+
             </div>
 
         </div>
@@ -133,6 +140,8 @@
     </div>
     <div class="et-hero-tabs-button toggleRemove">
         <button class="user_goback" style="top: 10%" onclick="gotoLogin()"><span>새 모임 시작하기</span></button>
+        <a class="go-main" style="color: azure; font-size: 2px;" href="./main.html"> 메인 페이지로 이동 </a>
+
     </div>
     <div class="et-hero-tabs-container toggleRemove">
         <a class="et-hero-tab" href="#tab-es6">모임</a>
@@ -199,5 +208,6 @@
 
 <script src="../static/welcome/welcome.js"></script>
 <script src="../static/welcome/welcomeSigninup.js"></script>
+
 
 </html>

@@ -30,16 +30,14 @@
         <div class="modal-body moimDetailModalBody">
           <img id="moimDetail_Image" src="../static/images/main-running.jpg" alt="">
           <p class="moimDetailModal_introduce" id="moimDetail_introduce">모임소개글 모임소개글 모임소개글<br>모임소개글 모임소개글 모임소개글 모임소개글</p>
-          <button type="button" class="btn btn-primary" onclick="attendMoim(document.getElementById('moimDetailId').value)">모임 참여</button>
+          <button type="button" class="btn btn-primary" onclick="attendMoim(document.getElementById('moimDetailId').value)">모임 참여 신청</button>
           <button type="button" class="btn btn-primary" onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴</button>
           <button type="button" class="btn btn-secondary" onclick="editMoim(document.getElementById('moimDetailId').value)">모임 수정</button>
           <button type="button" class="btn btn-secondary" onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제</button>
           <button type="button" class="btn btn-warning" onclick="wishMoim(document.getElementById('moimDetailId').value)">찜 등록</button>
+          <button type="button" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">후기 등록</button>
           <button type="button" class="btn btn-success" onclick="gotoBoard()">게시판 입장</button>
           <div class="moimDetailModal_reviews" id="moimDetail_reviews">
-            <div class="moimDetailModal_review">
-              후기 1
-            </div>
           </div>
         </div>
       </div>
@@ -72,16 +70,12 @@
             </div>
             <div class="mb-3">
               <label for="newPost-image" class="col-form-label">카테고리</label>
-              <input type="text" class="form-control" id="newMoim-category" readonly>
+              <input type="text" class="form-control" id="newMoim-category" value="" readonly>
               <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                   카테고리 선택
                 </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                  <li><a class="dropdown-item" href="#">여행</a></li>
-                  <li><a class="dropdown-item" href="#">맛집투어</a></li>
-                  <li><a class="dropdown-item" href="#">운동</a></li>
-                  <li><a class="dropdown-item" href="#">원데이클래스</a></li>
+                <ul class="dropdown-menu" id="categoryMenu" aria-labelledby="dropdownMenuButton1">
                 </ul>
               </div>
             </div>
@@ -155,7 +149,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-          <button type="button" class="btn btn-primary" onclick="modifyMoim()">새 모임 수정</button>
+          <button type="button" class="btn btn-primary" onclick="editMoim()">새 모임 수정</button>
         </div>
       </div>
     </div>
@@ -166,8 +160,8 @@
     <div class="sidebar">
       <div class="sidebar-header">
         <div class="app-icon">
-          <h1 style="display: inline;">SAEMOIM</h1>
-          <img src="../static/images/bird.png" alt="" style="display: inline;">
+          <h1 style="display: inline;" onclick="goToHome()">SAEMOIM</h1>
+          <img src="../static/images/bird.png" alt="" style="display: inline;" onclick="goToHome()">
         </div>
       </div>
       <ul class="sidebar-list">
@@ -221,7 +215,7 @@
         <div class="account-info-picture">
           <img
             src="https://images.unsplash.com/photo-1527736947477-2790e28f3443?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTE2fHx3b21hbnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60"
-            alt="Account">
+            onclick="goToHome()" alt="Account">
         </div>
         <div class="account-info-name">이곳에 이름 출력</div>
         <img class="account-info-more" src="../static/images/logout.png" alt="" onclick="logout()">
@@ -236,7 +230,8 @@
           모임 추가하기</button>
       </div>
       <div class="app-content-actions">
-        <input class="search-bar" placeholder="Search..." type="text">
+        <input class="search-bar" id="search-name" placeholder="Search..." type="text">
+        <input type="button" onclick="showSearch($('#search-name').val())" value="검색">
         <div class="app-content-actions-wrapper">
           <div class="filter-button-wrapper">
             <button class="action-button filter jsFilter"><span>Filter</span><svg xmlns="http://www.w3.org/2000/svg"
@@ -247,7 +242,6 @@
             <div class="filter-menu">
               <label>카테고리</label>
               <select id="categoryFilter">
-
               </select>
               <label>Status</label>
               <select id="statusFilter">
@@ -268,7 +262,7 @@
           </div>
         </div>
       </div>
-      <h3 style="font-size: 30px;">전체 모임 보기</h3>
+      <h3 style="font-size: 30px;">모임 보기</h3>
       <div class="app-content-section gridView" id="find-content">
       </div>
       <h3 style="font-size: 30px;">인기 모임</h3>
@@ -285,7 +279,7 @@
           <thead>
           <tr>
             <th>모임 이름</th>
-            <th>유저 이름</th>
+            <th>참가 신청자 이름</th>
             <th>신청 상태</th>
           </tr>
           </thead>
@@ -318,7 +312,7 @@
           <thead>
           <tr>
             <th>모임 이름</th>
-            <th>유저 이름</th>
+            <th>모임 리더 이름</th>
             <th>신청 상태</th>
           </tr>
           </thead>

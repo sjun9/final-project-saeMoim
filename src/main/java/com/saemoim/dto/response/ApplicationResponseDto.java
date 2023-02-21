@@ -12,6 +12,7 @@ public class ApplicationResponseDto {
 	private Long id;
 	private Long groupId;
 	private String groupName;
+	private String leaderName;
 	private Long userId;
 	private String username;
 	private ApplicationStatusEnum status;
@@ -20,6 +21,7 @@ public class ApplicationResponseDto {
 		this.id = application.getId();
 		this.groupId = application.getGroupId();
 		this.groupName = application.getGroupName();
+		this.leaderName = application.getLeaderName();
 		this.userId = application.getUserId();
 		this.username = application.getUsername();
 		this.status = application.getStatus();
