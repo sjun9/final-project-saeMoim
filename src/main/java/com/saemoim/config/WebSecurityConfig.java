@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -23,12 +24,14 @@ import com.saemoim.security.CustomAuthenticationEntryPoint;
 import com.saemoim.security.CustomAuthenticationFailureHandler;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity    // @Secured 어노테이션 활성화
 @RequiredArgsConstructor
-public class WebSecurityConfig {
+public class WebSecurityConfig implements WebMvcConfigurer { // 지워도 됩니다 테스트용 CORS 허용
 
 	private final JwtUtil jwtUtil;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -61,10 +64,13 @@ public class WebSecurityConfig {
 
 		// 내용 추가 필요함. 로그인 페이지, 회원가입 페이지 등
 		http.authorizeHttpRequests()
+			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 지워도 됩니다 테스트용 CORS 허용
 			.requestMatchers("/sign-up").permitAll()
 			.requestMatchers("/sign-in").permitAll()
 			.requestMatchers("/reissue").permitAll()
 			.requestMatchers("/log-out").permitAll()
+				.requestMatchers("/allPost").permitAll() // 지워도 됩니다 테스트용
+				.requestMatchers("/posts/**").permitAll() // 지워도 됩니다 테스트용
 			.requestMatchers("/withdraw").permitAll()
 			.requestMatchers("/admin/sign-in").permitAll()
 			.requestMatchers("/email/**").permitAll()
@@ -89,4 +95,12 @@ public class WebSecurityConfig {
 
 		return http.build();    // 상기 설정들을 빌드하여 리턴
 	}
+
+	@Override
+	public void addCorsMappings(CorsRegistry registry) { // 지워도 됩니다 테스트용 CORS 허용
+		registry.addMapping("/**")
+				.allowedOrigins("*")
+				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD");
+	}
+
 }

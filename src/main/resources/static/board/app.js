@@ -1,15 +1,69 @@
+function setPostsCount() {
+  var settings = {
+    "url": "http://localhost:8080/posts/groups/1/count",
+    "method": "GET",
+    "timeout": 0,
+  };
+  
+  $.ajax(settings).done(function (response) {
+    localStorage.setItem("postsCount", response)
+  });
+}
+
+
+function getPosts(pageNum, sizeNum) {
+  // 비동기
+  // var settings = {
+  //   "url": "http://localhost:8080/posts/groups/1?page=" + pageNum + "&size=" + sizeNum,
+  //   "method": "GET",
+  //   "timeout": 0,
+  // };
+  
+  // $.ajax(settings).done(function (response) {
+  //   localStorage.setItem("pagedPostList", JSON.stringify(response));
+
+  //   // 임시
+  //   const postArray = JSON.parse(localStorage.getItem("pagedPostList"))
+  //   console.log(postArray);
+  // });
+
+  // 동기
+  $.ajax({
+    type: 'GET',
+    url: "http://localhost:8080/posts/groups/1?page=" + pageNum + "&size=" + sizeNum,
+    data: {},
+    async: false, // 비동기 해제
+    success: function(data) {
+      localStorage.setItem("pagedPostList", JSON.stringify(data));
+      const postArray = JSON.parse(localStorage.getItem("pagedPostList"))
+      // console.log(postArray);
+    }
+});
+  
+}
+
+
+
 // https://nohack.tistory.com/125
 
 const contents = document.querySelector(".contents");
 const buttons = document.querySelector(".buttons");
 
-const numOfContent = 178;
-const maxContent = 10;
+setPostsCount();
+const numOfContent = localStorage.getItem("postsCount"); // 전체 게시글 갯수
+const maxContent = 10; // 표시할 게시글 갯수
 const maxButton = 5;
 const maxPage = Math.ceil(numOfContent / maxContent);
 let page = 1;
 
-const makeContent = (id) => {
+
+
+
+
+const makeContent = (i) => {
+  const currentPost = JSON.parse(localStorage.getItem("pagedPostList"))[i];
+  // console.log(currentPost["title"])
+
   const contentwrap = document.createElement("li");
   contentwrap.classList.add("contentwrap");
 
@@ -17,30 +71,38 @@ const makeContent = (id) => {
   content__header.classList.add("content__header");
 
   content__header.innerHTML = `
-    <span class="content__header__id">${id}</span>
-    <span class="content__header__title" onclick="openBody(event)" data-bs-toggle="modal" data-bs-target="#readPostModal">게시물 제목</span>
-    <span class="content__header__author">작성자</span>
-    <span class="content__header__date">2022.01.01</span>
+    <span class="content__header__id">${currentPost["id"]}</span>
+    <span class="content__header__title" onclick="openBody(event)" data-bs-toggle="modal" data-bs-target="#readPostModal">${currentPost["title"]}</span>
+    <span class="content__header__author">${currentPost["username"]}</span>
+    <span class="content__header__date">${currentPost["createdAt"]}</span>
   `;
 
   contentwrap.appendChild(content__header);
-
+  // console.log("appended " + currentPost["title"])
   return contentwrap;
 };
 
-const makeButton = (id) => {
+
+
+const makeButton = (i) => {
   const button = document.createElement("button");
+
   button.classList.add("button");
-  button.dataset.num = id;
-  button.innerText = id;
-  button.addEventListener("click", (e) => {
-    Array.prototype.forEach.call(buttons.children, (button) => {
-      if (button.dataset.num) button.classList.remove("active");
-    });
-    e.target.classList.add("active");
-    renderContent(parseInt(e.target.dataset.num));
-  });
+  button.innerText = i;
   return button;
+
+  // const button = document.createElement("button");
+  // button.classList.add("button");
+  // button.dataset.num = i;
+  // button.innerText = i;
+  // button.addEventListener("click", (e) => {
+  //   Array.prototype.forEach.call(buttons.children, (button) => {
+  //     if (button.dataset.num) button.classList.remove("active");
+  //   });
+  //   e.target.classList.add("active");
+  //   renderContent(parseInt(e.target.dataset.num));
+  // });
+  // return button;
 };
 
 // Prev, Next Button
@@ -64,12 +126,22 @@ next.classList.add("button", "next");
 next.innerHTML = '<ion-icon name="chevron-forward-outline"></ion-icon>';
 next.addEventListener("click", goNextPage);
 
+
+
 const renderContent = (page) => {
+  // console.log("rendering page " + page + "...")
+  
   while (contents.hasChildNodes()) {
     contents.removeChild(contents.lastChild);
   }
-  for (let id = (page - 1) * maxContent + 1; id <= page * maxContent && id <= numOfContent; id++) {
-    contents.appendChild(makeContent(id));
+  
+  getPosts(page - 1, 10); // 페이징 처리된 게시글 리스트 가져옴
+  
+  const postArray = JSON.parse(localStorage.getItem("pagedPostList")) // 가져온 게시글 리스트 갯수를 계산하기 위해
+ 
+
+  for (let i = 0; i <= postArray.length - 1; i++) {
+    contents.appendChild(makeContent(i));
   }
 };
 
@@ -77,10 +149,15 @@ const renderButton = (page) => {
   while (buttons.hasChildNodes()) {
     buttons.removeChild(buttons.lastChild);
   }
-  for (let id = page; id < page + maxButton && id <= maxPage; id++) {
-    buttons.appendChild(makeButton(id));
+  for (let i = page; i < page + maxButton && i <= maxPage; i++) {
+    buttons.appendChild(makeButton(i));
   }
-  buttons.children[0].classList.add("active");
+  buttons.children[0].classList.add("active"); // 첫 로딩시 가장 왼쪽 페이지 선택
+
+  const createdButtons = document.querySelectorAll('.button');
+  createdButtons.forEach( (createdButton) => {
+    createdButton.addEventListener('click', gotoPageNum)
+  })
 
   buttons.prepend(prev);
   buttons.append(next);
@@ -89,11 +166,24 @@ const renderButton = (page) => {
   if (page + maxButton > maxPage) buttons.removeChild(next);
 };
 
+
+function gotoPageNum(event) {
+  document.querySelectorAll('.button').forEach ( (onebutton) => {
+    onebutton.classList.remove('active')
+  })
+  event.target.classList.add("active");
+  // console.log("you clicked " + event.target.innerText)
+  renderContent(event.target.innerText)
+  // console.log(event.target.innerText + " page done")
+}
+
 const render = (page) => {
   renderContent(page);
   renderButton(page);
 };
-render(page);
+render(page); // 게시판 실행 첫페이지 1
+
+
 
 
 
@@ -101,15 +191,22 @@ render(page);
 
 function openBody(event) {
   // 모달창에 해당 클릭이벤트 id 글 뿌려줌
+  
+  const postArray = JSON.parse(localStorage.getItem("pagedPostList")) 
+  const currentPostId = event.target.previousSibling.previousSibling.innerText
+  let currentPostId_inPostList = currentPostId % 10
+  if (currentPostId_inPostList === 0) currentPostId_inPostList = 10
+  currentPostId_inPostList = currentPostId_inPostList - 1
+
+  console.log(currentPostId_inPostList)
+  document.querySelector('#readPostModalLabel').innerText = postArray[currentPostId_inPostList]["title"]
+  document.querySelector('#readPostModalContent').innerText = postArray[currentPostId_inPostList]["content"]
+
  }
 
  function openProfile(event) {
   // 모달창에 해당 클릭이벤트 id 프로필 뿌려줌
  }
-
-
-
-
 
 
  function newPost() {
@@ -149,7 +246,7 @@ function openBody(event) {
 */
 $(function(){
   
-  getCommentList();
+  // getCommentList();
   
 });
 
@@ -160,10 +257,10 @@ function getCommentList(){
   
   $.ajax({
       type:'GET',
-      url : "<c:url value='/board/commentList.do'/>",
-      dataType : "json",
+      url : "<c:url value='./testCommentList.do'/>",
+      dataType : "json", // 받는 타입 -> success 로 처리
       data:$("#commentForm").serialize(),
-      contentType: "application/x-www-form-urlencoded; charset=UTF-8", 
+      contentType: "application/json; charset=UTF-8",  // 보내는 타입
       success : function(data){
           
           var html = "";
