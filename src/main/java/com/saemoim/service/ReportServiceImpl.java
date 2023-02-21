@@ -18,8 +18,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ReportServiceImpl implements ReportService {
-	private ReportRepository reportRepository;
-	private UserRepository userRepository;
+	private final ReportRepository reportRepository;
+	private final UserRepository userRepository;
 
 	@Transactional(readOnly = true)
 	@Override

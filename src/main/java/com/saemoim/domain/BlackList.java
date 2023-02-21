@@ -39,7 +39,7 @@ public class BlackList extends TimeStamped {
 		return user.getUsername();
 	}
 
-	public int getBanCount() {
+	public Integer getBanCount() {
 		return user.getBanCount();
 	}
 
