@@ -66,6 +66,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 			.requestMatchers("/comments").permitAll()
 			.requestMatchers("/sign-in").permitAll()
+			.requestMatchers("/sign-up/**").permitAll()
 			.requestMatchers("/reissue").permitAll()
 			.requestMatchers("/log-out").permitAll()
 			.requestMatchers("/withdraw").permitAll()

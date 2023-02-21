@@ -86,16 +86,16 @@
           <form class="forms_form">
             <fieldset class="forms_fieldset">
               <div class="forms_field">
-                <input id="username"  type="text" placeholder="닉네임" class="forms_field-input" style="width: 84%; float: left;" />
-                <input type="button" value="중복확인" class="forms_buttons-action" onclick="checkUsernameDuplication()" style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;">
-              </div>
-              <div class="forms_field">
                 <input id="signup-email" type="email" placeholder="Email" class="forms_field-input" style="width: 84%; float: left;" />
-                <input type="submit" value="인증코드" class="forms_buttons-action" style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;" >
+                <input type="button" value="인증코드" class="forms_buttons-action" onclick="checkAndSendCode()" style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;" >
               </div>
               <div class="forms_field">
                 <input id= "email-authorization-code" type="email" placeholder="Authentication Code" class="forms_field-input" style="width: 84%; float: left;" />
                 <input type="submit" value="코드확인" class="forms_buttons-action" style="display: inline; float: right; width: 15%; height: 31px; padding: 0px; text-align: center;">
+              </div>
+              <div class="forms_field">
+                <input id="username"  type="text" placeholder="닉네임" class="forms_field-input" style="width: 84%; float: left;" />
+                <input type="button" value="중복확인" class="forms_buttons-action" onclick="checkUsernameDuplication()" style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;">
               </div>
               <div class="forms_field">
                 <input id ="password" type="password" placeholder="비밀번호" class="forms_field-input"  />

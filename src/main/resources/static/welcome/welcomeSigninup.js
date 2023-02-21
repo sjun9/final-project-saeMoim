@@ -32,7 +32,7 @@ goback = () => {
   document.querySelector(".user").classList.toggle("remove");
 }
 
-// 지금 안 됨..;;
+
  function checkUsernameDuplication(){
     const settings = {
   "url": "http://localhost:8080/sign-up/username",
@@ -82,9 +82,9 @@ function login(){
     alert("로그인 성공");
     
     localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
-    // localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
+    localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
 
-    // window.location = './main.html'
+    window.location = './main.html'
     
     
 
@@ -99,3 +99,44 @@ function login(){
   });
 }
 
+function checkAndSendCode(){
+  const checkEmailDuplicationSettings = {
+    "url": "http://localhost:8080/sign-up/email",
+    "method": "POST",
+    "timeout": 0,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "data": JSON.stringify({
+      "email": $('#signup-email').val()
+    }),
+  };
+  
+  $.ajax(checkEmailDuplicationSettings).done(function (response) {
+    console.log(response);
+    const sendAuthenticationCodesettings = {
+      "url": "http://localhost:8080/email",
+      "method": "POST",
+      "timeout": 0,
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "data": JSON.stringify({
+        "email": $('#signup-email').val()
+      }),
+    };
+  
+    $.ajax(sendAuthenticationCodesettings
+      ).done(function (response) {
+      alert("인증코드를 이메일을 발송 했습니다.")
+      console.log(response);
+    })
+
+  }).fail(function(response){
+    if(response.responseJSON.httpStatus === 'BAD_REQUEST'){
+      alert("중복된 이메일 입니다.")   
+    }else{
+      alert("서버에 문제가 발생 했습니다. 잠시 후 다시 시도 해주세요.")
+    }
+  }); 
+}
