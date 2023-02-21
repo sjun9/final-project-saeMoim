@@ -68,6 +68,7 @@ $(document).ready(function () {
     showMoim('participant')
     showRequestedGroup()
     showAplliedGroup()
+    showCategory()
 });
 
 function changeValue(event) {
@@ -80,7 +81,33 @@ function gotochat() {
 }
 
 function logout() {
-    alert('로그아웃');
+    $.ajax({
+        type: "POST",
+        url: "http://localhost:8080/log-out",
+        success: function (response) {
+            console.log(response)
+        }
+    });
+}
+
+function showCategory() {
+    $('#categoryFilter').empty().append(`<option value=0>전체</option>`)
+    $.ajax({
+        type: "GET",
+        url: "http://localhost:8080/category",
+        success: function (response) {
+            console.log(response)
+            for (let i = 0; i < response.length; i++) {
+                let categories = response[i]['categories']
+                for (let i = 0; i < categories.length; i++) {
+                    let id = categories[i]['id']
+                    let name = categories[i]['name']
+                    let temp_html = `<option value=${id}>${name}</option>`
+                    $('#categoryFilter').append(temp_html)
+                }
+            }
+        }
+    });
 }
 
 function showMoim(type) {
@@ -108,6 +135,7 @@ function showMoim(type) {
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
+                let content = response[i]['content']
                 let categoryName = response[i]['categoryName']
                 let participantCount = response[i]['participantCount']
                 let recruitNumber = response[i]['recruitNumber']
@@ -119,6 +147,7 @@ function showMoim(type) {
                                     <div class="product-cell image">
                                         <img src="../static/images/main-running.jpg" alt="">
                                             <span>${groupName}</span>
+                                            <input type="hidden" value=${content}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
@@ -136,6 +165,48 @@ function showMoim(type) {
     });
 }
 
+
+function showFilter(categoryId, status) {
+    $('#find-content').empty()
+    $.ajax({
+        type: "GET",
+        url: "http://localhost:8080/group/categories/" + categoryId,
+        data: {status: status}, //전송 데이터
+        success: function (response) {
+            for (let i = 0; i < response.length; i++) {
+                let id = response[i]['id']
+                let groupName = response[i]['groupName']
+                let content = response[i]['content']
+                let categoryName = response[i]['categoryName']
+                let participantCount = response[i]['participantCount']
+                let recruitNumber = response[i]['recruitNumber']
+                let wishCount = response[i]['wishCount']
+                let status = response[i]['status']
+
+                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+                                    onClick="showMoimDetail(event, ${id})">
+                                    <div class="product-cell image">
+                                        <img src="../static/images/main-running.jpg" alt="">
+                                            <span>${groupName}</span>
+                                            <input type="hidden" value=${content}>
+                                    </div>
+                                    <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
+                                    <div class="product-cell status-cell">
+                                        <span class="cell-label">모임상태:</span>
+                                        <span class="status active">${status}</span>
+                                    </div>
+                                    <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
+                                    <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
+                                    <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
+                                </div>`
+                $('#find-content').append(temp_html)
+                console.log(response)
+            }
+        }
+    });
+}
+
+
 function showReview(id) {
     $('#moimDetail_reviews').empty();
     $.ajax({
@@ -150,7 +221,7 @@ function showReview(id) {
                                     <form id="reivewListForm" name="reivewListForm" method="post">
                                       <div id="reivewList">
                                         <table class='table'>
-                                          <h6><strong>${username}</strong></h6>
+                                          <h6><strong>작성자 : ${username}</strong></h6>
                                           <p style="overflow: hidden; word-wrap: break-word;">
                                             ${content}
                                           </p>
@@ -179,6 +250,7 @@ function showReview(id) {
         }
     });
 }
+
 
 function showRequestedGroup() {
     $('#requested-group').empty();
@@ -229,10 +301,9 @@ function showAplliedGroup() {
 
 function showMoimDetail(event, id) {
     let targetTitle = event.currentTarget.firstChild.nextSibling.children[1].innerText;
-    let targetImage = event.currentTarget.firstChild.nextSibling.children[0].currentSrc;
-
+    let targetContent = event.currentTarget.firstChild.nextSibling.children[2].value;
     document.querySelector('#moimDetail_Title').innerText = targetTitle;
-    document.querySelector('#moimDetail_Image').src = targetImage;
+    document.querySelector('#moimDetail_introduce').innerText = targetContent;
     document.getElementById('moimDetailId').value = id;
     showReview(id);
 }
@@ -243,7 +314,7 @@ function saveMoim() {
         "tag": $('#newMoim-tag').val(),
         "category": $('#newMoim-category').val(),
         "content": $('#newMoim-content').val(),
-        "recruitNumber": $('#newMoim-recruit').val(),
+        "recruitNumber": $('#newMoim-recruit').val()
     };
 
     $.ajax({

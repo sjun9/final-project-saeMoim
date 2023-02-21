@@ -1,4 +1,4 @@
-package com.saemoim.dto;
+package com.saemoim.dto.response;
 
 public record TagResponseDto(String name) {
 }

@@ -51,8 +51,9 @@ public class GroupController {
 
 	// 특정 카테고리 모임 조회
 	@GetMapping("/group/categories/{categoryId}")
-	public List<GroupResponseDto> getGroupsByCategory(@PathVariable Long categoryId, Pageable pageable) {
-		return groupService.getGroupsByCategory(categoryId, pageable).getContent();
+	public List<GroupResponseDto> getGroupsByCategoryAndStatus(@PathVariable Long categoryId,
+		@RequestParam String status, Pageable pageable) {
+		return groupService.getGroupsByCategoryAndStatus(categoryId, status, pageable).getContent();
 	}
 
 	// 특정 태그 모임 조회

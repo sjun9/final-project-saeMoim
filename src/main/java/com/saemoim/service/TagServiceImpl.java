@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.saemoim.domain.Tag;
-import com.saemoim.dto.TagResponseDto;
+import com.saemoim.dto.response.TagResponseDto;
 import com.saemoim.repository.TagRepository;
 
 import lombok.RequiredArgsConstructor;

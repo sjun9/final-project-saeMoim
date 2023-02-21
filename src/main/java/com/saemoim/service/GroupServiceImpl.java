@@ -81,21 +81,37 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Transactional(readOnly = true)
-	public Slice<GroupResponseDto> getGroupsByCategory(Long categoryId, Pageable pageable) {
-		Category category = categoryRepository.findById(categoryId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
-		);
-		if (category.getParentId() == null) {
-			throw new IllegalArgumentException(ErrorCode.NOT_CHILD_CATEGORY.getMessage()); // 에러메세지 다른걸로
+	public Slice<GroupResponseDto> getGroupsByCategoryAndStatus(Long categoryId, String status,
+		Pageable pageable) {
+		List<Group> groups;
+		if (categoryId.equals(0L)) {
+			groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
+		} else {
+			Category category = categoryRepository.findById(categoryId).orElseThrow(
+				() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
+			);
+			if (category.getParentId() == null) {
+				throw new IllegalArgumentException(ErrorCode.NOT_CHILD_CATEGORY.getMessage()); // 에러메세지 다른걸로
+			}
+			groups = groupRepository.findAllByCategoryOrderByCreatedAtDesc(category);
 		}
-		List<Group> groups = groupRepository.findAllByCategoryOrderByCreatedAtDesc(category);
+
+		if (status.equals(GroupStatusEnum.OPEN.toString())) {
+			groups = groups.stream()
+				.filter(g -> g.getStatus().equals(GroupStatusEnum.OPEN))
+				.toList();
+		} else if (status.equals(GroupStatusEnum.CLOSE.toString())) {
+			groups = groups.stream()
+				.filter(g -> g.getStatus().equals(GroupStatusEnum.CLOSE))
+				.toList();
+		}
+
 		boolean hasNext = false;
 		if (groups.size() > pageable.getPageSize()) {
 			groups.remove(pageable.getPageSize());
 			hasNext = true;
 		}
 		return new SliceImpl<>(groups.stream().map(GroupResponseDto::new).toList(), pageable, hasNext);
-
 	}
 
 	@Transactional(readOnly = true)

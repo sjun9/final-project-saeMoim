@@ -246,24 +246,21 @@
               </svg></button>
             <div class="filter-menu">
               <label>카테고리</label>
-              <select>
-                <option>전체보기</option>
-                <option>여행</option>
-                <option>맛집투어</option>
-                <option>운동</option>
-                <option>원데이클래스</option>
+              <select id="categoryFilter">
+
               </select>
               <label>Status</label>
-              <select>
-                <option>All Status</option>
-                <option>Active</option>
-                <option>Disabled</option>
+              <select id="statusFilter">
+                <option value="all">All Status</option>
+                <option value="OPEN">Active</option>
+                <option value="CLOSE">Disabled</option>
               </select>
               <div class="filter-menu-buttons">
-                <button class="filter-button reset">
+                <button class="filter-button reset" onclick="showMoim('all')">
                   Reset
                 </button>
-                <button class="filter-button apply">
+                <button class="filter-button apply" onclick="showFilter(
+                        document.getElementById('categoryFilter').value, document.getElementById('statusFilter').value)">
                   Apply
                 </button>
               </div>
