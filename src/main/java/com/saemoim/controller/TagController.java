@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.saemoim.dto.TagResponseDto;
+import com.saemoim.dto.response.TagResponseDto;
 import com.saemoim.service.TagServiceImpl;
 
 import lombok.RequiredArgsConstructor;

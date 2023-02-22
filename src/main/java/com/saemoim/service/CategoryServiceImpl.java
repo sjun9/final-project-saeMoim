@@ -25,7 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
 		List<Category> childCategories = categories.stream().filter(c -> c.getParentId() != null).toList();
 		return categories.stream()
 			.filter(c -> c.getParentId() == null)
-			.map(c -> new CategoryResponseDto(c, childCategories))
+			.map(c -> c.toCategoryResponseDto(childCategories))
 			.toList();
 	}
 

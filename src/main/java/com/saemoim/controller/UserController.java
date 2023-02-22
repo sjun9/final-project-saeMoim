@@ -116,18 +116,22 @@ public class UserController {
 	}
 
 	// 내 정보 조회 - 마이페이지
-	@GetMapping("/profile")
-	public ProfileResponseDto getMyProfile(@RequestBody CurrentPasswordRequestDto passwordRequestDto,
+	@PostMapping("/profile")
+	public ProfileResponseDto getMyProfile(@Validated @RequestBody CurrentPasswordRequestDto passwordRequestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return userService.getMyProfile(userDetails.getId(), passwordRequestDto);
 	}
 
+	@GetMapping("/user")
+	public ProfileResponseDto getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return new ProfileResponseDto(userDetails.getId(), userDetails.getUsername(), null);
+	}
+
 	// 내 정보 수정 - 마이페이지
 	@PutMapping("/profile")
-	public ResponseEntity<MessageResponseDto> updateProfile(@RequestBody ProfileRequestDto requestDto,
+	public ProfileResponseDto updateProfile(@Validated @RequestBody ProfileRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		userService.updateProfile(userDetails.getId(), requestDto);
-		return new ResponseEntity<>(new MessageResponseDto("회원 정보 수정 완료"), HttpStatus.OK);
+		return userService.updateProfile(userDetails.getId(), requestDto);
 	}
 
 	// 리프레쉬 토큰 재발급

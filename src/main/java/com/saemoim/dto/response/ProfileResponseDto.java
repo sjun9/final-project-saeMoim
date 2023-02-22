@@ -2,11 +2,13 @@ package com.saemoim.dto.response;
 
 import com.saemoim.domain.User;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProfileResponseDto {
 	private Long id;
 	private String username;

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.MyGroupResponseDto;
 import com.saemoim.security.UserDetailsImpl;
@@ -25,7 +27,8 @@ public class WishController {
 	private final WishServiceImpl wishService;
 
 	// 모임 즐겨찾기 조회
-	@GetMapping("/groups/wish")
+	@Secured(UserRoleEnum.Authority.USER)
+	@GetMapping("/group/wish")
 	public List<MyGroupResponseDto> getWishGroups(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return wishService.getWishGroups(userDetails.getId());
 	}

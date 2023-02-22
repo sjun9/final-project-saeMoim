@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.dto.response.MessageResponseDto;
-import com.saemoim.dto.response.MyGroupResponseDto;
 import com.saemoim.security.UserDetailsImpl;
 import com.saemoim.service.GroupServiceImpl;
 
@@ -52,8 +51,9 @@ public class GroupController {
 
 	// 특정 카테고리 모임 조회
 	@GetMapping("/group/categories/{categoryId}")
-	public List<GroupResponseDto> getGroupsByCategory(@PathVariable Long categoryId, Pageable pageable) {
-		return groupService.getGroupsByCategory(categoryId, pageable).getContent();
+	public List<GroupResponseDto> getGroupsByCategoryAndStatus(@PathVariable Long categoryId,
+		@RequestParam String status, Pageable pageable) {
+		return groupService.getGroupsByCategoryAndStatus(categoryId, status, pageable).getContent();
 	}
 
 	// 특정 태그 모임 조회
@@ -63,20 +63,20 @@ public class GroupController {
 	}
 
 	// 모임 이름으로 검색
-	@GetMapping("/groups")
+	@GetMapping("/group/name")
 	public List<GroupResponseDto> searchGroups(@RequestParam String groupName, Pageable pageable) {
 		return groupService.searchGroups(groupName, pageable).getContent();
 	}
 
 	// 내가 만든 모임 조회
 	@GetMapping("/leader/group")
-	public List<MyGroupResponseDto> getMyGroupsByLeader(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+	public List<GroupResponseDto> getMyGroupsByLeader(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return groupService.getMyGroupsByLeader(userDetails.getId());
 	}
 
 	// 참여중인 모임 조회
 	@GetMapping("/participant/group")
-	public List<MyGroupResponseDto> getMyGroupsByParticipant(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+	public List<GroupResponseDto> getMyGroupsByParticipant(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return groupService.getMyGroupsByParticipant(userDetails.getId());
 	}
 

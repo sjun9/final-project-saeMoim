@@ -23,7 +23,7 @@ public class GroupRequestDto {
 	private List<String> tagNames;
 
 	@NotBlank
-	@Size(min = 2, max = 10)
+	@Size(min = 2, max = 50)
 	private String name;
 
 	@NotBlank
