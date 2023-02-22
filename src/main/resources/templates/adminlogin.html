@@ -97,18 +97,50 @@
         <span>Admin login</span>
       </div>
       <form class="login-form">
-        <input type="text" placeholder="username" />
-        <input type="password" placeholder="password" />
-        <button type="button" onclick="gotoAdminPage()">login</button>
+        <input type="text" placeholder="username" id="username" />
+        <input type="password" placeholder="password" id="password" />
+        <button type="button" onclick="login()">login</button>
       </form>
     </div>
   </div>
 </body>
 <script>
 
-  function gotoAdminPage() {
-    location.href = './adminpage.html';
+
+
+  function login() {
+    var settings = {
+      "url": "http://localhost:8080/admin/sign-in",
+      "method": "POST",
+      "timeout": 0,
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "data": JSON.stringify({
+        "username": $('#username').val(),
+        "password": $('#password').val()
+      }),
+    };
+
+    $.ajax(settings).done(function (response, status, xhr) {
+      console.log(response);
+      console.log(xhr.getResponseHeader('Authorization'));
+      localStorage.setItem('accessToken', xhr.getResponseHeader('Authorization'))
+      alert('로그인 성공');
+      let time = new Date();
+      time.setMinutes(time.getMinutes() + 20);
+      localStorage.setItem('time', time)
+      window.location.href = './adminpage.html'
+    }).fail(function (response) {
+      console.log(response.responseJSON);
+      if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
+        alert('아이디와 비밀번호를 확인하여주세요.')
+      } else {
+        alert('서버에 문제가 발생하였습니다.')
+      }
+    });
   }
+
 
 </script>
 

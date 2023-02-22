@@ -10,5 +10,7 @@ import com.saemoim.domain.User;
 public interface ReportRepository extends JpaRepository<Report, Long> {
 	List<Report> findAllByOrderByCreatedAt();
 
+	void deleteAllBySubject_Id(Long subjectId);
+
 	boolean existsByReporterNameAndSubject(String reporterName, User subject);
 }

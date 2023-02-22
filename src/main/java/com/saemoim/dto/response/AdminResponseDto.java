@@ -9,10 +9,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class AdminResponseDto {
+	private Long adminId;
 	private String adminName;
 
 	@Builder
 	public AdminResponseDto(Admin admin) {
 		this.adminName = admin.getUsername();
+		this.adminId = admin.getId();
 	}
 }
