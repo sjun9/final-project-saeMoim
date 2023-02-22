@@ -1,7 +1,6 @@
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
 
-
 sidebarListItems.forEach((sidebarListItem) => {
     sidebarListItem.addEventListener('click', () => {
         sidebarListItems.forEach((selectedItem) => selectedItem.classList.remove('active'));
@@ -42,6 +41,31 @@ const body = document.querySelector('body');
 const modal = document.querySelector('.modal');
 const btnOpenPopup = document.querySelector('.btn-open-popup');
 
+
+const mapContainer = document.getElementById('saveMoimMap'),
+    mapOption = {
+        center: new kakao.maps.LatLng(37.5881, 126.9378),	// 지도의 중심 좌표(임의 설정)
+        level: 7					// 지도의 확대 레벨(임의 설정)
+    };
+
+//설정한 지도 생성
+const map = new kakao.maps.Map(mapContainer, mapOption);
+
+//마커 초기화(초기화 시 지도에 미리 지정 가능 : 카카오맵 API 문서 참조)
+const marker = new kakao.maps.Marker();
+
+//카카오맵 클릭 이벤트 추가
+kakao.maps.event.addListener(map, 'click', (mouseEvent) => {
+    //클릭한 위도, 경도 정보 불러오기
+    const latlng = mouseEvent.latLng;
+    //마커 위치를 클릭한 위치로 이동
+    marker.setPosition(latlng);
+    marker.setMap(map);
+
+    alert(`위도 : ${latlng.getLat()}, 경도 : ${latlng.getLng()}`);
+});
+
+
 function showModal() {
     modal.classList.toggle('show');
 
@@ -62,6 +86,12 @@ function modalEscape(event) {
 
 btnOpenPopup.addEventListener('click', showModal);
 modal.addEventListener('click', modalEscape);
+
+function relayoutMap() {
+    setTimeout(function () {
+        map.relayout();
+    }, 300);
+}
 
 $(document).ready(function () {
     showUsername()
@@ -420,7 +450,7 @@ function permitApplication(applicationId) {
         url: "http://localhost:8080/applications/" + applicationId + "/permit",
         headers: {'Authorization': localStorage.getItem('Authorization')}
     }).done(function (data) {
-        alert(data.responseJSON['message'])
+        alert(data['message'])
         console.log(data);
         showRequestedGroup()
     }).fail(function (e) {
@@ -434,7 +464,7 @@ function rejectApplication(applicationId) {
         url: "http://localhost:8080/applications/" + applicationId + "/reject",
         headers: {'Authorization': localStorage.getItem('Authorization')}
     }).done(function (data) {
-        alert(data.responseJSON['message'])
+        alert(data['message'])
         console.log(data);
         showRequestedGroup()
     }).fail(function (e) {
@@ -448,7 +478,7 @@ function cancelApplication(applicationId) {
         url: "http://localhost:8080/applications/" + applicationId,
         headers: {'Authorization': localStorage.getItem('Authorization')}
     }).done(function (data) {
-        alert(data.responseJSON['message'])
+        alert(data['message'])
         console.log(data);
         showAppliedGroup()
     }).fail(function (e) {
@@ -464,6 +494,9 @@ function showMoimDetail(event, id) {
     document.querySelector('#moimDetail_introduce').innerText = targetContent;
     document.getElementById('moimDetailId').value = id;
     showReview(id);
+    setTimeout(function () {
+        map.relayout();
+    }, 300);
 }
 
 
@@ -478,9 +511,10 @@ function saveMoim() {
         "address": "address",
         "firstRegion": "firstRegion",
         "secondRegion": "secondRegion",
-        "latitude": "latitude",
-        "longitude": "longitude"
+        "latitude": "aaa",
+        "longitude": "bbb"
     };
+
     $.ajax({
         type: "post",
         url: "http://localhost:8080/group",
@@ -505,7 +539,7 @@ function attendMoim(id) {
         headers: {'Authorization': localStorage.getItem('Authorization')}
     }).done(function (data) {
         console.log(data);
-        alert(data.responseJSON['message'])
+        alert(data['message'])
         location.reload()
     }).fail(function (e) {
         alert(e.responseJSON['message'])
@@ -519,7 +553,7 @@ function withdrawMoim(id) {
         headers: {'Authorization': localStorage.getItem('Authorization')}
     }).done(function (data) {
         console.log(data);
-        alert(data.responseJSON['message'])
+        alert(data['message'])
         showParticipantMoim()
         showAllMoim()
         showPopularMoim()
@@ -563,12 +597,14 @@ function deleteMoim(id) {
         url: "http://localhost:8080/groups/" + id,
         headers: {'Authorization': localStorage.getItem('Authorization')},
     }).done(function (data) {
-        console.log(data.responseJSON['message']);
-        alert(data.responseJSON['message'])
+        console.log(data)
+        console.log(data['message']);
+        alert(data['message'])
         showAllMoim()
         showPopularMoim()
         showLeaderMoim()
     }).fail(function (e) {
+        console.log(e)
         alert(e.responseJSON['message'])
     });
 }
@@ -581,7 +617,7 @@ function wishMoim(id) {
         ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
             console.log(data);
-            alert(data.responseJSON['message'])
+            alert(data['message'])
         },
         error: function (e) {
             alert(e.responseJSON['message'])
@@ -605,9 +641,8 @@ function addReviewMoim(id) {
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
-            let id = data['id']
             console.log(data);
-            alert(data.responseJSON['message'])
+            alert(data['message'])
         },
         error: function (e) {
             alert(e.responseJSON['message'])
@@ -634,7 +669,7 @@ function editReview(id) {
         ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
             console.log(data);
-            alert(data.responseJSON['message'])
+            alert(data['message'])
             window.location = './main.html'
         },
         error: function (e) {
@@ -653,7 +688,7 @@ function deleteReview(id) {
         ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
             console.log(data);
-            alert(data.responseJSON['message'])
+            alert(data['message'])
             window.location = './main.html'
         },
         error: function (e) {
