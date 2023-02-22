@@ -122,6 +122,11 @@ public class UserController {
 		return userService.getMyProfile(userDetails.getId(), passwordRequestDto);
 	}
 
+	@GetMapping("/user")
+	public ProfileResponseDto getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return new ProfileResponseDto(userDetails.getId(), userDetails.getUsername(), null);
+	}
+
 	// 내 정보 수정 - 마이페이지
 	@PutMapping("/profile")
 	public ProfileResponseDto updateProfile(@Validated @RequestBody ProfileRequestDto requestDto,
