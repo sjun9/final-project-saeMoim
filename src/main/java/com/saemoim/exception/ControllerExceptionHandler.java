@@ -25,6 +25,12 @@ public class ControllerExceptionHandler {
 		return new ExceptionResponseDto(HttpStatus.BAD_REQUEST, e.getMessage());
 	}
 
+	@ExceptionHandler(NullPointerException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponseDto handleNullPointerException(NullPointerException e) {
+		return new ExceptionResponseDto(HttpStatus.BAD_REQUEST, e.getMessage());
+	}
+
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public ExceptionResponseDto handleRuntimeException(Exception e) {

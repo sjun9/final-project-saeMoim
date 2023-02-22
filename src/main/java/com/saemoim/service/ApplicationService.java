@@ -11,7 +11,7 @@ public interface ApplicationService {
 
 	void cancelApplication(Long applicationId, String username);
 
-	List<ApplicationResponseDto> getApplications(Long groupId, String username);
+	List<ApplicationResponseDto> getApplications(String username);
 
 	void permitApplication(Long applicationId, String username);
 
