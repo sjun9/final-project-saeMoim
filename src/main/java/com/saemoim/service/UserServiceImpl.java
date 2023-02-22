@@ -107,8 +107,8 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage());
 		}
 
-		return new TokenResponseDto(jwtUtil.createAccessToken(userId, user.getUsername(), user.getRole()),
-			issueRefreshToken(userId, accessToken));
+		String newAccessToken = jwtUtil.createAccessToken(userId, user.getUsername(), user.getRole());
+		return new TokenResponseDto(newAccessToken, issueRefreshToken(userId, newAccessToken));
 	}
 
 	@Transactional

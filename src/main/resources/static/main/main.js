@@ -128,11 +128,21 @@ function logout() {
         localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
         window.location = './main.html'
     }).fail(function (e) {
-        alert(e.responseText)
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(logout, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
     });
 }
 
 function showUsername() {
+    $('#username').empty()
     $.ajax({
         type: "get",
         url: "http://localhost:8080/user",
@@ -168,7 +178,17 @@ function showCategory() {
             }
         }
     }).fail(function (e) {
-        console.log(e.responseText)
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(showCategory, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     });
 }
 
@@ -211,7 +231,41 @@ function showSearch(name) {
             }
         }
     }).fail(function (e) {
-        console.log(e.responseText)
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(showSearch, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
+    });
+}
+
+function reissue() {
+    var settings = {
+        "url": "http://localhost:8080/reissue",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Refresh_Token": localStorage.getItem('Refresh_Token'),
+            "Authorization": localStorage.getItem('Authorization')
+        },
+    };
+    $.ajax(settings).done(function (response, status, xhr) {
+        console.log("성공성공")
+        localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
+        localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
+    }).fail(function (e) {
+        console.log("실패실패")
+        console.log(e)
+        alert("다시 로그인 해주세요.")
+        localStorage.removeItem('Authorization')
+        localStorage.removeItem('Refresh_Token')
+        window.location.replace('./welcome.html');
     });
 }
 
@@ -321,13 +375,23 @@ function showFilter(categoryId, status) {
             }
         }
     }).fail(function (e) {
-        console.log(e.responseText)
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(showFilter, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     });
 }
 
 
 function showReview(id) {
-    $('#moimDetail_reviews').empty().append(`<textarea style="width: 100%" rows="3" cols="30" id="reviewText" value=""> </textarea>
+    $('#moimDetail_reviews').empty().append(`<textarea style="width:150%" rows="3" cols="30" id="reviewText" value=""> </textarea>
                                      <button type="button" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">후기 등록</button>`);
 
     $.ajax({
@@ -350,7 +414,8 @@ function showReview(id) {
                                           <tr>
                                             <td></td>
                                           </tr>
-                                          <textarea class="button_hide" style="width: 100%" rows="3" cols="30" id="review"
+                                          <textarea class="button_hide" style="width:150
+                                         %" rows="3" cols="30" id="review"
                                             name="review"></textarea>
                                           <div class="edit_delete">
                                             <button type="button" class="btn btn-danger" style="float: right;" onclick="deleteReview(${id})">삭제</button>
@@ -371,7 +436,17 @@ function showReview(id) {
             }
         }
     }).fail(function (e) {
-        console.log(e.responseText)
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(showReview, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     });
 }
 
@@ -401,7 +476,17 @@ function showRequestedGroup() {
             }
         }
     }).fail(function (e) {
-        console.log(e.responseText)
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(showRequestedGroup, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     });
 }
 
@@ -429,7 +514,17 @@ function showAppliedGroup() {
             }
         }
     }).fail(function (e) {
-        console.log(e.responseText)
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(showAppliedGroup, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     });
 }
 
@@ -444,7 +539,17 @@ function permitApplication(applicationId) {
         console.log(data);
         showRequestedGroup()
     }).fail(function (e) {
-        alert(e.responseJSON['message'])
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(permitApplication, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     })
 }
 
@@ -458,7 +563,17 @@ function rejectApplication(applicationId) {
         console.log(data);
         showRequestedGroup()
     }).fail(function (e) {
-        alert(e.responseJSON['message'])
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(rejectApplication, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     })
 }
 
@@ -472,7 +587,17 @@ function cancelApplication(applicationId) {
         console.log(data);
         showAppliedGroup()
     }).fail(function (e) {
-        alert(e.responseJSON['message'])
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(cancelApplication, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     })
 }
 
@@ -517,7 +642,16 @@ function saveMoim() {
         alert("작성 완료")
         location.reload()
     }).fail(function (e) {
-        alert(e.responseText['message'])
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(saveMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
     })
 }
 
@@ -532,8 +666,17 @@ function attendMoim(id) {
         alert(data['message'])
         location.reload()
     }).fail(function (e) {
-        alert(e.responseJSON['message'])
-    })
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(attendMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 function withdrawMoim(id) {
@@ -548,8 +691,17 @@ function withdrawMoim(id) {
         showAllMoim()
         showPopularMoim()
     }).fail(function (e) {
-        alert(e.responseJSON['message'])
-    })
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(withdrawMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 function editMoim(id) {
@@ -577,8 +729,17 @@ function editMoim(id) {
         alert("작성 완료")
         location.reload()
     }).fail(function (e) {
-        alert(e.responseText)
-    })
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(editMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 function deleteMoim(id) {
@@ -594,8 +755,16 @@ function deleteMoim(id) {
         showPopularMoim()
         showLeaderMoim()
     }).fail(function (e) {
-        console.log(e)
-        alert(e.responseJSON['message'])
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(deleteMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
     });
 }
 
@@ -608,12 +777,21 @@ function wishMoim(id) {
         success: function (data) {
             console.log(data);
             alert(data['message'])
-        },
-        error: function (e) {
-            alert(e.responseJSON['message'])
-            console.log("실패")
         }
-    })
+
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(wishMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
+
     //alert('찜 등록 후 페이지 새로고침\n마이페이지에 찜목록 보기 추가예정')
 }
 
@@ -640,7 +818,18 @@ function addReviewMoim(id) {
         }
     }).done(function () {
         showReview(id)
-    })
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(addReviewMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
     //alert('찜 등록 후 페이지 새로고침\n마이페이지에 찜목록 보기 추가예정')
 }
 
@@ -661,12 +850,19 @@ function editReview(id) {
             console.log(data);
             alert(data['message'])
             window.location = './main.html'
-        },
-        error: function (e) {
-            alert(e.responseJSON['message'])
-            console.log(e)
         }
-    })
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(editReview, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 
@@ -680,12 +876,19 @@ function deleteReview(id) {
             console.log(data);
             alert(data['message'])
             window.location = './main.html'
-        },
-        error: function (e) {
-            alert(e.responseJSON['message'])
-            console.log("실패")
         }
-    })
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(deleteReview, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 
@@ -743,6 +946,17 @@ function gotoBoard(id) {
                 console.log(e.responseJSON['message'])
             }
         });
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(gotoBoard, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
     });
 }
 
@@ -785,13 +999,16 @@ function getMyProfile() {
             }, error: function (e) {
             console.log(e)
         }
-    }).fail(function (response) {
-        if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-            alert(response.responseJSON['message'])
-            $('#passpass').show()
-            $('#myProfile_2').hide()
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(getMyProfile, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
         } else {
-            alert("재로그인")
+            alert(e.responseText['message'])
         }
     });
 }
@@ -835,13 +1052,17 @@ function updateProfile(content, pass) {
         $('#passpass').show()
         $('#myProfile_2').hide()
         window.location.reload()
-    }).fail(function (response) {
-        if (response.responseJSON['message'] === "rawPassword cannot be null") {
-            alert("비밀번호를 다시 확인해주세요")
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 0) {
+            reissue()
+            setTimeout(updateProfile, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
         } else {
-            alert(response.responseJSON['message'])
+            alert(e.responseText['message'])
         }
-
     });
 
 }
