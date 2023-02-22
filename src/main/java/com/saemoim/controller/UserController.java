@@ -117,14 +117,14 @@ public class UserController {
 
 	// 내 정보 조회 - 마이페이지
 	@PostMapping("/profile")
-	public ProfileResponseDto getMyProfile(@RequestBody CurrentPasswordRequestDto passwordRequestDto,
+	public ProfileResponseDto getMyProfile(@Validated @RequestBody CurrentPasswordRequestDto passwordRequestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return userService.getMyProfile(userDetails.getId(), passwordRequestDto);
 	}
 
 	// 내 정보 수정 - 마이페이지
 	@PutMapping("/profile")
-	public ProfileResponseDto updateProfile(@RequestBody ProfileRequestDto requestDto,
+	public ProfileResponseDto updateProfile(@Validated @RequestBody ProfileRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return userService.updateProfile(userDetails.getId(), requestDto);
 	}
