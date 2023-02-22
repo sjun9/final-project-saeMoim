@@ -116,7 +116,7 @@ public class UserController {
 	}
 
 	// 내 정보 조회 - 마이페이지
-	@GetMapping("/profile")
+	@PostMapping("/profile")
 	public ProfileResponseDto getMyProfile(@RequestBody CurrentPasswordRequestDto passwordRequestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return userService.getMyProfile(userDetails.getId(), passwordRequestDto);
@@ -124,10 +124,9 @@ public class UserController {
 
 	// 내 정보 수정 - 마이페이지
 	@PutMapping("/profile")
-	public ResponseEntity<MessageResponseDto> updateProfile(@RequestBody ProfileRequestDto requestDto,
+	public ProfileResponseDto updateProfile(@RequestBody ProfileRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		userService.updateProfile(userDetails.getId(), requestDto);
-		return new ResponseEntity<>(new MessageResponseDto("회원 정보 수정 완료"), HttpStatus.OK);
+		return userService.updateProfile(userDetails.getId(), requestDto);
 	}
 
 	// 리프레쉬 토큰 재발급

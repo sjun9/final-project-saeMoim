@@ -35,7 +35,6 @@
           <button type="button" class="btn btn-secondary" onclick="editMoim(document.getElementById('moimDetailId').value)">모임 수정</button>
           <button type="button" class="btn btn-secondary" onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제</button>
           <button type="button" class="btn btn-warning" onclick="wishMoim(document.getElementById('moimDetailId').value)">찜 등록</button>
-          <button type="button" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">후기 등록</button>
           <button type="button" class="btn btn-success" onclick="gotoBoard()">게시판 입장</button>
           <div class="moimDetailModal_reviews" id="moimDetail_reviews">
           </div>
@@ -126,11 +125,7 @@
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
                   카테고리 선택
                 </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                  <li><a class="dropdown-item" href="#">여행</a></li>
-                  <li><a class="dropdown-item" href="#">맛집투어</a></li>
-                  <li><a class="dropdown-item" href="#">운동</a></li>
-                  <li><a class="dropdown-item" href="#">원데이클래스</a></li>
+                <ul class="dropdown-menu" id="modifyCategoryMenu" aria-labelledby="dropdownMenuButton1">
                 </ul>
               </div>
             </div>
@@ -359,9 +354,8 @@
       <div class="app-content-header">
         <h1 class="app-content-headerText">마이프로필</h1>
       </div>
-      <div class="app-content-section">
-        <div>개인프로필 간단하게 띄우고 프로필</div>
-        <div>비번 수정기능 추가</div>
+      <div class="app-content-section" id="myProfile">
+
       </div>
     </div>
     <div class="app-content chat" id="side-chat-content">

@@ -13,12 +13,20 @@ sidebarListItems.forEach((sidebarListItem) => {
 
 document.querySelector("#side-find").addEventListener("click", () => {
     document.querySelector("#side-find-content").classList.add("active");
+    // showCategory()
+    // showAllMoim()
+    // showPopularMoim()
 })
 document.querySelector("#side-mypage").addEventListener("click", () => {
     document.querySelector("#side-mypage-content").classList.add("active");
+    // showLeaderMoim()
+    // showParticipantMoim()
+    // showRequestedGroup()
+    // showAplliedGroup()
 })
 document.querySelector("#side-profile").addEventListener("click", () => {
     document.querySelector("#side-profile-content").classList.add("active");
+    showMyProfile()
 })
 document.querySelector("#side-chat").addEventListener("click", () => {
     document.querySelector("#side-chat-content").classList.add("active");
@@ -62,13 +70,13 @@ categories.forEach((category) => {
 })
 
 $(document).ready(function () {
-    showMoim('all')
-    //showMoim('popular')
-    showMoim('made')
-    showMoim('participant')
-    showRequestedGroup()
-    showAplliedGroup()
+    showAllMoim()
+    showPopularMoim()
     showCategory()
+    showLeaderMoim()
+    showParticipantMoim()
+    showRequestedGroup()
+    showAppliedGroup()
 });
 
 function changeValue(event) {
@@ -94,6 +102,15 @@ function logout() {
         window.location = './main.html'
     });
 }
+
+function showMyProfile() {
+    $('#myProfile').empty()
+    let temp_html = `<div>비밀번호를 입력하세요.</div>
+                        <input type="text" id="checkPassword" rows="2" cols="20">
+                        <input type="button" value="입력" onclick="getMyProfile()">`
+    $('#myProfile').append(temp_html)
+}
+
 
 function showCategory() {
     $('#categoryFilter').empty().append(`<option value=0>전체</option>`)
@@ -158,26 +175,8 @@ function showSearch(name) {
     });
 }
 
-
-function showMoim(type) {
-    let contentId;
-    let url;
-    if (type === "all") {
-        contentId = '#find-content';
-        url = "http://localhost:8080/group";
-    } else if (type === "popular") {
-        contentId = '#popular-content';
-        url = "http://localhost:8080/group/popular";
-    } else if (type === "made") {
-        contentId = '#made-group';
-        url = "http://localhost:8080/leader/group";
-    } else if (type === "participant") {
-        contentId = '#participant-group';
-        url = "http://localhost:8080/participant/group";
-    }
-
-    $(contentId).empty()
-    $.ajax({
+function showMoimAjax(url, contentId) {
+    return {
         type: "GET",
         url: url,
         headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
@@ -212,7 +211,35 @@ function showMoim(type) {
                 console.log(response)
             }
         }
-    });
+    };
+}
+
+function showAllMoim() {
+    let contentId = '#find-content';
+    let url = "http://localhost:8080/group";
+    $(contentId).empty()
+    $.ajax(showMoimAjax(url, contentId));
+}
+
+function showPopularMoim() {
+    let contentId = '#popular-content';
+    let url = "http://localhost:8080/group/popular";
+    $(contentId).empty()
+    $.ajax(showMoimAjax(url, contentId));
+}
+
+function showLeaderMoim() {
+    let contentId = '#made-group';
+    let url = "http://localhost:8080/leader/group";
+    $(contentId).empty()
+    $.ajax(showMoimAjax(url, contentId));
+}
+
+function showParticipantMoim() {
+    let contentId = '#participant-group';
+    let url = "http://localhost:8080/participant/group";
+    $(contentId).empty()
+    $.ajax(showMoimAjax(url, contentId));
 }
 
 
@@ -258,8 +285,8 @@ function showFilter(categoryId, status) {
 
 
 function showReview(id) {
-    $('#moimDetail_reviews').empty();
-    $('#moimDetail_reviews').append(` <textarea style="width: 100%" rows="3" cols="30" id="reviewText" value=""> </textarea>`);
+    $('#moimDetail_reviews').empty().append(`<textarea style="width: 100%" rows="3" cols="30" id="reviewText" value=""> </textarea>
+                                     <button type="button" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">후기 등록</button>`);
 
     $.ajax({
         type: "GET",
@@ -332,7 +359,7 @@ function showRequestedGroup() {
     });
 }
 
-function showAplliedGroup() {
+function showAppliedGroup() {
     $('#applied-group').empty()
     $.ajax({
         type: "GET",
@@ -394,7 +421,7 @@ function cancelApplication(applicationId) {
         headers: {'Authorization': localStorage.getItem('Authorization')},
         success: function (data) {
             console.log(data);
-            showAplliedGroup();
+            showAppliedGroup();
         },
         error: function (e) {
         }
@@ -436,6 +463,7 @@ function saveMoim() {
         success: function (data) {
             console.log(data);
             alert("작성 완료")
+            showAllMoim()
         },
         error: function (e) {
             alert("실패")
@@ -469,7 +497,8 @@ function withdrawMoim(id) {
         success: function (data) {
             console.log(data);
             alert('탈퇴 완료')
-            showMoim('participant')
+            showParticipantMoim()
+            showAllMoim()
         },
         error: function (e) {
             alert("실패")
@@ -483,6 +512,7 @@ function withdrawMoim(id) {
 
 function editMoim(id) {
 
+
     alert('모임수정 페이지로 넘어갑니다.\n본인이 개설한 모임이 아니면 수정 못하게 막기\n모임수정페이지 만들어야하니 일단 이건 나중에 합시다')
 }
 
@@ -494,7 +524,8 @@ function deleteMoim(id) {
         success: function (data) {
             console.log(data);
             alert('모임 삭제 완료')
-            window.location = './main.html'
+            showAllMoim()
+            showLeaderMoim()
         },
         error: function (e) {
             alert("실패")
@@ -512,7 +543,6 @@ function wishMoim(id) {
         success: function (data) {
             console.log(data);
             alert("찜 등록 완료")
-            window.location = './main.html'
         },
         error: function (e) {
             alert("실패")
@@ -621,4 +651,31 @@ function gotoDeleteReview(event) {
     event.currentTarget.parentNode.previousSibling.classList.toggle('button_hide');
     event.currentTarget.parentNode.previousSibling.previousSibling.classList.toggle('button_hide');
     event.currentTarget.parentNode.previousSibling.previousSibling.previousSibling.classList.toggle('button_hide');
+}
+
+
+function getMyProfile() {
+    let jsonData = {"password": $('#checkPassword').val()};
+    $('#myProfile').empty();
+    $.ajax({
+        type: "post",
+        url: "http://localhost:8080/profile",
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        data: JSON.stringify(jsonData), //전송 데이터
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+        success: function (response) {
+            let username = response['username']
+            let content = response['content']
+
+            let temp_html = `<div>${username}</div>
+                             <div>${content}</div>
+                             
+                             `
+            $('#myProfile').append(temp_html)
+            console.log(response)
+        }, error: function (e) {
+            console.log(e)
+        }
+    });
 }
