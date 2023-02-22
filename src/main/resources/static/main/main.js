@@ -619,7 +619,7 @@ function showMoimDetail(event, id) {
 function saveMoim() {
     let jsonData = { // Body에 첨부할 json 데이터
         "name": $('#newMoim-title').val(),
-        "tagNames": [$('#newMoim-tag').val()],
+        "tagNames": [$('#tagt').val()], // 처음 입력한 값밖에 저장이 안됨 해결해야하ㅏ하하하하함
         "categoryName": $('#newMoim-category').val(),
         "content": $('#newMoim-content').val(),
         "recruitNumber": $('#newMoim-recruit').val(),
@@ -639,6 +639,7 @@ function saveMoim() {
         contentType: "application/json; charset=utf-8" //헤더의 Content-Type을 설정
     }).done(function (data) {
         console.log(data);
+        console.log(jsonData["tagNames"])
         alert("작성 완료")
         location.reload()
     }).fail(function (e) {
@@ -1064,6 +1065,45 @@ function updateProfile(content, pass) {
             alert(e.responseText['message'])
         }
     });
-
 }
 
+
+$.expr[":"].contains = $.expr.createPseudo(function (arg) {
+    return function (elem) {
+        return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+    };
+});
+$(document).ready(function () {
+    $('#addTagBtn').click(function () {
+        $('#tags option:selected').each(function () {
+            $(this).appendTo($('#selectedTags'));
+        });
+    });
+    $('#removeTagBtn').click(function () {
+        $('#selectedTags option:selected').each(function (el) {
+            $(this).appendTo($('#tags'));
+        });
+    });
+    $('.tagRemove').click(function (event) {
+        event.preventDefault();
+        $(this).parent().remove();
+    });
+    $('ul.tags').click(function () {
+        $('#search-field').focus();
+    });
+    $('#search-field').keypress(function (event) {
+        if (event.which == '13') {
+            if (($(this).val() != '') && ($(".tags .addedTag:contains('" + $(this).val() + "') ").length == 0)) {
+
+
+                $('<li class="addedTag" id="added">' + $(this).val() + '<span class="tagRemove" onclick="$(this).parent().remove();">x</span><input type="hidden" id="tagt" value="' + $(this).val() + '" name="tags[]"></li>').insertBefore('.tags .tagAdd');
+                $(this).val('');
+
+            } else {
+                $(this).val('');
+
+            }
+        }
+    });
+
+});
