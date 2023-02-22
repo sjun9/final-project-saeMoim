@@ -2,6 +2,7 @@ package com.saemoim.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -42,6 +43,12 @@ public class ControllerExceptionHandler {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponseDto MethodArgumentNotValidException(MethodArgumentNotValidException e) {
 		return new ExceptionResponseDto(HttpStatus.BAD_REQUEST, e.getAllErrors().get(0).getDefaultMessage());
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public ExceptionResponseDto handleAccessDeniedException(AccessDeniedException e) {
+		return new ExceptionResponseDto(HttpStatus.FORBIDDEN, e.getMessage());
 	}
 
 }
