@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.jwt.JwtAuthFilter;
@@ -31,7 +33,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 @EnableMethodSecurity    // @Secured 어노테이션 활성화
 @RequiredArgsConstructor
-public class WebSecurityConfig implements WebMvcConfigurer { // 지워도 됩니다 테스트용 CORS 허용
+public class WebSecurityConfig implements WebMvcConfigurer {
 
 	private final JwtUtil jwtUtil;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -64,7 +66,7 @@ public class WebSecurityConfig implements WebMvcConfigurer { // 지워도 됩니
 
 		// 내용 추가 필요함. 로그인 페이지, 회원가입 페이지 등
 		http.authorizeHttpRequests()
-			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 지워도 됩니다 테스트용 CORS 허용
+			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 			.requestMatchers("/sign-up").permitAll()
 			.requestMatchers("/sign-in").permitAll()
 			.requestMatchers("/reissue").permitAll()
@@ -78,6 +80,7 @@ public class WebSecurityConfig implements WebMvcConfigurer { // 지워도 됩니
 			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/groups/**").permitAll()
 			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())
+			.requestMatchers("/admins/**").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString(), UserRoleEnum.ROOT.toString())
 			.and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 		// .anyRequest().authenticated();	// 모든 요청에 대해 인증. 당장 사용하지 않으므로 주석 처리
@@ -97,10 +100,9 @@ public class WebSecurityConfig implements WebMvcConfigurer { // 지워도 됩니
 	}
 
 	@Override
-	public void addCorsMappings(CorsRegistry registry) { // 지워도 됩니다 테스트용 CORS 허용
+	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-				.allowedOrigins("*")
-				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD");
+			.allowedMethods("GET", "POST", "DELETE", "PUT", "OPTIONS", "PATCH")
+			.exposedHeaders("Authorization");
 	}
-
 }

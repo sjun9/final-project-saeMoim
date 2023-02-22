@@ -1,7 +1,6 @@
 package com.saemoim.dto.response;
 
 import com.saemoim.domain.User;
-import com.saemoim.domain.enums.UserRoleEnum;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,13 +10,15 @@ import lombok.NoArgsConstructor;
 public class UserResponseDto {
 	private Long id;
 	private String username;
-	private int banCount;
-	private UserRoleEnum role;
+	private String email;
+	private Integer banCount;
+	private String createdAt;
 
 	public UserResponseDto(User user) {
 		this.id = user.getId();
 		this.username = user.getUsername();
+		this.email = user.getEmail();
 		this.banCount = user.getBanCount();
-		this.role = user.getRole();
+		this.createdAt = user.getCreatedAt().toString();
 	}
 }

@@ -1,3 +1,33 @@
+const loginEmail = "aaa@naver.com"
+const loginPassword = "aaaa1234!"
+
+function login(email, password)  { // 임시로 토큰 받아오는 용
+
+  var settings = {
+    "url": "http://localhost:8080/sign-in",
+    "method": "POST",
+    "timeout": 0,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "data": JSON.stringify({
+      "email": "aaa@naver.com",
+      "password": "aaaa1234!"
+    }),
+  };
+  
+  $.ajax(settings).done(function (response, status, xhr) {
+    console.log(response);
+    // console.log(xhr);
+    console.log(xhr.getResponseHeader('Authorization'))
+    // localStorage.setItem("Authorization", xhr.getResponseHeader("Authorization"))
+  });
+
+
+}
+login(loginEmail, loginPassword)
+
+
 function setPostsCount() {
   var settings = {
     "url": "http://localhost:8080/posts/groups/1/count",
@@ -16,7 +46,7 @@ function getPosts(pageNum, sizeNum) {
   // var settings = {
   //   "url": "http://localhost:8080/posts/groups/1?page=" + pageNum + "&size=" + sizeNum,
   //   "method": "GET",
-  //   "timeout": 0,
+  //   "timeout": 0
   // };
   
   // $.ajax(settings).done(function (response) {
@@ -38,8 +68,7 @@ function getPosts(pageNum, sizeNum) {
       const postArray = JSON.parse(localStorage.getItem("pagedPostList"))
       // console.log(postArray);
     }
-});
-  
+  });
 }
 
 
