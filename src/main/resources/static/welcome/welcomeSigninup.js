@@ -127,7 +127,9 @@ function checkAndSendCode(){
     $.ajax(sendAuthenticationCodesettings
       ).done(function (response, status, xhr ) {
       alert("인증코드를 이메일을 발송 했습니다.")
-      localStorage.setItem('authCode', xhr.getResponseHeader('authCode'));
+      console.log('authCode', response['authCode'])
+      localStorage.setItem('authCode', response['authCode']);
+      
     })
   }).fail(function(response){
     if(response.responseJSON.httpStatus === 'BAD_REQUEST'){
