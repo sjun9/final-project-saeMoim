@@ -32,7 +32,7 @@
           <p class="moimDetailModal_introduce" id="moimDetail_introduce">모임소개글 모임소개글 모임소개글<br>모임소개글 모임소개글 모임소개글 모임소개글</p>
           <button type="button" class="btn btn-primary" onclick="attendMoim(document.getElementById('moimDetailId').value)">모임 참여 신청</button>
           <button type="button" class="btn btn-primary" onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴</button>
-          <button type="button" class="btn btn-secondary" onclick="editMoim(document.getElementById('moimDetailId').value)">모임 수정</button>
+          <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal">모임 수정</button>
           <button type="button" class="btn btn-secondary" onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제</button>
           <button type="button" class="btn btn-warning" onclick="wishMoim(document.getElementById('moimDetailId').value)">찜 등록</button>
           <button type="button" class="btn btn-success" onclick="gotoBoard()">게시판 입장</button>
@@ -115,6 +115,10 @@
               <input type="text" class="form-control" id="modifyMoim-title">
             </div>
             <div class="mb-3">
+              <label for="newPost-image" class="col-form-label">희망 모집 인원</label>
+              <input type="text" class="form-control" id="modifyMoim-recruit">
+            </div>
+            <div class="mb-3">
               <label for="newPost-image" class="col-form-label">모임 태그</label>
               <input type="text" class="form-control" id="modifyMoim-tag">
             </div>
@@ -144,7 +148,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-          <button type="button" class="btn btn-primary" onclick="editMoim()">새 모임 수정</button>
+          <button type="button" class="btn btn-primary" onclick="editMoim(document.getElementById('moimDetailId').value)">새 모임 수정</button>
         </div>
       </div>
     </div>

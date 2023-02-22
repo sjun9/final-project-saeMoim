@@ -13,16 +13,16 @@ sidebarListItems.forEach((sidebarListItem) => {
 
 document.querySelector("#side-find").addEventListener("click", () => {
     document.querySelector("#side-find-content").classList.add("active");
-    // showCategory()
-    // showAllMoim()
-    // showPopularMoim()
+    showCategory()
+    showAllMoim()
+    showPopularMoim()
 })
 document.querySelector("#side-mypage").addEventListener("click", () => {
     document.querySelector("#side-mypage-content").classList.add("active");
-    // showLeaderMoim()
-    // showParticipantMoim()
-    // showRequestedGroup()
-    // showAplliedGroup()
+    showLeaderMoim()
+    showParticipantMoim()
+    showRequestedGroup()
+    showAppliedGroup()
 })
 document.querySelector("#side-profile").addEventListener("click", () => {
     document.querySelector("#side-profile-content").classList.add("active");
@@ -63,24 +63,22 @@ function modalEscape(event) {
 btnOpenPopup.addEventListener('click', showModal);
 modal.addEventListener('click', modalEscape);
 
-
-const categories = document.querySelectorAll('.dropdown-item')
-categories.forEach((category) => {
-    category.addEventListener('click', changeValue)
-})
-
 $(document).ready(function () {
     showAllMoim()
     showPopularMoim()
     showCategory()
-    showLeaderMoim()
-    showParticipantMoim()
-    showRequestedGroup()
-    showAppliedGroup()
+    //showLeaderMoim()
+    //showParticipantMoim()
+    //showRequestedGroup()
+    //showAppliedGroup()
 });
 
-function changeValue(event) {
+function changeNewValue(event) {
     document.querySelector('#newMoim-category').value = event.target.innerText
+}
+
+function changeModifyValue(event) {
+    document.querySelector('#modifyMoim-category').value = event.target.innerText
 }
 
 function gotochat() {
@@ -100,6 +98,8 @@ function logout() {
         localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
         localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
         window.location = './main.html'
+    }).fail(function (e) {
+        alert(e.responseText)
     });
 }
 
@@ -116,21 +116,24 @@ function showCategory() {
     $('#categoryFilter').empty().append(`<option value=0>전체</option>`)
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/category",
-        success: function (response) {
-            console.log(response)
-            for (let i = 0; i < response.length; i++) {
-                let categories = response[i]['categories']
-                for (let i = 0; i < categories.length; i++) {
-                    let id = categories[i]['id']
-                    let name = categories[i]['name']
-                    let temp_html = `<option value=${id}>${name}</option>`
-                    let temp_html2 = `<li><a class="dropdown-item" href="#">${name}</a></li>`
-                    $('#categoryFilter').append(temp_html)
-                    $('#categoryMenu').append(temp_html2)
-                }
+        url: "http://localhost:8080/category"
+    }).done(function (response) {
+        console.log(response)
+        for (let i = 0; i < response.length; i++) {
+            let categories = response[i]['categories']
+            for (let i = 0; i < categories.length; i++) {
+                let id = categories[i]['id']
+                let name = categories[i]['name']
+                let temp_html = `<option value=${id}>${name}</option>`
+                let temp_html2 = `<li><a class="dropdown-item" href="#" onclick="changeNewValue(event)">${name}</a></li>`
+                let temp_html3 = `<li><a class="dropdown-item" href="#" onclick="changeModifyValue(event)">${name}</a></li>`
+                $('#categoryFilter').append(temp_html)
+                $('#categoryMenu').append(temp_html2)
+                $('#modifyCategoryMenu').append(temp_html3)
             }
         }
+    }).fail(function (e) {
+        console.log(e.responseText)
     });
 }
 
@@ -172,6 +175,8 @@ function showSearch(name) {
                 console.log(response)
             }
         }
+    }).fail(function (e) {
+        console.log(e.responseText)
     });
 }
 
@@ -280,6 +285,8 @@ function showFilter(categoryId, status) {
                 console.log(response)
             }
         }
+    }).fail(function (e) {
+        console.log(e.responseText)
     });
 }
 
@@ -328,6 +335,8 @@ function showReview(id) {
                 console.log(response)
             }
         }
+    }).fail(function (e) {
+        console.log(e.responseText)
     });
 }
 
@@ -356,6 +365,8 @@ function showRequestedGroup() {
                 console.log(response)
             }
         }
+    }).fail(function (e) {
+        console.log(e.responseText)
     });
 }
 
@@ -382,6 +393,8 @@ function showAppliedGroup() {
                 console.log(response)
             }
         }
+    }).fail(function (e) {
+        console.log(e.responseText)
     });
 }
 
@@ -390,13 +403,13 @@ function permitApplication(applicationId) {
     $.ajax({
         type: "PUT",
         url: "http://localhost:8080/applications/" + applicationId + "/permit",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
-        success: function (data) {
-            console.log(data);
-            showRequestedGroup()
-        },
-        error: function (e) {
-        }
+        headers: {'Authorization': localStorage.getItem('Authorization')}
+    }).done(function (data) {
+        alert(data.responseJSON['message'])
+        console.log(data);
+        showRequestedGroup()
+    }).fail(function (e) {
+        alert(e.responseJSON['message'])
     })
 }
 
@@ -404,13 +417,13 @@ function rejectApplication(applicationId) {
     $.ajax({
         type: "PUT",
         url: "http://localhost:8080/applications/" + applicationId + "/reject",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
-        success: function (data) {
-            console.log(data);
-            showRequestedGroup()
-        },
-        error: function (e) {
-        }
+        headers: {'Authorization': localStorage.getItem('Authorization')}
+    }).done(function (data) {
+        alert(data.responseJSON['message'])
+        console.log(data);
+        showRequestedGroup()
+    }).fail(function (e) {
+        alert(e.responseJSON['message'])
     })
 }
 
@@ -418,13 +431,13 @@ function cancelApplication(applicationId) {
     $.ajax({
         type: "DELETE",
         url: "http://localhost:8080/applications/" + applicationId,
-        headers: {'Authorization': localStorage.getItem('Authorization')},
-        success: function (data) {
-            console.log(data);
-            showAppliedGroup();
-        },
-        error: function (e) {
-        }
+        headers: {'Authorization': localStorage.getItem('Authorization')}
+    }).done(function (data) {
+        alert(data.responseJSON['message'])
+        console.log(data);
+        showAppliedGroup()
+    }).fail(function (e) {
+        alert(e.responseJSON['message'])
     })
 }
 
@@ -459,16 +472,13 @@ function saveMoim() {
         headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
-        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
-        success: function (data) {
-            console.log(data);
-            alert("작성 완료")
-            showAllMoim()
-        },
-        error: function (e) {
-            alert("실패")
-            console.log("실패")
-        }
+        contentType: "application/json; charset=utf-8" //헤더의 Content-Type을 설정
+    }).done(function (data) {
+        console.log(data);
+        alert("작성 완료")
+        location.reload()
+    }).fail(function (e) {
+        alert(e.responseText)
     })
 }
 
@@ -477,15 +487,13 @@ function attendMoim(id) {
     $.ajax({
         type: "post",
         url: "http://localhost:8080/groups/" + id + "/application",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
-        success: function (data) {
-            console.log(data);
-            alert('참가신청 완료')
-        },
-        error: function (e) {
-            alert("실패")
-            console.log("실패")
-        }
+        headers: {'Authorization': localStorage.getItem('Authorization')}
+    }).done(function (data) {
+        console.log(data);
+        alert(data.responseJSON['message'])
+        location.reload()
+    }).fail(function (e) {
+        alert(e.responseJSON['message'])
     })
 }
 
@@ -493,27 +501,45 @@ function withdrawMoim(id) {
     $.ajax({
         type: "delete",
         url: "http://localhost:8080/group/" + id + "/participant",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
-        success: function (data) {
-            console.log(data);
-            alert('탈퇴 완료')
-            showParticipantMoim()
-            showAllMoim()
-        },
-        error: function (e) {
-            alert("실패")
-            console.log("실패")
-        }
+        headers: {'Authorization': localStorage.getItem('Authorization')}
+    }).done(function (data) {
+        console.log(data);
+        alert(data.responseJSON['message'])
+        showParticipantMoim()
+        showAllMoim()
+        showPopularMoim()
+    }).fail(function (e) {
+        alert(e.responseJSON['message'])
     })
-
-    // 페이지 새로고침
-    // location.reload()
 }
 
 function editMoim(id) {
-
-
-    alert('모임수정 페이지로 넘어갑니다.\n본인이 개설한 모임이 아니면 수정 못하게 막기\n모임수정페이지 만들어야하니 일단 이건 나중에 합시다')
+    let jsonData = { // Body에 첨부할 json 데이터
+        "name": $('#modifyMoim-title').val(),
+        "tagNames": [$('#modifyMoim-tag').val()],
+        "categoryId": 6,
+        "content": $('#modifyMoim-content').val(),
+        "recruitNumber": $('#modifyMoim-recruit').val(),
+        "address": "address",
+        "firstRegion": "firstRegion",
+        "secondRegion": "secondRegion",
+        "latitude": "latitude",
+        "longitude": "longitude"
+    };
+    $.ajax({
+        type: "put",
+        url: "http://localhost:8080/groups/" + id,
+        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        data: JSON.stringify(jsonData), //전송 데이터
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+    }).done(function (data) {
+        console.log(data);
+        alert("작성 완료")
+        location.reload()
+    }).fail(function (e) {
+        alert(e.responseText)
+    })
 }
 
 function deleteMoim(id) {
@@ -521,17 +547,15 @@ function deleteMoim(id) {
         type: "delete",
         url: "http://localhost:8080/groups/" + id,
         headers: {'Authorization': localStorage.getItem('Authorization')},
-        success: function (data) {
-            console.log(data);
-            alert('모임 삭제 완료')
-            showAllMoim()
-            showLeaderMoim()
-        },
-        error: function (e) {
-            alert("실패")
-            console.log("실패")
-        }
-    })
+    }).done(function (data) {
+        console.log(data.responseJSON['message']);
+        alert(data.responseJSON['message'])
+        showAllMoim()
+        showPopularMoim()
+        showLeaderMoim()
+    }).fail(function (e) {
+        alert(e.responseJSON['message'])
+    });
 }
 
 function wishMoim(id) {
@@ -542,10 +566,10 @@ function wishMoim(id) {
         ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
             console.log(data);
-            alert("찜 등록 완료")
+            alert(data.responseJSON['message'])
         },
         error: function (e) {
-            alert("실패")
+            alert(e.responseJSON['message'])
             console.log("실패")
         }
     })
@@ -566,14 +590,16 @@ function addReviewMoim(id) {
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
+            let id = data['id']
             console.log(data);
-            alert("후기 등록 완료")
-            window.location = './main.html'
+            alert(data.responseJSON['message'])
         },
         error: function (e) {
-            alert("실패")
+            alert(e.responseJSON['message'])
             console.log(e)
         }
+    }).done(function () {
+        showReview(id)
     })
     //alert('찜 등록 후 페이지 새로고침\n마이페이지에 찜목록 보기 추가예정')
 }
@@ -593,11 +619,11 @@ function editReview(id) {
         ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
             console.log(data);
-            alert("후기 수정 완료")
+            alert(data.responseJSON['message'])
             window.location = './main.html'
         },
         error: function (e) {
-            alert("실패")
+            alert(e.responseJSON['message'])
             console.log(e)
         }
     })
@@ -612,11 +638,11 @@ function deleteReview(id) {
         ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
             console.log(data);
-            alert("후기 삭제 완료")
+            alert(data.responseJSON['message'])
             window.location = './main.html'
         },
         error: function (e) {
-            alert("실패")
+            alert(e.responseJSON['message'])
             console.log("실패")
         }
     })
