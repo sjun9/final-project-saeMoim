@@ -14,6 +14,7 @@ import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.response.BlackListResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.BlackListRepository;
+import com.saemoim.repository.ReportRepository;
 import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class BlackListServiceImpl implements BlackListService {
 	private final UserRepository userRepository;
 	private final BlackListRepository blackListRepository;
+	private final ReportRepository reportRepository;
 
 	@Transactional(readOnly = true)
 	@Override
@@ -46,7 +48,6 @@ public class BlackListServiceImpl implements BlackListService {
 			user.getBanCount() > 2 ? BlacklistStatusEnum.PERMANENT_BAN : BlacklistStatusEnum.BAN;
 		user.updateStatus(UserRoleEnum.REPORT);
 		BlackList blackList = new BlackList(user, status);
-
 		blackListRepository.save(blackList);
 	}
 
@@ -59,6 +60,7 @@ public class BlackListServiceImpl implements BlackListService {
 		find.updateStatus(BlacklistStatusEnum.PERMANENT_BAN);
 
 		blackListRepository.save(find);
+		reportRepository.deleteAllBySubject_Id(find.getUserId());
 	}
 
 	@Transactional

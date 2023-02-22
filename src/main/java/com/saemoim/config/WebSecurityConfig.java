@@ -64,7 +64,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		// 내용 추가 필요함. 로그인 페이지, 회원가입 페이지 등
 		http.authorizeHttpRequests()
 			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-			.requestMatchers("/comments").permitAll()
+			.requestMatchers("/sign-up").permitAll()
 			.requestMatchers("/sign-in").permitAll()
 			.requestMatchers("/sign-up/**").permitAll()
 			.requestMatchers("/reissue").permitAll()
@@ -75,7 +75,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 			.requestMatchers("/category").permitAll()
 			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/groups/**").permitAll()
+      			.requestMatchers("/comments").permitAll()
 			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())
+			.requestMatchers("/admins/**").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString(), UserRoleEnum.ROOT.toString())
 			.and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 		// .anyRequest().authenticated();	// 모든 요청에 대해 인증. 당장 사용하지 않으므로 주석 처리
@@ -97,7 +99,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-			.allowedMethods("GET", "POST", "PUT", "OPTIONS")
-			.exposedHeaders("Authorization", "Refresh_Token");	//exposedHeader 을 설정해야만 스크립트에서 'Authorization' 을 꺼낼 수 있음.
+			.allowedMethods("GET", "POST", "DELETE", "PUT", "OPTIONS", "PATCH")
+			.exposedHeaders("Authorization", "Refresh_Token");
 	}
 }

@@ -26,6 +26,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		AuthenticationException authenticationException) throws IOException {
 
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.setCharacterEncoding("utf-8");
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
 		try (OutputStream os = response.getOutputStream()) {
