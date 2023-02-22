@@ -66,6 +66,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 			.requestMatchers("/sign-up").permitAll()
 			.requestMatchers("/sign-in").permitAll()
+			.requestMatchers("/sign-up/**").permitAll()
 			.requestMatchers("/reissue").permitAll()
 			.requestMatchers("/log-out").permitAll()
 			.requestMatchers("/withdraw").permitAll()
@@ -74,6 +75,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 			.requestMatchers("/category").permitAll()
 			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/groups/**").permitAll()
+      			.requestMatchers("/comments").permitAll()
 			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admins/**").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString(), UserRoleEnum.ROOT.toString())
@@ -98,6 +100,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
 			.allowedMethods("GET", "POST", "DELETE", "PUT", "OPTIONS", "PATCH")
-			.exposedHeaders("Authorization");
+			.exposedHeaders("Authorization", "Refresh_Token");
 	}
 }
