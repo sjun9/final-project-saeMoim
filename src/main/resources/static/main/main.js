@@ -26,7 +26,8 @@ document.querySelector("#side-mypage").addEventListener("click", () => {
 })
 document.querySelector("#side-profile").addEventListener("click", () => {
     document.querySelector("#side-profile-content").classList.add("active");
-    showMyProfile()
+    $('#passpass').show()
+    $('#myProfile_2').hide()
 })
 document.querySelector("#side-chat").addEventListener("click", () => {
     document.querySelector("#side-chat-content").classList.add("active");
@@ -118,7 +119,7 @@ function logout() {
     $.ajax({
         type: "POST",
         url: "http://localhost:8080/log-out",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
         success: function (response) {
             console.log(response)
         }
@@ -135,7 +136,7 @@ function showUsername() {
     $.ajax({
         type: "get",
         url: "http://localhost:8080/user",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Authorization': localStorage.getItem('Authorization') },
         success: function (data) {
             let username = data['username']
             $('#username').append(`${username}`)
@@ -178,7 +179,7 @@ function showSearch(name) {
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/group/name",
-        data: {groupName: name}, //전송 데이터
+        data: { groupName: name }, //전송 데이터
         success: function (response) {
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -219,7 +220,7 @@ function showMoimAjax(url, contentId) {
     return {
         type: "GET",
         url: url,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
         success: function (response) {
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -288,7 +289,7 @@ function showFilter(categoryId, status) {
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/group/categories/" + categoryId,
-        data: {status: status}, //전송 데이터
+        data: { status: status }, //전송 데이터
         success: function (response) {
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -381,7 +382,7 @@ function showRequestedGroup() {
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/leader/application",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
         success: function (response) {
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -410,7 +411,7 @@ function showAppliedGroup() {
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/participant/application",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
         success: function (response) {
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -438,7 +439,7 @@ function permitApplication(applicationId) {
     $.ajax({
         type: "PUT",
         url: "http://localhost:8080/applications/" + applicationId + "/permit",
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        headers: { 'Authorization': localStorage.getItem('Authorization') }
     }).done(function (data) {
         alert(data['message'])
         console.log(data);
@@ -452,7 +453,7 @@ function rejectApplication(applicationId) {
     $.ajax({
         type: "PUT",
         url: "http://localhost:8080/applications/" + applicationId + "/reject",
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        headers: { 'Authorization': localStorage.getItem('Authorization') }
     }).done(function (data) {
         alert(data['message'])
         console.log(data);
@@ -466,7 +467,7 @@ function cancelApplication(applicationId) {
     $.ajax({
         type: "DELETE",
         url: "http://localhost:8080/applications/" + applicationId,
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        headers: { 'Authorization': localStorage.getItem('Authorization') }
     }).done(function (data) {
         alert(data['message'])
         console.log(data);
@@ -508,7 +509,7 @@ function saveMoim() {
     $.ajax({
         type: "post",
         url: "http://localhost:8080/group",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8" //헤더의 Content-Type을 설정
@@ -526,7 +527,7 @@ function attendMoim(id) {
     $.ajax({
         type: "post",
         url: "http://localhost:8080/groups/" + id + "/application",
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        headers: { 'Authorization': localStorage.getItem('Authorization') }
     }).done(function (data) {
         console.log(data);
         alert(data['message'])
@@ -540,7 +541,7 @@ function withdrawMoim(id) {
     $.ajax({
         type: "delete",
         url: "http://localhost:8080/group/" + id + "/participant",
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        headers: { 'Authorization': localStorage.getItem('Authorization') }
     }).done(function (data) {
         console.log(data);
         alert(data['message'])
@@ -568,7 +569,7 @@ function editMoim(id) {
     $.ajax({
         type: "put",
         url: "http://localhost:8080/groups/" + id,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
@@ -585,7 +586,7 @@ function deleteMoim(id) {
     $.ajax({
         type: "delete",
         url: "http://localhost:8080/groups/" + id,
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Authorization': localStorage.getItem('Authorization') },
     }).done(function (data) {
         console.log(data)
         console.log(data['message']);
@@ -603,7 +604,7 @@ function wishMoim(id) {
     $.ajax({
         type: "post",
         url: "http://localhost:8080/groups/" + id + "/wish",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Authorization': localStorage.getItem('Authorization') },
         ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
             console.log(data);
@@ -625,7 +626,7 @@ function addReviewMoim(id) {
     $.ajax({
         type: "post",
         url: "http://localhost:8080/groups/" + id + "/review",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
@@ -652,7 +653,7 @@ function editReview(id) {
     $.ajax({
         type: "put",
         url: "http://localhost:8080/reviews/" + id,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
@@ -674,7 +675,7 @@ function deleteReview(id) {
     $.ajax({
         type: "delete",
         url: "http://localhost:8080/reviews/" + id,
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Authorization': localStorage.getItem('Authorization') },
         ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
             console.log(data);
@@ -700,7 +701,7 @@ function gotoBoard(id) {
     $.ajax({
         type: "get",
         url: "http://localhost:8080/user",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Authorization': localStorage.getItem('Authorization') },
         success: function (data) {
             myId = data['id']
         }
@@ -708,7 +709,7 @@ function gotoBoard(id) {
         $.ajax({
             type: "get",
             url: "http://localhost:8080/groups/" + id,
-            headers: {'Authorization': localStorage.getItem('Authorization')},
+            headers: { 'Authorization': localStorage.getItem('Authorization') },
             success: function (data) {
                 if (myId === data['userId']) {
                     alert('게시판으로 이동합니다.')
@@ -717,7 +718,7 @@ function gotoBoard(id) {
                     $.ajax({
                         type: "get",
                         url: "http://localhost:8080/group/" + id + "/participant",
-                        headers: {'Authorization': localStorage.getItem('Authorization')},
+                        headers: { 'Authorization': localStorage.getItem('Authorization') },
                         success: function (data) {
                             for (let i = 0; i < data.length; i++) {
                                 if (data[i]['userId'] === myId) {
@@ -769,7 +770,7 @@ function getMyProfile() {
     $.ajax({
         type: "post",
         url: "http://localhost:8080/profile",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        headers: { 'Authorization': localStorage.getItem('Authorization') },
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
