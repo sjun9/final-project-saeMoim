@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.saemoim.dto.request.AdminRequestDto;
 import com.saemoim.dto.response.AdminResponseDto;
+import com.saemoim.dto.response.AdminTokenResponseDto;
 import com.saemoim.dto.response.MessageResponseDto;
-import com.saemoim.dto.response.TokenResponseDto;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.security.UserDetailsImpl;
 import com.saemoim.service.AdminServiceImpl;
@@ -34,7 +34,7 @@ public class AdminController {
 
 	@PostMapping("/admin/sign-in")
 	public ResponseEntity<MessageResponseDto> signInByAdmin(@RequestBody AdminRequestDto requestDto) {
-		TokenResponseDto tokenResponseDto = adminService.signInByAdmin(requestDto);
+		AdminTokenResponseDto tokenResponseDto = adminService.signInByAdmin(requestDto);
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(JwtUtil.AUTHORIZATION_HEADER, tokenResponseDto.getAccessToken());
 		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));

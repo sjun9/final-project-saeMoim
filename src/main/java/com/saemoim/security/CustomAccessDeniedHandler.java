@@ -27,6 +27,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 		AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.setCharacterEncoding("utf-8");
 		response.setStatus(HttpStatus.FORBIDDEN.value());
 
 		try (OutputStream os = response.getOutputStream()) {
