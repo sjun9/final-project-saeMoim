@@ -1,6 +1,5 @@
 package com.saemoim.dto.response;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.saemoim.domain.Group;
@@ -16,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class GroupResponseDto {
+public class GroupResponseDto implements Comparable<GroupResponseDto> {
 	private Long id;
 	private List<String> tags;
 	private String groupName;
@@ -29,11 +28,11 @@ public class GroupResponseDto {
 	private String latitude;
 	private String longitude;
 	private GroupStatusEnum status;
-	private int wishCount;
+	private Integer wishCount;
 	private int recruitNumber;
 	private int participantCount;
-	private LocalDateTime createdAt;
-	private LocalDateTime modifiedAt;
+	private String createdAt;
+	private String modifiedAt;
 
 	public GroupResponseDto(Group group) {
 		this.id = group.getId();
@@ -51,7 +50,18 @@ public class GroupResponseDto {
 		this.wishCount = group.getWishCount();
 		this.recruitNumber = group.getRecruitNumber();
 		this.participantCount = group.getParticipantCount();
-		this.createdAt = group.getCreatedAt();
-		this.modifiedAt = group.getModifiedAt();
+		this.createdAt = group.getCreatedAt().toString();
+		this.modifiedAt = group.getModifiedAt().toString();
+	}
+
+	@Override
+	public int compareTo(GroupResponseDto o) {
+		if (this.wishCount < o.getWishCount()) {
+			return -1;
+		} else if (this.wishCount.equals(o.getWishCount())) {
+			return 0;
+		} else {
+			return 1;
+		}
 	}
 }

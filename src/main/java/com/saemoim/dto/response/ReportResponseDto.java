@@ -1,5 +1,7 @@
 package com.saemoim.dto.response;
 
+import java.time.LocalDateTime;
+
 import com.saemoim.domain.Report;
 
 import lombok.Builder;
@@ -14,6 +16,7 @@ public class ReportResponseDto {
 	private String subjectUsername;
 	private String reporterName;
 	private String content;
+	private LocalDateTime createdAt;
 
 	@Builder
 	public ReportResponseDto(Report report) {
@@ -22,5 +25,6 @@ public class ReportResponseDto {
 		this.subjectUsername = report.getSubjectUsername();
 		this.reporterName = report.getReporterName();
 		this.content = report.getContent();
+		this.createdAt = report.getCreatedAt();
 	}
 }

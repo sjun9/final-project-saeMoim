@@ -10,7 +10,7 @@ import com.saemoim.domain.Admin;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.AdminRequestDto;
 import com.saemoim.dto.response.AdminResponseDto;
-import com.saemoim.dto.response.TokenResponseDto;
+import com.saemoim.dto.response.AdminTokenResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.repository.AdminRepository;
@@ -26,16 +26,16 @@ public class AdminServiceImpl implements AdminService {
 
 	@Transactional
 	@Override
-	public TokenResponseDto signInByAdmin(AdminRequestDto requestDto) {
+	public AdminTokenResponseDto signInByAdmin(AdminRequestDto requestDto) {
 		Admin admin = adminRepository.findByUsername(requestDto.getUsername()).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 		if (!passwordEncoder.matches(requestDto.getPassword(), admin.getPassword())) {
-			throw new IllegalAccessError(ErrorCode.INVALID_PASSWORD.getMessage());
+			throw new IllegalArgumentException(ErrorCode.INVALID_PASSWORD.getMessage());
 		}
 
 		String accessToken = issueToken(admin.getId(), admin.getUsername(), admin.getRole());
-		return new TokenResponseDto(accessToken, null);
+		return new AdminTokenResponseDto(accessToken);
 	}
 
 	@Transactional(readOnly = true)
@@ -58,7 +58,7 @@ public class AdminServiceImpl implements AdminService {
 	@Transactional
 	@Override
 	public void deleteAdmin(Long adminId) {
-		if (adminRepository.existsById(adminId)) {
+		if (!adminRepository.existsById(adminId)) {
 			throw new IllegalArgumentException(ErrorCode.NOT_EXIST_ADMIN.getMessage());
 		}
 		adminRepository.deleteById(adminId);
