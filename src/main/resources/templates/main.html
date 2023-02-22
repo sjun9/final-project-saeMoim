@@ -29,13 +29,14 @@
         </div>
         <div class="modal-body moimDetailModalBody">
           <img id="moimDetail_Image" src="../static/images/main-running.jpg" alt="">
-          <p class="moimDetailModal_introduce" id="moimDetail_introduce">모임소개글 모임소개글 모임소개글<br>모임소개글 모임소개글 모임소개글 모임소개글</p>
+          <p>모임 소개글</p>
+          <p class="moimDetailModal_introduce" id="moimDetail_introduce"></p>
           <button type="button" class="btn btn-primary" onclick="attendMoim(document.getElementById('moimDetailId').value)">모임 참여 신청</button>
           <button type="button" class="btn btn-primary" onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴</button>
           <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal">모임 수정</button>
           <button type="button" class="btn btn-secondary" onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제</button>
           <button type="button" class="btn btn-warning" onclick="wishMoim(document.getElementById('moimDetailId').value)">찜 등록</button>
-          <button type="button" class="btn btn-success" onclick="gotoBoard()">게시판 입장</button>
+          <button type="button" class="btn btn-success" onclick="gotoBoard(document.getElementById('moimDetailId').value)">게시판 입장</button>
           <div class="moimDetailModal_reviews" id="moimDetail_reviews">
           </div>
         </div>
@@ -216,7 +217,7 @@
             src="https://images.unsplash.com/photo-1527736947477-2790e28f3443?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTE2fHx3b21hbnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60"
             onclick="goToHome()" alt="Account">
         </div>
-        <div class="account-info-name">이곳에 이름 출력</div>
+        <div class="account-info-name" id="username"></div>
         <img class="account-info-more" src="../static/images/logout.png" alt="" onclick="logout()">
       </div>
     </div>

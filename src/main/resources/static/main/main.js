@@ -64,6 +64,7 @@ btnOpenPopup.addEventListener('click', showModal);
 modal.addEventListener('click', modalEscape);
 
 $(document).ready(function () {
+    showUsername()
     showAllMoim()
     showPopularMoim()
     showCategory()
@@ -100,6 +101,20 @@ function logout() {
         window.location = './main.html'
     }).fail(function (e) {
         alert(e.responseText)
+    });
+}
+
+function showUsername() {
+    $.ajax({
+        type: "get",
+        url: "http://localhost:8080/user",
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        success: function (data) {
+            let username = data['username']
+            $('#username').append(`${username}`)
+        }, error: function (e) {
+            $('#username').append(`"로그인 해주세요"`)
+        }
     });
 }
 
@@ -654,12 +669,56 @@ function goToHome() {
 }
 
 
-function gotoBoard() {
-    alert('[게시판으로 페이지 이동]\n본인이 개설 또는 참가한 모임이 아니면 입장 못하게 막기\nlocatStorage에 모임 정보를 넘겨준 뒤, board.html로 이동합니다\n그러면 board.html에서 localStorage의 정보로 게시글을 가져옴')
-
-    alert('게시판으로 이동합니다.')
-    // 게시판으로 이동
-    location.href = './board.html'
+function gotoBoard(id) {
+    let myId
+    let isParticipant = false
+    $.ajax({
+        type: "get",
+        url: "http://localhost:8080/user",
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        success: function (data) {
+            myId = data['id']
+        }
+    }).done(function () {
+        $.ajax({
+            type: "get",
+            url: "http://localhost:8080/groups/" + id,
+            headers: {'Authorization': localStorage.getItem('Authorization')},
+            success: function (data) {
+                if (myId === data['userId']) {
+                    alert('게시판으로 이동합니다.')
+                    window.location = './board.html'
+                } else {
+                    $.ajax({
+                        type: "get",
+                        url: "http://localhost:8080/group/" + id + "/participant",
+                        headers: {'Authorization': localStorage.getItem('Authorization')},
+                        success: function (data) {
+                            for (let i = 0; i < data.length; i++) {
+                                if (data[i]['userId'] === myId) {
+                                    isParticipant = true
+                                }
+                            }
+                            if (isParticipant) {
+                                alert('게시판으로 이동합니다.')
+                                window.location = './board.html'
+                            } else {
+                                alert('참가자만 입장 가능합니다.')
+                            }
+                        },
+                        error: function (e) {
+                            alert(e.responseJSON['message'])
+                            console.log(e.responseJSON['message'])
+                        }
+                    });
+                }
+            },
+            error: function (e) {
+                alert(e.responseJSON['message'])
+                console.log(e.responseJSON['message'])
+            }
+        });
+    });
 }
 
 function gotoEditReview(event) {
