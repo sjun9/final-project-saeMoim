@@ -162,7 +162,7 @@ public class GroupServiceImpl implements GroupService {
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 		// 카테고리 존재 확인
-		Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(
+		Category category = categoryRepository.findByName(requestDto.getCategoryName()).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
 		);
 		if (category.getParentId() == null) {
@@ -178,7 +178,7 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional
 	public GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, String username) {
 		// 카테고리 존재 확인
-		Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(
+		Category category = categoryRepository.findByName(requestDto.getCategoryName()).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
 		);
 		if (category.getParentId() == null) {

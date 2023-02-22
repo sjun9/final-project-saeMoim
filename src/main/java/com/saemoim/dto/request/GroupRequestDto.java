@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GroupRequestDto {
 	@NotNull
-	private Long categoryId;
+	private String categoryName;
 
 	private List<String> tagNames;
 

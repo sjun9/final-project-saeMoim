@@ -1,10 +1,10 @@
 package com.saemoim.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -28,6 +28,7 @@ import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
 import com.saemoim.repository.TagRepository;
+import com.saemoim.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 class GroupServiceImplTest {
@@ -35,6 +36,8 @@ class GroupServiceImplTest {
 	@Mock
 	private GroupRepository groupRepository;
 
+	@Mock
+	private UserRepository userRepository;
 	@Mock
 	private CategoryRepository categoryRepository;
 	@Mock
@@ -79,7 +82,7 @@ class GroupServiceImplTest {
 	void createGroup() {
 		// given
 		GroupRequestDto request = GroupRequestDto.builder()
-			.categoryId(1L)
+			.categoryName("named")
 			.tagNames(new ArrayList<>())
 			.address("djemfotm")
 			.firstRegion("d")
@@ -90,17 +93,18 @@ class GroupServiceImplTest {
 			.content("contenddddddddddddddddt")
 			.recruitNumber(3)
 			.build();
+		var id = 1L;
 		User user = new User("dddd", "ddd", "name", UserRoleEnum.USER);
 		Category category = Category.builder().parentId(1L).name("named").build();
-		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+		when(categoryRepository.findByName(anyString())).thenReturn(Optional.of(category));
+		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
 		// when
-		GroupResponseDto response = groupService.createGroup(request, user.getId());
-
+		GroupResponseDto response = groupService.createGroup(request, id);
 		// then
 		assertThat(response.getGroupName()).isEqualTo("name");
 		assertThat(response.getUsername()).isEqualTo("name");
-		verify(categoryRepository).findById(anyLong());
+		verify(categoryRepository).findByName(anyString());
 		verify(groupRepository).save(any(Group.class));
 	}
 
@@ -109,7 +113,7 @@ class GroupServiceImplTest {
 	void updateGroup() {
 		// given
 		GroupRequestDto request = GroupRequestDto.builder()
-			.categoryId(1L)
+			.categoryName("named")
 			.tagNames(new ArrayList<>())
 			.address("djemfotm")
 			.firstRegion("d")
@@ -120,15 +124,17 @@ class GroupServiceImplTest {
 			.content("contenddddddddddddddddt")
 			.recruitNumber(3)
 			.build();
-		User user = new User("email", "pass", "john", UserRoleEnum.USER);
+		var id = 1L;
+		var name = "anemmee";
+		User user = new User("email", "pass", "anemmee", UserRoleEnum.USER);
 		Group group = Group.builder().id(1L).user(user).name("name").build();
 		Category category = Category.builder().parentId(1L).name("named").build();
 
-		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+		when(categoryRepository.findByName(anyString())).thenReturn(Optional.of(category));
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
 
 		// when
-		GroupResponseDto response = groupService.updateGroup(group.getId(), request, user.getUsername());
+		GroupResponseDto response = groupService.updateGroup(id, request, name);
 
 		// then
 		assertThat(response.getGroupName()).isEqualTo(group.getName());
