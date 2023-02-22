@@ -41,7 +41,7 @@ public class ReportController {
 	}
 
 	// 관리자가 신고내역 삭제
-	@DeleteMapping("/admin/report/{reportId}")
+	@DeleteMapping("/admin/reports/{reportId}")
 	public ResponseEntity<MessageResponseDto> deleteReport(@PathVariable Long reportId) {
 		reportService.deleteReport(reportId);
 		return new ResponseEntity<>(new MessageResponseDto("신고 삭제 완료"), HttpStatus.OK);

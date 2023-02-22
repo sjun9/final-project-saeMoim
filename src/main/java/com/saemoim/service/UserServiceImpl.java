@@ -38,6 +38,8 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public void signUp(SignUpRequestDto requestDto) {
+		checkEmailDuplication(new EmailRequestDto(requestDto.getEmail()));
+		checkUsernameDuplication(new UsernameRequestDto(requestDto.getUsername()));
 		User user = new User(requestDto.getEmail(), passwordEncoder.encode(requestDto.getPassword()),
 			requestDto.getUsername(), UserRoleEnum.USER);
 

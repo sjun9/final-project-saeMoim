@@ -24,13 +24,13 @@ public class ParticipantController {
 	private final ParticipantServiceImpl participantService;
 
 	// 특정 모임의 참여자 조회
-	@GetMapping("/group/{groupId}/participant")
+	@GetMapping("/participant/groups/{groupId}")
 	public List<ParticipantResponseDto> getParticipants(@PathVariable Long groupId) {
 		return participantService.getParticipants(groupId);
 	}
 
 	// 모임 탈퇴
-	@DeleteMapping("/group/{groupId}/participant")
+	@DeleteMapping("/participant/groups/{groupId}")
 	public ResponseEntity<MessageResponseDto> withdrawGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		participantService.withdrawGroup(groupId, userDetails.getId());

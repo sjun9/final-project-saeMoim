@@ -59,7 +59,7 @@ public class ReviewController {
 	}
 
 	//관리자 후기 삭제
-	@DeleteMapping("/admin/review/{reviewId}")
+	@DeleteMapping("/admin/reviews/{reviewId}")
 	public ResponseEntity<MessageResponseDto> deleteReviewByAdmin(@PathVariable Long reviewId) {
 		reviewService.deleteReviewByAdmin(reviewId);
 		return new ResponseEntity<>(new MessageResponseDto("후기 삭제 성공"), HttpStatus.OK);
