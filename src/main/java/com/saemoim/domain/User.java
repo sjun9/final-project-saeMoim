@@ -2,21 +2,14 @@ package com.saemoim.domain;
 
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.ProfileRequestDto;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "users")
 @Getter
+@Entity(name = "users")
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
@@ -68,4 +61,5 @@ public class User extends TimeStamped {
 		this.password = changedPassword;
 		this.content = profileRequestDto.getContent();
 	}
+
 }

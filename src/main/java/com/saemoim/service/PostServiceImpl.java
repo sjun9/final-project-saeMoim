@@ -106,7 +106,6 @@ public class PostServiceImpl implements PostService {
 		String title = requestDto.getTitle();
 		String content = requestDto.getContent();
 		Post savedPost = postRepository.save(new Post(group, title, content, user));
-
 		return new PostResponseDto(savedPost);
 	}
 
