@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://kit.fontawesome.com/13a08ca775.js" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=06b0d21be95f7359297cfcaa65fc12bf"></script>
   <title>Document</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
@@ -29,19 +30,15 @@
         </div>
         <div class="modal-body moimDetailModalBody">
           <img id="moimDetail_Image" src="../static/images/main-running.jpg" alt="">
-          <p class="moimDetailModal_introduce" id="moimDetail_introduce">모임소개글 모임소개글 모임소개글<br>모임소개글 모임소개글 모임소개글 모임소개글
-          </p>
-          <button type="button" class="btn btn-primary"
-            onclick="attendMoim(document.getElementById('moimDetailId').value)">모임 참여 신청</button>
-          <button type="button" class="btn btn-primary"
-            onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴</button>
-          <button type="button" class="btn btn-secondary"
-            onclick="editMoim(document.getElementById('moimDetailId').value)">모임 수정</button>
-          <button type="button" class="btn btn-secondary"
-            onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제</button>
-          <button type="button" class="btn btn-warning"
-            onclick="wishMoim(document.getElementById('moimDetailId').value)">찜 등록</button>
-          <button type="button" class="btn btn-success" onclick="gotoBoard()">게시판 입장</button>
+          <p>모임 소개글</p>
+          <p class="moimDetailModal_introduce" id="moimDetail_introduce"></p>
+          <button type="button" class="btn btn-primary" onclick="attendMoim(document.getElementById('moimDetailId').value)">모임 참여 신청</button>
+          <button type="button" class="btn btn-primary" onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴</button>
+          <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal">모임 수정</button>
+          <button type="button" class="btn btn-secondary" onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제</button>
+          <button type="button" class="btn btn-warning" onclick="wishMoim(document.getElementById('moimDetailId').value)">찜 등록</button>
+          <button type="button" class="btn btn-success" onclick="gotoBoard(document.getElementById('moimDetailId').value)">게시판 입장</button>
+          <div id="moimMap" style="width:700px; margin: auto; height:400px;"></div>
           <div class="moimDetailModal_reviews" id="moimDetail_reviews">
           </div>
         </div>
@@ -77,8 +74,7 @@
               <label for="newPost-image" class="col-form-label">카테고리</label>
               <input type="text" class="form-control" id="newMoim-category" value="" readonly>
               <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
-                  data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                   카테고리 선택
                 </button>
                 <ul class="dropdown-menu" id="categoryMenu" aria-labelledby="dropdownMenuButton1">
@@ -94,7 +90,7 @@
               <input type="text" class="form-control" id="newMoim-content">
             </div>
             <div class="mb-3">
-              <p>[ 여기에 지도 추가 예정 ]</p>
+              <div id="saveMoimMap" style="width:700px; margin: auto; height:400px;"></div>
             </div>
           </form>
         </div>
@@ -108,7 +104,7 @@
 
 
   <div class="modal fade" id="modifyMoimModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+       aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -122,6 +118,10 @@
               <input type="text" class="form-control" id="modifyMoim-title">
             </div>
             <div class="mb-3">
+              <label for="newPost-image" class="col-form-label">희망 모집 인원</label>
+              <input type="text" class="form-control" id="modifyMoim-recruit">
+            </div>
+            <div class="mb-3">
               <label for="newPost-image" class="col-form-label">모임 태그</label>
               <input type="text" class="form-control" id="modifyMoim-tag">
             </div>
@@ -129,8 +129,7 @@
               <label for="newPost-image" class="col-form-label">카테고리</label>
               <input type="text" class="form-control" id="modifyMoim-category" readonly>
               <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
-                  data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
                   카테고리 선택
                 </button>
                 <ul class="dropdown-menu" id="modifyCategoryMenu" aria-labelledby="dropdownMenuButton1">
@@ -146,13 +145,13 @@
               <input type="text" class="form-control" id="modifyMoim-content">
             </div>
             <div class="mb-3">
-              <p>[ 여기에 지도 추가 예정 ]</p>
+              <div id="modifyMoimMap" style="width:700px; margin: auto; height:400px;"></div>
             </div>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-          <button type="button" class="btn btn-primary" onclick="editMoim()">새 모임 수정</button>
+          <button type="button" class="btn btn-primary" onclick="editMoim(document.getElementById('moimDetailId').value)">새 모임 수정</button>
         </div>
       </div>
     </div>
@@ -220,7 +219,7 @@
             src="https://images.unsplash.com/photo-1527736947477-2790e28f3443?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTE2fHx3b21hbnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60"
             onclick="goToHome()" alt="Account">
         </div>
-        <div class="account-info-name">이곳에 이름 출력</div>
+        <div class="account-info-name" id="username"></div>
         <img class="account-info-more" src="../static/images/logout.png" alt="" onclick="logout()">
       </div>
     </div>
@@ -229,7 +228,7 @@
     <div class="app-content find active" id="side-find-content">
       <div class="app-content-header">
         <h1 class="app-content-headerText">모임 찾기</h1>
-        <button class="app-content-headerButton btn-open-popup" data-bs-toggle="modal" data-bs-target="#newMoimModal">새
+        <button class="app-content-headerButton btn-open-popup" data-bs-toggle="modal" data-bs-target="#newMoimModal" onclick="relayoutMap()">새
           모임 추가하기</button>
       </div>
       <div class="app-content-actions">
@@ -256,8 +255,7 @@
                 <button class="filter-button reset" onclick="showAllMoim()">
                   Reset
                 </button>
-                <button class="filter-button apply"
-                  onclick="showFilter(
+                <button class="filter-button apply" onclick="showFilter(
                         document.getElementById('categoryFilter').value, document.getElementById('statusFilter').value)">
                   Apply
                 </button>
@@ -281,11 +279,11 @@
       <div style="overflow-y: scroll;">
         <table class="fixed_headers">
           <thead>
-            <tr>
-              <th>모임 이름</th>
-              <th>참가 신청자 이름</th>
-              <th>신청 상태</th>
-            </tr>
+          <tr>
+            <th>모임 이름</th>
+            <th>참가 신청자 이름</th>
+            <th>신청 상태</th>
+          </tr>
           </thead>
           <tbody id="requested-group">
           </tbody>
@@ -294,8 +292,7 @@
       <div style="overflow-y: scroll;">
         <h3 style="font-size: 30px;">내가 개설한 모임</h3>
         <div class="app-content-section gridView" id="made-group" style="overflow: hidden;">
-          <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal"
-            onclick="showMoimDetail(event)">
+          <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" onclick="showMoimDetail(event)">
             <div class="product-cell image">
               <img src="../static/images/main-chicken.jpg" alt="">
               <span>홍대 사시는분 간단하게 치맥ㄱ???</span>
@@ -315,11 +312,11 @@
       <div style="overflow-y: scroll;">
         <table class="fixed_headers">
           <thead>
-            <tr>
-              <th>모임 이름</th>
-              <th>모임 리더 이름</th>
-              <th>신청 상태</th>
-            </tr>
+          <tr>
+            <th>모임 이름</th>
+            <th>모임 리더 이름</th>
+            <th>신청 상태</th>
+          </tr>
           </thead>
           <tbody id="applied-group">
           </tbody>
@@ -328,8 +325,7 @@
       <div style="overflow-y: scroll;">
         <h3 style="font-size: 30px;">내가 참여한 모임</h3>
         <div class="app-content-section gridView" id="participant-group" style="overflow: hidden;">
-          <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal"
-            onclick="showMoimDetail(event)">
+          <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" onclick="showMoimDetail(event)">
             <div class="product-cell image">
               <img src="../static/images/main-running.jpg" alt="">
               <span>한강정기러닝동호회[초보가능, 상시모집]</span>
@@ -343,8 +339,7 @@
             <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>56</div>
             <div class="product-cell price"><span class="cell-label">후기수:</span>360</div>
           </div>
-          <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal"
-            onclick="showMoimDetail(event)">
+          <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" onclick="showMoimDetail(event)">
             <div class="product-cell image">
               <img src="../static/images/main-baking.jpg" alt="">
               <span>베이킹 원데이클래스 재료비만 들고오세요~</span>
@@ -366,14 +361,14 @@
       <div class="app-content-header">
         <h1 class="app-content-headerText">마이프로필 수정</h1>
       </div>
-      <div class="app-content-section">
+      <div class="app-content-section" id="myProfile">
         <div id="passpass">
           <div>비밀번호를 입력하세요.</div>
           <input type="password" id="checkPassword" rows="2" cols="20">
           <input type="button" value="입력" id="checkPwd" onclick="getMyProfile()">`
         </div>
 
-        <div id="myProfile" style="display: none;">
+        <div id="myProfile_2" style="display: none;">
           <h2 id="profileName"></h2>
           <div class="content_title">비밀번호</div>
           <div class="content_content">
@@ -425,6 +420,5 @@
   integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="../static/main/main.js"></script>
-
 
 </html>
