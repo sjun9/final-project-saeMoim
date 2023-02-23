@@ -129,7 +129,7 @@ function logout() {
         window.location = './main.html'
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
             setTimeout(logout, 150)
             setTimeout(showUsername, 150)
@@ -179,7 +179,7 @@ function showCategory() {
         }
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
             setTimeout(showCategory, 150)
             setTimeout(showUsername, 150)
@@ -232,9 +232,9 @@ function showSearch(name) {
         }
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(showSearch, 150)
+            setTimeout(showSearch(name), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -284,6 +284,9 @@ function showMoimAjax(url, contentId) {
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
+                let tags = response[i]['tags']
+                let leaderId = response[i]['userId']
+                let leaderName = response[i]['username']
 
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
@@ -291,6 +294,9 @@ function showMoimAjax(url, contentId) {
                                         <img src="../static/images/main-running.jpg" alt="">
                                             <span>${groupName}</span>
                                             <input type="hidden" value=${content}>
+                                            <input type="hidden" value=${tags}>
+                                            <input type="hidden" value=${leaderName}>
+                                            <input type="hidden" value=${leaderId}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
@@ -312,28 +318,72 @@ function showAllMoim() {
     let contentId = '#find-content';
     let url = "http://localhost:8080/group";
     $(contentId).empty()
-    $.ajax(showMoimAjax(url, contentId));
+    $.ajax(showMoimAjax(url, contentId)).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showAllMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 function showPopularMoim() {
     let contentId = '#popular-content';
     let url = "http://localhost:8080/group/popular";
     $(contentId).empty()
-    $.ajax(showMoimAjax(url, contentId));
+    $.ajax(showMoimAjax(url, contentId)).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showPopularMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 function showLeaderMoim() {
     let contentId = '#made-group';
     let url = "http://localhost:8080/leader/group";
     $(contentId).empty()
-    $.ajax(showMoimAjax(url, contentId));
+    $.ajax(showMoimAjax(url, contentId)).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showLeaderMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 function showParticipantMoim() {
     let contentId = '#participant-group';
     let url = "http://localhost:8080/participant/group";
     $(contentId).empty()
-    $.ajax(showMoimAjax(url, contentId));
+    $.ajax(showMoimAjax(url, contentId)).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showParticipantMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 
@@ -376,9 +426,9 @@ function showFilter(categoryId, status) {
         }
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(showFilter, 150)
+            setTimeout(showFilter(categoryId, status), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -437,9 +487,9 @@ function showReview(id) {
         }
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(showReview, 150)
+            setTimeout(showReview(id), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -477,7 +527,7 @@ function showRequestedGroup() {
         }
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
             setTimeout(showRequestedGroup, 150)
             setTimeout(showUsername, 150)
@@ -515,7 +565,7 @@ function showAppliedGroup() {
         }
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
             setTimeout(showAppliedGroup, 150)
             setTimeout(showUsername, 150)
@@ -540,9 +590,9 @@ function permitApplication(applicationId) {
         showRequestedGroup()
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(permitApplication, 150)
+            setTimeout(permitApplication(applicationId), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -564,9 +614,9 @@ function rejectApplication(applicationId) {
         showRequestedGroup()
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(rejectApplication, 150)
+            setTimeout(rejectApplication(applicationId), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -588,9 +638,9 @@ function cancelApplication(applicationId) {
         showAppliedGroup()
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(cancelApplication, 150)
+            setTimeout(cancelApplication(applicationId), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -605,7 +655,10 @@ function cancelApplication(applicationId) {
 function showMoimDetail(event, id) {
     let targetTitle = event.currentTarget.firstChild.nextSibling.children[1].innerText;
     let targetContent = event.currentTarget.firstChild.nextSibling.children[2].value;
+    let tags = event.currentTarget.firstChild.nextSibling.children[3].value;
     document.querySelector('#moimDetail_Title').innerText = targetTitle;
+    document.querySelector('#moimLeader').innerText = leaderName;
+    document.querySelector('#moimTag').innerText = tags;
     document.querySelector('#moimDetail_introduce').innerText = targetContent;
     document.getElementById('moimDetailId').value = id;
     showReview(id);
@@ -617,9 +670,14 @@ function showMoimDetail(event, id) {
 
 //미완
 function saveMoim() {
+    let tags = []
+    for (let i = 0; i < $('[name="tagsA"]').length; i++) {
+        tags.push($('[name="tagsA"]')[i].value)
+    }
+    console.log(tags)
     let jsonData = { // Body에 첨부할 json 데이터
         "name": $('#newMoim-title').val(),
-        "tagNames": [$('#tagt').val()], // 처음 입력한 값밖에 저장이 안됨 해결해야하ㅏ하하하하함
+        "tagNames": tags,
         "categoryName": $('#newMoim-category').val(),
         "content": $('#newMoim-content').val(),
         "recruitNumber": $('#newMoim-recruit').val(),
@@ -644,7 +702,7 @@ function saveMoim() {
         location.reload()
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
             setTimeout(saveMoim, 150)
             setTimeout(showUsername, 150)
@@ -668,9 +726,9 @@ function attendMoim(id) {
         location.reload()
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(attendMoim, 150)
+            setTimeout(attendMoim(id), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -693,9 +751,9 @@ function withdrawMoim(id) {
         showPopularMoim()
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(withdrawMoim, 150)
+            setTimeout(withdrawMoim(id), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -706,10 +764,11 @@ function withdrawMoim(id) {
 }
 
 function editMoim(id) {
+
     let jsonData = { // Body에 첨부할 json 데이터
         "name": $('#modifyMoim-title').val(),
         "tagNames": [$('#modifyMoim-tag').val()],
-        "categoryId": 6,
+        "categoryName": $('#modifyMoim-category').val(),
         "content": $('#modifyMoim-content').val(),
         "recruitNumber": $('#modifyMoim-recruit').val(),
         "address": "address",
@@ -731,9 +790,9 @@ function editMoim(id) {
         location.reload()
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(editMoim, 150)
+            setTimeout(editMoim(id), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -741,6 +800,7 @@ function editMoim(id) {
             alert(e.responseText['message'])
         }
     });
+
 }
 
 function deleteMoim(id) {
@@ -757,9 +817,9 @@ function deleteMoim(id) {
         showLeaderMoim()
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(deleteMoim, 150)
+            setTimeout(deleteMoim(id), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -782,9 +842,9 @@ function wishMoim(id) {
 
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(wishMoim, 150)
+            setTimeout(wishMoim(id), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -821,9 +881,9 @@ function addReviewMoim(id) {
         showReview(id)
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(addReviewMoim, 150)
+            setTimeout(addReviewMoim(id), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -854,9 +914,9 @@ function editReview(id) {
         }
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(editReview, 150)
+            setTimeout(editReview(id), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -880,9 +940,9 @@ function deleteReview(id) {
         }
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(deleteReview, 150)
+            setTimeout(deleteReview(id), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -949,9 +1009,9 @@ function gotoBoard(id) {
         });
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(gotoBoard, 150)
+            setTimeout(gotoBoard(id), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -1002,7 +1062,7 @@ function getMyProfile() {
         }
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
             setTimeout(getMyProfile, 150)
             setTimeout(showUsername, 150)
@@ -1055,9 +1115,9 @@ function updateProfile(content, pass) {
         window.location.reload()
     }).fail(function (e) {
         console.log(e.status)
-        if (e.status === 0) {
+        if (e.status === 401) {
             reissue()
-            setTimeout(updateProfile, 150)
+            setTimeout(updateProfile(content, pass), 150)
             setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
             alert(e.responseJSON['message'])
@@ -1094,11 +1154,14 @@ $(document).ready(function () {
     $('#search-field').keypress(function (event) {
         if (event.which == '13') {
             if (($(this).val() != '') && ($(".tags .addedTag:contains('" + $(this).val() + "') ").length == 0)) {
+                temp_html = `<li class="addedTag" id="added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
+               <input type="hidden" value="` + $(this).val() + `" name="tagsA">
+             </li>`
+                $('#tatag').append(temp_html)
 
+                console.log($('[name="tagsA"]').val())
 
-                $('<li class="addedTag" id="added">' + $(this).val() + '<span class="tagRemove" onclick="$(this).parent().remove();">x</span><input type="hidden" id="tagt" value="' + $(this).val() + '" name="tags[]"></li>').insertBefore('.tags .tagAdd');
                 $(this).val('');
-
             } else {
                 $(this).val('');
 
