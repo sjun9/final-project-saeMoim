@@ -127,6 +127,10 @@ public class Group extends TimeStamped {
 		return this.user.getId();
 	}
 
+	public String getCategoryName() {
+		return this.category.getName();
+	}
+
 	public boolean isLeader(String username) {
 		return this.getUsername().equals(username);
 	}

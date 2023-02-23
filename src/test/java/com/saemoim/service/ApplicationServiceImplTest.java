@@ -1,8 +1,14 @@
 package com.saemoim.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -93,16 +99,17 @@ class ApplicationServiceImplTest {
 	@DisplayName("리더가모임요청내역조회")
 	void getApplications() {
 		// given
-		var groupId = 1L;
 		var username = "nana";
 		var group = Group.builder().user(new User("e", "p", "nana", UserRoleEnum.USER)).build();
-		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
+		List<Group> list = new ArrayList<>();
+		list.add(group);
+		when(groupRepository.findByUser_username(anyString())).thenReturn(list);
 
 		// when
-		applicationService.getApplications(groupId, username);
+		applicationService.getApplications(username);
 
 		// then
-		verify(applicationRepository).findAllByGroupOrderByCreatedAt(group);
+		verify(applicationRepository).findAllByGroups(list);
 
 	}
 

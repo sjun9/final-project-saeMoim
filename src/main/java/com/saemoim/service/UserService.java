@@ -32,7 +32,7 @@ public interface UserService {
 
 	ProfileResponseDto getMyProfile(Long id, CurrentPasswordRequestDto passwordRequestDto);
 
-	void updateProfile(Long userId, ProfileRequestDto requestDto);
+	ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto);
 
 	TokenResponseDto reissueToken(String accessToken, String refreshToken);
 }

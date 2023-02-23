@@ -31,7 +31,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity    // @Secured 어노테이션 활성화
+@EnableMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class WebSecurityConfig implements WebMvcConfigurer {
 
@@ -39,7 +39,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-	// 비밀번호 단방향 암호화 인코더
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -59,53 +58,40 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		// jwt 방식에선 사용하지 않아도 됨.
 		http.csrf().disable();
-		// Session 방식 사용하지 않고 JWT 방식 사용하기 위한 설정
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-		// 내용 추가 필요함. 로그인 페이지, 회원가입 페이지 등
 		http.authorizeHttpRequests()
 			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-			.requestMatchers("/sign-up").permitAll()
+			.requestMatchers("/sign-up/**").permitAll()
 			.requestMatchers("/sign-in").permitAll()
 			.requestMatchers("/reissue").permitAll()
-			.requestMatchers("/log-out").permitAll()
-				.requestMatchers("/allPost").permitAll() // 지워도 됩니다 테스트용
-				.requestMatchers("/post/**").permitAll() // 지워도 됩니다 테스트용
-				.requestMatchers("/posts/**").permitAll() // 지워도 됩니다 테스트용
-				.requestMatchers("/profile/**").permitAll() // 지워도 됩니다 테스트용
-				.requestMatchers("/comments/**").permitAll() // 지워도 됩니다 테스트용
-			.requestMatchers("/withdraw").permitAll()
 			.requestMatchers("/admin/sign-in").permitAll()
 			.requestMatchers("/email/**").permitAll()
 			.requestMatchers("/category").permitAll()
+			.requestMatchers("/tag").permitAll()
 			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/groups/**").permitAll()
 			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admins/**").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString(), UserRoleEnum.ROOT.toString())
+			.anyRequest().authenticated()
 			.and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
-		// .anyRequest().authenticated();	// 모든 요청에 대해 인증. 당장 사용하지 않으므로 주석 처리
 
+		http.cors();
 		http.formLogin().disable();
-		// .loginPage("/로그인form url").permitAll();
 
-		// http.addFilterBefore(new CustomSecurityFilter(userDetailsService, passwordEncoder()),
-		// 	UsernamePasswordAuthenticationFilter.class);
-
-		// 접근 제한 페이지 이동
-		// http.exceptionHandling().accessDeniedPage("/api/user/forbidden");
 		http.exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint);
 		http.exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);
 
-		return http.build();    // 상기 설정들을 빌드하여 리턴
+		return http.build();
 	}
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
 			.allowedMethods("GET", "POST", "DELETE", "PUT", "OPTIONS", "PATCH")
-			.exposedHeaders("Authorization");
+			.exposedHeaders("Authorization", "Refresh_Token");
+		// .allowedOrigins("*");
 	}
 }

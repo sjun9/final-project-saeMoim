@@ -58,6 +58,10 @@ public class Application extends TimeStamped {
 		return this.group.getName();
 	}
 
+	public String getLeaderName() {
+		return this.group.getUsername();
+	}
+
 	public Long getUserId() {
 		return this.user.getId();
 	}

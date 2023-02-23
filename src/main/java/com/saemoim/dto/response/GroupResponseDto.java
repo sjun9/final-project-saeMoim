@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 public class GroupResponseDto implements Comparable<GroupResponseDto> {
 	private Long id;
 	private List<String> tags;
+	private String categoryName;
 	private String groupName;
 	private Long userId;
 	private String username;
@@ -31,12 +32,11 @@ public class GroupResponseDto implements Comparable<GroupResponseDto> {
 	private Integer wishCount;
 	private int recruitNumber;
 	private int participantCount;
-	private String createdAt;
-	private String modifiedAt;
 
 	public GroupResponseDto(Group group) {
 		this.id = group.getId();
 		this.tags = group.getTags().stream().map(Tag::getName).toList();
+		this.categoryName = group.getCategoryName();
 		this.groupName = group.getName();
 		this.userId = group.getUserId();
 		this.username = group.getUsername();
@@ -50,8 +50,6 @@ public class GroupResponseDto implements Comparable<GroupResponseDto> {
 		this.wishCount = group.getWishCount();
 		this.recruitNumber = group.getRecruitNumber();
 		this.participantCount = group.getParticipantCount();
-		this.createdAt = group.getCreatedAt().toString();
-		this.modifiedAt = group.getModifiedAt().toString();
 	}
 
 	@Override

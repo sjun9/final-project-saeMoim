@@ -2,6 +2,7 @@ package com.saemoim.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -15,13 +16,19 @@ public class ControllerExceptionHandler {
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ExceptionResponseDto handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-		return new ExceptionResponseDto(HttpStatus.BAD_REQUEST, e.getAllErrors().get(0).getDefaultMessage());
+	public ExceptionResponseDto handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+		return new ExceptionResponseDto(HttpStatus.BAD_REQUEST, e.getMessage());
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponseDto handleIllegalArgumentException(IllegalArgumentException e) {
+		return new ExceptionResponseDto(HttpStatus.BAD_REQUEST, e.getMessage());
+	}
+
+	@ExceptionHandler(NullPointerException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponseDto handleNullPointerException(NullPointerException e) {
 		return new ExceptionResponseDto(HttpStatus.BAD_REQUEST, e.getMessage());
 	}
 
@@ -31,4 +38,17 @@ public class ControllerExceptionHandler {
 		log.info("Internal Server Error", e);
 		return new ExceptionResponseDto(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR.getMessage());
 	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponseDto MethodArgumentNotValidException(MethodArgumentNotValidException e) {
+		return new ExceptionResponseDto(HttpStatus.BAD_REQUEST, e.getAllErrors().get(0).getDefaultMessage());
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public ExceptionResponseDto handleAccessDeniedException(AccessDeniedException e) {
+		return new ExceptionResponseDto(HttpStatus.FORBIDDEN, e.getMessage());
+	}
+
 }

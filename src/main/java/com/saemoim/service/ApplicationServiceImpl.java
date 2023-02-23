@@ -66,14 +66,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ApplicationResponseDto> getApplications(Long groupId, String username) {
-		Group group = groupRepository.findById(groupId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
-		);
-		if (!group.isLeader(username)) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
-		}
-		List<Application> applications = applicationRepository.findAllByGroupOrderByCreatedAt(group);
+	public List<ApplicationResponseDto> getApplications(String username) {
+		List<Group> groups = groupRepository.findByUser_username(username);
+		List<Application> applications = applicationRepository.findAllByGroups(groups);
 
 		return applications.stream().map(ApplicationResponseDto::new).toList();
 	}

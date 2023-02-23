@@ -1,17 +1,10 @@
 package com.saemoim.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +28,8 @@ import com.saemoim.domain.Admin;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.AdminRequestDto;
 import com.saemoim.dto.response.AdminResponseDto;
+import com.saemoim.dto.response.AdminTokenResponseDto;
 import com.saemoim.dto.response.MessageResponseDto;
-import com.saemoim.dto.response.TokenResponseDto;
 import com.saemoim.service.AdminServiceImpl;
 
 @ExtendWith(SpringExtension.class)
@@ -53,7 +46,7 @@ class AdminControllerTest {
 	@WithCustomMockUser
 	void signInByAdmin() throws Exception {
 		//given
-		TokenResponseDto responseDto = mock(TokenResponseDto.class);
+		AdminTokenResponseDto responseDto = mock(AdminTokenResponseDto.class);
 		AdminRequestDto requestDto = AdminRequestDto.builder()
 			.password("asdf1234!")
 			.username("장성준")

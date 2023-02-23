@@ -38,6 +38,8 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public void signUp(SignUpRequestDto requestDto) {
+		checkEmailDuplication(new EmailRequestDto(requestDto.getEmail()));
+		checkUsernameDuplication(new UsernameRequestDto(requestDto.getUsername()));
 		User user = new User(requestDto.getEmail(), passwordEncoder.encode(requestDto.getPassword()),
 			requestDto.getUsername(), UserRoleEnum.USER);
 
@@ -105,8 +107,8 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage());
 		}
 
-		return new TokenResponseDto(jwtUtil.createAccessToken(userId, user.getUsername(), user.getRole()),
-			issueRefreshToken(userId, accessToken));
+		String newAccessToken = jwtUtil.createAccessToken(userId, user.getUsername(), user.getRole());
+		return new TokenResponseDto(newAccessToken, issueRefreshToken(userId, newAccessToken));
 	}
 
 	@Transactional
@@ -161,13 +163,14 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public void updateProfile(Long userId, ProfileRequestDto requestDto) {
+	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto) {
 		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 		String changedPassword = passwordEncoder.encode(requestDto.getPassword());
 		user.updateProfile(requestDto, changedPassword);
 		userRepository.save(user);
+		return new ProfileResponseDto(user);
 	}
 
 	private void deleteRefreshToken(String refreshToken) {
