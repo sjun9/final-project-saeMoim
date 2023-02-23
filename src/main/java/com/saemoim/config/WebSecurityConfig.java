@@ -72,6 +72,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 			.requestMatchers("/reissue").permitAll()
 			.requestMatchers("/log-out").permitAll()
 				.requestMatchers("/allPost").permitAll() // 지워도 됩니다 테스트용
+				.requestMatchers("/post/**").permitAll() // 지워도 됩니다 테스트용
 				.requestMatchers("/posts/**").permitAll() // 지워도 됩니다 테스트용
 				.requestMatchers("/profile/**").permitAll() // 지워도 됩니다 테스트용
 				.requestMatchers("/comments/**").permitAll() // 지워도 됩니다 테스트용

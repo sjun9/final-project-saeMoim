@@ -32,5 +32,6 @@ public class PostResponseDto {
 		this.content = savedPost.getContent();
 		this.createdAt = savedPost.getCreatedAt();
 		this.modifiedAt = savedPost.getModifiedAt();
+		this.likeCount = savedPost.getLikeCount();
 	}
 }

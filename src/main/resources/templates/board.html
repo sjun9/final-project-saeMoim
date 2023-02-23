@@ -100,7 +100,7 @@
             <img src="../static/images/main-english.jpg" alt="" style="max-width: 45%; margin: 20px 0;">
             <p id="readPostModalContent"></p>
           </div>
-          <button type="button" class="btn btn-danger" onclick="deletePost(event)" style="float: right;">게시글 삭제</button>
+          <button type="button" class="btn btn-danger" onclick="gotoDeletePost(event)" style="float: right;">게시글 삭제</button>
           <button type="button" class="btn btn-secondary" onclick="gotoEditPost(event)" style="float: right; margin-right: 8px;">게시글 수정</button>
           <div class="container">
             <form id="commentForm" name="commentForm" method="post">
@@ -166,7 +166,7 @@
               <input type="file" class="form-control" id="editPost-image">
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+              <button type="button" class="btn btn-secondary" onclick="cancleEdit(event)" data-bs-dismiss="modal">취소</button>
               <button type="button" class="btn btn-primary" onclick="editPost(event)">수정</button>
             </div>
           </form>

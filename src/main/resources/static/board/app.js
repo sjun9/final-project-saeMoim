@@ -1,11 +1,11 @@
 /**
  * 임시 정보
  */
-const Authorization = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiTmFtZSI6ImJiYiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjc3MTAwNTg2LCJpYXQiOjE2NzcwOTkzODZ9.BLR4u0wNfdNLBmZXuGoCzZ-YA0QWsKZBEv5yEno-s-g"
-const Refresh_Token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiZXhwIjoxNjc3MTAyOTg2LCJpYXQiOjE2NzcwOTkzODZ9.wmhym_HsIKVXmOaRd92jVJGSZL3u0CPifC8dXeD10LY"
+const Authorization = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiTmFtZSI6ImJiYiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjc3MTUzNTAyLCJpYXQiOjE2NzcxNTIzMDJ9.aMmSaqM4xmWWSBkqVYBh44UUzTTc-mwXP4syA-PDjms"
+const Refresh_Token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiZXhwIjoxNjc3MTU1OTAyLCJpYXQiOjE2NzcxNTIzMDJ9.TD-Qa67nwcA7mJyR-ESAPwH_XvCI7ggH09Ymbxhh-o4"
 
 const tempGroupId = "1" // main -> board 전환시, 현재 어느 그룹의 게시판으로 넘어왔는지 localStorage에 저장후 getItem하여 활용
-const tempUserId = "2" // 현재 로그인중인(나의) userId는 어떻게 들고오나요? (수정 삭제 시 본인확인용)
+const tempUserId = "2" // 현재 로그인한 사람 user id -> localStorage에 저장후 getItem하여 활용?
 // 그리고 webconfig permitAll ???
 
 
@@ -35,7 +35,7 @@ function getGroupProfileIdList() {
 }
 
 
-// 프로필 리스트 전체 삭제
+// 기존 프로필 리스트 전체 삭제
 function deleteProfileList() {
   const userZone = document.querySelector('#user_zone');
   while (userZone.firstChild) {
@@ -123,7 +123,7 @@ profile()
  */
 
 
-// 게시글 생성 (토큰 필요)
+// 게시글 생성
 function newPost() {
   const newPostTitle = document.querySelector("#newPost-title").value
   const newPostContent = document.querySelector("#newPost-content").value
@@ -175,12 +175,12 @@ function openBody(event) {
 }
 
 
-
+// 게시글 수정
 function editPost(event) {
   const new_title = document.querySelector("#editPost-title").value
   const new_content = document.querySelector("#editPost-content").value
   const currentPostId = localStorage.getItem("current_post_id")
-  
+
   var settings = {
     "url": "http://localhost:8080/posts/" + currentPostId,
     "method": "PUT",
@@ -195,7 +195,7 @@ function editPost(event) {
       "content": new_content
     }),
   };
-  
+
   $.ajax(settings).done(function (response) {
     console.log(response);
     alert("수정 완료")
@@ -210,16 +210,15 @@ function editPost(event) {
 }
 
 
-
 // 게시글 수정 모달창 열기
 // 추후 게시글 이미지 url 추가 필요함
 function editPostModal(event) {
   // 값 가져와서 수정 api
-  
+
   const original_title = document.querySelector('#readPostModalLabel').innerText
   const original_content = document.querySelector('#readPostModalContent').innerText
 
-  document.querySelector("#closeReadPostModal").click() // 모달창 닫고
+  document.querySelector("#closeReadPostModal").click() // 게시글 모달창 닫고
   document.querySelector("#openEdit").click() // 수정 모달창 열기
 
   document.querySelector("#editPost-title").value = original_title
@@ -238,12 +237,52 @@ function gotoEditPost(event) {
 }
 
 
-// 게시글 삭제
-function deletePost(event) {
-  // 유저 확인하고 글 삭제
-  alert("게시글 삭제")
+// 게시글 수정 취소
+function cancleEdit(event) {
+  document.querySelector("#closeReadPostModal").click() // 수정 모달창 닫고
+  document.querySelector("#openRead").click() // 게시글 모달창 열기
 }
 
+
+// 게시글 삭제
+function deletePost(event) {
+  const currentPostId = localStorage.getItem("current_post_id")
+
+  var settings = {
+    "url": "http://localhost:8080/posts/" + currentPostId,
+    "method": "DELETE",
+    "timeout": 0,
+    "headers": {
+      "Authorization": Authorization,
+      "Refresh_Token": Refresh_Token
+    },
+  };
+
+  $.ajax(settings).done(function (response) {
+    alert("삭제 되었습니다.");
+    location.reload()
+  });
+}
+
+
+// 게시글 삭제 확인 메세지
+function AskDeletePost(event) {
+  // 유저 확인하고 글 삭제
+  if (confirm("게시글을 삭제하시겠습니까?")) {
+    deletePost(event)
+  }
+}
+
+
+// 게시글 삭제 전 유저검증
+function gotoDeletePost(event) {
+  const currentPostUserId = localStorage.getItem("current_post_user_id")
+  if (tempUserId !== currentPostUserId) {
+    alert('작성자만 삭제 가능합니다');
+    return;
+  }
+  AskDeletePost(event)// 댓글 수정모드 전환
+}
 
 
 /**
@@ -277,7 +316,7 @@ function setPostsCount() {
 }
 
 
-// 해당 페이지 게시글 리스트 가져오기
+// 해당 페이지 게시글 리스트 가져오기 
 function getPosts(pageNum, sizeNum) {
   $.ajax({
     type: 'GET',
@@ -302,11 +341,33 @@ const makeContent = (i) => {
   const content__header = document.createElement("div");
   content__header.classList.add("content__header");
 
+  let simpleCreatedAt = "null"
+  let likeChecked = ""
+  let currentLikeCount = currentPost["likeCount"]
+
+  // 좋아요 체크여부 가져오기
+  checkLike(currentPost["id"]) // localStorage에 현재 게시글 좋아요 체크 여부를 저장
+  if (localStorage.getItem("currentLikeChecked") === "true") { likeChecked += "active" }
+
+  if (currentPost["createdAt"]) { // createdAt이 null일 경우 페이지 로딩 안됨... 임시로 if문 적용
+    const createdAt = String(currentPost["createdAt"])
+    const simpleCreatedAtDate = createdAt.split('.')[0].split('T')[0]
+    const simpleCreatedAtHour = createdAt.split('.')[0].split('T')[1].split(':')[0]
+    const simpleCreatedAtMin = createdAt.split('.')[0].split('T')[1].split(':')[1]
+    simpleCreatedAt = ""
+    simpleCreatedAt = simpleCreatedAtDate + " " + simpleCreatedAtHour + ":" + simpleCreatedAtMin
+  }
+  // console.log(currentPost)
   content__header.innerHTML = `
     <span class="content__header__id">${currentPost["id"]}</span>
+    <a href="#" class="like-button content__header__likeButton ${likeChecked}">
+      <div class="content__header__likeNumber">${currentLikeCount}</div>
+      <?xml version="1.0" encoding="utf-8"?>
+      <svg width="20" height="20" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M320 1344q0-26-19-45t-45-19q-27 0-45.5 19t-18.5 45q0 27 18.5 45.5t45.5 18.5q26 0 45-18.5t19-45.5zm160-512v640q0 26-19 45t-45 19h-288q-26 0-45-19t-19-45v-640q0-26 19-45t45-19h288q26 0 45 19t19 45zm1184 0q0 86-55 149 15 44 15 76 3 76-43 137 17 56 0 117-15 57-54 94 9 112-49 181-64 76-197 78h-129q-66 0-144-15.5t-121.5-29-120.5-39.5q-123-43-158-44-26-1-45-19.5t-19-44.5v-641q0-25 18-43.5t43-20.5q24-2 76-59t101-121q68-87 101-120 18-18 31-48t17.5-48.5 13.5-60.5q7-39 12.5-61t19.5-52 34-50q19-19 45-19 46 0 82.5 10.5t60 26 40 40.5 24 45 12 50 5 45 .5 39q0 38-9.5 76t-19 60-27.5 56q-3 6-10 18t-11 22-8 24h277q78 0 135 57t57 135z"/></svg>
+    </a>
     <span class="content__header__title" onclick="openBody(event)" data-bs-toggle="modal" data-bs-target="#readPostModal">${currentPost["title"]}</span>
     <span class="content__header__author">${currentPost["username"]}</span>
-    <span class="content__header__date">${currentPost["createdAt"]}</span>
+    <span class="content__header__date">${simpleCreatedAt}</span>
   `;
 
   contentwrap.appendChild(content__header);
@@ -364,6 +425,7 @@ const renderContent = (page) => {
   for (let i = 0; i <= postArray.length - 1; i++) {
     contents.appendChild(makeContent(i));
   }
+  addLikeFeatureToButtons()
 };
 
 
@@ -439,7 +501,7 @@ function renderComments(currentPostId) {
       "Refresh_Token": Refresh_Token
     },
   };
-  
+
   $.ajax(settings).done(function (response) {
     var cCnt = response.length;
     document.querySelector("#cCnt").innerText = cCnt;
@@ -503,13 +565,13 @@ function writeComment() {
       "comment": commentStr
     }),
   };
-  
+
   $.ajax(settings).done(function (response) {
     alert("댓글작성 완료")
     document.querySelector("#comment").value = ""
     renderComments(currentPostId) // 댓글목록 새로 불러오기
   });
-  
+
 }
 
 
@@ -531,7 +593,7 @@ function editComment(event) {
       "comment": newCommentStr
     }),
   };
-  
+
   $.ajax(settings).done(function (response) {
     alert("수정 완료")
     renderComments(currentPostId)
@@ -566,7 +628,7 @@ function gotoEditComment(event) {
 function deleteComment(event) {
   const currentPostId = localStorage.getItem("current_post_id")
   const currentCommentId = event.currentTarget.nextElementSibling.nextElementSibling.innerText
-  
+
   var settings = {
     "url": "http://localhost:8080/comments/" + currentCommentId,
     "method": "DELETE",
@@ -577,7 +639,7 @@ function deleteComment(event) {
       "Content-Type": "application/json"
     },
   };
-  
+
   $.ajax(settings).done(function (response) {
     alert("삭제 완료")
     renderComments(currentPostId)
@@ -596,6 +658,121 @@ function gotoDeleteComment(event) {
 
 
 
+
+
+/**
+ * 좋아요
+ */
+
+// 좋아요 버튼
+function addLikeFeatureToButtons() {
+  const like_buttons = document.querySelectorAll(".like-button");
+
+  like_buttons.forEach((button) => {
+    button.addEventListener("click", function (e) {
+      console.log('hi')
+      e.preventDefault();
+      this.classList.toggle("active"); // 좋아요 상태를 변경
+  
+      let currentLikeCount = parseInt(this.firstElementChild.innerText)
+      
+      const nodes = [...e.currentTarget.parentElement.parentElement.parentElement.children];
+      let index = nodes.indexOf(e.currentTarget.parentElement.parentElement);
+      
+      const postArray = JSON.parse(localStorage.getItem("pagedPostList")) // to get postId
+      let currentPostId = postArray[index]["id"]
+  
+      // 변경된 상태에 따라 동작
+      if (this.classList.contains('active')) {
+        doLike(currentPostId)
+        e.currentTarget.classList.add("animated");
+        currentLikeCount = currentLikeCount + 1
+        this.firstElementChild.innerText = String(currentLikeCount)
+      } else {
+        unLike(currentPostId)
+        e.currentTarget.classList.remove("animated");
+        currentLikeCount = currentLikeCount - 1
+        this.firstElementChild.innerText = String(currentLikeCount)
+      }
+    });
+  })
+  
+}
+
+
+
+function plusOrMinus() {
+  return Math.random() < 0.5 ? -1 : 1;
+}
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+
+// 좋아요 여부 확인 -> 좋아요 선택되어있게 표시
+function checkLike(postId) {
+  console.log(String(postId))
+  $.ajax({
+    type: "GET",
+    url: "http://localhost:8080/post/" + String(postId) + "/likeCheck",
+    async: false,
+    data: {},
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader("Authorization", Authorization);
+      xhr.setRequestHeader("Refresh_Token", Refresh_Token);
+    },
+    success: function (response) {
+      if (response["message"] === "true") {
+        localStorage.setItem("currentLikeChecked", true)
+      } else {
+        localStorage.setItem("currentLikeChecked", false)
+      }
+    }
+  });
+}
+
+
+// 좋아요 누르기
+function doLike(postId) {
+  var settings = {
+    "url": "http://localhost:8080/post/" + String(postId) + "/like",
+    "method": "POST",
+    "timeout": 0,
+    "headers": {
+      "Authorization": Authorization,
+      "Refresh_Token": Refresh_Token
+    },
+  };
+  
+  $.ajax(settings).done(function (response) {
+    console.log(response);
+  }).fail(function () {
+    alert("like failed")
+    location.reload()
+  });
+}
+
+
+// 좋아요 취소
+function unLike(postId) {
+  var settings = {
+    "url": "http://localhost:8080/post/" + String(postId) + "/unlike",
+    "method": "POST",
+    "timeout": 0,
+    "headers": {
+      "Authorization": Authorization,
+      "Refresh_Token": Refresh_Token
+    },
+  };
+  
+  $.ajax(settings).done(function (response) {
+    console.log(response);
+  }).fail(function () {
+    alert("unlike failed")
+    location.reload()
+  });
+}
 
 
 
