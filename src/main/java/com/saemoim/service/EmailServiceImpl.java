@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.saemoim.domain.User;
 import com.saemoim.exception.ErrorCode;
+import com.saemoim.redis.RedisUtil;
 import com.saemoim.repository.UserRepository;
 
 import jakarta.mail.MessagingException;
@@ -22,6 +23,8 @@ public class EmailServiceImpl implements EmailService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JavaMailSender emailSender;
+	private final RedisUtil redisUtil;
+
 	private String authCode;
 	private String tempPassword;
 
@@ -61,11 +64,18 @@ public class EmailServiceImpl implements EmailService {
 		return message;
 	}
 
+	public String getEmailAuthCode(String email) {
+		if (!redisUtil.isExists(email.replace("@", ""))) {
+			throw new IllegalArgumentException(ErrorCode.NOT_FOUND_AUTH_CODE.getMessage());
+		}
+		return redisUtil.getData(email.replace("@", ""));
+	}
+
 	@Override
-	public String sendEmail(String toEmail) throws MessagingException {
+	public void sendEmail(String toEmail) throws MessagingException {
 		MimeMessage emailForm = createEmailForm(toEmail);
 		emailSender.send(emailForm);
-		return authCode;
+		redisUtil.setData(toEmail.replace("@", ""), authCode, 3 * 60 * 1000L);
 	}
 
 	// 비밀번호 찾기 시 메일 발송
