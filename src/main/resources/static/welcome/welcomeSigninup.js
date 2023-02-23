@@ -89,7 +89,7 @@ function login() {
         localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
         localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
 
-        window.location = './main.html'
+        location.replace('./main.html')
     }).fail(function () {
         alert("이메일과 비밀번호를 다시 확인 해주세요.")
     });
@@ -123,12 +123,10 @@ function checkAndSendCode() {
 
         }
         ischeckemailDuplication = true;
-        ;
 
         $.ajax(sendAuthenticationCodesettings
-        ).done(function (response, status, xhr) {
-            alert("인증코드를 이메일을 발송 했습니다.")
-            localStorage.setItem('authCode', response['authCode']);
+        ).done(function (response) {
+            alert("인증코드를 이메일로 발송 했습니다.\n제한 시간은 3분 입니다.")
 
         })
     }).fail(function (response) {
@@ -144,16 +142,23 @@ function checkAndSendCode() {
 
 // 메일로 보낸 인증 코드 확인
 function checkAuthCode() {
-
-    $.ajax().done
-    const inputValue = $('#email-authentication-code').val();
-    if (inputValue === localStorage.getItem('authCode')) {
-        alert("인증 되었습니다.");
-        ischeckAuthCode = true;
-
-    } else {
-        alert("인증 코드를 다시 확인 해주세요.")
-    }
+    $.ajax({
+        type: 'POST',
+        url: "http://localhost:8080/email/check",
+        data: JSON.stringify({email: $('#signup-email').val()}),
+        dataType: "JSON",
+        contentType: "application/json; charset=utf-8",
+        success: function (response) {
+            if (response['authCode'] === $('#email-authentication-code').val()) {
+                alert("인증 되었습니다.");
+                ischeckAuthCode = true;
+            } else {
+                alert("인증 코드가 틀렸습니다.")
+            }
+        }
+    }).fail(function (response) {
+        alert(response.responseJSON['message'])
+    });
 }
 
 
@@ -194,7 +199,6 @@ function signup() {
 
     if (isCheckUsernameDuplication && ischeckAuthCode && ischeckemailDuplication && ischeckpassword) {
         $.ajax(settings).done(function (response) {
-            localStorage.removeItem('authCode');
             alert("회원가입 완료")
             userForms.classList.remove('bounceLeft')
             userForms.classList.add('bounceRight')
