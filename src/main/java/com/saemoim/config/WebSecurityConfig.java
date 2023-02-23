@@ -63,6 +63,13 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 
 		http.authorizeHttpRequests()
 			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.requestMatchers("/log-out").permitAll()
+				.requestMatchers("/allPost").permitAll() // 지워도 됩니다 테스트용
+				.requestMatchers("/post/**").permitAll() // 지워도 됩니다 테스트용
+				.requestMatchers("/posts/**").permitAll() // 지워도 됩니다 테스트용
+				.requestMatchers("/profile/**").permitAll() // 지워도 됩니다 테스트용
+				.requestMatchers("/comments/**").permitAll() // 지워도 됩니다 테스트용
+				.requestMatchers("/withdraw").permitAll()
 			.requestMatchers("/sign-up/**").permitAll()
 			.requestMatchers("/sign-in").permitAll()
 			.requestMatchers("/reissue").permitAll()
@@ -75,7 +82,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admins/**").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString(), UserRoleEnum.ROOT.toString())
-			.anyRequest().authenticated()
+			.anyRequest().authenticated() // 되는데요 안됩니다 내말뤼 내말뤼
 			.and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
 		http.cors();

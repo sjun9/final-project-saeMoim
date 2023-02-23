@@ -176,7 +176,7 @@ a:visited {
 }
 
 .account-info-name {
-    font-size: 14px;
+    font-size: 15px;
     color: var(--sidebar-main-color);
     margin: 0 8px;
     overflow: hidden;
@@ -540,7 +540,7 @@ a:visited {
 .gridView .products-row {
     margin: 8px;
     width: calc(25% - 16px);
-    height: calc(50% - 16px);
+    height: 100%;
     background-color: var(--app-content-secondary-color);
     padding: 8px;
     border-radius: 4px;
@@ -668,9 +668,10 @@ a:visited {
 }
 
 .fixed_headers {
-    width: 750px;
+    min-height: 100px;
     table-layout: fixed;
     border-collapse: collapse;
+    background-color: #f5f5f5;
 }
 
 th {
@@ -783,4 +784,10 @@ P, H1 {
 
 p {
     color: #ccc;
+}
+
+.mypageTable {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }

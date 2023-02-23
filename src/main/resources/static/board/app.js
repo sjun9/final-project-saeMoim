@@ -1,36 +1,38 @@
 /**
  * 임시 정보
  */
-const Authorization = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiTmFtZSI6ImJiYiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjc3MTUzNTAyLCJpYXQiOjE2NzcxNTIzMDJ9.aMmSaqM4xmWWSBkqVYBh44UUzTTc-mwXP4syA-PDjms"
-const Refresh_Token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiZXhwIjoxNjc3MTU1OTAyLCJpYXQiOjE2NzcxNTIzMDJ9.TD-Qa67nwcA7mJyR-ESAPwH_XvCI7ggH09Ymbxhh-o4"
+// const Authorization = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiTmFtZSI6ImJiYiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjc3MTY3NDg4LCJpYXQiOjE2NzcxNjYyODh9.sMYFSF56Hobd0qsCvuENY6cxlGIGylIU1dfj5aOT_ns"
+// const Refresh_Token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiZXhwIjoxNjc3MTY5ODg4LCJpYXQiOjE2NzcxNjYyODh9.OxXhznYD-J6_VcEAIW3WROaitYp59bWOJopLB7jB2Ms"
 
-const tempGroupId = "1" // main -> board 전환시, 현재 어느 그룹의 게시판으로 넘어왔는지 localStorage에 저장후 getItem하여 활용
-const tempUserId = "2" // 현재 로그인한 사람 user id -> localStorage에 저장후 getItem하여 활용?
-// 그리고 webconfig permitAll ???
+// const tempGroupId = "1"dw
+// const tempUserId = "2"
 
+let Authorization = localStorage.getItem("Authorization")
+let Refresh_Token = localStorage.getItem("Refresh_Token")
 
-
+let tempGroupId = localStorage.getItem("current_group_id")
+let tempUserId = localStorage.getItem("current_user_id")
 
 /**
  * 우측 프로필 리스트
  */
 
 
-// 해당 그룹 참여자 리스트 가져와서 localStorage에 저장
+// 현재 그룹 참여자 리스트 가져와서 localStorage에 저장
 function getGroupProfileIdList() {
-  var settings = {
-    "url": "http://localhost:8080/group/" + tempGroupId + "/participant",
-    "method": "GET",
-    "timeout": 0,
-    "headers": {
-      "Authorization": Authorization,
-      "Refresh_Token": Refresh_Token
+  $.ajax({
+    type: "GET",
+    url: "http://localhost:8080/participant/groups/" + tempGroupId,
+    async: false,
+    data: {},
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader("Authorization", Authorization);
+      xhr.setRequestHeader("Refresh_Token", Refresh_Token);
     },
-  };
-
-  $.ajax(settings).done(function (response) {
-    localStorage.setItem("profileIdList", JSON.stringify(response));
-    const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
+    success: function (response) {
+      localStorage.setItem("profileIdList", JSON.stringify(response));
+      // const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
+    }
   });
 }
 
@@ -106,8 +108,10 @@ function openProfile(event) {
 }
 
 function profile() {
+  // 리더프로필정보 가져오기
   getGroupProfileIdList()
   deleteProfileList()
+  // 리더프로필 추가
   renderProfileList()
 }
 profile()
@@ -295,10 +299,10 @@ const contents = document.querySelector(".contents");
 const buttons = document.querySelector(".buttons");
 
 setPostsCount();
-const numOfContent = localStorage.getItem("postsCount");// 전체 게시글 갯수
+let numOfContent = localStorage.getItem("postsCount");// 전체 게시글 갯수
 const maxContent = 10; // 표시할 게시글 갯수
 const maxButton = 5; // 표시할 버튼 갯수
-const maxPage = Math.ceil(numOfContent / maxContent);
+let maxPage = Math.ceil(numOfContent / maxContent);
 let page = 1; // 새로고침 시 1페이지부터 시작
 
 
@@ -306,7 +310,7 @@ let page = 1; // 새로고침 시 1페이지부터 시작
 function setPostsCount() {
   $.ajax({
     type: 'GET',
-    url: "http://localhost:8080/posts/groups/1/count",
+    url: "http://localhost:8080/posts/groups/" + tempGroupId + "/count",
     data: {},
     async: false, // 비동기 해제
     success: function (response) {
@@ -320,7 +324,7 @@ function setPostsCount() {
 function getPosts(pageNum, sizeNum) {
   $.ajax({
     type: 'GET',
-    url: "http://localhost:8080/posts/groups/1?page=" + pageNum + "&size=" + sizeNum,
+    url: "http://localhost:8080/posts/groups/" + tempGroupId + "?page=" + pageNum + "&size=" + sizeNum,
     data: {},
     async: false, // 비동기 해제
     success: function (data) {
@@ -437,6 +441,7 @@ const renderButton = (page) => {
   for (let i = page; i < page + maxButton && i <= maxPage; i++) {
     buttons.appendChild(makeButton(i));
   }
+  console.log(page)
   buttons.children[0].classList.add("active"); // 첫 로딩시 가장 왼쪽 페이지 선택
 
   const createdButtons = document.querySelectorAll('.button');
@@ -464,6 +469,7 @@ function gotoPageNum(event) {
 
 // 해당 페이지 게시글 및 버튼 렌더링
 const render = (page) => {
+  document.querySelector('#moim_title').innerText = tempGroupId + "번 게시판"
   renderContent(page);
   renderButton(page);
 };
@@ -493,7 +499,7 @@ function renderComments(currentPostId) {
   }
 
   var settings = {
-    "url": "http://localhost:8080/comments/" + currentPostId,
+    "url": "http://localhost:8080/posts/" + currentPostId + "/comment",
     "method": "GET",
     "timeout": 0,
     "headers": {
@@ -712,10 +718,10 @@ function randomInt(min, max) {
 
 // 좋아요 여부 확인 -> 좋아요 선택되어있게 표시
 function checkLike(postId) {
-  console.log(String(postId))
+  // console.log(String(postId))
   $.ajax({
     type: "GET",
-    url: "http://localhost:8080/post/" + String(postId) + "/likeCheck",
+    url: "http://localhost:8080/posts/" + String(postId) + "/likeCheck",
     async: false,
     data: {},
     beforeSend: function (xhr) {
@@ -736,7 +742,7 @@ function checkLike(postId) {
 // 좋아요 누르기
 function doLike(postId) {
   var settings = {
-    "url": "http://localhost:8080/post/" + String(postId) + "/like",
+    "url": "http://localhost:8080/posts/" + String(postId) + "/like",
     "method": "POST",
     "timeout": 0,
     "headers": {
@@ -757,8 +763,8 @@ function doLike(postId) {
 // 좋아요 취소
 function unLike(postId) {
   var settings = {
-    "url": "http://localhost:8080/post/" + String(postId) + "/unlike",
-    "method": "POST",
+    "url": "http://localhost:8080/posts/" + String(postId) + "/like",
+    "method": "DELETE",
     "timeout": 0,
     "headers": {
       "Authorization": Authorization,
