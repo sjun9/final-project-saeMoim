@@ -161,6 +161,9 @@ public class GroupServiceImpl implements GroupService {
 		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
+		if (groupRepository.existsByName(requestDto.getName())) {
+			throw new IllegalArgumentException(ErrorCode.DUPLICATED_GROUP_NAME.getMessage());
+		}
 		// 카테고리 존재 확인
 		Category category = categoryRepository.findByName(requestDto.getCategoryName()).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
@@ -168,10 +171,10 @@ public class GroupServiceImpl implements GroupService {
 		if (category.getParentId() == null) {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
-		Group group = new Group(requestDto, category, user);
-		groupRepository.save(group);
+		Group newGroup = new Group(requestDto, category, user);
+		groupRepository.save(newGroup);
 
-		return new GroupResponseDto(group);
+		return new GroupResponseDto(newGroup);
 	}
 
 	@Override
