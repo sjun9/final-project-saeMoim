@@ -1,10 +1,6 @@
 package com.saemoim.controller;
 
-import java.nio.charset.StandardCharsets;
-
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,11 +21,18 @@ import lombok.RequiredArgsConstructor;
 public class EmailController {
 	private final EmailServiceImpl emailService;
 
+	@PostMapping("/email/check")
+	public EmailAuthCodeResponseDto getEmailAuthCode(@RequestBody @Validated EmailRequestDto requestDto) {
+		String authCode = emailService.getEmailAuthCode(requestDto.getEmail());
+		return new EmailAuthCodeResponseDto(authCode);
+	}
+
 	@PostMapping("/email")
-	public ResponseEntity<EmailAuthCodeResponseDto> sendEmail(@RequestBody @Validated EmailRequestDto requestDto) throws
+	public ResponseEntity<MessageResponseDto> sendEmailAuthCode(
+		@RequestBody @Validated EmailRequestDto requestDto) throws
 		MessagingException {
-		String authCode = emailService.sendEmail(requestDto.getEmail());
-		return new ResponseEntity<>(new EmailAuthCodeResponseDto(authCode), HttpStatus.OK);
+		emailService.sendEmail(requestDto.getEmail());
+		return new ResponseEntity<>(new MessageResponseDto("이메일 전송 완료"), HttpStatus.OK);
 	}
 
 	// 비밀번호 찾기
