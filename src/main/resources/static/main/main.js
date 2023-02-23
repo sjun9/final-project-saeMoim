@@ -159,6 +159,8 @@ function showUsername() {
 
 function showCategory() {
     $('#categoryFilter').empty().append(`<option value=0>전체</option>`)
+    $('#categoryMenu').empty()
+    $('#modifyCategoryMenu').empty()
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/category"
@@ -657,7 +659,7 @@ function showMoimDetail(event, id) {
     let targetContent = event.currentTarget.firstChild.nextSibling.children[2].value;
     let tags = event.currentTarget.firstChild.nextSibling.children[3].value;
     document.querySelector('#moimDetail_Title').innerText = targetTitle;
-    document.querySelector('#moimLeader').innerText = leaderName;
+    // document.querySelector('#moimLeader').innerText = leaderName;
     document.querySelector('#moimTag').innerText = tags;
     document.querySelector('#moimDetail_introduce').innerText = targetContent;
     document.getElementById('moimDetailId').value = id;
@@ -975,8 +977,10 @@ function gotoBoard(id) {
             headers: {'Authorization': localStorage.getItem('Authorization')},
             success: function (data) {
                 if (myId === data['userId']) {
+                    localStorage.setItem("current_group_id", id)
+                    localStorage.setItem("current_user_id", myId)
                     alert('게시판으로 이동합니다.')
-                    window.location = './board.html'
+                    // window.location = './board.html'
                 } else {
                     $.ajax({
                         type: "get",
@@ -990,7 +994,9 @@ function gotoBoard(id) {
                             }
                             if (isParticipant) {
                                 alert('게시판으로 이동합니다.')
-                                window.location = './board.html'
+                                localStorage.setItem("current_group_id", id)
+                                localStorage.setItem("current_user_id", myId)
+                                // window.location = './board.html'
                             } else {
                                 alert('참가자만 입장 가능합니다.')
                             }
@@ -1006,7 +1012,11 @@ function gotoBoard(id) {
                 alert(e.responseJSON['message'])
                 console.log(e.responseJSON['message'])
             }
-        });
+        }).done(
+            function () {
+                window.location = './board.html'
+            }
+        );
     }).fail(function (e) {
         console.log(e.status)
         if (e.status === 401) {
