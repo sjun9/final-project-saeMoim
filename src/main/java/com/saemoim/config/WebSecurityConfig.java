@@ -75,6 +75,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 			.anyRequest().authenticated()
 			.and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
+		http.cors();
 		http.formLogin().disable();
 
 		http.exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint);
@@ -88,5 +89,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		registry.addMapping("/**")
 			.allowedMethods("GET", "POST", "DELETE", "PUT", "OPTIONS", "PATCH")
 			.exposedHeaders("Authorization", "Refresh_Token");
+		// .allowedOrigins("*");
 	}
 }

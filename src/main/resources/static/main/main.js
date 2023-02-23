@@ -119,7 +119,7 @@ function logout() {
     $.ajax({
         type: "POST",
         url: "http://localhost:8080/log-out",
-        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         success: function (response) {
             console.log(response)
         }
@@ -128,15 +128,25 @@ function logout() {
         localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
         window.location = './main.html'
     }).fail(function (e) {
-        alert(e.responseText)
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(logout, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
     });
 }
 
 function showUsername() {
+    $('#username').empty()
     $.ajax({
         type: "get",
         url: "http://localhost:8080/user",
-        headers: { 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Authorization': localStorage.getItem('Authorization')},
         success: function (data) {
             let username = data['username']
             $('#username').append(`${username}`)
@@ -145,7 +155,6 @@ function showUsername() {
         }
     });
 }
-
 
 
 function showCategory() {
@@ -169,7 +178,17 @@ function showCategory() {
             }
         }
     }).fail(function (e) {
-        console.log(e.responseText)
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showCategory, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     });
 }
 
@@ -179,7 +198,7 @@ function showSearch(name) {
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/group/name",
-        data: { groupName: name }, //전송 데이터
+        data: {groupName: name}, //전송 데이터
         success: function (response) {
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -212,7 +231,41 @@ function showSearch(name) {
             }
         }
     }).fail(function (e) {
-        console.log(e.responseText)
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showSearch(name), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
+    });
+}
+
+function reissue() {
+    var settings = {
+        "url": "http://localhost:8080/reissue",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Refresh_Token": localStorage.getItem('Refresh_Token'),
+            "Authorization": localStorage.getItem('Authorization')
+        },
+    };
+    $.ajax(settings).done(function (response, status, xhr) {
+        console.log("성공성공")
+        localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
+        localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
+    }).fail(function (e) {
+        console.log("실패실패")
+        console.log(e)
+        alert("다시 로그인 해주세요.")
+        localStorage.removeItem('Authorization')
+        localStorage.removeItem('Refresh_Token')
+        window.location.replace('./welcome.html');
     });
 }
 
@@ -220,7 +273,7 @@ function showMoimAjax(url, contentId) {
     return {
         type: "GET",
         url: url,
-        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         success: function (response) {
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -231,6 +284,9 @@ function showMoimAjax(url, contentId) {
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
+                let tags = response[i]['tags']
+                let leaderId = response[i]['userId']
+                let leaderName = response[i]['username']
 
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
@@ -238,6 +294,9 @@ function showMoimAjax(url, contentId) {
                                         <img src="../static/images/main-running.jpg" alt="">
                                             <span>${groupName}</span>
                                             <input type="hidden" value=${content}>
+                                            <input type="hidden" value=${tags}>
+                                            <input type="hidden" value=${leaderName}>
+                                            <input type="hidden" value=${leaderId}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
@@ -259,28 +318,72 @@ function showAllMoim() {
     let contentId = '#find-content';
     let url = "http://localhost:8080/group";
     $(contentId).empty()
-    $.ajax(showMoimAjax(url, contentId));
+    $.ajax(showMoimAjax(url, contentId)).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showAllMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 function showPopularMoim() {
     let contentId = '#popular-content';
     let url = "http://localhost:8080/group/popular";
     $(contentId).empty()
-    $.ajax(showMoimAjax(url, contentId));
+    $.ajax(showMoimAjax(url, contentId)).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showPopularMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 function showLeaderMoim() {
     let contentId = '#made-group';
     let url = "http://localhost:8080/leader/group";
     $(contentId).empty()
-    $.ajax(showMoimAjax(url, contentId));
+    $.ajax(showMoimAjax(url, contentId)).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showLeaderMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 function showParticipantMoim() {
     let contentId = '#participant-group';
     let url = "http://localhost:8080/participant/group";
     $(contentId).empty()
-    $.ajax(showMoimAjax(url, contentId));
+    $.ajax(showMoimAjax(url, contentId)).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showParticipantMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 
@@ -289,7 +392,7 @@ function showFilter(categoryId, status) {
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/group/categories/" + categoryId,
-        data: { status: status }, //전송 데이터
+        data: {status: status}, //전송 데이터
         success: function (response) {
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -322,13 +425,23 @@ function showFilter(categoryId, status) {
             }
         }
     }).fail(function (e) {
-        console.log(e.responseText)
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showFilter(categoryId, status), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     });
 }
 
 
 function showReview(id) {
-    $('#moimDetail_reviews').empty().append(`<textarea style="width: 100%" rows="3" cols="30" id="reviewText" value=""> </textarea>
+    $('#moimDetail_reviews').empty().append(`<textarea style="width:150%" rows="3" cols="30" id="reviewText" value=""> </textarea>
                                      <button type="button" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">후기 등록</button>`);
 
     $.ajax({
@@ -351,7 +464,8 @@ function showReview(id) {
                                           <tr>
                                             <td></td>
                                           </tr>
-                                          <textarea class="button_hide" style="width: 100%" rows="3" cols="30" id="review"
+                                          <textarea class="button_hide" style="width:150
+                                         %" rows="3" cols="30" id="review"
                                             name="review"></textarea>
                                           <div class="edit_delete">
                                             <button type="button" class="btn btn-danger" style="float: right;" onclick="deleteReview(${id})">삭제</button>
@@ -372,7 +486,17 @@ function showReview(id) {
             }
         }
     }).fail(function (e) {
-        console.log(e.responseText)
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showReview(id), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     });
 }
 
@@ -382,7 +506,7 @@ function showRequestedGroup() {
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/leader/application",
-        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         success: function (response) {
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -402,7 +526,17 @@ function showRequestedGroup() {
             }
         }
     }).fail(function (e) {
-        console.log(e.responseText)
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showRequestedGroup, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     });
 }
 
@@ -411,7 +545,7 @@ function showAppliedGroup() {
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/participant/application",
-        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         success: function (response) {
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -430,7 +564,17 @@ function showAppliedGroup() {
             }
         }
     }).fail(function (e) {
-        console.log(e.responseText)
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(showAppliedGroup, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     });
 }
 
@@ -439,13 +583,23 @@ function permitApplication(applicationId) {
     $.ajax({
         type: "PUT",
         url: "http://localhost:8080/applications/" + applicationId + "/permit",
-        headers: { 'Authorization': localStorage.getItem('Authorization') }
+        headers: {'Authorization': localStorage.getItem('Authorization')}
     }).done(function (data) {
         alert(data['message'])
         console.log(data);
         showRequestedGroup()
     }).fail(function (e) {
-        alert(e.responseJSON['message'])
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(permitApplication(applicationId), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     })
 }
 
@@ -453,13 +607,23 @@ function rejectApplication(applicationId) {
     $.ajax({
         type: "PUT",
         url: "http://localhost:8080/applications/" + applicationId + "/reject",
-        headers: { 'Authorization': localStorage.getItem('Authorization') }
+        headers: {'Authorization': localStorage.getItem('Authorization')}
     }).done(function (data) {
         alert(data['message'])
         console.log(data);
         showRequestedGroup()
     }).fail(function (e) {
-        alert(e.responseJSON['message'])
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(rejectApplication(applicationId), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     })
 }
 
@@ -467,13 +631,23 @@ function cancelApplication(applicationId) {
     $.ajax({
         type: "DELETE",
         url: "http://localhost:8080/applications/" + applicationId,
-        headers: { 'Authorization': localStorage.getItem('Authorization') }
+        headers: {'Authorization': localStorage.getItem('Authorization')}
     }).done(function (data) {
         alert(data['message'])
         console.log(data);
         showAppliedGroup()
     }).fail(function (e) {
-        alert(e.responseJSON['message'])
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(cancelApplication(applicationId), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+
     })
 }
 
@@ -481,7 +655,10 @@ function cancelApplication(applicationId) {
 function showMoimDetail(event, id) {
     let targetTitle = event.currentTarget.firstChild.nextSibling.children[1].innerText;
     let targetContent = event.currentTarget.firstChild.nextSibling.children[2].value;
+    let tags = event.currentTarget.firstChild.nextSibling.children[3].value;
     document.querySelector('#moimDetail_Title').innerText = targetTitle;
+    document.querySelector('#moimLeader').innerText = leaderName;
+    document.querySelector('#moimTag').innerText = tags;
     document.querySelector('#moimDetail_introduce').innerText = targetContent;
     document.getElementById('moimDetailId').value = id;
     showReview(id);
@@ -493,10 +670,15 @@ function showMoimDetail(event, id) {
 
 //미완
 function saveMoim() {
+    let tags = []
+    for (let i = 0; i < $('[name="tagsA"]').length; i++) {
+        tags.push($('[name="tagsA"]')[i].value)
+    }
+    console.log(tags)
     let jsonData = { // Body에 첨부할 json 데이터
         "name": $('#newMoim-title').val(),
-        "tagNames": [$('#newMoim-tag').val()],
-        "categoryId": 6,
+        "tagNames": tags,
+        "categoryName": $('#newMoim-category').val(),
         "content": $('#newMoim-content').val(),
         "recruitNumber": $('#newMoim-recruit').val(),
         "address": "address",
@@ -509,16 +691,26 @@ function saveMoim() {
     $.ajax({
         type: "post",
         url: "http://localhost:8080/group",
-        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8" //헤더의 Content-Type을 설정
     }).done(function (data) {
         console.log(data);
+        console.log(jsonData["tagNames"])
         alert("작성 완료")
         location.reload()
     }).fail(function (e) {
-        alert(e.responseText)
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(saveMoim, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
     })
 }
 
@@ -527,21 +719,30 @@ function attendMoim(id) {
     $.ajax({
         type: "post",
         url: "http://localhost:8080/groups/" + id + "/application",
-        headers: { 'Authorization': localStorage.getItem('Authorization') }
+        headers: {'Authorization': localStorage.getItem('Authorization')}
     }).done(function (data) {
         console.log(data);
         alert(data['message'])
         location.reload()
     }).fail(function (e) {
-        alert(e.responseJSON['message'])
-    })
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(attendMoim(id), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 function withdrawMoim(id) {
     $.ajax({
         type: "delete",
         url: "http://localhost:8080/group/" + id + "/participant",
-        headers: { 'Authorization': localStorage.getItem('Authorization') }
+        headers: {'Authorization': localStorage.getItem('Authorization')}
     }).done(function (data) {
         console.log(data);
         alert(data['message'])
@@ -549,15 +750,25 @@ function withdrawMoim(id) {
         showAllMoim()
         showPopularMoim()
     }).fail(function (e) {
-        alert(e.responseJSON['message'])
-    })
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(withdrawMoim(id), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 function editMoim(id) {
+
     let jsonData = { // Body에 첨부할 json 데이터
         "name": $('#modifyMoim-title').val(),
         "tagNames": [$('#modifyMoim-tag').val()],
-        "categoryId": 6,
+        "categoryName": $('#modifyMoim-category').val(),
         "content": $('#modifyMoim-content').val(),
         "recruitNumber": $('#modifyMoim-recruit').val(),
         "address": "address",
@@ -569,7 +780,7 @@ function editMoim(id) {
     $.ajax({
         type: "put",
         url: "http://localhost:8080/groups/" + id,
-        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
@@ -578,15 +789,25 @@ function editMoim(id) {
         alert("작성 완료")
         location.reload()
     }).fail(function (e) {
-        alert(e.responseText)
-    })
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(editMoim(id), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
+
 }
 
 function deleteMoim(id) {
     $.ajax({
         type: "delete",
         url: "http://localhost:8080/groups/" + id,
-        headers: { 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Authorization': localStorage.getItem('Authorization')},
     }).done(function (data) {
         console.log(data)
         console.log(data['message']);
@@ -595,8 +816,16 @@ function deleteMoim(id) {
         showPopularMoim()
         showLeaderMoim()
     }).fail(function (e) {
-        console.log(e)
-        alert(e.responseJSON['message'])
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(deleteMoim(id), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
     });
 }
 
@@ -604,17 +833,26 @@ function wishMoim(id) {
     $.ajax({
         type: "post",
         url: "http://localhost:8080/groups/" + id + "/wish",
-        headers: { 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Authorization': localStorage.getItem('Authorization')},
         ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
             console.log(data);
             alert(data['message'])
-        },
-        error: function (e) {
-            alert(e.responseJSON['message'])
-            console.log("실패")
         }
-    })
+
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(wishMoim(id), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
+
     //alert('찜 등록 후 페이지 새로고침\n마이페이지에 찜목록 보기 추가예정')
 }
 
@@ -626,7 +864,7 @@ function addReviewMoim(id) {
     $.ajax({
         type: "post",
         url: "http://localhost:8080/groups/" + id + "/review",
-        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
@@ -641,7 +879,18 @@ function addReviewMoim(id) {
         }
     }).done(function () {
         showReview(id)
-    })
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(addReviewMoim(id), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
     //alert('찜 등록 후 페이지 새로고침\n마이페이지에 찜목록 보기 추가예정')
 }
 
@@ -653,7 +902,7 @@ function editReview(id) {
     $.ajax({
         type: "put",
         url: "http://localhost:8080/reviews/" + id,
-        headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
@@ -662,12 +911,19 @@ function editReview(id) {
             console.log(data);
             alert(data['message'])
             window.location = './main.html'
-        },
-        error: function (e) {
-            alert(e.responseJSON['message'])
-            console.log(e)
         }
-    })
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(editReview(id), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 
@@ -675,18 +931,25 @@ function deleteReview(id) {
     $.ajax({
         type: "delete",
         url: "http://localhost:8080/reviews/" + id,
-        headers: { 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Authorization': localStorage.getItem('Authorization')},
         ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
             console.log(data);
             alert(data['message'])
             window.location = './main.html'
-        },
-        error: function (e) {
-            alert(e.responseJSON['message'])
-            console.log("실패")
         }
-    })
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(deleteReview(id), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
 }
 
 
@@ -701,7 +964,7 @@ function gotoBoard(id) {
     $.ajax({
         type: "get",
         url: "http://localhost:8080/user",
-        headers: { 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Authorization': localStorage.getItem('Authorization')},
         success: function (data) {
             myId = data['id']
         }
@@ -709,7 +972,7 @@ function gotoBoard(id) {
         $.ajax({
             type: "get",
             url: "http://localhost:8080/groups/" + id,
-            headers: { 'Authorization': localStorage.getItem('Authorization') },
+            headers: {'Authorization': localStorage.getItem('Authorization')},
             success: function (data) {
                 if (myId === data['userId']) {
                     alert('게시판으로 이동합니다.')
@@ -718,7 +981,7 @@ function gotoBoard(id) {
                     $.ajax({
                         type: "get",
                         url: "http://localhost:8080/group/" + id + "/participant",
-                        headers: { 'Authorization': localStorage.getItem('Authorization') },
+                        headers: {'Authorization': localStorage.getItem('Authorization')},
                         success: function (data) {
                             for (let i = 0; i < data.length; i++) {
                                 if (data[i]['userId'] === myId) {
@@ -744,6 +1007,17 @@ function gotoBoard(id) {
                 console.log(e.responseJSON['message'])
             }
         });
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(gotoBoard(id), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
     });
 }
 
@@ -766,11 +1040,11 @@ function gotoDeleteReview(event) {
 
 
 function getMyProfile() {
-    let jsonData = { "password": $('#checkPassword').val() };
+    let jsonData = {"password": $('#checkPassword').val()};
     $.ajax({
         type: "post",
         url: "http://localhost:8080/profile",
-        headers: { 'Authorization': localStorage.getItem('Authorization') },
+        headers: {'Authorization': localStorage.getItem('Authorization')},
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
@@ -784,18 +1058,22 @@ function getMyProfile() {
                 $('#passpass').hide()
                 $('#myProfile_2').show()
             }, error: function (e) {
-                console.log(e)
-            }
-    }).fail(function (response) {
-        if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-            alert(response.responseJSON['message'])
-            $('#passpass').show()
-            $('#myProfile_2').hide()
+            console.log(e)
+        }
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(getMyProfile, 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
         } else {
-            alert("재로그인")
+            alert(e.responseText['message'])
         }
     });
 }
+
 $('.pw').focusout(function () {
     var pwd1 = $("#password_1").val();
     var pwd2 = $("#password_2").val();
@@ -835,14 +1113,60 @@ function updateProfile(content, pass) {
         $('#passpass').show()
         $('#myProfile_2').hide()
         window.location.reload()
-    }).fail(function (response) {
-        if (response.responseJSON['message'] === "rawPassword cannot be null") {
-            alert("비밀번호를 다시 확인해주세요")
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 401) {
+            reissue()
+            setTimeout(updateProfile(content, pass), 150)
+            setTimeout(showUsername, 150)
+        } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
         } else {
-            alert(response.responseJSON['message'])
+            alert(e.responseText['message'])
         }
-
     });
-
 }
 
+
+$.expr[":"].contains = $.expr.createPseudo(function (arg) {
+    return function (elem) {
+        return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+    };
+});
+$(document).ready(function () {
+    $('#addTagBtn').click(function () {
+        $('#tags option:selected').each(function () {
+            $(this).appendTo($('#selectedTags'));
+        });
+    });
+    $('#removeTagBtn').click(function () {
+        $('#selectedTags option:selected').each(function (el) {
+            $(this).appendTo($('#tags'));
+        });
+    });
+    $('.tagRemove').click(function (event) {
+        event.preventDefault();
+        $(this).parent().remove();
+    });
+    $('ul.tags').click(function () {
+        $('#search-field').focus();
+    });
+    $('#search-field').keypress(function (event) {
+        if (event.which == '13') {
+            if (($(this).val() != '') && ($(".tags .addedTag:contains('" + $(this).val() + "') ").length == 0)) {
+                temp_html = `<li class="addedTag" id="added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
+               <input type="hidden" value="` + $(this).val() + `" name="tagsA">
+             </li>`
+                $('#tatag').append(temp_html)
+
+                console.log($('[name="tagsA"]').val())
+
+                $(this).val('');
+            } else {
+                $(this).val('');
+
+            }
+        }
+    });
+
+});
