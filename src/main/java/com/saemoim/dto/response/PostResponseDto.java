@@ -26,10 +26,12 @@ public class PostResponseDto {
 	private boolean isLikeChecked;
 	public PostResponseDto(Post savedPost) {
 		this.id = savedPost.getId();
+		this.userId = savedPost.getUserId();
 		this.title = savedPost.getTitle();
 		this.username = savedPost.getUsername();
 		this.content = savedPost.getContent();
 		this.createdAt = savedPost.getCreatedAt();
 		this.modifiedAt = savedPost.getModifiedAt();
+		this.likeCount = savedPost.getLikeCount();
 	}
 }

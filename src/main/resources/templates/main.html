@@ -318,22 +318,43 @@
         <div class="app-content-header">
             <h1 class="app-content-headerText">마이페이지</h1>
         </div>
-        <h3 style="font-size: 30px;">참가 신청 받은 목록</h3>
-        <div style="overflow-y: scroll;">
-            <table class="fixed_headers">
-                <thead>
-                <tr>
-                    <th>모임 이름</th>
-                    <th>참가 신청자 이름</th>
-                    <th>신청 상태</th>
-                </tr>
-                </thead>
-                <tbody id="requested-group">
-                </tbody>
-            </table>
+        <div class="mypageTable">
+            <div>
+                <h3 style="font-size: 30px;">참가 신청 받은 목록</h3>
+                <div style="height: 100px; overflow-y: scroll;">
+                    <table class="fixed_headers" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <th>모임 이름</th>
+                            <th>참가 신청자 이름</th>
+                            <th>신청 상태</th>
+                        </tr>
+                        </thead>
+                        <tbody id="requested-group">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div>
+                <h3 style="font-size: 30px;">참가 신청한 목록</h3>
+                <div style="overflow-y: scroll;">
+                    <table class="fixed_headers" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <th>모임 이름</th>
+                            <th>모임 리더 이름</th>
+                            <th>신청 상태</th>
+                        </tr>
+                        </thead>
+                        <tbody id="applied-group">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+        <hr>
+        <h3 style="font-size: 30px;">내가 개설한 모임</h3>
         <div style="overflow-y: scroll;">
-            <h3 style="font-size: 30px;">내가 개설한 모임</h3>
             <div class="app-content-section gridView" id="made-group" style="overflow: hidden;">
                 <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal"
                      onclick="showMoimDetail(event)">
@@ -352,22 +373,9 @@
                 </div>
             </div>
         </div>
-        <h3 style="font-size: 30px;">참가 신청한 목록</h3>
+        <hr>
+        <h3 style="font-size: 30px;">내가 참여한 모임</h3>
         <div style="overflow-y: scroll;">
-            <table class="fixed_headers">
-                <thead>
-                <tr>
-                    <th>모임 이름</th>
-                    <th>모임 리더 이름</th>
-                    <th>신청 상태</th>
-                </tr>
-                </thead>
-                <tbody id="applied-group">
-                </tbody>
-            </table>
-        </div>
-        <div style="overflow-y: scroll;">
-            <h3 style="font-size: 30px;">내가 참여한 모임</h3>
             <div class="app-content-section gridView" id="participant-group" style="overflow: hidden;">
                 <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal"
                      onclick="showMoimDetail(event)">

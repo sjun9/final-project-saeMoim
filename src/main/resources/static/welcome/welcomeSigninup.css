@@ -347,3 +347,7 @@ input::placeholder {
     padding: 50px 45px;
   }
 }
+#signup-button,
+#login-button {
+  cursor: pointer;
+}

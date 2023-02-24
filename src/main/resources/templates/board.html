@@ -6,6 +6,8 @@
   <title>Pagination</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
   <!-- Styles -->
   <link rel="stylesheet" href="../static/board/style.css" />
   <link rel="stylesheet" href="../static/board/profilePage.css" />
@@ -23,7 +25,7 @@
         </div>
         <div class="modal-body">
           <div class="content-profile-page">
-            <div class="profile-user-page card">
+            <div class="profile-user-page card" id="profile_modal_page">
               <div class="img-user-profile">
                 <img class="profile-bgHome"
                   src="https://37.media.tumblr.com/88cbce9265c55a70a753beb0d6ecc2cd/tumblr_n8gxzn78qH1st5lhmo1_1280.jpg" />
@@ -33,12 +35,12 @@
               <button type="button" onclick="gotochat()">DM 보내기</button>
               <div class="user-profile-data">
                 <h1>Jose Pino</h1>
-                <p>github.com/jofpin</p>
+                <!-- <p>github.com/jofpin</p> -->
               </div>
               <div class="description-profile">여행을 좋아하는 어쩌고 저쩌고 입니다. 반갑습니다!</div>
               <ul class="data-user">
-                <li><a><strong>2</strong><span>개설한 모임</span></a></li>
-                <li><a><strong>5</strong><span>참가중인 모임</span></a></li>
+                <!-- <li><a><strong>2</strong><span>개설한 모임</span></a></li> -->
+                <!-- <li><a><strong>5</strong><span>참가중인 모임</span></a></li> -->
               </ul>
             </div>
           </div>
@@ -59,41 +61,47 @@
         <div class="modal-body">
           <form>
             <div class="mb-3">
-              <label for="newPost-title" class="col-form-label">Recipient:</label>
+              <label for="newPost-title" class="col-form-label">제목:</label>
               <input type="text" class="form-control" id="newPost-title">
             </div>
             <div class="mb-3">
-              <label for="newPost-content" class="col-form-label">Message:</label>
+              <label for="newPost-content" class="col-form-label">내용:</label>
               <textarea class="form-control" id="newPost-content"></textarea>
             </div>
             <div class="mb-3">
-              <label for="newPost-image" class="col-form-label">Recipient:</label>
+              <label for="newPost-image" class="col-form-label">이미지 첨부:</label>
               <input type="file" class="form-control" id="newPost-image">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+              <button type="button" class="btn btn-primary" onclick="newPost()">확인</button>
             </div>
           </form>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-          <button type="button" class="btn btn-primary">확인</button>
-        </div>
+
       </div>
     </div>
   </div>
 
   <!-- read post Modal -->
+  <button type="button" id="openRead" style="display: none;" data-bs-toggle="modal" data-bs-target="#readPostModal">
+    open read button
+  </button>
   <div class="modal fade" id="readPostModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="readPostModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered ">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="readPostModalLabel">게시물 제목 게시물 제목 게시물 제목 게시물 제목 게시물 제목</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h1 class="modal-title fs-5" id="readPostModalLabel"></h1>
+          <button type="button" class="btn-close" id="closeReadPostModal" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div style="width: auto; height: 400px; text-align: center;">
-            <img src="../static/images/spine.jpg" alt="" style="max-width: 1000px; margin: 20px 0;">
-            <p>30분에 한번씩 일어나서 만세 스트레칭 해주십쇼<br>우리의 척추는 소중합니다</p>
+            <img src="../static/images/main-english.jpg" alt="" style="max-width: 45%; margin: 20px 0;">
+            <p id="readPostModalContent"></p>
           </div>
+          <button type="button" class="btn btn-danger" onclick="gotoDeletePost(event)" style="float: right;">게시글 삭제</button>
+          <button type="button" class="btn btn-secondary" onclick="gotoEditPost(event)" style="float: right; margin-right: 8px;">게시글 수정</button>
           <div class="container">
             <form id="commentForm" name="commentForm" method="post">
               <br><br>
@@ -108,7 +116,7 @@
                         placeholder="댓글을 입력하세요"></textarea>
                       <br>
                       <div>
-                        <a href='#' onClick="fn_comment('${result.code }')" class="btn pull-right btn-success">등록</a>
+                        <a href='#' onClick="writeComment()" class="btn pull-right btn-success" style="float: right;">댓글 등록</a>
                       </div>
                     </td>
                   </tr>
@@ -120,69 +128,6 @@
           <div class="container">
             <form id="commentListForm" name="commentListForm" method="post">
               <div id="commentList">
-                <table class='table'>
-                  <h6><strong>12312123</strong></h6>
-                  <p style="overflow: hidden; word-wrap: break-word;">
-                    램줃랴ㅕ주댤쟏루쟈뎌ㅜㅑ줗럇2주34ㅎ샤2ㅜㄷ4ㅎ랴ㅓ2ㅠ34ㅑㅠㅓwhefoaiwf<br>oefawoefijoqefjiqwoiefjoqiejfpqoeufhpawiuefhpw9uefh9awe3hfa9p2u8frp2938rfyp2938rf29p38yrfp2983qayr2890yrhf20a938ry2038rya23r823r9a29prah293rha2p93rah29p3ruhy29p3rhyp92q3urhy928yhrf839477hy39ty98e4yt2893ryh293rhy28oa3ryor2o83rho283ruhy2389ryho283rhy2387raaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdf
-                  </p>
-                  <tr>
-                    <td></td>
-                  </tr>
-                  <textarea class="button_hide" style="width: 100%" rows="3" cols="30" id="comment"
-                    name="comment"></textarea>
-                  <div class="edit_delete">
-                    <button type="button" class="btn btn-danger" style="float: right;">삭제</button>
-                    <button type="button" onclick="gotoEditComment(event)" class="btn btn-secondary"
-                      style="float: right; margin-right: 8px;">수정</button>
-                  </div>
-                  <div class="cancel_submit button_hide">
-                    <button type="button" class="btn btn-success" style="float: right;">수정</button>
-                    <button type="button" onclick="gotoDeleteComment(event)" class="btn btn-secondary"
-                      style="float: right; margin-right: 8px;">취소</button>
-                  </div>
-                </table>
-                <table class='table'>
-                  <h6><strong>12312123</strong></h6>
-                  <p style="overflow: hidden; word-wrap: break-word;">
-                    asdfasdfaowfoawiefhowaiehfaowihfoaiwhefoaiwf<br>oefawoefijoqefjiqwoiefjoqiejfpqoeufhpawiuefhpw9uefh9awe3hfa9p2u8frp2938rfyp2938rf29p38yrfp2983qayr2890yrhf20a938ry2038rya23r823r9a29prah293rha2p93rah29p3ruhy29p3rhyp92q3urhy928yhrf839477hy39ty98e4yt2893ryh293rhy28oa3ryor2o83rho283ruhy2389ryho283rhy2387raaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdf
-                  </p>
-                  <tr>
-                    <td></td>
-                  </tr>
-                  <textarea class="button_hide" style="width: 100%" rows="3" cols="30" id="comment"
-                    name="comment"></textarea>
-                  <div class="edit_delete">
-                    <button type="button" class="btn btn-danger" style="float: right;">삭제</button>
-                    <button type="button" onclick="gotoEditComment(event)" class="btn btn-secondary"
-                      style="float: right; margin-right: 8px;">수정</button>
-                  </div>
-                  <div class="cancel_submit button_hide">
-                    <button type="button" class="btn btn-success" style="float: right;">수정</button>
-                    <button type="button" onclick="gotoDeleteComment(event)" class="btn btn-secondary"
-                      style="float: right; margin-right: 8px;">취소</button>
-                  </div>
-                </table>
-                <table class='table'>
-                  <h6><strong>12312123</strong></h6>
-                  <p style="overflow: hidden; word-wrap: break-word;">
-                    asdfasdfaowfoawiefhowaiehfaowihfoaiwhefoaiwf<br>oefawoefijoqefjiqwoiefjoqiejfpqoeufhpawiuefhpw9uefh9awe3hfa9p2u8frp2938rfyp2938rf29p38yrfp2983qayr2890yrhf20a938ry2038rya23r823r9a29prah293rha2p93rah29p3ruhy29p3rhyp92q3urhy928yhrf839477hy39ty98e4yt2893ryh293rhy28oa3ryor2o83rho283ruhy2389ryho283rhy2387raaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdf
-                  </p>
-                  <tr>
-                    <td></td>
-                  </tr>
-                  <textarea class="button_hide" style="width: 100%" rows="3" cols="30" id="comment"
-                    name="comment"></textarea>
-                  <div class="edit_delete">
-                    <button type="button" class="btn btn-danger" style="float: right;">삭제</button>
-                    <button type="button" onclick="gotoEditComment(event)" class="btn btn-secondary"
-                      style="float: right; margin-right: 8px;">수정</button>
-                  </div>
-                  <div class="cancel_submit button_hide">
-                    <button type="button" class="btn btn-success" style="float: right;">수정</button>
-                    <button type="button" onclick="gotoDeleteComment(event)" class="btn btn-secondary"
-                      style="float: right; margin-right: 8px;">취소</button>
-                  </div>
-                </table>
               </div>
             </form>
           </div>
@@ -194,9 +139,46 @@
     </div>
   </div>
 
+  <!-- edit post modal -->
+  <button type="button" id="openEdit" style="display: none;" data-bs-toggle="modal" data-bs-target="#staticBackdrop_edit">
+    open edit button
+  </button>
+  <div class="modal fade" id="staticBackdrop_edit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel_edit" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel_edit">글 수정</h1>
+          <button type="button" class="btn-close" id="closeEditPostModal" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="editPost-title" class="col-form-label">제목:</label>
+              <input type="text" class="form-control" id="editPost-title">
+            </div>
+            <div class="mb-3">
+              <label for="editPost-content" class="col-form-label">내용:</label>
+              <textarea class="form-control" id="editPost-content"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="editPost-image" class="col-form-label">이미지 첨부:</label>
+              <input type="file" class="form-control" id="editPost-image">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" onclick="cancleEdit(event)" data-bs-dismiss="modal">취소</button>
+              <button type="button" class="btn btn-primary" onclick="editPost(event)">수정</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <div class="gridView">
     <div class="crudzone">
-      <h1 style="margin-top: 100px;">OOO 모임 게시판입니다</h1>
+      <h1 style="margin-top: 100px;" id="moim_title">OOO 모임 게시판입니다</h1>
       <!-- Button trigger modal -->
       <article class="article">
         <!-- 글 10개씩 -->
@@ -207,20 +189,19 @@
       <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
         data-bs-whatever="@mdo">새 글 작성하기</button>
     </div>
-    <div class="userzone">
-      <div style="margin-top: 20px;">이미지 클릭 시 프로필 페이지로 이동</div>
-      <div class="userzone__user">
-        <div class="userzone__user__img" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
+    <div class="userzone" id="user_zone">
+      <div class="userzone__user" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
+        <div class="userzone__user__img">
         </div>
         <div class="userzone__user__name">이름1</div>
       </div>
-      <div class="userzone__user">
-        <div class="userzone__user__img" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
+      <div class="userzone__user" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
+        <div class="userzone__user__img">
         </div>
         <div class="userzone__user__name">이름2</div>
       </div>
-      <div class="userzone__user">
-        <div class="userzone__user__img" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
+      <div class="userzone__user" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
+        <div class="userzone__user__img">
         </div>
         <div class="userzone__user__name">이름3</div>
       </div>
@@ -236,6 +217,7 @@
     integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
     crossorigin="anonymous"></script>
   <script src="../static/board/app.js"></script>
+
 </body>
 
 </html>

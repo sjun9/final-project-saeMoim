@@ -84,7 +84,7 @@ function login() {
 
     $.ajax(settings).done(function (response, status, xhr) {
 
-        alert("로그인 성공");
+        // alert("로그인 성공");
 
         localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
         localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))

@@ -151,7 +151,7 @@ function showUsername() {
             let username = data['username']
             $('#username').append(`${username}`)
         }, error: function (e) {
-            $('#username').append(`"로그인 해주세요"`)
+            $('#username').append(`로그인이 필요합니다`)
         }
     });
 }
@@ -370,7 +370,7 @@ function showLeaderMoim() {
     });
 }
 
-function showParticipantMoim() {
+function showParticipantMoim() { // 참여중인 모임 조회
     let contentId = '#participant-group';
     let url = "http://localhost:8080/participant/group";
     $(contentId).empty()
@@ -743,7 +743,7 @@ function attendMoim(id) {
 function withdrawMoim(id) {
     $.ajax({
         type: "delete",
-        url: "http://localhost:8080/group/" + id + "/participant",
+        url: "http://localhost:8080/participant/groups/" + id,
         headers: {'Authorization': localStorage.getItem('Authorization')}
     }).done(function (data) {
         console.log(data);
@@ -963,29 +963,34 @@ function goToHome() {
 function gotoBoard(id) {
     let myId
     let isParticipant = false
-    $.ajax({
+    $.ajax({ // 유저 정보 가져오기
         type: "get",
         url: "http://localhost:8080/user",
         headers: {'Authorization': localStorage.getItem('Authorization')},
+        async: false,
         success: function (data) {
             myId = data['id']
         }
     }).done(function () {
-        $.ajax({
+        $.ajax({ // 그룹 정보 가져오기
             type: "get",
             url: "http://localhost:8080/groups/" + id,
             headers: {'Authorization': localStorage.getItem('Authorization')},
+            async: false,
             success: function (data) {
-                if (myId === data['userId']) {
+                if (myId === data['userId']) { // 페이지 이동 조건 (done)
+
+                    // data에서 리더 정보 가져와서 localStorage에 넣어준다 -> 프로필 최상단 리더프로필 고정용
                     localStorage.setItem("current_group_id", id)
                     localStorage.setItem("current_user_id", myId)
                     alert('게시판으로 이동합니다.')
-                    // window.location = './board.html'
+                    window.location = './board.html'
                 } else {
-                    $.ajax({
+                    $.ajax({ // 특정 모임 참여자 조회
                         type: "get",
-                        url: "http://localhost:8080/group/" + id + "/participant",
+                        url: "http://localhost:8080/participant/groups/" + id,
                         headers: {'Authorization': localStorage.getItem('Authorization')},
+                        async: false,
                         success: function (data) {
                             for (let i = 0; i < data.length; i++) {
                                 if (data[i]['userId'] === myId) {
@@ -993,10 +998,11 @@ function gotoBoard(id) {
                                 }
                             }
                             if (isParticipant) {
+                                alert(id)
                                 alert('게시판으로 이동합니다.')
                                 localStorage.setItem("current_group_id", id)
                                 localStorage.setItem("current_user_id", myId)
-                                // window.location = './board.html'
+                                window.location = './board.html'
                             } else {
                                 alert('참가자만 입장 가능합니다.')
                             }
@@ -1012,11 +1018,7 @@ function gotoBoard(id) {
                 alert(e.responseJSON['message'])
                 console.log(e.responseJSON['message'])
             }
-        }).done(
-            function () {
-                window.location = './board.html'
-            }
-        );
+        })
     }).fail(function (e) {
         console.log(e.status)
         if (e.status === 401) {
