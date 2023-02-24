@@ -52,6 +52,7 @@ public class BlackListServiceImpl implements BlackListService {
 	}
 
 	@Transactional
+	@Override
 	public void imposePermanentBan(Long blacklistId) {
 		BlackList find = blackListRepository.findById(blacklistId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.DUPLICATED_BLACKLIST.getMessage())
@@ -74,6 +75,7 @@ public class BlackListServiceImpl implements BlackListService {
 	}
 
 	@Scheduled(cron = "${schedules.cron.reward.publish}")
+	@Override
 	public void scheduledBlacklist() {
 		blackListRepository.findAll()
 			.stream()

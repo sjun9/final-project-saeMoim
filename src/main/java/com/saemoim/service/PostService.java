@@ -1,17 +1,14 @@
 package com.saemoim.service;
 
-import java.util.List;
-
-import com.saemoim.dto.request.PostRequestDto;
-//import com.saemoim.dto.response.PostListResponseDto;
-import com.saemoim.dto.response.PostResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface PostService {
-	List<PostResponseDto> getAllPosts();
+import com.saemoim.dto.request.PostRequestDto;
+import com.saemoim.dto.response.PostResponseDto;
 
-	List<PostResponseDto> getAllGroupPosts(Long group_id, Pageable pageable);
+public interface PostService {
+
+	Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable);
 
 	PostResponseDto getPost(Long postId, Long userId);
 
@@ -22,6 +19,4 @@ public interface PostService {
 	void deletePost(Long postId, Long userId);
 
 	void deletePostByAdmin(Long postId);
-
-	Long getAllGroupPostsCount(Long groupId);
 }

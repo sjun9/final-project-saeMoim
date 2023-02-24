@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public void checkEmailDuplication(EmailRequestDto requestDto) {
 		if (userRepository.existsByEmail(requestDto.getEmail())) {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_EMAIL.getMessage());
@@ -54,6 +55,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public void checkUsernameDuplication(UsernameRequestDto requestDto) {
 		if (userRepository.existsByUsername(requestDto.getUsername())) {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_USERNAME.getMessage());
@@ -173,7 +175,8 @@ public class UserServiceImpl implements UserService {
 		return new ProfileResponseDto(user);
 	}
 
-	private void deleteRefreshToken(String refreshToken) {
+	@Override
+	public void deleteRefreshToken(String refreshToken) {
 		Optional<String> refreshTokenValue = jwtUtil.resolveToken(refreshToken);
 
 		if (refreshTokenValue.isPresent()) {
@@ -183,7 +186,8 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	private String issueRefreshToken(Long userId, String accessToken) {
+	@Override
+	public String issueRefreshToken(Long userId, String accessToken) {
 		String refreshToken = jwtUtil.createRefreshToken(userId);
 		String refreshTokenValue = refreshToken.substring(7);
 		String accessTokenValue = jwtUtil.resolveToken(accessToken).orElseThrow(

@@ -8,7 +8,11 @@ public interface BlackListService {
 
 	List<BlackListResponseDto> getBlacklists();
 
+	void imposePermanentBan(Long blacklistId);
+
 	void addBlacklist(Long userId);
 
 	void deleteBlacklist(Long blacklistId);
+
+	void scheduledBlacklist();
 }

@@ -13,7 +13,8 @@ public enum ErrorCode {
 	// 유저
 	DUPLICATED_USERNAME("중복된 username 입니다"),
 	DUPLICATED_EMAIL("중복된 email 입니다"),
-	NOT_FOUND_AUTH_CODE("인증코드를 다시 받아주세요."),
+	NOT_FOUND_AUTH_CODE("인증 코드를 다시 받아주세요."),
+	NOT_MATCH_CODE("인증 코드가 맞지 않습니다."),
 	NOT_FOUND_USER("사용자를 찾을 수 없습니다."),
 	INVALID_PASSWORD("비밀번호가 틀렸습니다."),
 	INVALID_USER("접근 권한이 없는 사용자입니다."),
@@ -21,6 +22,7 @@ public enum ErrorCode {
 
 	DUPLICATED_ADMIN("중복된 관리자 아이디 입니다"),
 	NOT_EXIST_ADMIN("해당 관리자가 존재하지 않습니다"),
+	NOT_ALLOWED_ADMIN("루트 관리자는 삭제할 수 없습니다."),
 
 	// 카테고리
 	DUPLICATED_CATEGORY("중복된 카테고리 입니다."),

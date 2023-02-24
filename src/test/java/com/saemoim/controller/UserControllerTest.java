@@ -41,7 +41,7 @@ import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
 import com.saemoim.dto.request.UsernameRequestDto;
 import com.saemoim.dto.request.WithdrawRequestDto;
-import com.saemoim.dto.response.MessageResponseDto;
+import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
 import com.saemoim.dto.response.UserResponseDto;
@@ -262,7 +262,7 @@ class UserControllerTest {
 	void updateProfile() throws Exception {
 		// given
 		var request = new ProfileRequestDto();
-		MessageResponseDto responseDto = new MessageResponseDto("회원 정보 수정 완료");
+		GenericsResponseDto responseDto = new GenericsResponseDto("회원 정보 수정 완료");
 		doNothing().when(userService).updateProfile(anyLong(), any(ProfileRequestDto.class));
 		// when
 		ResultActions resultActions = mockMvc.perform(put("/profile")

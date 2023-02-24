@@ -144,8 +144,8 @@ function checkAndSendCode() {
 function checkAuthCode() {
     $.ajax({
         type: 'POST',
-        url: "http://localhost:8080/email/check",
-        data: JSON.stringify({email: $('#signup-email').val()}),
+        url: "http://localhost:8080/email/auth-code",
+        data: JSON.stringify({email: $('#signup-email').val(), code: $('#email-authentication-code').val()}),
         dataType: "JSON",
         contentType: "application/json; charset=utf-8",
         success: function (response) {

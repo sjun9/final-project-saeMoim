@@ -4,7 +4,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.saemoim.dto.response.MessageResponseDto;
+import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.service.BlackListServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +54,7 @@ class BlackListControllerTest {
 	@DisplayName("블랙리스트 등록")
 	void addBlacklist() throws Exception {
 		//given
-		MessageResponseDto responseDto = new MessageResponseDto("블랙리스트 등록 완료");
+		GenericsResponseDto responseDto = new GenericsResponseDto("블랙리스트 등록 완료");
 		doNothing().when(blackListService).addBlacklist(anyLong());
 		//when
 		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/blacklist/users/{userId}", 1L));
@@ -68,7 +67,7 @@ class BlackListControllerTest {
 	@DisplayName("영구 블랙리스트 등록")
 	void imposePermanentBan() throws Exception {
 		//given
-		MessageResponseDto responseDto = new MessageResponseDto("영구 블랙리스트 등록 완료");
+		GenericsResponseDto responseDto = new GenericsResponseDto("영구 블랙리스트 등록 완료");
 		doNothing().when(blackListService).imposePermanentBan(anyLong());
 		//when
 		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.patch("/blacklist/{blacklistId}", 1L));
@@ -81,7 +80,7 @@ class BlackListControllerTest {
 	@DisplayName("블랙리스트 해제")
 	void deleteBlacklist() throws Exception {
 		//given
-		MessageResponseDto responseDto = new MessageResponseDto("블랙리스트 해제 완료");
+		GenericsResponseDto responseDto = new GenericsResponseDto("블랙리스트 해제 완료");
 		doNothing().when(blackListService).deleteBlacklist(anyLong());
 		//when
 		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.delete("/blacklist/{blacklistId}", 1L));

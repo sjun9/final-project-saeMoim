@@ -1,10 +1,17 @@
 package com.saemoim.controller;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +36,7 @@ import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.AdminRequestDto;
 import com.saemoim.dto.response.AdminResponseDto;
 import com.saemoim.dto.response.AdminTokenResponseDto;
-import com.saemoim.dto.response.MessageResponseDto;
+import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.service.AdminServiceImpl;
 
 @ExtendWith(SpringExtension.class)
@@ -87,7 +94,7 @@ class AdminControllerTest {
 	@WithCustomMockUser
 	void createAdmin() throws Exception {
 		//given
-		MessageResponseDto responseDto = new MessageResponseDto("관리자 계정 생성 완료");
+		GenericsResponseDto responseDto = new GenericsResponseDto("관리자 계정 생성 완료");
 		AdminRequestDto requestDto = AdminRequestDto.builder()
 			.username("장성준")
 			.password("asdf1234!")

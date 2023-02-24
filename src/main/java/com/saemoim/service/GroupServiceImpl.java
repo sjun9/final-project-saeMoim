@@ -60,6 +60,7 @@ public class GroupServiceImpl implements GroupService {
 		return new GroupResponseDto(group);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	@Cacheable(value = "popularGroup")
 	public List<GroupResponseDto> getGroupByPopularity() {
@@ -80,6 +81,7 @@ public class GroupServiceImpl implements GroupService {
 		return list;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public Slice<GroupResponseDto> getGroupsByCategoryAndStatus(Long categoryId, String status,
 		Pageable pageable) {
@@ -114,6 +116,7 @@ public class GroupServiceImpl implements GroupService {
 		return new SliceImpl<>(groups.stream().map(GroupResponseDto::new).toList(), pageable, hasNext);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public Slice<GroupResponseDto> getGroupsByTag(String tagName, Pageable pageable) {
 		List<Tag> tags = tagRepository.findAllByName(tagName);
@@ -127,6 +130,7 @@ public class GroupServiceImpl implements GroupService {
 
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public Slice<GroupResponseDto> searchGroups(String groupName, Pageable pageable) {
 		List<Group> groups = groupRepository.findAllByNameContainingOrderByCreatedAtDesc(groupName);
@@ -138,6 +142,7 @@ public class GroupServiceImpl implements GroupService {
 		return new SliceImpl<>(groups.stream().map(GroupResponseDto::new).toList(), pageable, hasNext);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<GroupResponseDto> getMyGroupsByLeader(Long userId) {
 		List<Group> groups = groupRepository.findAllByUser_IdOrderByCreatedAtDesc(userId);
@@ -145,6 +150,7 @@ public class GroupServiceImpl implements GroupService {
 		return groups.stream().map(GroupResponseDto::new).toList();
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<GroupResponseDto> getMyGroupsByParticipant(Long userId) {
 		List<Group> groups = participantRepository.findAllByUser_IdOrderByCreatedAtDesc(userId)

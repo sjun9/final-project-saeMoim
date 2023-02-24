@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saemoim.dto.response.ApplicationResponseDto;
-import com.saemoim.dto.response.MessageResponseDto;
+import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.security.UserDetailsImpl;
-import com.saemoim.service.ApplicationServiceImpl;
+import com.saemoim.service.ApplicationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,50 +23,53 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ApplicationController {
 
-	private final ApplicationServiceImpl applicationService;
+	private final ApplicationService applicationService;
 
 	// 참가자가 신청한 모임내역 조회
 	@GetMapping("/participant/application")
-	public List<ApplicationResponseDto> getMyApplications(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return applicationService.getMyApplications(userDetails.getId());
+	public ResponseEntity<List<ApplicationResponseDto>> getMyApplications(
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ResponseEntity.ok().body(applicationService.getMyApplications(userDetails.getId()));
 	}
 
 	// 참가자가 모임 신청
 	@PostMapping("/groups/{groupId}/application")
-	public ResponseEntity<MessageResponseDto> applyGroup(@PathVariable Long groupId,
+	public ResponseEntity<GenericsResponseDto> applyGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		applicationService.applyGroup(groupId, userDetails.getId());
-		return new ResponseEntity<>(new MessageResponseDto("모임 신청 완료"), HttpStatus.OK);
+		return ResponseEntity.status(HttpStatus.CREATED).body(new GenericsResponseDto("모임 신청이 완료 되었습니다."));
 	}
 
 	// 참가자가 모임 신청 취소
 	@DeleteMapping("applications/{applicationId}")
-	public ResponseEntity<MessageResponseDto> cancelApplication(@PathVariable Long applicationId,
+	public ResponseEntity<GenericsResponseDto> cancelApplication(@PathVariable Long applicationId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		applicationService.cancelApplication(applicationId, userDetails.getUsername());
-		return new ResponseEntity<>(new MessageResponseDto("모임 신청 취소 완료"), HttpStatus.OK);
+		return ResponseEntity.ok().body(new GenericsResponseDto("모임 신청 취소가 완료되었습니다."));
 	}
 
 	// 리더가 신청받은 모임내역 조회
 	@GetMapping("/leader/application")
-	public List<ApplicationResponseDto> getApplications(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return applicationService.getApplications(userDetails.getUsername());
+	public ResponseEntity<GenericsResponseDto> getApplications(
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ResponseEntity.ok()
+			.body(new GenericsResponseDto(applicationService.getApplications(userDetails.getUsername())));
 	}
 
 	// 리더가 모임 신청 승인
 	@PutMapping("/applications/{applicationId}/permit")
-	public ResponseEntity<MessageResponseDto> permitApplication(@PathVariable Long applicationId,
+	public ResponseEntity<GenericsResponseDto> permitApplication(@PathVariable Long applicationId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		applicationService.permitApplication(applicationId, userDetails.getUsername());
-		return new ResponseEntity<>(new MessageResponseDto("신청 승인 완료"), HttpStatus.OK);
+		return ResponseEntity.ok().body(new GenericsResponseDto("신청 승인이 완료 되었습니다."));
 	}
 
 	// 리더가 모임 신청 거절
 	@PutMapping("/applications/{applicationId}/reject")
-	public ResponseEntity<MessageResponseDto> rejectApplication(@PathVariable Long applicationId,
+	public ResponseEntity<GenericsResponseDto> rejectApplication(@PathVariable Long applicationId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		applicationService.rejectApplication(applicationId, userDetails.getUsername());
-		return new ResponseEntity<>(new MessageResponseDto("신청 거절 완료"), HttpStatus.OK);
+		return ResponseEntity.ok().body(new GenericsResponseDto("신청 거절이 완료 되었습니다."));
 	}
 
 }
