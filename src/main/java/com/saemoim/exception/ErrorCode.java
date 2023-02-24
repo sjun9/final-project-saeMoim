@@ -13,6 +13,7 @@ public enum ErrorCode {
 	// 유저
 	DUPLICATED_USERNAME("중복된 username 입니다"),
 	DUPLICATED_EMAIL("중복된 email 입니다"),
+	NOT_FOUND_AUTH_CODE("인증코드를 다시 받아주세요."),
 	NOT_FOUND_USER("사용자를 찾을 수 없습니다."),
 	INVALID_PASSWORD("비밀번호가 틀렸습니다."),
 	INVALID_USER("접근 권한이 없는 사용자입니다."),
@@ -52,6 +53,7 @@ public enum ErrorCode {
 
 	// 모임
 	NOT_FOUND_GROUP("해당 모임은 존재하지 않습니다."),
+	DUPLICATED_GROUP_NAME("존재하는 모임명입니다."),
 	INTERNAL_SERVER_ERROR("서버 오류"),
 	ALREADY_OPEN("이미 열려있는 모임입니다."),
 	ALREADY_CLOSE("이미 닫혀있는 모임입니다."),

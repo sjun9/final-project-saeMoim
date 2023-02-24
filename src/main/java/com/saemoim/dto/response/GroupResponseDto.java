@@ -32,8 +32,6 @@ public class GroupResponseDto implements Comparable<GroupResponseDto> {
 	private Integer wishCount;
 	private int recruitNumber;
 	private int participantCount;
-	private String createdAt;
-	private String modifiedAt;
 
 	public GroupResponseDto(Group group) {
 		this.id = group.getId();
@@ -52,8 +50,6 @@ public class GroupResponseDto implements Comparable<GroupResponseDto> {
 		this.wishCount = group.getWishCount();
 		this.recruitNumber = group.getRecruitNumber();
 		this.participantCount = group.getParticipantCount();
-		this.createdAt = group.getCreatedAt().toString();
-		this.modifiedAt = group.getModifiedAt().toString();
 	}
 
 	@Override

@@ -11,6 +11,8 @@ import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
 
 public interface GroupRepository extends JpaRepository<Group, Long> {
+	boolean existsByName(String name);
+
 	List<Group> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
 	List<Group> findAllByUser_IdOrderByCreatedAtDesc(Long userId);
