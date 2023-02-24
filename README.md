@@ -1,6 +1,6 @@
 # 새모임 프로젝트🕊️
 > 오프라인에서 취미활동을 함께 하거나, 혼자서는 갈 수 없는 곳에 함께 갈 파티원을 모집할 수 있는 서비스 
-### 왜 자꾸 5조 feat.조성제조
+
 ___
 #### 팀원소개
 ``리더`` 이송언 <br> 
@@ -31,10 +31,15 @@ ___
 ### 목차 
 <!-- TOC -->
 * [새모임 프로젝트🕊️](#-)
-  * [프로젝트 개발 환경](#--)
-  * [와이어 프레임](#-)
-  * [ERD](#erd)
-  * [서비스 아키텍처](#-)
+   * [팀원소개](#)
+    * [프로젝트 설명 </br>](#--br)
+    * [기술 스택</br>](#--br)
+    * [목차](#)
+    * [프로젝트 개발 환경](#--)
+    * [와이어 프레임](#-)
+    * [서비스 아키텍처](#-)
+    * [Class UML](#class-uml)
+    * [ERD](#erd)
 <!-- TOC -->
 ___
 ### 프로젝트 개발 환경
@@ -86,13 +91,6 @@ ___
 
 ___
 
-### ERD
-<details><summary> ERD
-</summary><img src="src/main/documents/ERD.png">
-</details>
-
-___
-
 ### 서비스 아키텍처
 <details><summary>현재
 </summary>
@@ -111,6 +109,11 @@ ___
 <details><summary>UML
 </summary>
 <img src="src/main/documents/classUML.png">
+</details>
+
+### ERD
+<details><summary> ERD
+</summary><img src="src/main/documents/ERD.png">
 </details>
 
 ---
