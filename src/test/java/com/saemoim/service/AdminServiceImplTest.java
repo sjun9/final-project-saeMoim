@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -91,8 +92,11 @@ class AdminServiceImplTest {
 	void deleteAdmin() {
 		//given
 		Long adminId = 1L;
+		Admin admin = mock(Admin.class);
 
-		when(adminRepository.existsById(adminId)).thenReturn(false);
+		when(adminRepository.findById(adminId)).thenReturn(Optional.of(admin));
+		when(admin.getRole()).thenReturn(UserRoleEnum.ADMIN);
+		doNothing().when(adminRepository).deleteById(anyLong());
 		//when
 		adminService.deleteAdmin(adminId);
 		//then

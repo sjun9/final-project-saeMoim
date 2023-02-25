@@ -70,7 +70,7 @@ class CategoryControllerTest {
 
 		//then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("$[0]['name']", responseDto.getName()).exists());
+			.andExpect(jsonPath("$['data'][0]['name']", responseDto.getName()).exists());
 	}
 
 	@Test
@@ -91,8 +91,8 @@ class CategoryControllerTest {
 
 		//then
 
-		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+		resultActions.andExpect(status().isCreated())
+			.andExpect(jsonPath("data", responseDto.getData()).exists());
 	}
 
 	@Test
@@ -115,8 +115,8 @@ class CategoryControllerTest {
 
 		//then
 
-		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+		resultActions.andExpect(status().isCreated())
+			.andExpect(jsonPath("data", responseDto.getData()).exists());
 	}
 
 	@Test
@@ -140,7 +140,7 @@ class CategoryControllerTest {
 		//then
 
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+			.andExpect(jsonPath("data", responseDto.getData()).exists());
 	}
 
 	@Test
@@ -157,6 +157,6 @@ class CategoryControllerTest {
 
 		//then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+			.andExpect(jsonPath("data", responseDto.getData()).exists());
 	}
 }

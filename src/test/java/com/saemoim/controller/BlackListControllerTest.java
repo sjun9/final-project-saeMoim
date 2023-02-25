@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ class BlackListControllerTest {
 		//given
 		when(blackListService.getBlacklists()).thenReturn(new ArrayList<>());
 		//when
-		mockMvc.perform(MockMvcRequestBuilders.get("/blacklist"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/admin/blacklist"));
 		//then
 		verify(blackListService).getBlacklists();
 	}
@@ -54,26 +55,28 @@ class BlackListControllerTest {
 	@DisplayName("블랙리스트 등록")
 	void addBlacklist() throws Exception {
 		//given
-		GenericsResponseDto responseDto = new GenericsResponseDto("블랙리스트 등록 완료");
+		GenericsResponseDto responseDto = new GenericsResponseDto("블랙리스트 등록이 완료 되었습니다.");
 		doNothing().when(blackListService).addBlacklist(anyLong());
 		//when
-		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/blacklist/users/{userId}", 1L));
+		ResultActions resultActions = mockMvc.perform(
+			MockMvcRequestBuilders.post("/admin/blacklist/users/{userId}", 1L));
 		//then
-		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+		resultActions.andExpect(status().isCreated())
+			.andExpect(jsonPath("data").value(responseDto.getData()));
 	}
 
 	@Test
 	@DisplayName("영구 블랙리스트 등록")
 	void imposePermanentBan() throws Exception {
 		//given
-		GenericsResponseDto responseDto = new GenericsResponseDto("영구 블랙리스트 등록 완료");
+		GenericsResponseDto responseDto = new GenericsResponseDto("영구 블랙리스트 등록이 완료 되었습니다.");
 		doNothing().when(blackListService).imposePermanentBan(anyLong());
 		//when
-		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.patch("/blacklist/{blacklistId}", 1L));
+		ResultActions resultActions = mockMvc.perform(
+			MockMvcRequestBuilders.patch("/admin/blacklists/{blacklistId}", 1L));
 		//then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+			.andExpect(jsonPath("data", responseDto.getData()).exists());
 	}
 
 	@Test
@@ -83,9 +86,10 @@ class BlackListControllerTest {
 		GenericsResponseDto responseDto = new GenericsResponseDto("블랙리스트 해제 완료");
 		doNothing().when(blackListService).deleteBlacklist(anyLong());
 		//when
-		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.delete("/blacklist/{blacklistId}", 1L));
+		ResultActions resultActions = mockMvc.perform(
+			MockMvcRequestBuilders.delete("/admin/blacklists/{blacklistId}", 1L));
 		//then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+			.andExpect(jsonPath("data", responseDto.getData()).exists());
 	}
 }

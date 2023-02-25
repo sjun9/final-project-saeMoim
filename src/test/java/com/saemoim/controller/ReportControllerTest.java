@@ -31,6 +31,9 @@ import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.ReportRequestDto;
 import com.saemoim.dto.response.ReportResponseDto;
+import com.saemoim.jwt.JwtUtil;
+import com.saemoim.security.CustomAccessDeniedHandler;
+import com.saemoim.security.CustomAuthenticationEntryPoint;
 import com.saemoim.service.ReportServiceImpl;
 
 @ExtendWith(SpringExtension.class)
@@ -41,6 +44,12 @@ class ReportControllerTest {
 	MockMvc mockMvc;
 	@MockBean
 	ReportServiceImpl reportService;
+	@MockBean
+	private JwtUtil jwtUtil;
+	@MockBean
+	private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	@MockBean
+	private CustomAccessDeniedHandler customAccessDeniedHandler;
 
 	@Test
 	@DisplayName("신고된 사용자 조회")
@@ -55,7 +64,7 @@ class ReportControllerTest {
 		//when
 		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/admin/report"));
 		//then
-		resultActions.andExpect(jsonPath("$[0]['reporterName']").value("ssss"));
+		resultActions.andExpect(jsonPath("$['data'][0]['reporterName']").value("ssss"));
 		resultActions.andExpect(status().isOk());
 	}
 
@@ -72,7 +81,7 @@ class ReportControllerTest {
 			.content(new Gson().toJson(requestDto))
 			.with(csrf()));
 		//then
-		resultActions.andExpect(status().isOk());
+		resultActions.andExpect(status().isCreated()).andExpect(jsonPath("data").value("사용자 신고가 완료 되었습니다."));
 	}
 
 	@Test
@@ -83,8 +92,8 @@ class ReportControllerTest {
 		doNothing().when(reportService).deleteReport(anyLong());
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			MockMvcRequestBuilders.delete("/admin/report/{reportId}", 1L).with(csrf()));
+			MockMvcRequestBuilders.delete("/admin/reports/{reportId}", 1L).with(csrf()));
 		//then
-		resultActions.andExpect(status().isOk()).andExpect(jsonPath("message").value("신고 삭제 완료"));
+		resultActions.andExpect(status().isOk()).andExpect(jsonPath("data").value("신고 삭제가 완료 되었습니다."));
 	}
 }

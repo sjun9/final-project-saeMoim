@@ -85,7 +85,6 @@ class ApplicationServiceImplTest {
 		var user = new User("email", "pass", "name", UserRoleEnum.USER);
 		var application = Application.builder().id(1L).user(user).build();
 
-		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 		when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
 		// when
 		applicationService.cancelApplication(applicationId, username);
