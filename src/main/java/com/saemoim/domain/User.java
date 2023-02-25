@@ -2,7 +2,14 @@ package com.saemoim.domain;
 
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.ProfileRequestDto;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,9 +32,8 @@ public class User extends TimeStamped {
 	private String username;
 	@Column(nullable = false)
 	private String content = "안녕하세요. 잘 부탁드립니다.";
-	;
 	@Column
-	private Integer banCount = 0;
+	private int banCount = 0;
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private UserRoleEnum role;
@@ -59,5 +65,4 @@ public class User extends TimeStamped {
 		this.password = changedPassword;
 		this.content = profileRequestDto.getContent();
 	}
-
 }

@@ -68,6 +68,7 @@ public class AdminServiceImpl implements AdminService {
 		adminRepository.deleteById(adminId);
 	}
 
+	@Override
 	public String issueToken(Long id, String username, UserRoleEnum role) {
 		return jwtUtil.createAccessToken(id, username, role);
 	}

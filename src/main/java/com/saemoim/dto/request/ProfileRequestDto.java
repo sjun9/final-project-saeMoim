@@ -3,9 +3,12 @@ package com.saemoim.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class ProfileRequestDto {
 
 	@Size(min = 8, max = 15, message = "8자 이상 15자 이하여야 합니다.")
@@ -14,4 +17,9 @@ public class ProfileRequestDto {
 	@NotBlank
 	private String content;
 
+	@Builder
+	public ProfileRequestDto(String password, String content) {
+		this.password = password;
+		this.content = content;
+	}
 }

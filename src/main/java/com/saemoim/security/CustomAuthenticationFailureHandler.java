@@ -5,10 +5,12 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.saemoim.exception.ErrorCode;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,8 +22,8 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 		AuthenticationException ex) throws IOException, ServletException {
 
 		Map<String, Object> response = new HashMap<>();
-		response.put("status", "34");
-		response.put("message", "토큰이 유효하지 않습니다.");
+		response.put("status", HttpStatus.UNAUTHORIZED);
+		response.put("message", ErrorCode.INVALID_TOKEN.getMessage());
 
 		httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		OutputStream out = httpServletResponse.getOutputStream();

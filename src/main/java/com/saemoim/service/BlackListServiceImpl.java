@@ -75,8 +75,7 @@ public class BlackListServiceImpl implements BlackListService {
 	}
 
 	@Scheduled(cron = "${schedules.cron.reward.publish}")
-	@Override
-	public void scheduledBlacklist() {
+	private void scheduledBlacklist() {
 		blackListRepository.findAll()
 			.stream()
 			.filter(b -> b.getStatus().equals(BlacklistStatusEnum.BAN))

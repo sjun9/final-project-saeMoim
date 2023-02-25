@@ -54,13 +54,13 @@ public class ReviewController {
 	public ResponseEntity<GenericsResponseDto> deleteReview(@PathVariable Long reviewId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		reviewService.deleteReview(reviewId, userDetails.getUsername());
-		return new ResponseEntity<>(new GenericsResponseDto("후기 삭제 성공"), HttpStatus.OK);
+		return new ResponseEntity<>(new GenericsResponseDto("후기 삭제가 성공 하였습니다."), HttpStatus.OK);
 	}
 
 	//관리자 후기 삭제
 	@DeleteMapping("/admin/reviews/{reviewId}")
 	public ResponseEntity<GenericsResponseDto> deleteReviewByAdmin(@PathVariable Long reviewId) {
 		reviewService.deleteReviewByAdmin(reviewId);
-		return new ResponseEntity<>(new GenericsResponseDto("후기 삭제 성공"), HttpStatus.OK);
+		return new ResponseEntity<>(new GenericsResponseDto("후기 삭제가 성공 하였습니다."), HttpStatus.OK);
 	}
 }

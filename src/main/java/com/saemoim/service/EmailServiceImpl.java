@@ -30,8 +30,7 @@ public class EmailServiceImpl implements EmailService {
 	private String tempPassword;
 
 	// 회원가입 시 메일 발송
-	@Override
-	public void createCode() {
+	private void createCode() {
 
 		Random random = new Random();
 		StringBuilder code = new StringBuilder();
@@ -47,8 +46,7 @@ public class EmailServiceImpl implements EmailService {
 		authCode = code.toString();
 	}
 
-	@Override
-	public MimeMessage createEmailForm(String email) throws MessagingException {
+	private MimeMessage createEmailForm(String email) throws MessagingException {
 
 		createCode();
 
@@ -86,14 +84,12 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	// 비밀번호 찾기 시 메일 발송
-	@Override
-	public void createTempPassword() {
+	private void createTempPassword() {
 		UUID uid = UUID.randomUUID();
 		tempPassword = uid.toString().substring(0, 10);
 	}
 
-	@Override
-	public MimeMessage createTempPasswordEmailForm(String email) throws MessagingException {
+	private MimeMessage createTempPasswordEmailForm(String email) throws MessagingException {
 		createTempPassword();
 
 		String fromEmail = "dpevent@naver.com";

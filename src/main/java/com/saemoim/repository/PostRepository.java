@@ -10,5 +10,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 	List<Post> findAllByGroup_Id(Long group_id);
 
-	Long countByGroup_Id(Long group_id);
 }

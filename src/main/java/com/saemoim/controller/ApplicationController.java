@@ -1,7 +1,5 @@
 package com.saemoim.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.saemoim.dto.response.ApplicationResponseDto;
 import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.security.UserDetailsImpl;
 import com.saemoim.service.ApplicationService;
@@ -27,9 +24,10 @@ public class ApplicationController {
 
 	// 참가자가 신청한 모임내역 조회
 	@GetMapping("/participant/application")
-	public ResponseEntity<List<ApplicationResponseDto>> getMyApplications(
+	public ResponseEntity<GenericsResponseDto> getMyApplications(
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(applicationService.getMyApplications(userDetails.getId()));
+		return ResponseEntity.ok()
+			.body(new GenericsResponseDto(applicationService.getMyApplications(userDetails.getId())));
 	}
 
 	// 참가자가 모임 신청

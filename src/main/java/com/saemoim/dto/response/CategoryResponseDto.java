@@ -18,10 +18,7 @@ public class CategoryResponseDto {
 	public CategoryResponseDto(Category category, List<Category> childCategories) {
 		this.id = category.getId();
 		this.name = category.getName();
-		for (Category childCategory : childCategories) {
-			if (childCategory.getParentId().equals(category.getId())) {
-				categories.add(new CategoryResponseDto(childCategory, childCategories));
-			}
-		}
+		childCategories.stream().filter(c -> c.getParentId().equals(category.getId())).map(c ->
+			c.toCategoryResponseDto(childCategories)).toList();
 	}
 }

@@ -35,8 +35,4 @@ public interface UserService {
 	ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto);
 
 	TokenResponseDto reissueToken(String accessToken, String refreshToken);
-
-	void deleteRefreshToken(String refreshToken);
-
-	String issueRefreshToken(Long userId, String accessToken);
 }

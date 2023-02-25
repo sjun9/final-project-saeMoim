@@ -42,7 +42,7 @@ public class UserController {
 	@PostMapping("/sign-up")
 	public ResponseEntity<GenericsResponseDto> signUp(@Validated @RequestBody SignUpRequestDto requestDto) {
 		userService.signUp(requestDto);
-		return ResponseEntity.ok().body(new GenericsResponseDto("회원가입 완료"));
+		return ResponseEntity.ok().body(new GenericsResponseDto("회원가입이 완료 되었습니다."));
 	}
 
 	// 이메일 중복 확인
@@ -50,7 +50,7 @@ public class UserController {
 	public ResponseEntity<GenericsResponseDto> checkEmailDuplication(
 		@Validated @RequestBody EmailRequestDto requestDto) {
 		userService.checkEmailDuplication(requestDto);
-		return ResponseEntity.ok().body(new GenericsResponseDto("이메일 중복 검사 완료"));
+		return ResponseEntity.ok().body(new GenericsResponseDto("이메일 중복 검사가 완료 되었습니다."));
 	}
 
 	// 이름 중복 확인
@@ -58,7 +58,7 @@ public class UserController {
 	public ResponseEntity<GenericsResponseDto> checkUsernameDuplication(
 		@Validated @RequestBody UsernameRequestDto requestDto) {
 		userService.checkUsernameDuplication(requestDto);
-		return ResponseEntity.ok().body(new GenericsResponseDto("이름 중복 검사 완료"));
+		return ResponseEntity.ok().body(new GenericsResponseDto("이름 중복 검사가 완료 되었습니다."));
 	}
 
 	// 로그인
@@ -72,7 +72,7 @@ public class UserController {
 		headers.set(JwtUtil.REFRESH_TOKEN_HEADER, tokenResponseDto.getRefreshToken());
 		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 
-		return ResponseEntity.ok().headers(headers).body(new GenericsResponseDto("로그인 완료"));
+		return ResponseEntity.ok().headers(headers).body(new GenericsResponseDto("로그인이 완료 되었습니다."));
 	}
 
 	@PostMapping("/log-out")
@@ -81,7 +81,7 @@ public class UserController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(JwtUtil.AUTHORIZATION_HEADER, "");
 		headers.set(JwtUtil.REFRESH_TOKEN_HEADER, "");
-		return ResponseEntity.ok().headers(headers).body(new GenericsResponseDto("로그아웃 완료"));
+		return ResponseEntity.ok().headers(headers).body(new GenericsResponseDto("로그아웃이 완료 되었습니다."));
 	}
 
 	// 회원 탈퇴
@@ -93,7 +93,7 @@ public class UserController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(JwtUtil.AUTHORIZATION_HEADER, "");
 		headers.set(JwtUtil.REFRESH_TOKEN_HEADER, "");
-		return ResponseEntity.ok().headers(headers).body(new GenericsResponseDto("회원탈퇴 완료"));
+		return ResponseEntity.ok().headers(headers).body(new GenericsResponseDto("회원탈퇴가 완료 되었습니다."));
 	}
 
 	// 전체 회원 조회
@@ -138,6 +138,6 @@ public class UserController {
 		headers.set(JwtUtil.AUTHORIZATION_HEADER, tokenResponseDto.getAccessToken());
 		headers.set(JwtUtil.REFRESH_TOKEN_HEADER, tokenResponseDto.getRefreshToken());
 		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
-		return ResponseEntity.ok().headers(headers).body(new GenericsResponseDto("토큰 재발급 완료"));
+		return ResponseEntity.ok().headers(headers).body(new GenericsResponseDto("토큰 재발급이 완료 되었습니다."));
 	}
 }

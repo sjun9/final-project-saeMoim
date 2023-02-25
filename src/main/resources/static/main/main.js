@@ -277,18 +277,18 @@ function showMoimAjax(url, contentId) {
         url: url,
         headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         success: function (response) {
-            for (let i = 0; i < response.length; i++) {
-                let id = response[i]['id']
-                let groupName = response[i]['groupName']
-                let content = response[i]['content']
-                let categoryName = response[i]['categoryName']
-                let participantCount = response[i]['participantCount']
-                let recruitNumber = response[i]['recruitNumber']
-                let wishCount = response[i]['wishCount']
-                let status = response[i]['status']
-                let tags = response[i]['tags']
-                let leaderId = response[i]['userId']
-                let leaderName = response[i]['username']
+            for (let i = 0; i < response['data'].length; i++) {
+                let id = response['data'][i]['id']
+                let groupName = response['data'][i]['groupName']
+                let content = response['data'][i]['content']
+                let categoryName = response['data'][i]['categoryName']
+                let participantCount = response['data'][i]['participantCount']
+                let recruitNumber = response['data'][i]['recruitNumber']
+                let wishCount = response['data'][i]['wishCount']
+                let status = response['data'][i]['status']
+                let tags = response['data'][i]['tags']
+                let leaderId = response['data'][i]['userId']
+                let leaderName = response['data'][i]['username']
 
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">

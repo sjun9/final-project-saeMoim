@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.saemoim.domain.Group;
 import com.saemoim.domain.User;
 import com.saemoim.domain.Wish;
-import com.saemoim.dto.response.MyGroupResponseDto;
+import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.GroupRepository;
 import com.saemoim.repository.UserRepository;
@@ -25,12 +25,12 @@ public class WishServiceImpl implements WishService {
 
 	@Transactional
 	@Override
-	public List<MyGroupResponseDto> getWishGroups(Long userId) {
+	public List<GroupResponseDto> getWishGroups(Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 		List<Wish> wishes = wishRepository.findAllByUserOrderByCreatedAtDesc(user);
-		return wishes.stream().map(Wish::getGroup).map(MyGroupResponseDto::new).toList();
+		return wishes.stream().map(Wish::getGroup).map(GroupResponseDto::new).toList();
 	}
 
 	@Transactional

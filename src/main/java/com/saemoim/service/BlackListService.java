@@ -13,6 +13,4 @@ public interface BlackListService {
 	void addBlacklist(Long userId);
 
 	void deleteBlacklist(Long blacklistId);
-
-	void scheduledBlacklist();
 }

@@ -175,8 +175,7 @@ public class UserServiceImpl implements UserService {
 		return new ProfileResponseDto(user);
 	}
 
-	@Override
-	public void deleteRefreshToken(String refreshToken) {
+	private void deleteRefreshToken(String refreshToken) {
 		Optional<String> refreshTokenValue = jwtUtil.resolveToken(refreshToken);
 
 		if (refreshTokenValue.isPresent()) {
@@ -186,8 +185,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	@Override
-	public String issueRefreshToken(Long userId, String accessToken) {
+	private String issueRefreshToken(Long userId, String accessToken) {
 		String refreshToken = jwtUtil.createRefreshToken(userId);
 		String refreshTokenValue = refreshToken.substring(7);
 		String accessTokenValue = jwtUtil.resolveToken(accessToken).orElseThrow(

@@ -34,13 +34,13 @@ public class ReportController {
 	public ResponseEntity<GenericsResponseDto> reportUser(@PathVariable Long subjectUserId,
 		@Validated @RequestBody ReportRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 		reportService.reportUser(subjectUserId, requestDto, userDetails.getUsername());
-		return ResponseEntity.status(HttpStatus.CREATED).body(new GenericsResponseDto("사용자 신고 완료"));
+		return ResponseEntity.status(HttpStatus.CREATED).body(new GenericsResponseDto("사용자 신고가 완료 되었습니다."));
 	}
 
 	// 관리자가 신고내역 삭제
 	@DeleteMapping("/admin/reports/{reportId}")
 	public ResponseEntity<GenericsResponseDto> deleteReport(@PathVariable Long reportId) {
 		reportService.deleteReport(reportId);
-		return ResponseEntity.ok().body(new GenericsResponseDto("신고 삭제 완료"));
+		return ResponseEntity.ok().body(new GenericsResponseDto("신고 삭제가 완료 되었습니다."));
 	}
 }
