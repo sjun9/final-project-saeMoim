@@ -1,7 +1,10 @@
 package com.saemoim.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
@@ -59,7 +62,7 @@ class WishServiceImplTest {
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 		when(wishRepository.existsByUserAndGroup(any(User.class), any(Group.class))).thenReturn(false);
 		// when
-		wishService.wishGroup(groupId, userId);
+		wishService.addWishGroup(groupId, userId);
 
 		// then
 		verify(wishRepository).save(any(Wish.class));

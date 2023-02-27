@@ -63,9 +63,10 @@ class ApplicationServiceImplTest {
 		// given
 		var userId = 1L;
 		var groupId = 1L;
-		var group = Group.builder().name("group").build();
-		var user = new User("email", "pass", "name", UserRoleEnum.USER);
-		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+		var user = User.builder().id(1L).username("pati").role(UserRoleEnum.USER).build();
+		var user2 = User.builder().id(2L).username("pati2").role(UserRoleEnum.USER).build();
+		var group = Group.builder().user(user).name("group").build();
+		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user2));
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
 		when(applicationRepository.existsByUserAndGroup(any(User.class), any(Group.class))).thenReturn(false);
 		// when
@@ -81,7 +82,7 @@ class ApplicationServiceImplTest {
 		// given
 		Long applicationId = 1L;
 		Long userId = 1L;
-		var user = new User("email", "pass", "name", UserRoleEnum.USER);
+		var user = User.builder().id(1L).username("pati").role(UserRoleEnum.USER).build();
 		var application = Application.builder().id(1L).user(user).build();
 
 		when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
@@ -117,8 +118,8 @@ class ApplicationServiceImplTest {
 		// given
 		var applicationId = 1L;
 		var userId = 1L;
-		Group group = Group.builder().id(1L).user(new User("e", "p", "leader", UserRoleEnum.USER)).build();
-		User user = User.builder().id(1L).username("pati").build();
+		User user = User.builder().id(1L).username("pati").role(UserRoleEnum.USER).build();
+		Group group = Group.builder().id(1L).user(user).build();
 		Application application = Application.builder()
 			.group(group)
 			.user(user)
@@ -141,8 +142,8 @@ class ApplicationServiceImplTest {
 		// given
 		var applicationId = 1L;
 		var userId = 1L;
-		Group group = Group.builder().id(1L).user(new User("e", "p", "leader", UserRoleEnum.USER)).build();
-		User user = User.builder().username("pati").build();
+		User user = User.builder().id(1L).username("pati").build();
+		Group group = Group.builder().id(1L).user(user).build();
 		Application application = Application.builder().status(ApplicationStatusEnum.WAIT)
 			.group(group)
 			.user(user)

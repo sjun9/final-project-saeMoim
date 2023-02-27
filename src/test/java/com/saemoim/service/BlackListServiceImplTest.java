@@ -94,11 +94,12 @@ class BlackListServiceImplTest {
 	void deleteBlacklist() {
 		//given
 		Long blacklistId = 1L;
-		String name = "jun";
-		User user = new User("seongjuni1@naver.com", "1234", "jun", UserRoleEnum.USER);
+		User user = mock(User.class);
 		BlackList blacklist = new BlackList(user, BlacklistStatusEnum.BAN);
 
+		when(user.getId()).thenReturn(1L);
 		when(blackListRepository.findById(anyLong())).thenReturn(Optional.of(blacklist));
+		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 		doNothing().when(blackListRepository).delete(any(BlackList.class));
 		//when
 		blackListService.deleteBlacklist(blacklistId);
