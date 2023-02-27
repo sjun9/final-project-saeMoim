@@ -559,7 +559,7 @@ function showAppliedGroup() {
                                     <td>${groupName}</td>
                                     <td>${leaderName}</td>
                                     <td>${status}</td>
-                                    <td><input type="button" onclick="cancelApplication(${id})">취소</td>
+                                    <td><input type="button" onclick="cancelApplication(${id})">삭제</td>
                                   </tr>`
                 $('#applied-group').append(temp_html)
                 console.log(response)

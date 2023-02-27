@@ -47,7 +47,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public PostResponseDto getPost(Long postId, Long userId) {
 		Post post = postRepository.findById(postId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
 
 		String title = post.getTitle();
 		Long id = post.getUserId();
@@ -88,7 +88,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId) {
 		Post savedPost = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
+			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
 
 		if (savedPost.isWriter(userId)) {
 			String title = requestDto.getTitle();
@@ -106,7 +106,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public void deletePost(Long postId, Long userId) {
 		Post savedPost = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
+			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
 
 		if (savedPost.isWriter(userId)) {
 			postRepository.delete(savedPost);
@@ -121,7 +121,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public void deletePostByAdmin(Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage())
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage())
 		);
 
 		postRepository.delete(post);

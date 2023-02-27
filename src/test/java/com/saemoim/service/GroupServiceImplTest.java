@@ -1,10 +1,12 @@
 package com.saemoim.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -125,16 +127,17 @@ class GroupServiceImplTest {
 			.recruitNumber(3)
 			.build();
 		var id = 1L;
-		var name = "anemmee";
-		User user = new User("email", "pass", "anemmee", UserRoleEnum.USER);
-		Group group = Group.builder().id(1L).user(user).name("name").build();
+		var userId = 1L;
+		User user = mock(User.class);
+		Group group = Group.builder().id(userId).user(user).name("name").build();
 		Category category = Category.builder().parentId(1L).name("named").build();
 
+		when(user.getId()).thenReturn(1L);
 		when(categoryRepository.findByName(anyString())).thenReturn(Optional.of(category));
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
 
 		// when
-		GroupResponseDto response = groupService.updateGroup(id, request, name);
+		GroupResponseDto response = groupService.updateGroup(id, request, userId);
 
 		// then
 		assertThat(response.getGroupName()).isEqualTo(group.getName());
@@ -144,12 +147,14 @@ class GroupServiceImplTest {
 	@DisplayName("모임삭제")
 	void deleteGroup() {
 		// given
-		User user = new User("email", "pass", "john", UserRoleEnum.USER);
+		Long userId = 1L;
+		User user = mock(User.class);
 		Group group = Group.builder().id(1L).user(user).name("name").build();
 
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
+		when(user.getId()).thenReturn(userId);
 		// when
-		groupService.deleteGroup(group.getId(), user.getUsername());
+		groupService.deleteGroup(group.getId(), userId);
 
 		// then
 		verify(groupRepository).delete(group);
@@ -159,13 +164,14 @@ class GroupServiceImplTest {
 	@DisplayName("모임열기")
 	void openGroup() {
 		// given
-		var user = new User("email", "pass", "name", UserRoleEnum.USER);
+		var userId = 1L;
+		var user = mock(User.class);
 		var group = Group.builder().status(GroupStatusEnum.CLOSE).user(user).build();
 
 		when(groupRepository.findById(group.getId())).thenReturn(Optional.of(group));
-
+		when(user.getId()).thenReturn(userId);
 		// when
-		groupService.openGroup(group.getId(), user.getUsername());
+		groupService.openGroup(group.getId(), userId);
 
 		// then
 		assertThat(group.getStatus()).isEqualTo(GroupStatusEnum.OPEN);
@@ -175,13 +181,15 @@ class GroupServiceImplTest {
 	@DisplayName("모임닫기")
 	void closeGroup() {
 		// given
-		var user = new User("email", "pass", "name", UserRoleEnum.USER);
+		var userId = 1L;
+		var user = mock(User.class);
 		var group = Group.builder().status(GroupStatusEnum.OPEN).user(user).build();
 
 		when(groupRepository.findById(group.getId())).thenReturn(Optional.of(group));
+		when(user.getId()).thenReturn(userId);
 
 		// when
-		groupService.closeGroup(group.getId(), user.getUsername());
+		groupService.closeGroup(group.getId(), userId);
 
 		// then
 		assertThat(group.getStatus()).isEqualTo(GroupStatusEnum.CLOSE);

@@ -75,7 +75,7 @@ class CategoryServiceImplTest {
 		when(categoryRepository.existsByName(anyString())).thenReturn(false);
 		when(categoryRepository.save(any(Category.class))).thenReturn(category);
 		//when
-		categoryService.createCategory(requestDto);
+		categoryService.createParentCategory(requestDto);
 		//then
 		verify(categoryRepository).save(any(Category.class));
 	}
@@ -90,7 +90,8 @@ class CategoryServiceImplTest {
 
 		when(categoryRepository.existsByName(anyString())).thenReturn(true);
 		//when
-		Exception exception = assertThrows(RuntimeException.class, () -> categoryService.createCategory(requestDto));
+		Exception exception = assertThrows(RuntimeException.class,
+			() -> categoryService.createParentCategory(requestDto));
 		//then
 		assertThat(exception.getMessage()).isEqualTo(ErrorCode.DUPLICATED_CATEGORY.getMessage());
 	}

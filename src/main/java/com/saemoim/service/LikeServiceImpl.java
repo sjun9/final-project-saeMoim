@@ -32,7 +32,7 @@ public class LikeServiceImpl implements LikeService {
 	@Transactional
 	public void addLike(Long postId, Long userId) {
 		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
+			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
 		post.plusLikeCount();
 		likeRepository.save(new PostLike(post, userId));
 
@@ -42,7 +42,7 @@ public class LikeServiceImpl implements LikeService {
 	@Transactional
 	public void deleteLike(Long postId, Long userId) {
 		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
+			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
 		post.minusLikeCount();
 		likeRepository.deleteByPost_IdAndUserId(postId, userId);
 

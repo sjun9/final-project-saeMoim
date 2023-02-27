@@ -31,10 +31,8 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Transactional
 	@Override
-	public void createCategory(CategoryRequestDto requestDto) {
-		if (categoryRepository.existsByName(requestDto.getName())) {
-			throw new IllegalArgumentException(ErrorCode.DUPLICATED_CATEGORY.getMessage());
-		}
+	public void createParentCategory(CategoryRequestDto requestDto) {
+		_isExistsCategory(requestDto);
 
 		Category category = Category.builder()
 			.name(requestDto.getName())
@@ -46,14 +44,9 @@ public class CategoryServiceImpl implements CategoryService {
 	@Transactional
 	@Override
 	public void createChildCategory(Long parentId, CategoryRequestDto requestDto) {
-		if (categoryRepository.existsByName(requestDto.getName())) {
-			throw new IllegalArgumentException(ErrorCode.DUPLICATED_CATEGORY.getMessage());
-		}
+		_isExistsCategory(requestDto);
 
-		//아래 로직은 프론트에서 처리해주기 때문에 필요 없긴함
-		Category findCategory = categoryRepository.findById(parentId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
-		);
+		Category findCategory = _getCategoryById(parentId);
 		if (findCategory.getParentId() != null) {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
@@ -69,13 +62,9 @@ public class CategoryServiceImpl implements CategoryService {
 	@Transactional
 	@Override
 	public void updateCategory(Long categoryId, CategoryRequestDto requestDto) {
-		if (categoryRepository.existsByName(requestDto.getName())) {
-			throw new IllegalArgumentException(ErrorCode.DUPLICATED_CATEGORY.getMessage());
-		}
+		_isExistsCategory(requestDto);
 
-		Category category = categoryRepository.findById(categoryId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
-		);
+		Category category = _getCategoryById(categoryId);
 
 		category.updateCategory(requestDto.getName());
 		categoryRepository.save(category);
@@ -88,10 +77,20 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new IllegalArgumentException(ErrorCode.NOT_EMPTY_CATEGORY.getMessage());
 		}
 
-		Category category = categoryRepository.findById(categoryId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
-		);
+		Category category = _getCategoryById(categoryId);
 
 		categoryRepository.delete(category);
+	}
+
+	private Category _getCategoryById(Long categoryId) {
+		return categoryRepository.findById(categoryId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_CATEGORY.getMessage())
+		);
+	}
+
+	private void _isExistsCategory(CategoryRequestDto requestDto) {
+		if (categoryRepository.existsByName(requestDto.getName())) {
+			throw new IllegalArgumentException(ErrorCode.DUPLICATED_CATEGORY.getMessage());
+		}
 	}
 }

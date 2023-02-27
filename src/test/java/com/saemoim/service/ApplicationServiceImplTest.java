@@ -1,7 +1,6 @@
 package com.saemoim.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.verify;
@@ -81,13 +80,13 @@ class ApplicationServiceImplTest {
 	void cancelApplication() {
 		// given
 		Long applicationId = 1L;
-		String username = "name";
+		Long userId = 1L;
 		var user = new User("email", "pass", "name", UserRoleEnum.USER);
 		var application = Application.builder().id(1L).user(user).build();
 
 		when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
 		// when
-		applicationService.cancelApplication(applicationId, username);
+		applicationService.deleteApplication(applicationId, userId);
 
 		// then
 		verify(applicationRepository).delete(application);
@@ -98,14 +97,14 @@ class ApplicationServiceImplTest {
 	@DisplayName("리더가모임요청내역조회")
 	void getApplications() {
 		// given
-		var username = "nana";
+		var userId = 1L;
 		var group = Group.builder().user(new User("e", "p", "nana", UserRoleEnum.USER)).build();
 		List<Group> list = new ArrayList<>();
 		list.add(group);
-		when(groupRepository.findByUser_username(anyString())).thenReturn(list);
+		when(groupRepository.findByUser_userId(anyLong())).thenReturn(list);
 
 		// when
-		applicationService.getApplications(username);
+		applicationService.getApplications(userId);
 
 		// then
 		verify(applicationRepository).findAllByGroups(list);
@@ -117,7 +116,7 @@ class ApplicationServiceImplTest {
 	void permitApplication() {
 		// given
 		var applicationId = 1L;
-		var username = "leader";
+		var userId = 1L;
 		Group group = Group.builder().id(1L).user(new User("e", "p", "leader", UserRoleEnum.USER)).build();
 		User user = User.builder().id(1L).username("pati").build();
 		Application application = Application.builder()
@@ -129,7 +128,7 @@ class ApplicationServiceImplTest {
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
 		when(userRepository.findById(1L)).thenReturn(Optional.of(application.getUser()));
 		// when
-		applicationService.permitApplication(applicationId, username);
+		applicationService.permitApplication(applicationId, userId);
 		// then
 		verify(applicationRepository).save(any(Application.class));
 		verify(participantRepository).save(any(Participant.class));
@@ -141,7 +140,7 @@ class ApplicationServiceImplTest {
 	void rejectApplication() {
 		// given
 		var applicationId = 1L;
-		var username = "leader";
+		var userId = 1L;
 		Group group = Group.builder().id(1L).user(new User("e", "p", "leader", UserRoleEnum.USER)).build();
 		User user = User.builder().username("pati").build();
 		Application application = Application.builder().status(ApplicationStatusEnum.WAIT)
@@ -152,7 +151,7 @@ class ApplicationServiceImplTest {
 		when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
 		// when
-		applicationService.rejectApplication(applicationId, username);
+		applicationService.rejectApplication(applicationId, userId);
 		// then
 		verify(applicationRepository).save(any(Application.class));
 		assertThat(application.getStatus()).isEqualTo(ApplicationStatusEnum.REJECT);

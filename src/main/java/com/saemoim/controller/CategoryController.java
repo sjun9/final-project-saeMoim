@@ -32,7 +32,7 @@ public class CategoryController {
 	// 카테고리 생성
 	@PostMapping("/admin/category")
 	public ResponseEntity<GenericsResponseDto> createCategory(@Validated @RequestBody CategoryRequestDto requestDto) {
-		categoryService.createCategory(requestDto);
+		categoryService.createParentCategory(requestDto);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(new GenericsResponseDto(requestDto.getName() + " 카테고리 생성이 완료 되었습니다."));
 	}

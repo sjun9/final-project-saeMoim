@@ -24,6 +24,6 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 	@Query(value = "select distinct g from sae_group g join fetch g.user")
 	List<Group> findAll();
 
-	@Query(value = "select distinct g from sae_group g where g.user.username = :username")
-	List<Group> findByUser_username(@Param("username") String username);
+	@Query(value = "select distinct g from sae_group g where g.user.id = :userId")
+	List<Group> findByUser_userId(@Param("userId") Long userId);
 }

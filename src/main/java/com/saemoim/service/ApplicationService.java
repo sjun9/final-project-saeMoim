@@ -9,11 +9,11 @@ public interface ApplicationService {
 
 	void applyGroup(Long groupId, Long userId);
 
-	void cancelApplication(Long applicationId, String username);
+	void deleteApplication(Long applicationId, Long userId);
 
-	List<ApplicationResponseDto> getApplications(String username);
+	List<ApplicationResponseDto> getApplications(Long userId);
 
-	void permitApplication(Long applicationId, String username);
+	void permitApplication(Long applicationId, Long userId);
 
-	void rejectApplication(Long applicationId, String username);
+	void rejectApplication(Long applicationId, Long userId);
 }

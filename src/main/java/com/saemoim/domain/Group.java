@@ -131,8 +131,8 @@ public class Group extends TimeStamped {
 		return this.category.getName();
 	}
 
-	public boolean isLeader(String username) {
-		return this.getUsername().equals(username);
+	public boolean isLeader(Long userId) {
+		return this.getUserId().equals(userId);
 	}
 
 	public void updateStatusToOpen() {

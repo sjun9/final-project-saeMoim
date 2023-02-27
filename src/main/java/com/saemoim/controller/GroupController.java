@@ -97,14 +97,14 @@ public class GroupController {
 	public ResponseEntity<GroupResponseDto> updateGroup(@PathVariable Long groupId,
 		@Validated @RequestBody GroupRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(groupService.updateGroup(groupId, requestDto, userDetails.getUsername()));
+		return ResponseEntity.ok().body(groupService.updateGroup(groupId, requestDto, userDetails.getId()));
 	}
 
 	// 모임 삭제
 	@DeleteMapping("/groups/{groupId}")
 	public ResponseEntity<GenericsResponseDto> deleteGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		groupService.deleteGroup(groupId, userDetails.getUsername());
+		groupService.deleteGroup(groupId, userDetails.getId());
 		return ResponseEntity.ok().body(new GenericsResponseDto("모임이 삭제 되었습니다."));
 	}
 
@@ -112,7 +112,7 @@ public class GroupController {
 	@PatchMapping("/groups/{groupId}/open")
 	public ResponseEntity<GenericsResponseDto> openGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		groupService.openGroup(groupId, userDetails.getUsername());
+		groupService.openGroup(groupId, userDetails.getId());
 		return ResponseEntity.ok().body(new GenericsResponseDto("모임 상태가 'OPEN'으로 변경 되었습니다"));
 	}
 
@@ -120,7 +120,7 @@ public class GroupController {
 	@PatchMapping("/groups/{groupId}/close")
 	public ResponseEntity<GenericsResponseDto> closeGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		groupService.closeGroup(groupId, userDetails.getUsername());
+		groupService.closeGroup(groupId, userDetails.getId());
 		return ResponseEntity.ok().body(new GenericsResponseDto("모임 상태가 'CLOSE'로 변경 되었습니다"));
 	}
 

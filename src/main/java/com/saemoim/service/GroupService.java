@@ -37,12 +37,12 @@ public interface GroupService {
 
 	GroupResponseDto createGroup(GroupRequestDto requestDto, Long userId);
 
-	GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, String username);
+	GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, Long userId);
 
-	void deleteGroup(Long groupId, String username);
+	void deleteGroup(Long groupId, Long userId);
 
-	void openGroup(Long groupId, String username);
+	void openGroup(Long groupId, Long userId);
 
-	void closeGroup(Long groupId, String username);
+	void closeGroup(Long groupId, Long userId);
 
 }

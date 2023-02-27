@@ -81,7 +81,7 @@ class CategoryControllerTest {
 			.name("여행")
 			.build();
 		GenericsResponseDto responseDto = new GenericsResponseDto(requestDto.getName() + " 카테고리 생성 완료");
-		doNothing().when(categoryService).createCategory(any(CategoryRequestDto.class));
+		doNothing().when(categoryService).createParentCategory(any(CategoryRequestDto.class));
 
 		//when
 		ResultActions resultActions = mockMvc.perform(

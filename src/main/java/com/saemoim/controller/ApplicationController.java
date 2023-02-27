@@ -42,7 +42,7 @@ public class ApplicationController {
 	@DeleteMapping("applications/{applicationId}")
 	public ResponseEntity<GenericsResponseDto> cancelApplication(@PathVariable Long applicationId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		applicationService.cancelApplication(applicationId, userDetails.getUsername());
+		applicationService.deleteApplication(applicationId, userDetails.getId());
 		return ResponseEntity.ok().body(new GenericsResponseDto("모임 신청 취소가 완료되었습니다."));
 	}
 
@@ -51,14 +51,14 @@ public class ApplicationController {
 	public ResponseEntity<GenericsResponseDto> getApplications(
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ResponseEntity.ok()
-			.body(new GenericsResponseDto(applicationService.getApplications(userDetails.getUsername())));
+			.body(new GenericsResponseDto(applicationService.getApplications(userDetails.getId())));
 	}
 
 	// 리더가 모임 신청 승인
 	@PutMapping("/applications/{applicationId}/permit")
 	public ResponseEntity<GenericsResponseDto> permitApplication(@PathVariable Long applicationId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		applicationService.permitApplication(applicationId, userDetails.getUsername());
+		applicationService.permitApplication(applicationId, userDetails.getId());
 		return ResponseEntity.ok().body(new GenericsResponseDto("신청 승인이 완료 되었습니다."));
 	}
 
@@ -66,7 +66,7 @@ public class ApplicationController {
 	@PutMapping("/applications/{applicationId}/reject")
 	public ResponseEntity<GenericsResponseDto> rejectApplication(@PathVariable Long applicationId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		applicationService.rejectApplication(applicationId, userDetails.getUsername());
+		applicationService.rejectApplication(applicationId, userDetails.getId());
 		return ResponseEntity.ok().body(new GenericsResponseDto("신청 거절이 완료 되었습니다."));
 	}
 
