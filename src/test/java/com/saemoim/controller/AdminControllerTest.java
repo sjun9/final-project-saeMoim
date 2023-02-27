@@ -1,10 +1,16 @@
 package com.saemoim.controller;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +35,10 @@ import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.AdminRequestDto;
 import com.saemoim.dto.response.AdminResponseDto;
 import com.saemoim.dto.response.AdminTokenResponseDto;
-import com.saemoim.dto.response.MessageResponseDto;
+import com.saemoim.dto.response.GenericsResponseDto;
+import com.saemoim.jwt.JwtUtil;
+import com.saemoim.security.CustomAccessDeniedHandler;
+import com.saemoim.security.CustomAuthenticationEntryPoint;
 import com.saemoim.service.AdminServiceImpl;
 
 @ExtendWith(SpringExtension.class)
@@ -40,19 +49,24 @@ class AdminControllerTest {
 	private AdminServiceImpl adminService;
 	@Autowired
 	private MockMvc mockMvc;
+	@MockBean
+	private JwtUtil jwtUtil;
+	@MockBean
+	private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	@MockBean
+	private CustomAccessDeniedHandler customAccessDeniedHandler;
 
 	@Test
 	@DisplayName("관리자 로그인")
 	@WithCustomMockUser
 	void signInByAdmin() throws Exception {
 		//given
-		AdminTokenResponseDto responseDto = mock(AdminTokenResponseDto.class);
+		AdminTokenResponseDto responseDto = new AdminTokenResponseDto("aaaaa");
 		AdminRequestDto requestDto = AdminRequestDto.builder()
 			.password("asdf1234!")
 			.username("장성준")
 			.build();
 
-		when(responseDto.getAccessToken()).thenReturn("aaaaa");
 		when(adminService.signInByAdmin(any(AdminRequestDto.class))).thenReturn(responseDto);
 		//when
 		ResultActions resultActions = mockMvc.perform(
@@ -63,12 +77,12 @@ class AdminControllerTest {
 		//then
 		verify(adminService).signInByAdmin(any(AdminRequestDto.class));
 		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", "aaaaa"))
-			.andExpect(jsonPath("message").value("관리자 로그인 완료"));
+			.andExpect(jsonPath("data").value("관리자 로그인 완료"));
 	}
 
 	@Test
 	@DisplayName("관리자 목록 조회")
-	@WithCustomMockUser
+	@WithCustomMockUser(role = UserRoleEnum.ROOT)
 	void getAdmins() throws Exception {
 		//given
 		List<AdminResponseDto> list = new ArrayList<>();
@@ -79,15 +93,15 @@ class AdminControllerTest {
 		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/admin"));
 		//then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("$[0]['adminName']").value("admin"));
+			.andExpect(jsonPath("$['data'][0]['adminName']").value("admin"));
 	}
 
 	@Test
 	@DisplayName("관리자 계정 생성")
-	@WithCustomMockUser
+	@WithCustomMockUser(role = UserRoleEnum.ROOT)
 	void createAdmin() throws Exception {
 		//given
-		MessageResponseDto responseDto = new MessageResponseDto("관리자 계정 생성 완료");
+		GenericsResponseDto responseDto = new GenericsResponseDto("관리자 계정 생성이 완료 되었습니다.");
 		AdminRequestDto requestDto = AdminRequestDto.builder()
 			.username("장성준")
 			.password("asdf1234!")
@@ -98,32 +112,32 @@ class AdminControllerTest {
 		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/admin")
 			.contentType(MediaType.APPLICATION_JSON)
 			.with(csrf())
-			.content(new Gson().toJson(requestDto)));//then
+			.content(new Gson().toJson(requestDto)));
 		//then
-		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message").value(responseDto.getMessage()));
+		resultActions.andExpect(status().isCreated())
+			.andExpect(jsonPath("data").value(responseDto.getData()));
 	}
 
 	@Test
-	@DisplayName("관리자 목록 조회")
-	@WithCustomMockUser
+	@DisplayName("관리자 계정 삭제")
+	@WithCustomMockUser(role = UserRoleEnum.ROOT)
 	void deleteAdmin() throws Exception {
 		//given
 		Long adminId = 1L;
 
 		doNothing().when(adminService).deleteAdmin(adminId);
 		//when
-		ResultActions resultActions = mockMvc.perform(delete("/admin/{adminId}", adminId)
+		ResultActions resultActions = mockMvc.perform(delete("/admins/{adminId}", adminId)
 			.with(csrf()));
 		//then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message").value("관리자 계정 삭제 완료"));
+			.andExpect(jsonPath("data").value("관리자 계정 삭제가 완료 되었습니다."));
 	}
 
 	//수정 필요
 	@Test
 	@DisplayName("관리자 토큰 연장")
-	@WithCustomMockUser
+	@WithCustomMockUser(role = UserRoleEnum.ADMIN)
 	void reissueAdmin() throws Exception {
 		//given
 		String accessToken = "aaaaa";
@@ -135,8 +149,7 @@ class AdminControllerTest {
 			MockMvcRequestBuilders.post("/admin/reissue").with(csrf()));
 
 		//then
-		verify(adminService).issueToken(anyLong(), anyString(), any(UserRoleEnum.class));
 		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", "aaaaa"))
-			.andExpect(jsonPath("message").value("토큰 연장 완료"));
+			.andExpect(jsonPath("data").value("토큰 연장이 완료 되었습니다."));
 	}
 }

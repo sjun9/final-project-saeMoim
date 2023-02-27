@@ -32,4 +32,8 @@ public class Admin {
 		this.password = password;
 		this.role = UserRoleEnum.ADMIN;
 	}
+
+	public boolean isRootAdmin() {
+		return this.getRole().equals(UserRoleEnum.ROOT);
+	}
 }

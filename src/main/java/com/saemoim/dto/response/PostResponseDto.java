@@ -1,7 +1,6 @@
 package com.saemoim.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.saemoim.domain.Post;
 
@@ -23,15 +22,15 @@ public class PostResponseDto {
 	private LocalDateTime createdAt;
 	private LocalDateTime modifiedAt;
 	private int likeCount;
-	private boolean isLikeChecked;
-	public PostResponseDto(Post savedPost) {
-		this.id = savedPost.getId();
-		this.userId = savedPost.getUserId();
-		this.title = savedPost.getTitle();
-		this.username = savedPost.getUsername();
-		this.content = savedPost.getContent();
-		this.createdAt = savedPost.getCreatedAt();
-		this.modifiedAt = savedPost.getModifiedAt();
-		this.likeCount = savedPost.getLikeCount();
+
+	public PostResponseDto(Post post) {
+		this.id = post.getId();
+		this.userId = post.getUserId();
+		this.title = post.getTitle();
+		this.username = post.getUsername();
+		this.content = post.getContent();
+		this.createdAt = post.getCreatedAt();
+		this.modifiedAt = post.getModifiedAt();
+		this.likeCount = post.getLikeCount();
 	}
 }

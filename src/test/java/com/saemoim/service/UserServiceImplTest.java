@@ -112,7 +112,6 @@ class UserServiceImplTest {
 		when(user.isBanned()).thenReturn(false);
 		when(jwtUtil.createAccessToken(anyLong(), anyString(), any(UserRoleEnum.class))).thenReturn("accessToken");
 		when(jwtUtil.createRefreshToken(anyLong())).thenReturn("refreshToken");
-		when(jwtUtil.resolveToken(anyString())).thenReturn(Optional.of("accessTokenValue"));
 		doNothing().when(redisUtil).setData(anyString(), anyString(), anyLong());
 		//when
 		TokenResponseDto responseDto = userService.signIn(requestDto);
@@ -135,19 +134,18 @@ class UserServiceImplTest {
 		UserRoleEnum role = UserRoleEnum.USER;
 		User user = mock(User.class);
 
-		when(jwtUtil.resolveToken(accessToken)).thenReturn(Optional.of(accessTokenValue));
 		when(jwtUtil.resolveToken(refreshToken)).thenReturn(Optional.of(refreshTokenValue));
 		when(jwtUtil.getSubjectFromToken(refreshTokenValue)).thenReturn(getSubject);
 		when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 		when(user.isBanned()).thenReturn(false);
 		when(user.getUsername()).thenReturn(username);
 		when(user.getRole()).thenReturn(role);
-		when(redisUtil.isExists(refreshTokenValue)).thenReturn(true);
-		when(redisUtil.getData(refreshTokenValue)).thenReturn(accessTokenValue);
+		when(redisUtil.isExists(refreshToken)).thenReturn(true);
+		when(redisUtil.getData(refreshToken)).thenReturn(accessToken);
 		when(jwtUtil.createAccessToken(userId, username, role)).thenReturn(accessToken);
 		when(jwtUtil.createRefreshToken(userId)).thenReturn(refreshToken);
 		doNothing().when(redisUtil)
-			.setData(refreshToken.substring(7), accessTokenValue, JwtUtil.REFRESH_TOKEN_TIME);
+			.setData(refreshToken, accessToken, JwtUtil.REFRESH_TOKEN_TIME);
 
 		//when
 		TokenResponseDto responseDto = userService.reissueToken(accessToken, refreshToken);
@@ -166,7 +164,6 @@ class UserServiceImplTest {
 		when(user.getPassword()).thenReturn("encodingPassword");
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 		when(passwordEncoder.matches(requestDto.getPassword(), user.getPassword())).thenReturn(true);
-		when(jwtUtil.resolveToken(anyString())).thenReturn(Optional.of("refreshTokenValue"));
 		when(redisUtil.isExists(anyString())).thenReturn(false);
 		//when
 		userService.withdraw(requestDto, 1L, "refreshToken");
@@ -182,7 +179,7 @@ class UserServiceImplTest {
 		List<User> list = new ArrayList<>();
 		list.add(user);
 		when(user.getUsername()).thenReturn("장성준");
-		when(userRepository.findAll()).thenReturn(list);
+		when(userRepository.findAllByOrderByUsername()).thenReturn(list);
 		//when
 		List<UserResponseDto> responseDtoList = userService.getAllUsers();
 		//then
@@ -216,7 +213,7 @@ class UserServiceImplTest {
 		when(passwordRequest.getPassword()).thenReturn("pass");
 		when(passwordEncoder.matches(passwordRequest.getPassword(), user.getPassword())).thenReturn(true);
 		// when
-		ProfileResponseDto response = userService.getMyProfile(userId, passwordRequest);
+		ProfileResponseDto response = userService.checkPasswordAndGetMyProfile(userId, passwordRequest);
 		// then
 		assertThat(response.getUsername()).isEqualTo("name");
 	}
@@ -235,16 +232,15 @@ class UserServiceImplTest {
 
 		// then
 		verify(userRepository).save(user);
-		verify(user).updateProfile(request, passwordEncoder.encode(request.getPassword()));
+		verify(user).updateProfile(request.getContent(), passwordEncoder.encode(request.getPassword()));
 	}
 
 	@Test
 	@DisplayName("리프레쉬 토큰 삭제")
 	void deleteRefreshToken() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		//given
-		Method method = userService.getClass().getDeclaredMethod("deleteRefreshToken", String.class);
+		Method method = userService.getClass().getDeclaredMethod("_deleteRefreshToken", String.class);
 		method.setAccessible(true);
-		when(jwtUtil.resolveToken(anyString())).thenReturn(Optional.of("refreshTokenValue"));
 		when(redisUtil.isExists(anyString())).thenReturn(false);
 		//when
 		method.invoke(userService, "refreshToken");
@@ -256,10 +252,9 @@ class UserServiceImplTest {
 	@DisplayName("리프레쉬 토큰 발급")
 	void issueRefreshToken() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		//given
-		Method method = userService.getClass().getDeclaredMethod("issueRefreshToken", Long.class, String.class);
+		Method method = userService.getClass().getDeclaredMethod("_issueRefreshToken", Long.class, String.class);
 		method.setAccessible(true);
 		when(jwtUtil.createRefreshToken(anyLong())).thenReturn("refreshToken");
-		when(jwtUtil.resolveToken(anyString())).thenReturn(Optional.of("accessTokenValue"));
 		doNothing().when(redisUtil).setData(anyString(), anyString(), anyLong());
 		//when
 		String refreshToken = (String)method.invoke(userService, 1L, "accessToken");

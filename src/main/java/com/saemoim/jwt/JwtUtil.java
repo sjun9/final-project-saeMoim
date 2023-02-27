@@ -26,16 +26,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/*
-    JWT의 역할
-    요청 헤더에 토큰이 없을 경우
-    1. 토큰을 생성하고 반환함
-    요청 해더에 토큰이 있을 경우
-    1. 헤더에 담겨 들어온 토큰 값을 받아 검증을 진행함.
-
-    토큰에 대한 생성과 검증
-
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor

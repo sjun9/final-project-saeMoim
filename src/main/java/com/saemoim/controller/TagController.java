@@ -1,12 +1,11 @@
 package com.saemoim.controller;
 
-import java.util.List;
-
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.saemoim.dto.response.TagResponseDto;
-import com.saemoim.service.TagServiceImpl;
+import com.saemoim.dto.response.GenericsResponseDto;
+import com.saemoim.service.TagService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,12 +13,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TagController {
 
-	private final TagServiceImpl tagService;
+	private final TagService tagService;
 
 	// 모든 태그 조회
 	@GetMapping("/tag")
-	public List<TagResponseDto> getTags() {
-		return tagService.getTags();
+	public ResponseEntity<GenericsResponseDto> getTags() {
+		return ResponseEntity.ok().body(new GenericsResponseDto(tagService.getTags()));
 	}
 
 }

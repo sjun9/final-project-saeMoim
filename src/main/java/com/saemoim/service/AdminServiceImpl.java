@@ -58,12 +58,17 @@ public class AdminServiceImpl implements AdminService {
 	@Transactional
 	@Override
 	public void deleteAdmin(Long adminId) {
-		if (!adminRepository.existsById(adminId)) {
-			throw new IllegalArgumentException(ErrorCode.NOT_EXIST_ADMIN.getMessage());
+		Admin admin = adminRepository.findById(adminId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_ADMIN.getMessage())
+		);
+
+		if (admin.isRootAdmin()) {
+			throw new IllegalArgumentException(ErrorCode.NOT_ALLOWED_ADMIN.getMessage());
 		}
 		adminRepository.deleteById(adminId);
 	}
 
+	@Override
 	public String issueToken(Long id, String username, UserRoleEnum role) {
 		return jwtUtil.createAccessToken(id, username, role);
 	}

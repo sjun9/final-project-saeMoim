@@ -30,7 +30,7 @@ public interface UserService {
 
 	ProfileResponseDto getProfile(Long userId);
 
-	ProfileResponseDto getMyProfile(Long id, CurrentPasswordRequestDto passwordRequestDto);
+	ProfileResponseDto checkPasswordAndGetMyProfile(Long id, CurrentPasswordRequestDto passwordRequestDto);
 
 	ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto);
 

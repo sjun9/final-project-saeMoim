@@ -5,20 +5,22 @@ import java.io.OutputStream;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.saemoim.exception.ExceptionResponseDto;
+import com.saemoim.dto.response.GenericsResponseDto;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
-	private static final ExceptionResponseDto exceptionDto =
-		new ExceptionResponseDto(HttpStatus.UNAUTHORIZED, HttpStatus.UNAUTHORIZED.getReasonPhrase());
+	private static final ResponseEntity<GenericsResponseDto> exceptionDto =
+		ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+			.body(new GenericsResponseDto(HttpStatus.UNAUTHORIZED.getReasonPhrase()));
 
 	@Override
 	public void commence(HttpServletRequest request,

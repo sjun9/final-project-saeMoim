@@ -8,7 +8,7 @@ import com.saemoim.dto.response.CategoryResponseDto;
 public interface CategoryService {
 	List<CategoryResponseDto> getCategories();
 
-	void createCategory(CategoryRequestDto requestDto);
+	void createParentCategory(CategoryRequestDto requestDto);
 
 	void createChildCategory(Long parentId, CategoryRequestDto requestDto);
 

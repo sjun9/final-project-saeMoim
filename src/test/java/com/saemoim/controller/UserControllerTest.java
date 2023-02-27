@@ -41,11 +41,12 @@ import com.saemoim.dto.request.SignInRequestDto;
 import com.saemoim.dto.request.SignUpRequestDto;
 import com.saemoim.dto.request.UsernameRequestDto;
 import com.saemoim.dto.request.WithdrawRequestDto;
-import com.saemoim.dto.response.MessageResponseDto;
 import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
 import com.saemoim.dto.response.UserResponseDto;
 import com.saemoim.jwt.JwtUtil;
+import com.saemoim.security.CustomAccessDeniedHandler;
+import com.saemoim.security.CustomAuthenticationEntryPoint;
 import com.saemoim.service.UserServiceImpl;
 
 @ExtendWith(SpringExtension.class)
@@ -56,6 +57,12 @@ class UserControllerTest {
 	private MockMvc mockMvc;
 	@MockBean
 	private UserServiceImpl userService;
+	@MockBean
+	private JwtUtil jwtUtil;
+	@MockBean
+	private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	@MockBean
+	private CustomAccessDeniedHandler customAccessDeniedHandler;
 
 	@Test
 	@WithCustomMockUser
@@ -74,7 +81,7 @@ class UserControllerTest {
 			.content(new Gson().toJson(requestDto))
 			.with(csrf()));
 		//then
-		resultActions.andExpect(status().isOk()).andExpect(jsonPath("message").value("회원가입 완료"));
+		resultActions.andExpect(status().isOk()).andExpect(jsonPath("data").value("회원가입이 완료 되었습니다."));
 	}
 
 	@Test
@@ -92,7 +99,7 @@ class UserControllerTest {
 			.content(new Gson().toJson(requestDto))
 			.with(csrf()));
 		//then
-		resultActions.andExpect(status().isOk()).andExpect(jsonPath("message").value("이메일 중복 검사 완료"));
+		resultActions.andExpect(status().isOk()).andExpect(jsonPath("data").value("이메일 중복 검사가 완료 되었습니다."));
 	}
 
 	@Test
@@ -110,7 +117,7 @@ class UserControllerTest {
 			.content(new Gson().toJson(requestDto))
 			.with(csrf()));
 		//then
-		resultActions.andExpect(status().isOk()).andExpect(jsonPath("message").value("이름 중복 검사 완료"));
+		resultActions.andExpect(status().isOk()).andExpect(jsonPath("data").value("이름 중복 검사가 완료 되었습니다."));
 	}
 
 	@Test
@@ -134,7 +141,7 @@ class UserControllerTest {
 			.content(new Gson().toJson(requestDto)));
 		//then
 		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", "accessToken"))
-			.andExpect(jsonPath("message").value("로그인 완료"));
+			.andExpect(jsonPath("data").value("로그인이 완료 되었습니다."));
 	}
 
 	@Test
@@ -153,7 +160,7 @@ class UserControllerTest {
 
 		//then
 		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", ""))
-			.andExpect(jsonPath("message").value("로그아웃 완료"));
+			.andExpect(jsonPath("data").value("로그아웃이 완료 되었습니다."));
 	}
 
 	@Test
@@ -174,11 +181,11 @@ class UserControllerTest {
 			.with(csrf()));
 		//then
 		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", ""))
-			.andExpect(jsonPath("message").value("회원탈퇴 완료"));
+			.andExpect(jsonPath("data").value("회원탈퇴가 완료 되었습니다."));
 	}
 
 	@Test
-	@WithCustomMockUser
+	@WithCustomMockUser(role = UserRoleEnum.ADMIN)
 	@DisplayName("전체 회원 조회")
 	void getAllUsers() throws Exception {
 		//given
@@ -189,7 +196,7 @@ class UserControllerTest {
 			.content("asdfasfsdfsaf")
 			.email("aaaaa@naver.com")
 			.password("aaasdf1234!")
-			.role(UserRoleEnum.ADMIN)
+			.role(UserRoleEnum.USER)
 			.username("장성준")
 			.build();
 
@@ -200,7 +207,7 @@ class UserControllerTest {
 		//when
 		ResultActions resultActions = mockMvc.perform(get("/admin/user"));
 		//then
-		resultActions.andExpect(jsonPath("$[0]['username']").value("장성준"));
+		resultActions.andExpect(jsonPath("$['data'][0]['username']").value("장성준"));
 	}
 
 	@Test
@@ -214,7 +221,7 @@ class UserControllerTest {
 			.content("asdfasfsdfsaf")
 			.email("aaaaa@naver.com")
 			.password("aaasdf1234!")
-			.role(UserRoleEnum.ADMIN)
+			.role(UserRoleEnum.USER)
 			.username("장성준")
 			.build();
 
@@ -239,15 +246,16 @@ class UserControllerTest {
 			.content("asdfasfsdfsaf")
 			.email("aaaaa@naver.com")
 			.password("aaasdf1234!")
-			.role(UserRoleEnum.ADMIN)
+			.role(UserRoleEnum.USER)
 			.username("장성준")
 			.build();
 		ProfileResponseDto response = new ProfileResponseDto(user);
 
-		when(userService.getMyProfile(anyLong(), any(CurrentPasswordRequestDto.class))).thenReturn(response);
+		when(userService.checkPasswordAndGetMyProfile(anyLong(), any(CurrentPasswordRequestDto.class))).thenReturn(
+			response);
 
 		// when
-		ResultActions resultActions = mockMvc.perform(get("/profile")
+		ResultActions resultActions = mockMvc.perform(post("/profile")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(new Gson().toJson(request))
 			.with(csrf()));
@@ -261,15 +269,24 @@ class UserControllerTest {
 	@DisplayName("내 정보 수정")
 	void updateProfile() throws Exception {
 		// given
-		var request = new ProfileRequestDto();
-		MessageResponseDto responseDto = new MessageResponseDto("회원 정보 수정 완료");
-		doNothing().when(userService).updateProfile(anyLong(), any(ProfileRequestDto.class));
+		ProfileRequestDto request = new ProfileRequestDto("aaasdf1234!", "content");
+		User user = User.builder()
+			.id(1L)
+			.banCount(0)
+			.content("asdfasfsdfsaf")
+			.email("aaaaa@naver.com")
+			.password("aaasdf1234!")
+			.role(UserRoleEnum.USER)
+			.username("장성준")
+			.build();
+		ProfileResponseDto responseDto = new ProfileResponseDto(user);
+		when(userService.updateProfile(anyLong(), any(ProfileRequestDto.class))).thenReturn(responseDto);
 		// when
 		ResultActions resultActions = mockMvc.perform(put("/profile")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(new Gson().toJson(request)).with(csrf()));
 		// then
-		resultActions.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+		resultActions.andExpect(jsonPath("$['username']").value("장성준"));
 
 	}
 
@@ -293,7 +310,7 @@ class UserControllerTest {
 		resultActions.andExpect(status().isOk())
 			.andExpect(header().string(JwtUtil.AUTHORIZATION_HEADER, accessToken))
 			.andExpect(header().string(JwtUtil.REFRESH_TOKEN_HEADER, refreshToken))
-			.andExpect(jsonPath("$.message").value("토큰 재발급 완료"));
+			.andExpect(jsonPath("$.data").value("토큰 재발급이 완료 되었습니다."));
 	}
 
 }
