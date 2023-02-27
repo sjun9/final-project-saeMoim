@@ -23,32 +23,27 @@ public class WishServiceImpl implements WishService {
 	private final UserRepository userRepository;
 	private final GroupRepository groupRepository;
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public List<GroupResponseDto> getWishGroups(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
-		List<Wish> wishes = wishRepository.findAllByUserOrderByCreatedAtDesc(user);
-		return wishes.stream().map(Wish::getGroup).map(GroupResponseDto::new).toList();
+		User user = _getUserById(userId);
+
+		return wishRepository.findAllByUserOrderByCreatedAtDesc(user)
+			.stream().map(Wish::getGroup).map(GroupResponseDto::new).toList();
 	}
 
 	@Transactional
 	@Override
-	public void wishGroup(Long groupId, Long userId) {
+	public void addWishGroup(Long groupId, Long userId) {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		User user = userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
-		if (!wishRepository.existsByUserAndGroup(user, group)) {
-			Wish wish = new Wish(group, user);
-			wishRepository.save(wish);
-			group.addWishCount();
-		} else {
+		User user = _getUserById(userId);
+		if (wishRepository.existsByUserAndGroup(user, group)) {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_WISH.getMessage());
 		}
+		wishRepository.save(new Wish(group, user));
+		group.addWishCount();
 	}
 
 	@Transactional
@@ -57,13 +52,17 @@ public class WishServiceImpl implements WishService {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		User user = userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
+		User user = _getUserById(userId);
 		Wish wish = wishRepository.findByUserAndGroup(user, group).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_WISH.getMessage())
 		);
 		wishRepository.delete(wish);
 		group.subtractWishCount();
+	}
+
+	private User _getUserById(Long userId) {
+		return userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
 	}
 }

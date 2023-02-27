@@ -15,14 +15,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ParticipantServiceImpl implements ParticipantService {
-
 	private final ParticipantRepository participantRepository;
 
 	@Transactional(readOnly = true)
 	@Override
 	public List<ParticipantResponseDto> getParticipants(Long groupId) {
-		List<Participant> participants = participantRepository.findAllByGroup_IdOrderByCreatedAtDesc(groupId);
-		return participants.stream().map(ParticipantResponseDto::new).toList();
+		return participantRepository.findAllByGroup_IdOrderByCreatedAtDesc(groupId)
+			.stream().map(ParticipantResponseDto::new).toList();
 	}
 
 	@Transactional

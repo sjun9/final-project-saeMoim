@@ -90,8 +90,8 @@ function login() {
         localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
 
         location.replace('./main.html')
-    }).fail(function () {
-        alert("이메일과 비밀번호를 다시 확인 해주세요.")
+    }).fail(function (response) {
+        alert(response.responseJSON['data'])
     });
 }
 
@@ -142,22 +142,22 @@ function checkAndSendCode() {
 
 // 메일로 보낸 인증 코드 확인
 function checkAuthCode() {
-    $.ajax({
-        type: 'POST',
-        url: "http://localhost:8080/email/auth-code",
-        data: JSON.stringify({email: $('#signup-email').val(), code: $('#email-authentication-code').val()}),
-        dataType: "JSON",
-        contentType: "application/json; charset=utf-8",
-        success: function (response) {
-            if (response['authCode'] === $('#email-authentication-code').val()) {
-                alert("인증 되었습니다.");
-                ischeckAuthCode = true;
-            } else {
-                alert("인증 코드가 틀렸습니다.")
-            }
-        }
+    var settings = {
+        "url": "http://localhost:8080/email/auth-code",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "data": JSON.stringify({email: $('#signup-email').val(), code: $('#email-authentication-code').val()}),
+    };
+
+    $.ajax(settings).done(function (response) {
+        alert(response.data)
+        console.log(response)
     }).fail(function (response) {
-        alert(response.responseJSON['message'])
+        console.log(response)
+        alert(response.responseJSON['data'])
     });
 }
 

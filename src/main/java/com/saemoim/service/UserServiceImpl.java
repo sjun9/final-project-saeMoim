@@ -1,7 +1,6 @@
 package com.saemoim.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -77,7 +76,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		String accessToken = jwtUtil.createAccessToken(user.getId(), user.getUsername(), user.getRole());
-		String refreshToken = issueRefreshToken(user.getId(), accessToken);
+		String refreshToken = _issueRefreshToken(user.getId(), accessToken);
 
 		return new TokenResponseDto(accessToken, refreshToken);
 	}
@@ -85,24 +84,19 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public TokenResponseDto reissueToken(String accessToken, String refreshToken) {
-		String accessTokenValue = jwtUtil.resolveToken(accessToken).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
-		);
 		String refreshTokenValue = jwtUtil.resolveToken(refreshToken).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
 		);
 
 		Long userId = Long.valueOf(jwtUtil.getSubjectFromToken(refreshTokenValue));
-		User user = userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
+		User user = _getUserById(userId);
 
 		if (user.isBanned()) {
 			throw new IllegalArgumentException(ErrorCode.BANNED_USER.getMessage());
 		}
 
-		if (redisUtil.isExists(refreshTokenValue)) {
-			if (!redisUtil.getData(refreshTokenValue).equals(accessTokenValue)) {
+		if (redisUtil.isExists(refreshToken)) {
+			if (!redisUtil.getData(refreshToken).equals(accessToken)) {
 				throw new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage());
 			}
 		} else {
@@ -110,27 +104,25 @@ public class UserServiceImpl implements UserService {
 		}
 
 		String newAccessToken = jwtUtil.createAccessToken(userId, user.getUsername(), user.getRole());
-		return new TokenResponseDto(newAccessToken, issueRefreshToken(userId, newAccessToken));
+		return new TokenResponseDto(newAccessToken, _issueRefreshToken(userId, newAccessToken));
 	}
 
 	@Transactional
 	@Override
 	public void logout(String refreshToken) {
-		deleteRefreshToken(refreshToken);
+		_deleteRefreshToken(refreshToken);
 	}
 
 	@Transactional
 	@Override
 	public void withdraw(WithdrawRequestDto requestDto, Long userId, String refreshToken) {
-		User user = userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
+		User user = _getUserById(userId);
 
 		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
 			throw new IllegalAccessError(ErrorCode.INVALID_PASSWORD.getMessage());
 		}
 
-		deleteRefreshToken(refreshToken);
+		_deleteRefreshToken(refreshToken);
 
 		userRepository.delete(user);
 	}
@@ -138,62 +130,53 @@ public class UserServiceImpl implements UserService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<UserResponseDto> getAllUsers() {
-		return userRepository.findAll().stream().map(UserResponseDto::new).toList();
+		return userRepository.findAllByOrderByUsername().stream().map(UserResponseDto::new).toList();
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public ProfileResponseDto getProfile(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
+		User user = _getUserById(userId);
 		return new ProfileResponseDto(user);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public ProfileResponseDto getMyProfile(Long userId, CurrentPasswordRequestDto passwordRequestDto) {
-		User user = userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
-		if (passwordEncoder.matches(passwordRequestDto.getPassword(), user.getPassword())) {
-			return new ProfileResponseDto(user);
-		} else {
+	public ProfileResponseDto checkPasswordAndGetMyProfile(Long userId, CurrentPasswordRequestDto passwordRequestDto) {
+		User user = _getUserById(userId);
+		if (!passwordEncoder.matches(passwordRequestDto.getPassword(), user.getPassword())) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_PASSWORD.getMessage());
 		}
+		return new ProfileResponseDto(user);
 	}
 
 	@Transactional
 	@Override
 	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto) {
-		User user = userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
+		User user = _getUserById(userId);
 		String changedPassword = passwordEncoder.encode(requestDto.getPassword());
-		user.updateProfile(requestDto, changedPassword);
+		user.updateProfile(requestDto.getContent(), changedPassword);
 		userRepository.save(user);
 		return new ProfileResponseDto(user);
 	}
 
-	private void deleteRefreshToken(String refreshToken) {
-		Optional<String> refreshTokenValue = jwtUtil.resolveToken(refreshToken);
-
-		if (refreshTokenValue.isPresent()) {
-			if (redisUtil.isExists(refreshTokenValue.get())) {
-				redisUtil.deleteData(refreshTokenValue.get());
-			}
+	private void _deleteRefreshToken(String refreshToken) {
+		if (redisUtil.isExists(refreshToken)) {
+			redisUtil.deleteData(refreshToken);
 		}
 	}
 
-	private String issueRefreshToken(Long userId, String accessToken) {
+	private String _issueRefreshToken(Long userId, String accessToken) {
 		String refreshToken = jwtUtil.createRefreshToken(userId);
-		String refreshTokenValue = refreshToken.substring(7);
-		String accessTokenValue = jwtUtil.resolveToken(accessToken).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.INVALID_TOKEN.getMessage())
-		);
 
-		redisUtil.setData(refreshTokenValue, accessTokenValue, JwtUtil.REFRESH_TOKEN_TIME);
+		redisUtil.setData(refreshToken, accessToken, JwtUtil.REFRESH_TOKEN_TIME);
 
 		return refreshToken;
+	}
+
+	private User _getUserById(Long userId) {
+		return userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
 	}
 }

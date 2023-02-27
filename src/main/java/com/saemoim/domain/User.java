@@ -1,7 +1,6 @@
 package com.saemoim.domain;
 
 import com.saemoim.domain.enums.UserRoleEnum;
-import com.saemoim.dto.request.ProfileRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -61,8 +60,8 @@ public class User extends TimeStamped {
 		this.password = password;
 	}
 
-	public void updateProfile(ProfileRequestDto profileRequestDto, String changedPassword) {
+	public void updateProfile(String content, String changedPassword) {
 		this.password = changedPassword;
-		this.content = profileRequestDto.getContent();
+		this.content = content;
 	}
 }

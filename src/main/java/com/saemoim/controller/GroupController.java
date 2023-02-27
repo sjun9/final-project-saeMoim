@@ -32,7 +32,7 @@ public class GroupController {
 	// 모든 모임 조회
 	@GetMapping("/group")
 	public ResponseEntity<GenericsResponseDto> getAllGroups(Pageable pageable) {
-		return ResponseEntity.ok().body(new GenericsResponseDto<>(groupService.getAllGroups(pageable).getContent()));
+		return ResponseEntity.ok().body(new GenericsResponseDto<>(groupService.getAllGroups(pageable)));
 	}
 
 	// 선택 모임 조회
@@ -47,26 +47,26 @@ public class GroupController {
 		return ResponseEntity.ok().body(new GenericsResponseDto(groupService.getGroupByPopularity()));
 	}
 
-	// 특정 카테고리 모임 조회
+	//특정 카테고리 모임 조회
 	@GetMapping("/group/categories/{categoryId}")
 	public ResponseEntity<GenericsResponseDto> getGroupsByCategoryAndStatus(@PathVariable Long categoryId,
 		@RequestParam String status, Pageable pageable) {
 		return ResponseEntity.ok().body(new GenericsResponseDto(
-			groupService.getGroupsByCategoryAndStatus(categoryId, status, pageable).getContent()));
+			groupService.getGroupsByCategoryAndStatus(categoryId, status, pageable)));
 	}
 
 	// 특정 태그 모임 조회
 	@GetMapping("/group/tag")
 	public ResponseEntity<GenericsResponseDto> getGroupsByTag(@RequestParam String tagName, Pageable pageable) {
 		return ResponseEntity.ok()
-			.body(new GenericsResponseDto(groupService.getGroupsByTag(tagName, pageable).getContent()));
+			.body(new GenericsResponseDto(groupService.searchGroupsByTag(tagName, pageable)));
 	}
 
 	// 모임 이름으로 검색
 	@GetMapping("/group/name")
 	public ResponseEntity<GenericsResponseDto> searchGroups(@RequestParam String groupName, Pageable pageable) {
 		return ResponseEntity.ok()
-			.body(new GenericsResponseDto(groupService.searchGroups(groupName, pageable).getContent()));
+			.body(new GenericsResponseDto(groupService.searchGroups(groupName, pageable)));
 	}
 
 	// 내가 만든 모임 조회

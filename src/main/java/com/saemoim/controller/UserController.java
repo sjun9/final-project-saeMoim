@@ -113,7 +113,8 @@ public class UserController {
 	public ResponseEntity<ProfileResponseDto> getMyProfile(
 		@Validated @RequestBody CurrentPasswordRequestDto passwordRequestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(userService.getMyProfile(userDetails.getId(), passwordRequestDto));
+		return ResponseEntity.ok()
+			.body(userService.checkPasswordAndGetMyProfile(userDetails.getId(), passwordRequestDto));
 	}
 
 	@GetMapping("/user")

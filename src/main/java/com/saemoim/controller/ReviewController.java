@@ -1,5 +1,6 @@
 package com.saemoim.controller;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,8 +29,8 @@ public class ReviewController {
 
 	// 모임 후기 조회
 	@GetMapping("/groups/{groupId}/review")
-	public ResponseEntity<GenericsResponseDto> getReviews(@PathVariable Long groupId) {
-		return ResponseEntity.ok().body(new GenericsResponseDto(reviewService.getReviews(groupId)));
+	public ResponseEntity<GenericsResponseDto> getReviews(@PathVariable Long groupId, Pageable pageable) {
+		return ResponseEntity.ok().body(new GenericsResponseDto(reviewService.getReviews(groupId, pageable)));
 	}
 
 	// 모임 후기 작성
