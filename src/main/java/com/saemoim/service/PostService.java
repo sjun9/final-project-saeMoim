@@ -8,7 +8,7 @@ import com.saemoim.dto.response.PostResponseDto;
 
 public interface PostService {
 
-	Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable);
+	Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable, Long userId);
 
 	PostResponseDto getPost(Long postId, Long userId);
 

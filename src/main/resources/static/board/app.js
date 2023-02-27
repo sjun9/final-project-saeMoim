@@ -22,7 +22,7 @@ let tempUserId = localStorage.getItem("current_user_id")
 function getGroupProfileIdList() {
   $.ajax({
     type: "GET",
-    url: "http://localhost:8080/participant/groups/" + tempGroupId,
+    url: `http://localhost:8080/participant/groups/${tempGroupId}`,
     async: false,
     data: {},
     beforeSend: function (xhr) {
@@ -30,7 +30,7 @@ function getGroupProfileIdList() {
       xhr.setRequestHeader("Refresh_Token", Refresh_Token);
     },
     success: function (response) {
-      localStorage.setItem("profileIdList", JSON.stringify(response));
+      localStorage.setItem("profileIdList", JSON.stringify(response["data"]));
       // const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
     }
   });
@@ -47,11 +47,13 @@ function deleteProfileList() {
 
 
 // localStorage에서 참여자 리스트 가져와서 페이지 우측에 표시
+// 참여자 리스트 로컬스토리지에 저장해두고 모달창 열 때 활용해도 될 듯
+// -> openprofile 시 api 요청 줄이기
 function renderProfileList() {
   const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
   profileIdList.forEach((user) => {
     var settings = {
-      "url": "http://localhost:8080/profile/users/" + String(user["userId"]),
+      "url": `http://localhost:8080/profile/users/${user["userId"]}`,
       "method": "GET",
       "timeout": 0,
       "headers": {
@@ -91,7 +93,7 @@ function openProfile(event) {
     }
   })
   var settings = {
-    "url": "http://localhost:8080/profile/users/" + String(userId),
+    "url": `http://localhost:8080/profile/users/${userId}`,
     "method": "GET",
     "timeout": 0,
     "headers": {
@@ -134,7 +136,7 @@ function newPost() {
   // const imageUrl  = 이미지 경로 추가
 
   var settings = {
-    "url": "http://localhost:8080/posts/groups/" + tempGroupId,
+    "url": `http://localhost:8080/groups/${tempGroupId}/post`,
     "method": "POST",
     "timeout": 0,
     "headers": {
@@ -186,7 +188,7 @@ function editPost(event) {
   const currentPostId = localStorage.getItem("current_post_id")
 
   var settings = {
-    "url": "http://localhost:8080/posts/" + currentPostId,
+    "url": `http://localhost:8080/posts/${currentPostId}`,
     "method": "PUT",
     "timeout": 0,
     "headers": {
@@ -203,13 +205,14 @@ function editPost(event) {
   $.ajax(settings).done(function (response) {
     console.log(response);
     alert("수정 완료")
+    location.reload()
 
     // 게시글 최신화 (임시로 겉보기만...)
-    document.querySelector('#readPostModalLabel').innerText = new_title
-    document.querySelector('#readPostModalContent').innerText = new_content
+    // document.querySelector('#readPostModalLabel').innerText = new_title
+    // document.querySelector('#readPostModalContent').innerText = new_content
 
-    document.querySelector("#closeEditPostModal").click() // 수정 모달창 닫고
-    document.querySelector("#openRead").click() // 읽기 모달창 열고
+    // document.querySelector("#closeEditPostModal").click() // 수정 모달창 닫고
+    // document.querySelector("#openRead").click() // 읽기 모달창 열고
   });
 }
 
@@ -253,7 +256,7 @@ function deletePost(event) {
   const currentPostId = localStorage.getItem("current_post_id")
 
   var settings = {
-    "url": "http://localhost:8080/posts/" + currentPostId,
+    "url": `http://localhost:8080/posts/${currentPostId}`,
     "method": "DELETE",
     "timeout": 0,
     "headers": {
@@ -298,7 +301,7 @@ function gotoDeletePost(event) {
 const contents = document.querySelector(".contents");
 const buttons = document.querySelector(".buttons");
 
-setPostsCount();
+// setPostsCount(); 지움
 let numOfContent = localStorage.getItem("postsCount");// 전체 게시글 갯수
 const maxContent = 10; // 표시할 게시글 갯수
 const maxButton = 5; // 표시할 버튼 갯수
@@ -306,30 +309,38 @@ let maxPage = Math.ceil(numOfContent / maxContent);
 let page = 1; // 새로고침 시 1페이지부터 시작
 
 
-// 게시글 전체 길이 가져오기
-function setPostsCount() {
-  $.ajax({
-    type: 'GET',
-    url: "http://localhost:8080/posts/groups/" + tempGroupId + "/count",
-    data: {},
-    async: false, // 비동기 해제
-    success: function (response) {
-      localStorage.setItem("postsCount", response)
-    }
-  });
-}
+// 게시글 전체 갯수 가져오기 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// function setPostsCount() {
+//   $.ajax({
+//     type: 'GET',
+//     url: `http://localhost:8080/posts/groups/${tempGroupId}/count`,
+//     data: {},
+//     async: false, // 비동기 해제
+//     success: function (response) {
+//       localStorage.setItem("postsCount", response)
+//     }
+//   });
+// }
 
-
+// pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable
 // 해당 페이지 게시글 리스트 가져오기 
 function getPosts(pageNum, sizeNum) {
   $.ajax({
     type: 'GET',
-    url: "http://localhost:8080/posts/groups/" + tempGroupId + "?page=" + pageNum + "&size=" + sizeNum,
+    url: `http://localhost:8080/groups/${tempGroupId}/post?page=${pageNum}&size=${sizeNum}`,
+    // url: `http://localhost:8080/groups/${tempGroupId}/post?page=0&size=10`,
     data: {},
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader("Authorization", Authorization);
+      xhr.setRequestHeader("Refresh_Token", Refresh_Token);
+    },
     async: false, // 비동기 해제
     success: function (data) {
-      localStorage.setItem("pagedPostList", JSON.stringify(data));
-      const postArray = JSON.parse(localStorage.getItem("pagedPostList"))
+      console.log(data)
+      localStorage.setItem("postsCount", data["totalElements"])
+
+      localStorage.setItem("pagedPostList", JSON.stringify(data["content"])); // response에서 게시글 리스트 부분
+      // const postArray = JSON.parse(localStorage.getItem("pagedPostList"))
     }
   });
 }
@@ -346,12 +357,9 @@ const makeContent = (i) => {
   content__header.classList.add("content__header");
 
   let simpleCreatedAt = "null"
-  let likeChecked = ""
   let currentLikeCount = currentPost["likeCount"]
-
-  // 좋아요 체크여부 가져오기
-  checkLike(currentPost["id"]) // localStorage에 현재 게시글 좋아요 체크 여부를 저장
-  if (localStorage.getItem("currentLikeChecked") === "true") { likeChecked += "active" }
+  let likeChecked = ""
+  if (currentPost["likeChecked"] == true) { likeChecked += "active"}
 
   if (currentPost["createdAt"]) { // createdAt이 null일 경우 페이지 로딩 안됨... 임시로 if문 적용
     const createdAt = String(currentPost["createdAt"])
@@ -441,7 +449,7 @@ const renderButton = (page) => {
   for (let i = page; i < page + maxButton && i <= maxPage; i++) {
     buttons.appendChild(makeButton(i));
   }
-  console.log(page)
+  // console.log(page)
   buttons.children[0].classList.add("active"); // 첫 로딩시 가장 왼쪽 페이지 선택
 
   const createdButtons = document.querySelectorAll('.button');
@@ -483,8 +491,6 @@ render(page);
 
 
 
-
-
 /**
 * 댓글 관련 기능
 */
@@ -499,7 +505,7 @@ function renderComments(currentPostId) {
   }
 
   var settings = {
-    "url": "http://localhost:8080/posts/" + currentPostId + "/comment",
+    "url": `http://localhost:8080/posts/${currentPostId}/comment`,
     "method": "GET",
     "timeout": 0,
     "headers": {
@@ -509,16 +515,18 @@ function renderComments(currentPostId) {
   };
 
   $.ajax(settings).done(function (response) {
-    var cCnt = response.length;
+    let commentList = response["data"]
+    // console.log(response)
+    var cCnt = commentList.length;
     document.querySelector("#cCnt").innerText = cCnt;
 
     if (cCnt > 0) {
       for (i = 0; i < cCnt; i++) {
         let temp_html = `
         <table class='table'>
-          <h6><strong>${response[i]["username"]}</strong></h6>
+          <h6><strong>${commentList[i]["username"]}</strong></h6>
           <p style="overflow: hidden; word-wrap: break-word;">
-            ${response[i]["comment"]}
+            ${commentList[i]["comment"]}
           </p>
           <tr>
             <td></td>
@@ -529,8 +537,8 @@ function renderComments(currentPostId) {
             <button type="button" onclick="deleteComment(event)" class="btn btn-danger" style="float: right;">삭제</button>
             <button type="button" onclick="gotoEditComment(event)" class="btn btn-secondary"
               style="float: right; margin-right: 8px;">수정</button>
-            <div style="display: none">${response[i]["id"]}</div>
-            <div style="display: none">${response[i]["userId"]}</div>
+            <div style="display: none">${commentList[i]["id"]}</div>
+            <div style="display: none">${commentList[i]["userId"]}</div>
           </div>
           <div class="cancel_submit button_hide">
             <button type="button" onclick="editComment(event)" class="btn btn-success" style="float: right;">수정</button>
@@ -559,7 +567,7 @@ function writeComment() {
   const commentStr = document.querySelector("#comment").value
   const currentPostId = localStorage.getItem("current_post_id")
   var settings = {
-    "url": "http://localhost:8080/posts/" + currentPostId + "/comment",
+    "url": `http://localhost:8080/posts/${currentPostId}/comment`,
     "method": "POST",
     "timeout": 0,
     "headers": {
@@ -587,7 +595,7 @@ function editComment(event) {
   const currentCommentId = event.currentTarget.parentElement.previousElementSibling.children[2].innerText
   const newCommentStr = event.currentTarget.parentElement.previousElementSibling.previousElementSibling.value
   var settings = {
-    "url": "http://localhost:8080/comments/" + currentCommentId,
+    "url": `http://localhost:8080/comments/${currentCommentId}`,
     "method": "PUT",
     "timeout": 0,
     "headers": {
@@ -636,7 +644,7 @@ function deleteComment(event) {
   const currentCommentId = event.currentTarget.nextElementSibling.nextElementSibling.innerText
 
   var settings = {
-    "url": "http://localhost:8080/comments/" + currentCommentId,
+    "url": `http://localhost:8080/comments/${currentCommentId}`,
     "method": "DELETE",
     "timeout": 0,
     "headers": {
@@ -716,33 +724,10 @@ function randomInt(min, max) {
 }
 
 
-// 좋아요 여부 확인 -> 좋아요 선택되어있게 표시
-function checkLike(postId) {
-  // console.log(String(postId))
-  $.ajax({
-    type: "GET",
-    url: "http://localhost:8080/posts/" + String(postId) + "/likeCheck",
-    async: false,
-    data: {},
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader("Authorization", Authorization);
-      xhr.setRequestHeader("Refresh_Token", Refresh_Token);
-    },
-    success: function (response) {
-      if (response["message"] === "true") {
-        localStorage.setItem("currentLikeChecked", true)
-      } else {
-        localStorage.setItem("currentLikeChecked", false)
-      }
-    }
-  });
-}
-
-
 // 좋아요 누르기
 function doLike(postId) {
   var settings = {
-    "url": "http://localhost:8080/posts/" + String(postId) + "/like",
+    "url": `http://localhost:8080/posts/${postId}/like`,
     "method": "POST",
     "timeout": 0,
     "headers": {
@@ -763,7 +748,7 @@ function doLike(postId) {
 // 좋아요 취소
 function unLike(postId) {
   var settings = {
-    "url": "http://localhost:8080/posts/" + String(postId) + "/like",
+    "url": `http://localhost:8080/posts/${postId}/like`,
     "method": "DELETE",
     "timeout": 0,
     "headers": {

@@ -20,16 +20,6 @@ public class LikeServiceImpl implements LikeService {
 
 	@Override
 	@Transactional
-	public String checkLike(Long postId, Long userId) {
-		if (likeRepository.existsByPost_IdAndUserId(postId, userId)) {
-			return "true";
-		} else {
-			return "false";
-		}
-	}
-
-	@Override
-	@Transactional
 	public void addLike(Long postId, Long userId) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));

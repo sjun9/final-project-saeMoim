@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,13 +35,48 @@ public class PostServiceImpl implements PostService {
 	// 모임 전체 게시글 조회
 	@Transactional(readOnly = true)
 	@Override
-	public Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable) {
-		List<PostResponseDto> list = postRepository.findAllByGroup_Id(group_id)
-			.stream()
-			.map(PostResponseDto::new)
-			.toList();
-		return new PageImpl<>(list, pageable, list.size());
+	public Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable, Long userId) {
+		Page<Post> postList = postRepository.findAllByGroup_Id(group_id, pageable);
+		return postList.map(post -> {
+			Long id = post.getId();
+			Long postUserId = post.getUserId();
+			String title = post.getTitle();
+			String username = post.getUsername();
+			String content = post.getContent();
+			LocalDateTime createdAt = post.getCreatedAt();
+			LocalDateTime modifiedAt = post.getModifiedAt();
+			int likeCount = post.getLikeCount();
+
+			boolean isLikeChecked = likeRepository.existsByPost_IdAndUserId(id, userId);
+
+			return PostResponseDto.builder()
+				.id(id)
+				.userId(postUserId)
+				.title(title)
+				.username(username)
+				.content(content)
+				.createdAt(createdAt)
+				.modifiedAt(modifiedAt)
+				.likeCount(likeCount)
+				.isLikeChecked(isLikeChecked)
+				.build();
+		});
 	}
+
+	// @@@@@ TIL에 적기 @@@@@
+
+	// public Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable) {
+	// 	Page<Post> postList = postRepository.findAllByGroup_Id(group_id, pageable);
+	// 	return postList.map(PostResponseDto::toDto);
+	// }
+
+	// public Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable) {
+	// 	List<PostResponseDto> list = postRepository.findAllByGroup_Id(group_id, pageable)
+	// 		.stream()
+	// 		.map(PostResponseDto::new)
+	// 		.toList();
+	// 	return new PageImpl<>(list, pageable, list.size());
+	// }
 
 	// 특정 게시글 조회
 	@Transactional(readOnly = true)
@@ -49,19 +85,21 @@ public class PostServiceImpl implements PostService {
 		Post post = postRepository.findById(postId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
 
+		Long id = post.getId();
+		Long postUserId = post.getUserId();
 		String title = post.getTitle();
-		Long id = post.getUserId();
-		String username = post.getUser().getUsername();
+		String username = post.getUsername();
 		String content = post.getContent();
 		LocalDateTime createdAt = post.getCreatedAt();
 		LocalDateTime modifiedAt = post.getModifiedAt();
 		int likeCount = post.getLikeCount();
 
-		boolean isLikeChecked = likeRepository.existsByPost_IdAndUserId(postId, userId);
+		boolean isLikeChecked = likeRepository.existsByPost_IdAndUserId(id, userId);
 
 		return PostResponseDto.builder()
-			.title(title)
 			.id(id)
+			.userId(postUserId)
+			.title(title)
 			.username(username)
 			.content(content)
 			.createdAt(createdAt)
