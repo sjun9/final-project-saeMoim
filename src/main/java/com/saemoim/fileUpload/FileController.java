@@ -1,26 +1,22 @@
 package com.saemoim.fileUpload;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 
-@RestController
 @RequiredArgsConstructor
+@RestController
 public class FileController {
 
-	private final FileService fileService;
+	private final AWSS3Service awss3Service;
 
 	@PostMapping("/upload")
-	public Long uploadFile(@RequestPart("file")MultipartFile file) throws IOException {
-		return fileService.saveFile(file);
+	public String upload(@RequestParam("data") MultipartFile multipartFile) throws IOException {
+		return awss3Service.upload(multipartFile, "static");
 	}
-
-
 }
