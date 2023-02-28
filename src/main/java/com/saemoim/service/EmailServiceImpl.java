@@ -1,6 +1,5 @@
 package com.saemoim.service;
 
-import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.mail.javamail.JavaMailSender;
@@ -26,34 +25,21 @@ public class EmailServiceImpl implements EmailService {
 	private final JavaMailSender emailSender;
 	private final RedisUtil redisUtil;
 
-	private String authCode;
-	private String tempPassword;
+	private String tempCode;
 
-	// 회원가입 시 메일 발송
-	private void createCode() {
-
-		Random random = new Random();
-		StringBuilder code = new StringBuilder();
-
-		for (int i = 0; i < 12; i++) {
-			int index = random.nextInt(3);
-			switch (index) {
-				case 0 -> code.append((char)((int)random.nextInt(26) + 97));
-				case 1 -> code.append((char)((int)random.nextInt(26) + 65));
-				case 2 -> code.append(random.nextInt(9));
-			}
-		}
-		authCode = code.toString();
+	private void createTempCode() {
+		UUID uid = UUID.randomUUID();
+		tempCode = uid.toString().substring(0, 12);
 	}
 
-	private MimeMessage createEmailForm(String email) throws MessagingException {
+	private MimeMessage createAuthCodeEmailForm(String email) throws MessagingException {
 
-		createCode();
+		createTempCode();
 
 		String fromEmail = "dpevent@naver.com";
 		String toEmail = email; // 받는 사람
-		String title = "회원가입 인증 번호 입니다.";
-		String content = "인증 번호는 " + authCode + " 입니다.\n" +
+		String title = "새모임 회원가입 인증 번호 안내 이메일입니다.";
+		String content = "안녕하세요. 새모임 인증 번호를 발급해드립니다.\n 인증 번호는 " + tempCode + " 입니다.\n" +
 			"해당 인증번호를 인증번호 확인란에 기입하여 주세요.";
 
 		MimeMessage message = emailSender.createMimeMessage();    // 마임 메세지 -
@@ -65,9 +51,27 @@ public class EmailServiceImpl implements EmailService {
 		return message;
 	}
 
+	private MimeMessage createTempPasswordEmailForm(String email) throws MessagingException {
+		createTempCode();
+
+		String fromEmail = "dpevent@naver.com";
+		String toEmail = email;
+		String title = "새모임 임시 비밀번호 안내 이메일입니다.";
+		String content = "안녕하세요. 새모임 임시 비밀번호를 발급해드립니다.\n 회원님의 임시 비밀번호는 " + tempCode + " 입니다.\n" +
+			"로그인 후에 비밀번호를 변경해주세요.";
+
+		MimeMessage message = emailSender.createMimeMessage();
+		message.addRecipients(MimeMessage.RecipientType.TO, toEmail);
+		message.setSubject(title);
+		message.setFrom(fromEmail);
+		message.setText(content);
+
+		return message;
+	}
+
 	@Override
 	public void getEmailAuthCode(EmailCodeRequestDto requestDto) {
-		if (!redisUtil.isExists(requestDto.getEmail().replace("@", ""))) {
+		if (!redisUtil.isExists(requestDto.getEmail())) {
 			throw new IllegalArgumentException(ErrorCode.NOT_FOUND_AUTH_CODE.getMessage());
 		}
 
@@ -78,33 +82,9 @@ public class EmailServiceImpl implements EmailService {
 
 	@Override
 	public void sendEmail(String toEmail) throws MessagingException {
-		MimeMessage emailForm = createEmailForm(toEmail);
+		MimeMessage emailForm = createAuthCodeEmailForm(toEmail);
 		emailSender.send(emailForm);
-		redisUtil.setData(toEmail.replace("@", ""), authCode, 3 * 60 * 1000L);
-	}
-
-	// 비밀번호 찾기 시 메일 발송
-	private void createTempPassword() {
-		UUID uid = UUID.randomUUID();
-		tempPassword = uid.toString().substring(0, 10);
-	}
-
-	private MimeMessage createTempPasswordEmailForm(String email) throws MessagingException {
-		createTempPassword();
-
-		String fromEmail = "dpevent@naver.com";
-		String toEmail = email;
-		String title = "새모임 임시 비밀번호 안내 이메일입니다.";
-		String content = "안녕하세요. 새모임 임시 비밀번호를 발급해드립니다.\n 회원님의 임시 비밀번호는 " + tempPassword + " 입니다.\n" +
-			"로그인 후에 비밀번호를 변경해주세요.";
-
-		MimeMessage message = emailSender.createMimeMessage();
-		message.addRecipients(MimeMessage.RecipientType.TO, toEmail);
-		message.setSubject(title);
-		message.setFrom(fromEmail);
-		message.setText(content);
-
-		return message;
+		redisUtil.setData(toEmail, tempCode, 3 * 60 * 1000L);
 	}
 
 	@Transactional
@@ -117,7 +97,7 @@ public class EmailServiceImpl implements EmailService {
 		MimeMessage emailForm = createTempPasswordEmailForm(email);
 		emailSender.send(emailForm);
 
-		String encodingTempPwd = passwordEncoder.encode(tempPassword);
+		String encodingTempPwd = passwordEncoder.encode(tempCode);
 		user.updatePasswordToTemp(encodingTempPwd);
 		userRepository.save(user);
 	}

@@ -251,7 +251,8 @@ class UserControllerTest {
 			.build();
 		ProfileResponseDto response = new ProfileResponseDto(user);
 
-		when(userService.getMyProfile(anyLong(), any(CurrentPasswordRequestDto.class))).thenReturn(response);
+		when(userService.checkPasswordAndGetMyProfile(anyLong(), any(CurrentPasswordRequestDto.class))).thenReturn(
+			response);
 
 		// when
 		ResultActions resultActions = mockMvc.perform(post("/profile")

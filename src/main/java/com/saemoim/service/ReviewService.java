@@ -1,12 +1,13 @@
 package com.saemoim.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.saemoim.dto.request.ReviewRequestDto;
 import com.saemoim.dto.response.ReviewResponseDto;
 
 public interface ReviewService {
-	List<ReviewResponseDto> getReviews(Long groupId);
+	Page<ReviewResponseDto> getReviews(Long groupId, Pageable pageable);
 
 	ReviewResponseDto createReview(Long groupId, ReviewRequestDto requestDto, Long userId);
 

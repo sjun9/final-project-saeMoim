@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final GroupRepository groupRepository;
@@ -63,28 +61,11 @@ public class PostServiceImpl implements PostService {
 		});
 	}
 
-	// @@@@@ TIL에 적기 @@@@@
-
-	// public Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable) {
-	// 	Page<Post> postList = postRepository.findAllByGroup_Id(group_id, pageable);
-	// 	return postList.map(PostResponseDto::toDto);
-	// }
-
-	// public Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable) {
-	// 	List<PostResponseDto> list = postRepository.findAllByGroup_Id(group_id, pageable)
-	// 		.stream()
-	// 		.map(PostResponseDto::new)
-	// 		.toList();
-	// 	return new PageImpl<>(list, pageable, list.size());
-	// }
-
 	// 특정 게시글 조회
 	@Transactional(readOnly = true)
 	@Override
 	public PostResponseDto getPost(Long postId, Long userId) {
-		Post post = postRepository.findById(postId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
-
+		Post post = _getPostById(postId);
 		Long id = post.getId();
 		Long postUserId = post.getUserId();
 		String title = post.getTitle();
@@ -112,30 +93,26 @@ public class PostServiceImpl implements PostService {
 	@Transactional
 	@Override
 	public PostResponseDto createPost(Long groupId, PostRequestDto requestDto, Long userId) {
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
-		Group group = groupRepository.findById(groupId)
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage()));
-		String title = requestDto.getTitle();
-		String content = requestDto.getContent();
-		Post savedPost = postRepository.save(new Post(group, title, content, user));
+		User user = userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
+		Group group = groupRepository.findById(groupId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
+		);
+
+		Post savedPost = postRepository.save(new Post(group, requestDto.getTitle(), requestDto.getContent(), user));
 		return new PostResponseDto(savedPost);
 	}
 
 	@Transactional
 	@Override
 	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId) {
-		Post savedPost = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
+		Post savedPost = _getPostById(postId);
 
-		if (savedPost.isWriter(userId)) {
-			String title = requestDto.getTitle();
-			String content = requestDto.getContent();
-
-			savedPost.update(title, content);
-		} else {
+		if (!savedPost.isWriter(userId)) {
 			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
 		}
+		savedPost.update(requestDto.getTitle(), requestDto.getContent());
 
 		return new PostResponseDto(savedPost);
 	}
@@ -143,25 +120,25 @@ public class PostServiceImpl implements PostService {
 	@Transactional
 	@Override
 	public void deletePost(Long postId, Long userId) {
-		Post savedPost = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
+		Post savedPost = _getPostById(postId);
 
-		if (savedPost.isWriter(userId)) {
-			postRepository.delete(savedPost);
-
-		} else {
+		if (!savedPost.isWriter(userId)) {
 			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
 		}
 
+		postRepository.delete(savedPost);
 	}
 
 	@Transactional
 	@Override
 	public void deletePostByAdmin(Long postId) {
-		Post post = postRepository.findById(postId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage())
-		);
+		Post post = _getPostById(postId);
 
 		postRepository.delete(post);
+	}
+
+	private Post _getPostById(Long postId) {
+		return postRepository.findById(postId)
+			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
 	}
 }

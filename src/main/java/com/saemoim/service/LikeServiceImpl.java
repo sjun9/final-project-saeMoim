@@ -21,20 +21,22 @@ public class LikeServiceImpl implements LikeService {
 	@Override
 	@Transactional
 	public void addLike(Long postId, Long userId) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
+		Post post = postRepository.findById(postId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage())
+		);
+
 		post.plusLikeCount();
 		likeRepository.save(new PostLike(post, userId));
-
 	}
 
 	@Override
 	@Transactional
 	public void deleteLike(Long postId, Long userId) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
+		Post post = postRepository.findById(postId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage())
+		);
+
 		post.minusLikeCount();
 		likeRepository.deleteByPost_IdAndUserId(postId, userId);
-
 	}
 }

@@ -1,5 +1,6 @@
 package com.saemoim.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -17,6 +18,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -56,15 +61,18 @@ class ReportControllerTest {
 	@WithCustomMockUser(role = UserRoleEnum.ADMIN)
 	void getReportedUsers() throws Exception {
 		//given
-		User user = User.builder().username("jun").content("aaaaa").build();
+		Pageable pageable = PageRequest.of(0, 10);
+		User user = User.builder().id(1L).email("aaaaa@aaa.com").role(UserRoleEnum.USER)
+			.username("jun").password("afsdafsadfs").content("aaaaa").build();
 		Report report = new Report(user, "ssss", "ggggg");
 		List<ReportResponseDto> list = new ArrayList<>();
 		list.add(new ReportResponseDto(report));
-		when(reportService.getReportedUsers()).thenReturn(list);
+		Page<ReportResponseDto> page = new PageImpl<>(list, pageable, list.size());
+		when(reportService.getReportedUsers(any(Pageable.class))).thenReturn(page);
 		//when
 		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/admin/report"));
 		//then
-		resultActions.andExpect(jsonPath("$['data'][0]['reporterName']").value("ssss"));
+		resultActions.andExpect(jsonPath("$['data']['content'][0]['reporterName']").value("ssss"));
 		resultActions.andExpect(status().isOk());
 	}
 

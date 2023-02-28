@@ -1,7 +1,7 @@
 package com.saemoim.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +23,8 @@ public class ReportServiceImpl implements ReportService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ReportResponseDto> getReportedUsers() {
-		return reportRepository.findAllByOrderByCreatedAt().stream().map(ReportResponseDto::new).toList();
+	public Page<ReportResponseDto> getReportedUsers(Pageable pageable) {
+		return reportRepository.findAllByOrderByCreatedAt(pageable).map(ReportResponseDto::new);
 	}
 
 	@Transactional

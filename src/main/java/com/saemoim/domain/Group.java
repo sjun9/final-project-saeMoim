@@ -3,7 +3,8 @@ package com.saemoim.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -46,7 +47,7 @@ public class Group extends TimeStamped {
 	@JoinColumn(name = "category_id")
 	private Category category;
 
-	@BatchSize(size = 1000)
+	@Fetch(FetchMode.SUBSELECT)
 	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Tag> tags = new ArrayList<>();
 
@@ -84,12 +85,7 @@ public class Group extends TimeStamped {
 	public Group(GroupRequestDto request, Category category, User user) {
 		this.user = user;
 		this.category = category;
-
-		for (String name : request.getTagNames()) {
-			Tag tag = new Tag(name, this);
-			this.tags.add(tag);
-		}
-
+		request.getTagNames().forEach(t -> this.tags.add(new Tag(t, this)));
 		this.name = request.getName();
 		this.content = request.getContent();
 		this.address = request.getAddress();
@@ -103,12 +99,8 @@ public class Group extends TimeStamped {
 	public void update(GroupRequestDto request, Category category, User user) {
 		this.user = user;
 		this.category = category;
-
-		for (String name : request.getTagNames()) {
-			Tag tag = new Tag(name, this);
-			this.tags.add(tag);
-		}
-
+		this.tags.clear();
+		request.getTagNames().forEach(t -> this.tags.add(new Tag(t, this)));
 		this.name = request.getName();
 		this.content = request.getContent();
 		this.address = request.getAddress();
@@ -149,5 +141,13 @@ public class Group extends TimeStamped {
 
 	public void subtractWishCount() {
 		this.wishCount--;
+	}
+
+	public boolean isOpen() {
+		return this.status.equals(GroupStatusEnum.OPEN);
+	}
+
+	public boolean isClose() {
+		return this.status.equals(GroupStatusEnum.CLOSE);
 	}
 }

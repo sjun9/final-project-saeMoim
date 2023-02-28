@@ -34,7 +34,7 @@ public class WishController {
 	@PostMapping("/groups/{groupId}/wish")
 	public ResponseEntity<GenericsResponseDto> wishGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		wishService.wishGroup(groupId, userDetails.getId());
+		wishService.addWishGroup(groupId, userDetails.getId());
 		return ResponseEntity.status(HttpStatus.CREATED).body(new GenericsResponseDto("모임 찜하기 완료"));
 	}
 

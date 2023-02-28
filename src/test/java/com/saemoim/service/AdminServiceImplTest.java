@@ -94,8 +94,8 @@ class AdminServiceImplTest {
 		Long adminId = 1L;
 		Admin admin = mock(Admin.class);
 
-		when(adminRepository.findById(adminId)).thenReturn(Optional.of(admin));
-		when(admin.getRole()).thenReturn(UserRoleEnum.ADMIN);
+		when(adminRepository.findById(anyLong())).thenReturn(Optional.of(admin));
+		when(admin.isRootAdmin()).thenReturn(false);
 		doNothing().when(adminRepository).deleteById(anyLong());
 		//when
 		adminService.deleteAdmin(adminId);

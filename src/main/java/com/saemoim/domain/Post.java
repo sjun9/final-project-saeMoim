@@ -37,7 +37,7 @@ public class Post extends TimeStamped {
 	@Column(nullable = false)
 	private String content;
 	@Column(nullable = false)
-	private int likeCount;
+	private int likeCount = 0;
 
 	public Post(Group group, String title, String content, User user) {
 		this.group = group;
@@ -54,6 +54,7 @@ public class Post extends TimeStamped {
 	public Long getUserId() {
 		return this.user.getId();
 	}
+
 	public String getUsername() {
 		return this.user.getUsername();
 	}
@@ -65,6 +66,7 @@ public class Post extends TimeStamped {
 	public void plusLikeCount() {
 		this.likeCount++;
 	}
+
 	public void minusLikeCount() {
 		this.likeCount--;
 	}

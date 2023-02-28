@@ -158,19 +158,18 @@ function showUsername() {
 
 
 function showCategory() {
-    $('#categoryFilter').empty().append(`<option value=0>전체</option>`)
+    $('#categoryFilter').empty().append(`<option value="0">전체</option>`)
     $('#categoryMenu').empty()
     $('#modifyCategoryMenu').empty()
     $.ajax({
         type: "GET",
         url: "http://localhost:8080/category"
     }).done(function (response) {
-        console.log(response)
-        for (let i = 0; i < response.length; i++) {
-            let categories = response[i]['categories']
-            for (let i = 0; i < categories.length; i++) {
-                let id = categories[i]['id']
-                let name = categories[i]['name']
+        for (let i = 0; i < response['data'].length; i++) {
+            let categories = response['data'][i]
+            for (let i = 0; i < categories['categories'].length; i++) {
+                let id = categories['categories'][i]['id']
+                let name = categories['categories'][i]['name']
                 let temp_html = `<option value=${id}>${name}</option>`
                 let temp_html2 = `<li><a class="dropdown-item" href="#" onclick="changeNewValue(event)">${name}</a></li>`
                 let temp_html3 = `<li><a class="dropdown-item" href="#" onclick="changeModifyValue(event)">${name}</a></li>`
@@ -277,18 +276,20 @@ function showMoimAjax(url, contentId) {
         url: url,
         headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         success: function (response) {
-            for (let i = 0; i < response['data'].length; i++) {
-                let id = response['data'][i]['id']
-                let groupName = response['data'][i]['groupName']
-                let content = response['data'][i]['content']
-                let categoryName = response['data'][i]['categoryName']
-                let participantCount = response['data'][i]['participantCount']
-                let recruitNumber = response['data'][i]['recruitNumber']
-                let wishCount = response['data'][i]['wishCount']
-                let status = response['data'][i]['status']
-                let tags = response['data'][i]['tags']
-                let leaderId = response['data'][i]['userId']
-                let leaderName = response['data'][i]['username']
+            console.log(response)
+            response = response['data']['content']
+            for (let i = 0; i < response.length; i++) {
+                let id = response[i]['id']
+                let groupName = response[i]['groupName']
+                let content = response[i]['content']
+                let categoryName = response[i]['categoryName']
+                let participantCount = response[i]['participantCount']
+                let recruitNumber = response[i]['recruitNumber']
+                let wishCount = response[i]['wishCount']
+                let status = response[i]['status']
+                let tags = response[i]['tags']
+                let leaderId = response[i]['userId']
+                let leaderName = response[i]['username']
 
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
@@ -338,7 +339,51 @@ function showPopularMoim() {
     let contentId = '#popular-content';
     let url = "http://localhost:8080/group/popular";
     $(contentId).empty()
-    $.ajax(showMoimAjax(url, contentId)).fail(function (e) {
+    $.ajax({
+            type: "GET",
+            url: url,
+            headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+            success: function (response) {
+                console.log(response)
+                response = response['data']
+                for (let i = 0; i < response.length; i++) {
+                    let id = response[i]['id']
+                    let groupName = response[i]['groupName']
+                    let content = response[i]['content']
+                    let categoryName = response[i]['categoryName']
+                    let participantCount = response[i]['participantCount']
+                    let recruitNumber = response[i]['recruitNumber']
+                    let wishCount = response[i]['wishCount']
+                    let status = response[i]['status']
+                    let tags = response[i]['tags']
+                    let leaderId = response[i]['userId']
+                    let leaderName = response[i]['username']
+
+                    let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+                                    onClick="showMoimDetail(event, ${id})">
+                                    <div class="product-cell image">
+                                        <img src="../static/images/main-running.jpg" alt="">
+                                            <span>${groupName}</span>
+                                            <input type="hidden" value=${content}>
+                                            <input type="hidden" value=${tags}>
+                                            <input type="hidden" value=${leaderName}>
+                                            <input type="hidden" value=${leaderId}>
+                                    </div>
+                                    <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
+                                    <div class="product-cell status-cell">
+                                        <span class="cell-label">모임상태:</span>
+                                        <span class="status active">${status}</span>
+                                    </div>
+                                    <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
+                                    <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
+                                    <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
+                                </div>`
+                    $(contentId).append(temp_html)
+                    console.log(response)
+                }
+            }
+        }
+    ).fail(function (e) {
         console.log(e.status)
         if (e.status === 401) {
             reissue()
@@ -396,6 +441,7 @@ function showFilter(categoryId, status) {
         url: "http://localhost:8080/group/categories/" + categoryId,
         data: {status: status}, //전송 데이터
         success: function (response) {
+            response = response['data']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
@@ -658,6 +704,8 @@ function showMoimDetail(event, id) {
     let targetTitle = event.currentTarget.firstChild.nextSibling.children[1].innerText;
     let targetContent = event.currentTarget.firstChild.nextSibling.children[2].value;
     let tags = event.currentTarget.firstChild.nextSibling.children[3].value;
+    //위에 꺼 지우고 getGroup해서 밑에 넣어주자
+
     document.querySelector('#moimDetail_Title').innerText = targetTitle;
     // document.querySelector('#moimLeader').innerText = leaderName;
     document.querySelector('#moimTag').innerText = tags;

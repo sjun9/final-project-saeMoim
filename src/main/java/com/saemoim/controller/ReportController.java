@@ -1,5 +1,6 @@
 package com.saemoim.controller;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,8 +26,8 @@ public class ReportController {
 
 	// 관리자가 신고된 사용자 조회
 	@GetMapping("/admin/report")
-	public ResponseEntity<GenericsResponseDto> getReportedUsers() {
-		return ResponseEntity.ok().body(new GenericsResponseDto(reportService.getReportedUsers()));
+	public ResponseEntity<GenericsResponseDto> getReportedUsers(Pageable pageable) {
+		return ResponseEntity.ok().body(new GenericsResponseDto(reportService.getReportedUsers(pageable)));
 	}
 
 	// 회원이 사용자 신고

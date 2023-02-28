@@ -17,8 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
@@ -47,37 +45,6 @@ class GroupServiceImplTest {
 
 	@InjectMocks
 	private GroupServiceImpl groupService;
-
-	@Test
-	@DisplayName("카테고리로모임조회")
-	void getGroupsByCategory() {
-		// given
-		var categoryId = 2L;
-		var pageable = PageRequest.of(1, 4, Sort.by(Sort.Direction.DESC, "id"));
-		var category = Category.builder().parentId(1L).build();
-
-		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
-
-		// when
-		groupService.getGroupsByCategoryAndStatus(categoryId, "OPEN", pageable);
-
-		// then
-		verify(groupRepository).findAllByCategoryOrderByCreatedAtDesc(category);
-	}
-
-	@Test
-	@DisplayName("태그로모임조회")
-	void getGroupsByTag() {
-		// given
-		var pageable = PageRequest.of(1, 4, Sort.by(Sort.Direction.DESC, "id"));
-		var tagName = "tag";
-
-		// when
-		groupService.getGroupsByTag(tagName, pageable);
-
-		// then
-		verify(tagRepository).findAllByName(tagName);
-	}
 
 	@Test
 	@DisplayName("모임생성")

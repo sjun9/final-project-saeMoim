@@ -7,6 +7,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +17,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.saemoim.domain.Group;
 import com.saemoim.domain.Participant;
@@ -40,10 +46,14 @@ class ReviewServiceImplTest {
 	void getReviews() {
 		// given
 		var groupId = 1L;
+		List<Review> list = new ArrayList<>();
+		Pageable pageable = PageRequest.of(0, 10);
+		Page<Review> page = new PageImpl<>(list, pageable, list.size());
+		when(reviewRepository.findAllByGroup_IdOrderByCreatedAtDesc(groupId, pageable)).thenReturn(page);
 		// when
-		reviewService.getReviews(groupId);
+		Page<ReviewResponseDto> page1 = reviewService.getReviews(groupId, pageable);
 		// then
-		verify(reviewRepository).findAllByGroup_IdOrderByCreatedAtDesc(groupId);
+		verify(reviewRepository).findAllByGroup_IdOrderByCreatedAtDesc(groupId, pageable);
 	}
 
 	@Test

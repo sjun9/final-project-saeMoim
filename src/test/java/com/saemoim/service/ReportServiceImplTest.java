@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.saemoim.domain.Report;
 import com.saemoim.domain.User;
@@ -37,15 +42,15 @@ class ReportServiceImplTest {
 	@Test
 	@DisplayName("신고받은 사용자 조회")
 	void getReportedUsers() {
-		//given
 		List<Report> list = new ArrayList<>();
+		Pageable pageable = PageRequest.of(0, 10);
 
-		when(reportRepository.findAllByOrderByCreatedAt()).thenReturn(list);
+		when(reportRepository.findAllByOrderByCreatedAt(pageable)).thenReturn(new PageImpl<>(list, pageable, 0));
 		//when
-		List<ReportResponseDto> list1 = reportService.getReportedUsers();
+		Page<ReportResponseDto> page = reportService.getReportedUsers(pageable);
 		//then
-		verify(reportRepository).findAllByOrderByCreatedAt();
-		assertThat(list1).isEqualTo(list.stream().map(ReportResponseDto::new).toList());
+		verify(reportRepository).findAllByOrderByCreatedAt(pageable);
+		assertThat(page.getContent()).isEqualTo(list.stream().map(ReportResponseDto::new).collect(Collectors.toList()));
 	}
 
 	@Test
