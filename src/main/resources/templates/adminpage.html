@@ -2,299 +2,305 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://kit.fontawesome.com/13a08ca775.js" crossorigin="anonymous"></script>
-  <title>Document</title>
-  <script src="https://code.jquery.com/jquery-3.6.3.min.js"
-    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-    crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/13a08ca775.js" crossorigin="anonymous"></script>
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+            crossorigin="anonymous"></script>
 
-  <link rel="stylesheet" href="../static/admin/adminpage.css">
+    <link rel="stylesheet" href="../static/admin/adminpage.css">
 
 </head>
 
 <body>
-  <div class="app-container">
+<div class="app-container">
     <div class="sidebar">
-      <div class="sidebar-header">
-        <div class="app-icon">
-          <h1 style="display: inline;">SAEMOIM</h1>
-          <img src="../static/images/bird.png" alt="" style="display: inline;">
-          <h2 style="display: inline;">ADMIN</h2>
-          <button type="button" onclick="reissue()">로그인 연장</button>
-          <div style="display: flex; flex-direction: row; justify-content: space-between;">
-            <h3>로그인 유효시간 : </h3>
-            <h3 class="text-center" id="count-down-timer"></h3>
-          </div>
+        <div class="sidebar-header">
+            <div class="app-icon">
+                <h1 style="display: inline;">SAEMOIM</h1>
+                <img src="../static/images/bird.png" alt="" style="display: inline;">
+                <h2 style="display: inline;">ADMIN</h2>
+                <button type="button" onclick="reissue()">로그인 연장</button>
+                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                    <h3>로그인 유효시간 : </h3>
+                    <h3 class="text-center" id="count-down-timer"></h3>
+                </div>
+            </div>
         </div>
-      </div>
-      <ul class="sidebar-list">
-        <li class="sidebar-list-item active" id="side-find">
-          <a href="#">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="feather feather-home">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-            <span>Users</span>
-          </a>
-        </li>
-        <li class="sidebar-list-item " id="side-mypage">
-          <a href="#">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="feather feather-pie-chart">
-              <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
-              <path d="M22 12A10 10 0 0 0 12 2v10z" />
-            </svg>
-            <span>Blacklist</span>
-          </a>
-        </li>
-        <li class="sidebar-list-item" id="side-profile">
-          <a href="#">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="feather feather-inbox">
-              <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
-              <path
-                d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
-            </svg>
-            <span>Category</span>
-          </a>
-        </li>
-        <li class="sidebar-list-item" id="side-chat">
-          <a href="#">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="feather feather-bell">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-            <span>관리자 계정</span>
-          </a>
-        </li>
-      </ul>
-      <div class="account-info">
-        <div class="account-info-name">ADMIN</div>
-        <img class="account-info-more" src="../static/images/logout.png" alt="" onclick="logout()">
-      </div>
+        <ul class="sidebar-list">
+            <li class="sidebar-list-item active" id="side-find">
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="feather feather-home">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    <span>Users</span>
+                </a>
+            </li>
+            <li class="sidebar-list-item " id="side-mypage">
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="feather feather-pie-chart">
+                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+                        <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+                    </svg>
+                    <span>Blacklist</span>
+                </a>
+            </li>
+            <li class="sidebar-list-item" id="side-profile">
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="feather feather-inbox">
+                        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+                        <path
+                                d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+                    </svg>
+                    <span>Category</span>
+                </a>
+            </li>
+            <li class="sidebar-list-item" id="side-chat">
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="feather feather-bell">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span>관리자 계정</span>
+                </a>
+            </li>
+        </ul>
+        <div class="account-info">
+            <div class="account-info-name">ADMIN</div>
+            <img class="account-info-more" src="../static/images/logout.png" alt="" onclick="logout()">
+        </div>
     </div>
 
     <div class="app-content find active" id="side-find-content">
-      <div class="app-content-header">
-        <h1 class="app-content-headerText">전체 유저 조회</h1>
-      </div>
-      <table>
-        <caption>사용자</caption>
-        <thead>
-          <tr>
-            <th scope="col">Email</th>
-            <th scope="col">닉네임</th>
-            <th scope="col">가입일</th>
-            <th scope="col">정지 당한 횟수</th>
-          </tr>
-        </thead>
-        <tbody id="user-list">
-        </tbody>
-      </table>
+        <div class="app-content-header">
+            <h1 class="app-content-headerText">전체 유저 조회</h1>
+        </div>
+        <table>
+            <caption>사용자</caption>
+            <thead>
+            <tr>
+                <th scope="col">Email</th>
+                <th scope="col">닉네임</th>
+                <th scope="col">가입일</th>
+                <th scope="col">정지 당한 횟수</th>
+            </tr>
+            </thead>
+            <tbody id="user-list">
+            </tbody>
+        </table>
     </div>
 
     <div class="app-content mypage" id="side-mypage-content">
-      <div class="app-content-header">
-        <h1 class="app-content-headerText">신고/블랙리스트</h1>
-      </div>
-      <div class="app-content-section">
-        <div>
-          <table>
-            <caption>신고 목록</caption>
-            <thead>
-              <tr>
-                <th scope="col">피신고인 회원번호</th>
-                <th scope="col">피신고인</th>
-                <th scope="col">신고일</th>
-                <th scope="col">신고내용</th>
-                <th scope="col">신고인</th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <tbody id="report-list">
-            </tbody>
-          </table>
+        <div class="app-content-header">
+            <h1 class="app-content-headerText">신고/블랙리스트</h1>
         </div>
-        <div>
-          <table>
-            <caption>블랙리스트</caption>
-            <thead>
-              <tr>
-                <th scope="col">회원번호</th>
-                <th scope="col">닉네임</th>
-                <th scope="col">정지 당한 횟수</th>
-                <th scope="col">생성일</th>
-                <th scope="col">수정일</th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <tbody id="blacklist">
+        <div class="app-content-section">
+            <div>
+                <table>
+                    <caption>신고 목록</caption>
+                    <thead>
+                    <tr>
+                        <th scope="col">피신고인 회원번호</th>
+                        <th scope="col">피신고인</th>
+                        <th scope="col">신고일</th>
+                        <th scope="col">신고내용</th>
+                        <th scope="col">신고인</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody id="report-list">
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <table>
+                    <caption>블랙리스트</caption>
+                    <thead>
+                    <tr>
+                        <th scope="col">회원번호</th>
+                        <th scope="col">닉네임</th>
+                        <th scope="col">정지 당한 횟수</th>
+                        <th scope="col">생성일</th>
+                        <th scope="col">수정일</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody id="blacklist">
 
-            </tbody>
-          </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
-      </div>
     </div>
 
     <div class="app-content profile" id="side-profile-content">
-      <div class="app-content-header">
-        <h1 class="app-content-headerText">카테고리 설정</h1>
-        <div class="input-group mb-3">
-          <input type="number" id="iid" placeholder="수정카테고리번호" style="width: 40px;">
-          <input type="text" class="form-control" id="updateName" placeholder="수정할 이름" aria-label="카테고리 수정"
-            aria-describedby="button-addon2">
-          <button class="btn btn-outline-secondary" type="button" id="button-addon2"
-            onclick="updateCate($('#iid').val(), $('#updateName').val())">수정</button>
+        <div class="app-content-header">
+            <h1 class="app-content-headerText">카테고리 설정</h1>
+            <div class="input-group mb-3">
+                <input type="number" id="iid" placeholder="수정카테고리번호" style="width: 40px;">
+                <input type="text" class="form-control" id="updateName" placeholder="수정할 이름" aria-label="카테고리 수정"
+                       aria-describedby="button-addon2">
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                        onclick="updateCate($('#iid').val(), $('#updateName').val())">수정
+                </button>
+            </div>
+            <div class="input-group mb-3">
+                <input type="number" id="papaId" placeholder="상위카테고리번호입력" style="width: 40px;">
+                <input type="text" class="form-control" id="newName" placeholder="하위 카테고리 추가" aria-label="카테고리 추가"
+                       aria-describedby="button-addon2">
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                        onclick="addChildCate($('#papaId').val(), $('#newName').val())">추가
+                </button>
+            </div>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="newPaName" placeholder="상위 카테고리 추가" aria-label="카테고리 추가"
+                       aria-describedby="button-addon2">
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                        onclick="addPapaCate($('#newPaName').val())">추가
+                </button>
+            </div>
         </div>
-        <div class="input-group mb-3">
-          <input type="number" id="papaId" placeholder="상위카테고리번호입력" style="width: 40px;">
-          <input type="text" class="form-control" id="newName" placeholder="하위 카테고리 추가" aria-label="카테고리 추가"
-            aria-describedby="button-addon2">
-          <button class="btn btn-outline-secondary" type="button" id="button-addon2"
-            onclick="addChildCate($('#papaId').val(), $('#newName').val())">추가</button>
-        </div>
-        <div class="input-group mb-3">
-          <input type="text" class="form-control" id="newPaName" placeholder="상위 카테고리 추가" aria-label="카테고리 추가"
-            aria-describedby="button-addon2">
-          <button class="btn btn-outline-secondary" type="button" id="button-addon2"
-            onclick="addPapaCate($('#newPaName').val())">추가</button>
-        </div>
-      </div>
-      <div class="app-content-section">
+        <div class="app-content-section">
 
-        <div class="app-cate" id="categoryList">
+            <div class="app-cate" id="categoryList">
 
+            </div>
         </div>
-      </div>
     </div>
 
     <div class="app-content chat" id="side-chat-content">
-      <div class="app-content-header">
-        <h1 class="app-content-headerText">계정관리</h1>
-        <button class="app-content-headerButton" id="show">관리자계정추가</button>
-        <div class="background">
-          <div class="window">
-            <div class="popup">
-              <button id="close">X</button>
-              <div class="momodal">
-                <form>
-                  <div class="row mb-3">
-                    <label for="inputEmail3" class="col-sm-2 col-form-label">adminID</label>
-                    <div class="col-sm-10">
-                      <input type="text" class="form-control" id="inputEmail3">
+        <div class="app-content-header">
+            <h1 class="app-content-headerText">계정관리</h1>
+            <button class="app-content-headerButton" id="show">관리자계정추가</button>
+            <div class="background">
+                <div class="window">
+                    <div class="popup">
+                        <button id="close">X</button>
+                        <div class="momodal">
+                            <form>
+                                <div class="row mb-3">
+                                    <label for="inputEmail3" class="col-sm-2 col-form-label">adminID</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="inputEmail3">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
+                                    <div class="col-sm-10">
+                                        <input type="password" class="form-control" id="inputPassword3">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary"
+                                        onclick="createAdmin($('#inputEmail3').val(), $('#inputPassword3').val())">생성
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                  </div>
-                  <div class="row mb-3">
-                    <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
-                    <div class="col-sm-10">
-                      <input type="password" class="form-control" id="inputPassword3">
-                    </div>
-                  </div>
-                  <button type="submit" class="btn btn-primary"
-                    onclick="createAdmin($('#inputEmail3').val(), $('#inputPassword3').val())">생성</button>
-                </form>
-              </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-      <div class="app-content-section">
-        <div class="papa" id="aadminn">
+        <div class="app-content-section">
+            <div class="papa" id="aadminn">
 
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 </body>
 
 <script>
-  $(window.document).ready(function () {
-    aaa()
-  })
-  const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
-  const appContents = document.querySelectorAll(".app-content");
-
-  sidebarListItems.forEach((sidebarListItem) => {
-    sidebarListItem.addEventListener('click', () => {
-      sidebarListItems.forEach((selectedItem) => selectedItem.classList.remove('active'));
-      appContents.forEach((appContent) => appContent.classList.remove('active'));
-      sidebarListItem.classList.add('active');
+    $(window.document).ready(function () {
+        aaa()
     })
-  })
-  function aaa() {
-    var settings = {
-      "url": "http://localhost:8080/admin/user",
-      "method": "GET",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken')
-      },
-    };
-    $.ajax(settings).done(function (response) {
-      $('#user-list').empty()
-      let rows = response
-      for (let i = 0; i < rows.length; i++) {
-        let username = rows[i]['username']
-        let email = rows[i]['email']
-        let banCount = rows[i]['banCount']
-        let createdAt = rows[i]['createdAt']
+    const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
+    const appContents = document.querySelectorAll(".app-content");
 
-        let temp_html = `<tr>
+    sidebarListItems.forEach((sidebarListItem) => {
+        sidebarListItem.addEventListener('click', () => {
+            sidebarListItems.forEach((selectedItem) => selectedItem.classList.remove('active'));
+            appContents.forEach((appContent) => appContent.classList.remove('active'));
+            sidebarListItem.classList.add('active');
+        })
+    })
+
+    function aaa() {
+        var settings = {
+            "url": "http://localhost:8080/admin/user",
+            "method": "GET",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken')
+            },
+        };
+        $.ajax(settings).done(function (response) {
+            $('#user-list').empty()
+            let rows = response
+            for (let i = 0; i < rows.length; i++) {
+                let username = rows[i]['username']
+                let email = rows[i]['email']
+                let banCount = rows[i]['banCount']
+                let createdAt = rows[i]['createdAt']
+
+                let temp_html = `<tr>
                       <td scope="row">${email}</td>
                       <td>${username}</td>
                       <td>${createdAt}</td>
                       <td>${banCount}</td>
                     </tr>`
-        $('#user-list').append(temp_html)
-      }
-    });
-  }
+                $('#user-list').append(temp_html)
+            }
+        });
+    }
 
-  // userlist
-  document.querySelector("#side-find").addEventListener("click", () => {
-    document.querySelector("#side-find-content").classList.add("active");
-    aaa()
-  })
+    // userlist
+    document.querySelector("#side-find").addEventListener("click", () => {
+        document.querySelector("#side-find-content").classList.add("active");
+        aaa()
+    })
 
-  // report & blacklist
-  document.querySelector("#side-mypage").addEventListener("click", () => {
-    document.querySelector("#side-mypage-content").classList.add("active");
-    getReport()
-    getBlacklist()
-  })
-  function getReport() {
-    // report
-    var settings = {
-      "url": "http://localhost:8080/admin/report",
-      "method": "GET",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken')
-      },
-    };
-    $.ajax(settings).done(function (response) {
-      $('#report-list').empty()
-      let rows = response
-      for (let i = 0; i < rows.length; i++) {
-        let subjectUserId = rows[i]['subjectUserId']
-        let subjectUsername = rows[i]['subjectUsername']
-        let reporterName = rows[i]['reporterName']
-        let content = rows[i]['content']
-        let createdAt = rows[i]['createdAt']
-        let reportId = rows[i]['id']
+    // report & blacklist
+    document.querySelector("#side-mypage").addEventListener("click", () => {
+        document.querySelector("#side-mypage-content").classList.add("active");
+        getReport()
+        getBlacklist()
+    })
 
-        let temp_html = `<tr>
+    function getReport() {
+        // report
+        var settings = {
+            "url": "http://localhost:8080/admin/report",
+            "method": "GET",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken')
+            },
+        };
+        $.ajax(settings).done(function (response) {
+            $('#report-list').empty()
+            let rows = response
+            for (let i = 0; i < rows.length; i++) {
+                let subjectUserId = rows[i]['subjectUserId']
+                let subjectUsername = rows[i]['subjectUsername']
+                let reporterName = rows[i]['reporterName']
+                let content = rows[i]['content']
+                let createdAt = rows[i]['createdAt']
+                let reportId = rows[i]['id']
+
+                let temp_html = `<tr>
                 <td scope="row">${subjectUserId}</td>
                 <td>${subjectUsername}</td>
                 <td>${createdAt}</td>
@@ -305,37 +311,38 @@
                   <button type="button" onclick="addBK(${subjectUserId})">블랙리스트 추가</button>
                 </td>
               </tr>`
-        $('#report-list').append(temp_html)
-      }
-    }).fail(function (response) {
-      console.log(response.responseJSON);
-      alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-      window.location.href = './adminlogin.html';
-    });
-  }
-  function getBlacklist() {
-    // blacklist
-    var settingss = {
-      "url": "http://localhost:8080/admin/blacklist",
-      "method": "GET",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken')
-      },
-    };
+                $('#report-list').append(temp_html)
+            }
+        }).fail(function (response) {
+            console.log(response.responseJSON);
+            alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
+            window.location.href = './adminlogin.html';
+        });
+    }
 
-    $.ajax(settingss).done(function (responsee) {
-      $('#blacklist').empty()
-      let rows = responsee
-      for (let i = 0; i < rows.length; i++) {
-        let bkuserId = rows[i]['userId']
-        let bkusername = rows[i]['username']
-        let bkbanCount = rows[i]['banCount']
-        let bkcreatedAt = rows[i]['createdAt']
-        let bkmodifiedAt = rows[i]['modifiedAt']
-        let bkId = rows[i]['id']
+    function getBlacklist() {
+        // blacklist
+        var settingss = {
+            "url": "http://localhost:8080/admin/blacklist",
+            "method": "GET",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken')
+            },
+        };
 
-        let temp_html = `<tr>
+        $.ajax(settingss).done(function (responsee) {
+            $('#blacklist').empty()
+            let rows = responsee
+            for (let i = 0; i < rows.length; i++) {
+                let bkuserId = rows[i]['userId']
+                let bkusername = rows[i]['username']
+                let bkbanCount = rows[i]['banCount']
+                let bkcreatedAt = rows[i]['createdAt']
+                let bkmodifiedAt = rows[i]['modifiedAt']
+                let bkId = rows[i]['id']
+
+                let temp_html = `<tr>
                 <td scope="row">${bkuserId}</td>
                 <td>${bkusername}</td>
                 <td>${bkbanCount}</td>
@@ -347,460 +354,466 @@
                   <button type="button" onclick="perman(${bkId})">영구등록</button>
                 </td>
               </tr>`
-        $('#blacklist').append(temp_html)
-      }
-    }).fail(function (responsee) {
-      console.log(responsee.responseJSON);
-      alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-      window.location.href = './adminlogin.html';
-    });
-  }
+                $('#blacklist').append(temp_html)
+            }
+        }).fail(function (responsee) {
+            console.log(responsee.responseJSON);
+            alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
+            window.location.href = './adminlogin.html';
+        });
+    }
 
-  // 카테고리
-  document.querySelector("#side-profile").addEventListener("click", () => {
-    document.querySelector("#side-profile-content").classList.add("active");
-    getCate();
-  })
-  function getCate() {
-    var settings = {
-      "url": "http://localhost:8080/category",
-      "method": "GET",
-      "timeout": 0,
-    };
+    // 카테고리
+    document.querySelector("#side-profile").addEventListener("click", () => {
+        document.querySelector("#side-profile-content").classList.add("active");
+        getCate();
+    })
 
-    $.ajax(settings).done(function (response) {
-      console.log(response);
-      $('#categoryList').empty()
-      let rows = response
-      for (let i = 0; i < rows.length; i++) {
-        let categories = rows[i]['categories']
-        let parentName = rows[i]['name']
-        let parentId = rows[i]['id']
-        let childs = '카테고리'
-        for (let j = 0; j < categories.length; j++) {
-          let childName = categories[j]['name']
-          let childId = categories[j]['id']
-          childs += `<div class="child">
+    function getCate() {
+        var settings = {
+            "url": "http://localhost:8080/category",
+            "method": "GET",
+            "timeout": 0,
+        };
+
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+            $('#categoryList').empty()
+            let rows = response
+            for (let i = 0; i < rows.length; i++) {
+                let categories = rows[i]['categories']
+                let parentName = rows[i]['name']
+                let parentId = rows[i]['id']
+                let childs = '카테고리'
+                for (let j = 0; j < categories.length; j++) {
+                    let childName = categories[j]['name']
+                    let childId = categories[j]['id']
+                    childs += `<div class="child">
                             <li>${childId}. ${childName}</li>
                             <button type="button" style="margin-left: 20px;" onclick="deleteCate(${childId})">삭제</button>
                           </div>`
-        }
-        let temp_html = `<div class="papa">
+                }
+                let temp_html = `<div class="papa">
                             <div class="child" style="height: 30px;">
                               <h4>${parentId}. ${parentName}</h3>
                               <button type="button" style="margin-left: 20px;" onclick="deleteCate(${parentId})">삭제</button>
                             </div>
                             <p>${childs}</p>
                         </div>`
-        $('#categoryList').append(temp_html)
+                $('#categoryList').append(temp_html)
 
-      }
-    });
-  }
+            }
+        });
+    }
 
-  // 관리자관리
-  document.querySelector("#side-chat").addEventListener("click", () => {
-    document.querySelector("#side-chat-content").classList.add("active");
-    getAdmin()
-  })
-  function getAdmin() {
-    var settings = {
-      "url": "http://localhost:8080/admin",
-      "method": "GET",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken')
-      },
-    };
+    // 관리자관리
+    document.querySelector("#side-chat").addEventListener("click", () => {
+        document.querySelector("#side-chat-content").classList.add("active");
+        getAdmin()
+    })
 
-    $.ajax(settings).done(function (response) {
-      console.log(response);
-      $('#aadminn').empty()
-      let rows = response
-      for (let i = 0; i < rows.length; i++) {
-        let name = rows[i]['adminName']
-        let id = rows[i]['adminId']
-        let temp_html = `<div class="child">
+    function getAdmin() {
+        var settings = {
+            "url": "http://localhost:8080/admin",
+            "method": "GET",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken')
+            },
+        };
+
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+            $('#aadminn').empty()
+            let rows = response
+            for (let i = 0; i < rows.length; i++) {
+                let name = rows[i]['adminName']
+                let id = rows[i]['adminId']
+                let temp_html = `<div class="child">
                             <li>${name}</li>
                             <button type="button" style="margin-left: 20px;" onclick="deleteAdmin(${id})">삭제</button>
                           </div>`
-        $('#aadminn').append(temp_html)
-      }
-    }).fail(function (response) {
-      console.log(response);
-      if (response.statusText === "error") {
-        alert('root 관리자만 접근이 가능합니다.')
-        window.location.reload()
-      } if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-        alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-      } else {
-        alert('서버에 문제가 발생하였습니다.')
-      }
-    });
-  }
+                $('#aadminn').append(temp_html)
+            }
+        }).fail(function (response) {
+            console.log(response);
+            if (response.statusText === "error") {
+                alert('root 관리자만 접근이 가능합니다.')
+                window.location.reload()
+            }
+            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
+                alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
+            } else {
+                alert('서버에 문제가 발생하였습니다.')
+            }
+        });
+    }
 
-  function paddedFormat(num) {
-    return num < 10 ? "0" + num : num;
-  }
+    function paddedFormat(num) {
+        return num < 10 ? "0" + num : num;
+    }
 
-  function startCountDown(duration, element) {
+    function startCountDown(duration, element) {
 
-    let secondsRemaining = duration;
-    let min = 0;
-    let sec = 0;
+        let secondsRemaining = duration;
+        let min = 0;
+        let sec = 0;
 
-    let countInterval = setInterval(function () {
+        let countInterval = setInterval(function () {
 
-      min = parseInt(secondsRemaining / 60);
-      sec = parseInt(secondsRemaining % 60);
+            min = parseInt(secondsRemaining / 60);
+            sec = parseInt(secondsRemaining % 60);
 
-      element.textContent = `${paddedFormat(min)}:${paddedFormat(sec)}`;
+            element.textContent = `${paddedFormat(min)}:${paddedFormat(sec)}`;
 
-      secondsRemaining = secondsRemaining - 1;
+            secondsRemaining = secondsRemaining - 1;
 
-      if (secondsRemaining < 10) {
-        element.classList.add('count_red');
-      }
-      if (secondsRemaining < 0) {
-        clearInterval(countInterval);
+            if (secondsRemaining < 10) {
+                element.classList.add('count_red');
+            }
+            if (secondsRemaining < 0) {
+                clearInterval(countInterval);
 
-        alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-        location.href = './adminlogin.html';
-      };
+                alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
+                location.href = './adminlogin.html';
+            }
+            ;
 
-    }, 1000);
-  }
+        }, 1000);
+    }
 
-  function reissue() {
-    var settings = {
-      "url": "http://localhost:8080/admin/reissue",
-      "method": "POST",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken')
-      },
+    function reissue() {
+        var settings = {
+            "url": "http://localhost:8080/admin/reissue",
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken')
+            },
+        };
+
+        $.ajax(settings).done(function (response, status, xhr) {
+            console.log(response);
+            alert('재로그인 성공');
+            console.log(xhr.getResponseHeader('Authorization'));
+            localStorage.setItem('accessToken', xhr.getResponseHeader('Authorization'))
+            let time = new Date();
+            time.setMinutes(time.getMinutes() + 20);
+            localStorage.setItem('time', time)
+            window.location.reload();
+        }).fail(function (response) {
+            console.log(response.responseJSON);
+            alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
+            window.location.href = './adminlogin.html';
+        });
+
+    }
+
+    window.onload = function () {
+        let tokenTime = new Date(localStorage.getItem('time'))
+        let now = new Date();
+        let chae = new Date(tokenTime - now);
+        let time_minutes = chae.getMinutes(); // Value in minutes 발급시간하고 현재 차이 계산하고
+        let time_seconds = chae.getSeconds(); // Value in seconds
+
+        let duration = time_minutes * 60 + time_seconds;
+
+        element = document.querySelector('#count-down-timer');
+        element.textContent = `${paddedFormat(time_minutes)}:${paddedFormat(time_seconds)}`;
+
+        startCountDown(--duration, element);
     };
 
-    $.ajax(settings).done(function (response, status, xhr) {
-      console.log(response);
-      alert('재로그인 성공');
-      console.log(xhr.getResponseHeader('Authorization'));
-      localStorage.setItem('accessToken', xhr.getResponseHeader('Authorization'))
-      let time = new Date();
-      time.setMinutes(time.getMinutes() + 20);
-      localStorage.setItem('time', time)
-      window.location.reload();
-    }).fail(function (response) {
-      console.log(response.responseJSON);
-      alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-      window.location.href = './adminlogin.html';
-    });
+    function deleteRP(id) {
+        var settings = {
+            "url": "http://localhost:8080/admin/reports/" + id,
+            "method": "DELETE",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken')
+            },
+        };
 
-  }
+        $.ajax(settings).done(function (response) {
+            alert(response['message']);
+            getReport()
+        }).fail(function (response) {
+            console.log(response.responseJSON);
+            alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
+            window.location.href = './adminlogin.html';
+        });
+    }
 
-  window.onload = function () {
-    let tokenTime = new Date(localStorage.getItem('time'))
-    let now = new Date();
-    let chae = new Date(tokenTime - now);
-    let time_minutes = chae.getMinutes(); // Value in minutes 발급시간하고 현재 차이 계산하고
-    let time_seconds = chae.getSeconds(); // Value in seconds
+    function addBK(userId) {
+        var settings = {
+            "url": "http://localhost:8080/admin/blacklist/users/" + userId,
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken')
+            },
+        };
 
-    let duration = time_minutes * 60 + time_seconds;
+        $.ajax(settings).done(function (response) {
+            alert(response['message']);
+            getBlacklist()
+        }).fail(function (response) {
+            console.log(response.responseJSON);
+            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
+                alert(response.responseJSON['message'])
+            } else {
+                alert('서버에 문제가 발생하였습니다.')
+            }
+        });
 
-    element = document.querySelector('#count-down-timer');
-    element.textContent = `${paddedFormat(time_minutes)}:${paddedFormat(time_seconds)}`;
-
-    startCountDown(--duration, element);
-  };
-
-  function deleteRP(id) {
-    var settings = {
-      "url": "http://localhost:8080/admin/report/" + id,
-      "method": "DELETE",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken')
-      },
-    };
-
-    $.ajax(settings).done(function (response) {
-      alert(response['message']);
-      getReport()
-    }).fail(function (response) {
-      console.log(response.responseJSON);
-      alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-      window.location.href = './adminlogin.html';
-    });
-  }
-
-  function addBK(userId) {
-    var settings = {
-      "url": "http://localhost:8080/admin/blacklist/users/" + userId,
-      "method": "POST",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken')
-      },
-    };
-
-    $.ajax(settings).done(function (response) {
-      alert(response['message']);
-      getBlacklist()
-    }).fail(function (response) {
-      console.log(response.responseJSON);
-      if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-        alert(response.responseJSON['message'])
-      } else {
-        alert('서버에 문제가 발생하였습니다.')
-      }
-    });
-
-  }
+    }
 
 
-  function deleteBK(bkId) {
-    var settings = {
-      "url": "http://localhost:8080/admin/blacklist/" + bkId,
-      "method": "DELETE",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken')
-      },
-    };
+    function deleteBK(bkId) {
+        var settings = {
+            "url": "http://localhost:8080/admin/blacklists/" + bkId,
+            "method": "DELETE",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken')
+            },
+        };
 
-    $.ajax(settings).done(function (response) {
-      alert(response['message']);
-      getBlacklist()
-    }).fail(function (response) {
-      console.log(response.responseJSON);
-      if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-        alert(response.responseJSON['message'])
-      } else {
-        alert('서버에 문제가 발생하였습니다.')
-      }
-    });
-  }
+        $.ajax(settings).done(function (response) {
+            alert(response['message']);
+            getBlacklist()
+        }).fail(function (response) {
+            console.log(response.responseJSON);
+            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
+                alert(response.responseJSON['message'])
+            } else {
+                alert('서버에 문제가 발생하였습니다.')
+            }
+        });
+    }
 
-  function perman(blacklistId) {
-    var settings = {
-      "url": "http://localhost:8080/admin/blacklist/" + blacklistId,
-      "method": "PATCH",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken')
-      },
-    };
+    function perman(blacklistId) {
+        var settings = {
+            "url": "http://localhost:8080/admin/blacklists/" + blacklistId,
+            "method": "PATCH",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken')
+            },
+        };
 
-    $.ajax(settings).done(function (response) {
-      alert(response['message']);
-      getBlacklist()
-      getReport()
-    }).fail(function (response) {
-      console.log(response.responseJSON);
-      if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-        alert(response.responseJSON['message'])
-      } else {
-        alert('서버에 문제가 발생하였습니다.')
-      }
-    });
+        $.ajax(settings).done(function (response) {
+            alert(response['message']);
+            getBlacklist()
+            getReport()
+        }).fail(function (response) {
+            console.log(response.responseJSON);
+            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
+                alert(response.responseJSON['message'])
+            } else {
+                alert('서버에 문제가 발생하였습니다.')
+            }
+        });
 
-  }
+    }
 
-  function deleteCate(categoryId) {
-    var settings = {
-      "url": "http://localhost:8080/admin/categories/" + categoryId,
-      "method": "DELETE",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken')
-      },
-    };
+    function deleteCate(categoryId) {
+        var settings = {
+            "url": "http://localhost:8080/admin/categories/" + categoryId,
+            "method": "DELETE",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken')
+            },
+        };
 
-    $.ajax(settings).done(function (response) {
-      alert(response['message']);
-      getCate()
-    }).fail(function (response) {
-      console.log(response.responseJSON);
-      if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-        alert(response.responseJSON['message'])
-      } else {
-        alert('서버에 문제가 발생하였습니다.')
-      }
-    });
-  }
+        $.ajax(settings).done(function (response) {
+            alert(response['message']);
+            getCate()
+        }).fail(function (response) {
+            console.log(response.responseJSON);
+            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
+                alert(response.responseJSON['message'])
+            } else {
+                alert('서버에 문제가 발생하였습니다.')
+            }
+        });
+    }
 
-  function addChildCate(papaId, newName) {
-    var settings = {
-      "url": "http://localhost:8080/admin/categories/" + papaId,
-      "method": "POST",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken'),
-        "Content-Type": "application/json"
-      },
-      "data": JSON.stringify({
-        "name": newName
-      }),
-    };
+    function addChildCate(papaId, newName) {
+        var settings = {
+            "url": "http://localhost:8080/admin/categories/" + papaId,
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken'),
+                "Content-Type": "application/json"
+            },
+            "data": JSON.stringify({
+                "name": newName
+            }),
+        };
 
-    $.ajax(settings).done(function (response) {
-      alert(response['message']);
-      getCate()
-    }).fail(function (response) {
-      console.log(response.responseJSON);
-      if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-        alert(response.responseJSON['message'])
-      } else {
-        alert('서버에 문제가 발생하였습니다.')
-      }
-    });
-  }
+        $.ajax(settings).done(function (response) {
+            alert(response['message']);
+            getCate()
+        }).fail(function (response) {
+            console.log(response.responseJSON);
+            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
+                alert(response.responseJSON['message'])
+            } else {
+                alert('서버에 문제가 발생하였습니다.')
+            }
+        });
+    }
 
-  function addPapaCate(newPapa) {
-    var settings = {
-      "url": "http://localhost:8080/admin/category",
-      "method": "POST",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken'),
-        "Content-Type": "application/json"
-      },
-      "data": JSON.stringify({
-        "name": newPapa
-      }),
-    };
+    function addPapaCate(newPapa) {
+        var settings = {
+            "url": "http://localhost:8080/admin/category",
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken'),
+                "Content-Type": "application/json"
+            },
+            "data": JSON.stringify({
+                "name": newPapa
+            }),
+        };
 
-    $.ajax(settings).done(function (response) {
-      alert(response['message']);
-      getCate()
-    }).fail(function (response) {
-      console.log(response.responseJSON);
-      if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-        alert(response.responseJSON['message'])
-      } else {
-        alert('서버에 문제가 발생하였습니다.')
-      }
-    });
-  }
+        $.ajax(settings).done(function (response) {
+            alert(response['message']);
+            getCate()
+        }).fail(function (response) {
+            console.log(response.responseJSON);
+            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
+                alert(response.responseJSON['message'])
+            } else {
+                alert('서버에 문제가 발생하였습니다.')
+            }
+        });
+    }
 
-  function updateCate(id, name) {
-    var settings = {
-      "url": "http://localhost:8080/admin/categories/" + id,
-      "method": "PUT",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken'),
-        "Content-Type": "application/json"
-      },
-      "data": JSON.stringify({
-        "name": name
-      }),
-    };
+    function updateCate(id, name) {
+        var settings = {
+            "url": "http://localhost:8080/admin/categories/" + id,
+            "method": "PUT",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken'),
+                "Content-Type": "application/json"
+            },
+            "data": JSON.stringify({
+                "name": name
+            }),
+        };
 
-    $.ajax(settings).done(function (response) {
-      alert(response['message']);
-      getCate()
-    }).fail(function (response) {
-      console.log(response.responseJSON);
-      if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-        alert(response.responseJSON['message'])
-      } else {
-        alert('서버에 문제가 발생하였습니다.')
-      }
-    });
-  }
+        $.ajax(settings).done(function (response) {
+            alert(response['message']);
+            getCate()
+        }).fail(function (response) {
+            console.log(response.responseJSON);
+            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
+                alert(response.responseJSON['message'])
+            } else {
+                alert('서버에 문제가 발생하였습니다.')
+            }
+        });
+    }
 
-  function deleteAdmin(idd) {
-    var settings = {
-      "url": "http://localhost:8080/admins/" + idd,
-      "method": "DELETE",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken'),
-      },
-    };
+    function deleteAdmin(idd) {
+        var settings = {
+            "url": "http://localhost:8080/admins/" + idd,
+            "method": "DELETE",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken'),
+            },
+        };
 
-    $.ajax(settings).done(function (response) {
-      alert(response['message']);
-      getAdmin()
-    }).fail(function (response) {
-      console.log(response);
-      if (response.statusText === "error") {
-        alert('root 관리자만 접근이 가능합니다.')
-        window.location.reload()
-      } if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-        alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-      } else {
-        alert('서버에 문제가 발생하였습니다.')
-      }
-    });
+        $.ajax(settings).done(function (response) {
+            alert(response['message']);
+            getAdmin()
+        }).fail(function (response) {
+            console.log(response);
+            if (response.statusText === "error") {
+                alert('root 관리자만 접근이 가능합니다.')
+                window.location.reload()
+            }
+            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
+                alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
+            } else {
+                alert('서버에 문제가 발생하였습니다.')
+            }
+        });
 
-  }
+    }
 
-  function createAdmin(name, pass) {
-    var settings = {
-      "url": "http://localhost:8080/admin",
-      "method": "POST",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken'),
-        "Content-Type": "application/json"
-      },
-      "data": JSON.stringify({
-        "username": name,
-        "password": pass
-      }),
-    };
+    function createAdmin(name, pass) {
+        var settings = {
+            "url": "http://localhost:8080/admin",
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken'),
+                "Content-Type": "application/json"
+            },
+            "data": JSON.stringify({
+                "username": name,
+                "password": pass
+            }),
+        };
 
-    $.ajax(settings).done(function (response) {
-      alert(response['message']);
-      close()
-      getAdmin()
-    }).fail(function (response) {
-      console.log(response);
-      if (response.statusText === "error") {
-        alert('root 관리자만 접근이 가능합니다.')
-        window.location.reload()
-      } if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-        alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-      } else {
-        alert('서버에 문제가 발생하였습니다.')
-      }
-    });
-  }
+        $.ajax(settings).done(function (response) {
+            alert(response['message']);
+            close()
+            getAdmin()
+        }).fail(function (response) {
+            console.log(response);
+            if (response.statusText === "error") {
+                alert('root 관리자만 접근이 가능합니다.')
+                window.location.reload()
+            }
+            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
+                alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
+            } else {
+                alert('서버에 문제가 발생하였습니다.')
+            }
+        });
+    }
 
-  function logout() {
-    var settings = {
-      "url": "http://localhost:8080/log-out",
-      "method": "POST",
-      "timeout": 0,
-      "headers": {
-        "Authorization": localStorage.getItem('accessToken'),
-      },
-    };
+    function logout() {
+        var settings = {
+            "url": "http://localhost:8080/log-out",
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('accessToken'),
+            },
+        };
 
-    $.ajax(settings).done(function (response) {
-      alert(response['message']);
-      window.location.href = './adminlogin.html'
-    }).fail(function (response) {
-      if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-        alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-      } else {
-        alert('서버에 문제가 발생하였습니다.')
-      }
-    });
-  }
+        $.ajax(settings).done(function (response) {
+            alert(response['message']);
+            window.location.href = './adminlogin.html'
+        }).fail(function (response) {
+            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
+                alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
+            } else {
+                alert('서버에 문제가 발생하였습니다.')
+            }
+        });
+    }
 
-  function show() {
-    document.querySelector(".background").className = "background show";
-  }
+    function show() {
+        document.querySelector(".background").className = "background show";
+    }
 
-  function close() {
-    document.querySelector(".background").className = "background";
-  }
+    function close() {
+        document.querySelector(".background").className = "background";
+    }
 
-  document.querySelector("#show").addEventListener("click", show);
-  document.querySelector("#close").addEventListener("click", close);
+    document.querySelector("#show").addEventListener("click", show);
+    document.querySelector("#close").addEventListener("click", close);
 </script>
 
 </html>

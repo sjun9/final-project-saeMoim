@@ -27,7 +27,7 @@ import com.google.gson.Gson;
 import com.saemoim.domain.Category;
 import com.saemoim.dto.request.CategoryRequestDto;
 import com.saemoim.dto.response.CategoryResponseDto;
-import com.saemoim.dto.response.MessageResponseDto;
+import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.service.CategoryServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,7 +70,7 @@ class CategoryControllerTest {
 
 		//then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("$[0]['name']", responseDto.getName()).exists());
+			.andExpect(jsonPath("$['data'][0]['name']", responseDto.getName()).exists());
 	}
 
 	@Test
@@ -80,8 +80,8 @@ class CategoryControllerTest {
 		CategoryRequestDto requestDto = CategoryRequestDto.builder()
 			.name("여행")
 			.build();
-		MessageResponseDto responseDto = new MessageResponseDto(requestDto.getName() + " 카테고리 생성 완료");
-		doNothing().when(categoryService).createCategory(any(CategoryRequestDto.class));
+		GenericsResponseDto responseDto = new GenericsResponseDto(requestDto.getName() + " 카테고리 생성 완료");
+		doNothing().when(categoryService).createParentCategory(any(CategoryRequestDto.class));
 
 		//when
 		ResultActions resultActions = mockMvc.perform(
@@ -91,8 +91,8 @@ class CategoryControllerTest {
 
 		//then
 
-		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+		resultActions.andExpect(status().isCreated())
+			.andExpect(jsonPath("data", responseDto.getData()).exists());
 	}
 
 	@Test
@@ -104,7 +104,7 @@ class CategoryControllerTest {
 		CategoryRequestDto requestDto = CategoryRequestDto.builder()
 			.name("여행")
 			.build();
-		MessageResponseDto responseDto = new MessageResponseDto(requestDto.getName() + " 카테고리 생성 완료");
+		GenericsResponseDto responseDto = new GenericsResponseDto(requestDto.getName() + " 카테고리 생성 완료");
 		doNothing().when(categoryService).createChildCategory(anyLong(), any(CategoryRequestDto.class));
 
 		//when
@@ -115,8 +115,8 @@ class CategoryControllerTest {
 
 		//then
 
-		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+		resultActions.andExpect(status().isCreated())
+			.andExpect(jsonPath("data", responseDto.getData()).exists());
 	}
 
 	@Test
@@ -128,7 +128,7 @@ class CategoryControllerTest {
 		CategoryRequestDto requestDto = CategoryRequestDto.builder()
 			.name("여행")
 			.build();
-		MessageResponseDto responseDto = new MessageResponseDto(requestDto.getName() + " 카테고리 수정 완료");
+		GenericsResponseDto responseDto = new GenericsResponseDto(requestDto.getName() + " 카테고리 수정 완료");
 		doNothing().when(categoryService).updateCategory(anyLong(), any(CategoryRequestDto.class));
 
 		//when
@@ -140,7 +140,7 @@ class CategoryControllerTest {
 		//then
 
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+			.andExpect(jsonPath("data", responseDto.getData()).exists());
 	}
 
 	@Test
@@ -149,7 +149,7 @@ class CategoryControllerTest {
 		//given
 		Long parentId = 1L;
 
-		MessageResponseDto responseDto = new MessageResponseDto("카테고리 삭제 완료");
+		GenericsResponseDto responseDto = new GenericsResponseDto("카테고리 삭제 완료");
 		doNothing().when(categoryService).deleteCategory(anyLong());
 		//when
 		ResultActions resultActions = mockMvc.perform(
@@ -157,6 +157,6 @@ class CategoryControllerTest {
 
 		//then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("message", responseDto.getMessage()).exists());
+			.andExpect(jsonPath("data", responseDto.getData()).exists());
 	}
 }

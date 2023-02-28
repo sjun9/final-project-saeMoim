@@ -1,13 +1,14 @@
 package com.saemoim.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.saemoim.dto.request.PostRequestDto;
-import com.saemoim.dto.response.PostListResponseDto;
 import com.saemoim.dto.response.PostResponseDto;
 
 public interface PostService {
-	List<PostListResponseDto> getAllPosts();
+
+	Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable);
 
 	PostResponseDto getPost(Long postId, Long userId);
 

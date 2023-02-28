@@ -44,14 +44,21 @@ public class BlackListServiceImpl implements BlackListService {
 		}
 
 		user.plusBanCount();
-		BlacklistStatusEnum status =
-			user.getBanCount() > 2 ? BlacklistStatusEnum.PERMANENT_BAN : BlacklistStatusEnum.BAN;
+		BlacklistStatusEnum status;
+		if (user.getBanCount() > 2) {
+			status = BlacklistStatusEnum.PERMANENT_BAN;
+			reportRepository.deleteAllBySubject_Id(userId);
+		} else {
+			status = BlacklistStatusEnum.BAN;
+		}
+
 		user.updateStatus(UserRoleEnum.REPORT);
 		BlackList blackList = new BlackList(user, status);
 		blackListRepository.save(blackList);
 	}
 
 	@Transactional
+	@Override
 	public void imposePermanentBan(Long blacklistId) {
 		BlackList find = blackListRepository.findById(blacklistId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.DUPLICATED_BLACKLIST.getMessage())
@@ -67,18 +74,26 @@ public class BlackListServiceImpl implements BlackListService {
 	@Override
 	public void deleteBlacklist(Long blacklistId) {
 		BlackList blackList = blackListRepository.findById(blacklistId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_BLACKLIST.getMessage())
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_BLACKLIST.getMessage())
 		);
-
+		User user = userRepository.findById(blackList.getUserId()).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
+		user.updateStatus(UserRoleEnum.USER);
 		blackListRepository.delete(blackList);
 	}
 
+	@Transactional
 	@Scheduled(cron = "${schedules.cron.reward.publish}")
 	public void scheduledBlacklist() {
-		blackListRepository.findAll()
+		List<BlackList> blackLists = blackListRepository.findAll()
 			.stream()
 			.filter(b -> b.getStatus().equals(BlacklistStatusEnum.BAN))
 			.filter(b -> LocalDateTime.now().isAfter(b.getCreatedAt().plusDays(7)))
-			.forEach(blackListRepository::delete);
+			.toList();
+
+		if (blackLists.size() > 0) {
+			blackListRepository.deleteBlackLists(blackLists);
+		}
 	}
 }

@@ -1,7 +1,5 @@
 package com.saemoim.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -13,10 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saemoim.domain.enums.UserRoleEnum;
-import com.saemoim.dto.response.MessageResponseDto;
-import com.saemoim.dto.response.MyGroupResponseDto;
+import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.security.UserDetailsImpl;
-import com.saemoim.service.WishServiceImpl;
+import com.saemoim.service.WishService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,28 +21,28 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WishController {
 
-	private final WishServiceImpl wishService;
+	private final WishService wishService;
 
 	// 모임 즐겨찾기 조회
 	@Secured(UserRoleEnum.Authority.USER)
 	@GetMapping("/group/wish")
-	public List<MyGroupResponseDto> getWishGroups(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return wishService.getWishGroups(userDetails.getId());
+	public ResponseEntity<GenericsResponseDto> getWishGroups(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ResponseEntity.ok().body(new GenericsResponseDto(wishService.getWishGroups(userDetails.getId())));
 	}
 
 	// 모임 즐겨찾기 추가
 	@PostMapping("/groups/{groupId}/wish")
-	public ResponseEntity<MessageResponseDto> wishGroup(@PathVariable Long groupId,
+	public ResponseEntity<GenericsResponseDto> wishGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		wishService.wishGroup(groupId, userDetails.getId());
-		return new ResponseEntity<>(new MessageResponseDto("모임 찜하기 완료"), HttpStatus.OK);
+		wishService.addWishGroup(groupId, userDetails.getId());
+		return ResponseEntity.status(HttpStatus.CREATED).body(new GenericsResponseDto("모임 찜하기 완료"));
 	}
 
 	// 모임 즐겨찾기 해제
 	@DeleteMapping("/groups/{groupId}/wish")
-	public ResponseEntity<MessageResponseDto> deleteWishGroup(@PathVariable Long groupId,
+	public ResponseEntity<GenericsResponseDto> deleteWishGroup(@PathVariable Long groupId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		wishService.deleteWishGroup(groupId, userDetails.getId());
-		return new ResponseEntity<>(new MessageResponseDto("모임 찜하기 취소 완료"), HttpStatus.OK);
+		return ResponseEntity.ok().body(new GenericsResponseDto("모임 찜하기 취소 완료"));
 	}
 }

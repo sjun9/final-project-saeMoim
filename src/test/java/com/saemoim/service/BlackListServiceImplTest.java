@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +24,7 @@ import com.saemoim.domain.User;
 import com.saemoim.domain.enums.BlacklistStatusEnum;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.repository.BlackListRepository;
+import com.saemoim.repository.ReportRepository;
 import com.saemoim.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +38,9 @@ class BlackListServiceImplTest {
 
 	@InjectMocks
 	private BlackListServiceImpl blackListService;
+
+	@Mock
+	private ReportRepository reportRepository;
 
 	@Test
 	@DisplayName("블랙리스트 조회")
@@ -56,13 +61,12 @@ class BlackListServiceImplTest {
 		Long userId = 1L;
 		User user = new User("seongjuni1@naver.com", "1234", "jun", UserRoleEnum.USER);
 
-		User mockUser = mock(User.class);
-
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 		when(blackListRepository.existsByUser(any(User.class))).thenReturn(false);
 		//when
 		blackListService.addBlacklist(userId);
 		//then
+		Assertions.assertThat(user.getRole()).isEqualTo(UserRoleEnum.REPORT);
 		verify(blackListRepository).save(any(BlackList.class));
 	}
 
@@ -71,14 +75,17 @@ class BlackListServiceImplTest {
 	void imposePermanentBan() {
 		//given
 		Long blacklistId = 1L;
-		User user = new User("seongjuni1@naver.com", "1234", "jun", UserRoleEnum.USER);
+		User user = mock(User.class);
 
 		BlackList blackList = new BlackList(user, BlacklistStatusEnum.BAN);
 
+		when(user.getId()).thenReturn(1L);
 		when(blackListRepository.findById(anyLong())).thenReturn(Optional.of(blackList));
+		doNothing().when(reportRepository).deleteAllBySubject_Id(anyLong());
 		//when
 		blackListService.imposePermanentBan(blacklistId);
 		//then
+		Assertions.assertThat(blackList.getStatus()).isEqualTo(BlacklistStatusEnum.PERMANENT_BAN);
 		verify(blackListRepository).save(blackList);
 	}
 
@@ -87,11 +94,12 @@ class BlackListServiceImplTest {
 	void deleteBlacklist() {
 		//given
 		Long blacklistId = 1L;
-		String name = "jun";
-		User user = new User("seongjuni1@naver.com", "1234", "jun", UserRoleEnum.USER);
+		User user = mock(User.class);
 		BlackList blacklist = new BlackList(user, BlacklistStatusEnum.BAN);
 
+		when(user.getId()).thenReturn(1L);
 		when(blackListRepository.findById(anyLong())).thenReturn(Optional.of(blacklist));
+		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 		doNothing().when(blackListRepository).delete(any(BlackList.class));
 		//when
 		blackListService.deleteBlacklist(blacklistId);

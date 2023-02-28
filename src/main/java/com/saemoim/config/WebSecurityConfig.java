@@ -31,7 +31,6 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class WebSecurityConfig implements WebMvcConfigurer {
-
 	private final JwtUtil jwtUtil;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	private final CustomAccessDeniedHandler customAccessDeniedHandler;
@@ -89,6 +88,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		registry.addMapping("/**")
 			.allowedMethods("GET", "POST", "DELETE", "PUT", "OPTIONS", "PATCH")
 			.exposedHeaders("Authorization", "Refresh_Token");
-		// .allowedOrigins("*");
+		//.allowedOrigins("*");
 	}
 }

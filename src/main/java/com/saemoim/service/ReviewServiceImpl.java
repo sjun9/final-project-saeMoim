@@ -1,7 +1,7 @@
 package com.saemoim.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,17 +18,14 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
-
 	private final ReviewRepository reviewRepository;
 	private final ParticipantRepository participantRepository;
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ReviewResponseDto> getReviews(Long groupId) {
-		return reviewRepository.findAllByGroup_IdOrderByCreatedAtDesc(groupId)
-			.stream()
-			.map(ReviewResponseDto::new)
-			.toList();
+	public Page<ReviewResponseDto> getReviews(Long groupId, Pageable pageable) {
+		return reviewRepository.findAllByGroup_IdOrderByCreatedAtDesc(groupId, pageable)
+			.map(ReviewResponseDto::new);
 	}
 
 	@Transactional
@@ -37,7 +34,7 @@ public class ReviewServiceImpl implements ReviewService {
 		Participant participant = participantRepository.findByGroup_IdAndUser_Id(groupId, userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage())
 		);
-		Review review = new Review(requestDto, participant);
+		Review review = new Review(participant, requestDto.getContent());
 		reviewRepository.save(review);
 		return new ReviewResponseDto(review);
 	}
@@ -45,38 +42,36 @@ public class ReviewServiceImpl implements ReviewService {
 	@Transactional
 	@Override
 	public ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto requestDto, String username) {
-		Review review = reviewRepository.findById(reviewId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_REVIEW.getMessage())
-		);
-		if (review.isReviewWriter(username)) {
-			review.update(requestDto);
-			reviewRepository.save(review);
-			return new ReviewResponseDto(review);
-		} else {
+		Review review = _getReviewById(reviewId);
+		if (!review.isReviewWriter(username)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
+		review.update(requestDto.getContent());
+		reviewRepository.save(review);
+		return new ReviewResponseDto(review);
 	}
 
 	@Transactional
 	@Override
 	public void deleteReview(Long reviewId, String username) {
-		Review review = reviewRepository.findById(reviewId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_REVIEW.getMessage())
-		);
-		if (review.isReviewWriter(username)) {
-			reviewRepository.delete(review);
-		} else {
+		Review review = _getReviewById(reviewId);
+		if (!review.isReviewWriter(username)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
+		reviewRepository.delete(review);
 	}
 
 	@Transactional
 	@Override
 	public void deleteReviewByAdmin(Long reviewId) {
-		Review review = reviewRepository.findById(reviewId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_REVIEW.getMessage())
-		);
+		Review review = _getReviewById(reviewId);
 
 		reviewRepository.delete(review);
+	}
+
+	private Review _getReviewById(Long reviewId) {
+		return reviewRepository.findById(reviewId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_REVIEW.getMessage())
+		);
 	}
 }

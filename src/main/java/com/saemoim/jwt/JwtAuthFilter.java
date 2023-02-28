@@ -1,19 +1,17 @@
 package com.saemoim.jwt;
 
-import static com.saemoim.jwt.JwtUtil.*;
+import static com.saemoim.jwt.JwtUtil.AUTHORIZATION_KEY;
+import static com.saemoim.jwt.JwtUtil.AUTHORIZATION_NAME;
 
 import java.io.IOException;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saemoim.domain.enums.UserRoleEnum;
-import com.saemoim.exception.ExceptionResponseDto;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -53,17 +51,4 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 		SecurityContextHolder.setContext(context);
 	}
-
-	public void jwtExceptionHandler(HttpServletResponse response, String msg, HttpStatus statusCode) {
-		response.setStatus(statusCode.value());
-		response.setContentType("application/json");
-		try {
-			String json = new ObjectMapper().writeValueAsString(new ExceptionResponseDto(statusCode, msg));
-			log.error(json);
-			response.getWriter().write(json);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
-	}
-
 }

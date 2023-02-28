@@ -70,8 +70,8 @@ public class Application extends TimeStamped {
 		return this.user.getUsername();
 	}
 
-	public boolean isRightUserWhoApllied(String username) {
-		return this.getUsername().equals(username);
+	public boolean isRightUserWhoApplied(Long userId) {
+		return this.getUserId().equals(userId);
 	}
 
 	public void permit() {

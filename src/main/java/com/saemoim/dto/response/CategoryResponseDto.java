@@ -1,6 +1,5 @@
 package com.saemoim.dto.response;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.saemoim.domain.Category;
@@ -13,15 +12,12 @@ import lombok.NoArgsConstructor;
 public class CategoryResponseDto {
 	private Long id;
 	private String name;
-	private final List<CategoryResponseDto> categories = new ArrayList<>();
+	private List<CategoryResponseDto> categories;
 
 	public CategoryResponseDto(Category category, List<Category> childCategories) {
 		this.id = category.getId();
 		this.name = category.getName();
-		for (Category childCategory : childCategories) {
-			if (childCategory.getParentId().equals(category.getId())) {
-				categories.add(new CategoryResponseDto(childCategory, childCategories));
-			}
-		}
+		categories = childCategories.stream().filter(c -> c.getParentId().equals(category.getId())).map(c ->
+			c.toCategoryResponseDto(childCategories)).toList();
 	}
 }

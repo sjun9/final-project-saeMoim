@@ -8,7 +8,6 @@ import java.util.PriorityQueue;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,31 +34,25 @@ public class GroupServiceImpl implements GroupService {
 
 	private final GroupRepository groupRepository;
 	private final CategoryRepository categoryRepository;
-	private final ParticipantRepository participantRepository; // 원투매니
+	private final ParticipantRepository participantRepository;
 	private final UserRepository userRepository;
 	private final TagRepository tagRepository;
 
 	@Override
 	@Transactional(readOnly = true)
 	public Slice<GroupResponseDto> getAllGroups(Pageable pageable) {
-		List<Group> groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
-		boolean hasNext = false;
-		if (groups.size() > pageable.getPageSize()) {
-			groups.remove(pageable.getPageSize());
-			hasNext = true;
-		}
-		return new SliceImpl<>(groups.stream().map(GroupResponseDto::new).toList(), pageable, hasNext);
+		Slice<Group> groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
+		return groups.map(GroupResponseDto::new);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public GroupResponseDto getGroup(Long groupId) {
-		Group group = groupRepository.findById(groupId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
-		);
+		Group group = _getGroupById(groupId);
 		return new GroupResponseDto(group);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	@Cacheable(value = "popularGroup")
 	public List<GroupResponseDto> getGroupByPopularity() {
@@ -80,79 +73,61 @@ public class GroupServiceImpl implements GroupService {
 		return list;
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public Slice<GroupResponseDto> getGroupsByCategoryAndStatus(Long categoryId, String status,
 		Pageable pageable) {
-		List<Group> groups;
-		if (categoryId.equals(0L)) {
+		Slice<Group> groups;
+		if (categoryId == 0L) {
 			groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
 		} else {
 			Category category = categoryRepository.findById(categoryId).orElseThrow(
-				() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
+				() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_CATEGORY.getMessage())
 			);
 			if (category.getParentId() == null) {
-				throw new IllegalArgumentException(ErrorCode.NOT_CHILD_CATEGORY.getMessage()); // 에러메세지 다른걸로
+				throw new IllegalArgumentException(ErrorCode.NOT_CHILD_CATEGORY.getMessage());
 			}
-			groups = groupRepository.findAllByCategoryOrderByCreatedAtDesc(category);
+			if (status.equals(GroupStatusEnum.OPEN.toString())) {
+				groups = groupRepository.findByCategoryAndStatusIsOpen(category, pageable);
+			} else if (status.equals(GroupStatusEnum.CLOSE.toString())) {
+				groups = groupRepository.findByCategoryAndStatusIsClose(category, pageable);
+			} else {
+				groups = groupRepository.findByCategory(category, pageable);
+			}
 		}
 
-		if (status.equals(GroupStatusEnum.OPEN.toString())) {
-			groups = groups.stream()
-				.filter(g -> g.getStatus().equals(GroupStatusEnum.OPEN))
-				.toList();
-		} else if (status.equals(GroupStatusEnum.CLOSE.toString())) {
-			groups = groups.stream()
-				.filter(g -> g.getStatus().equals(GroupStatusEnum.CLOSE))
-				.toList();
-		}
-
-		boolean hasNext = false;
-		if (groups.size() > pageable.getPageSize()) {
-			groups.remove(pageable.getPageSize());
-			hasNext = true;
-		}
-		return new SliceImpl<>(groups.stream().map(GroupResponseDto::new).toList(), pageable, hasNext);
+		return groups.map(GroupResponseDto::new);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
-	public Slice<GroupResponseDto> getGroupsByTag(String tagName, Pageable pageable) {
-		List<Tag> tags = tagRepository.findAllByName(tagName);
-		List<Group> groups = new ArrayList<>(tags.stream().map(Tag::getGroup).toList());
-		boolean hasNext = false;
-		if (groups.size() > pageable.getPageSize()) {
-			groups.remove(pageable.getPageSize());
-			hasNext = true;
-		}
-		return new SliceImpl<>(groups.stream().map(GroupResponseDto::new).toList(), pageable, hasNext);
+	public Slice<GroupResponseDto> searchGroupsByTag(String tagName, Pageable pageable) {
+		Slice<Group> groups = tagRepository.findAllByNameContaining(tagName, pageable).map(Tag::getGroup);
 
+		return groups.map(GroupResponseDto::new);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public Slice<GroupResponseDto> searchGroups(String groupName, Pageable pageable) {
-		List<Group> groups = groupRepository.findAllByNameContainingOrderByCreatedAtDesc(groupName);
-		boolean hasNext = false;
-		if (groups.size() > pageable.getPageSize()) {
-			groups.remove(pageable.getPageSize());
-			hasNext = true;
-		}
-		return new SliceImpl<>(groups.stream().map(GroupResponseDto::new).toList(), pageable, hasNext);
+		Slice<Group> groups = groupRepository.findAllByNameContainingOrderByCreatedAtDesc(groupName, pageable);
+		return groups.map(GroupResponseDto::new);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<GroupResponseDto> getMyGroupsByLeader(Long userId) {
-		List<Group> groups = groupRepository.findAllByUser_IdOrderByCreatedAtDesc(userId);
-
-		return groups.stream().map(GroupResponseDto::new).toList();
+		return groupRepository.findAllByUser_IdOrderByCreatedAtDesc(userId)
+			.stream().map(GroupResponseDto::new).toList();
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<GroupResponseDto> getMyGroupsByParticipant(Long userId) {
-		List<Group> groups = participantRepository.findAllByUser_IdOrderByCreatedAtDesc(userId)
+		return participantRepository.findAllByUser_IdOrderByCreatedAtDesc(userId)
 			.stream()
 			.map(Participant::getGroup)
-			.toList();
-
-		return groups.stream().map(GroupResponseDto::new).toList();
+			.map(GroupResponseDto::new).toList();
 	}
 
 	@Override
@@ -164,9 +139,9 @@ public class GroupServiceImpl implements GroupService {
 		if (groupRepository.existsByName(requestDto.getName())) {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_GROUP_NAME.getMessage());
 		}
-		// 카테고리 존재 확인
+
 		Category category = categoryRepository.findByName(requestDto.getCategoryName()).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_CATEGORY.getMessage())
 		);
 		if (category.getParentId() == null) {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
@@ -179,69 +154,62 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional
-	public GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, String username) {
-		// 카테고리 존재 확인
+	public GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, Long userId) {
 		Category category = categoryRepository.findByName(requestDto.getCategoryName()).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_CATEGORY.getMessage())
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_CATEGORY.getMessage())
 		);
 		if (category.getParentId() == null) {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
-		Group group = groupRepository.findById(groupId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
-		);
-		if (group.isLeader(username)) {
-			group.update(requestDto, category, group.getUser());
-			groupRepository.save(group);
-		} else
+		Group group = _getGroupById(groupId);
+		if (!group.isLeader(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+		}
 
+		group.update(requestDto, category, group.getUser());
+		groupRepository.save(group);
 		return new GroupResponseDto(group);
 	}
 
 	@Override
 	@Transactional
-	public void deleteGroup(Long groupId, String username) {
-		Group group = groupRepository.findById(groupId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
-		);
-		if (group.isLeader(username)) {
-			groupRepository.delete(group);
-		} else {
+	public void deleteGroup(Long groupId, Long userId) {
+		Group group = _getGroupById(groupId);
+		if (!group.isLeader(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
+		groupRepository.delete(group);
 	}
 
 	@Override
 	@Transactional
-	public void openGroup(Long groupId, String username) {
-		Group group = groupRepository.findById(groupId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
-		);
-		if (group.getStatus().equals(GroupStatusEnum.OPEN)) {
+	public void openGroup(Long groupId, Long userId) {
+		Group group = _getGroupById(groupId);
+		if (group.isOpen()) {
 			throw new IllegalArgumentException(ErrorCode.ALREADY_OPEN.getMessage());
 		}
-		if (group.isLeader(username))
-			group.updateStatusToOpen();
-
-		else {
+		if (!group.isLeader(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
+		group.updateStatusToOpen();
 	}
 
 	@Transactional
 	@Override
-	public void closeGroup(Long groupId, String username) {
-		Group group = groupRepository.findById(groupId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
-		);
-		if (group.getStatus().equals(GroupStatusEnum.CLOSE)) {
+	public void closeGroup(Long groupId, Long userId) {
+		Group group = _getGroupById(groupId);
+		if (group.isClose()) {
 			throw new IllegalArgumentException(ErrorCode.ALREADY_CLOSE.getMessage());
 		}
-		if (group.isLeader(username))
-			group.updateStatusToClose();
-		else {
+		if (!group.isLeader(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
+		group.updateStatusToClose();
+	}
+
+	private Group _getGroupById(Long groupId) {
+		return groupRepository.findById(groupId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
+		);
 	}
 }

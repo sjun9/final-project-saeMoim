@@ -1,5 +1,6 @@
 package com.saemoim.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -17,6 +18,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -31,6 +36,9 @@ import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.ReportRequestDto;
 import com.saemoim.dto.response.ReportResponseDto;
+import com.saemoim.jwt.JwtUtil;
+import com.saemoim.security.CustomAccessDeniedHandler;
+import com.saemoim.security.CustomAuthenticationEntryPoint;
 import com.saemoim.service.ReportServiceImpl;
 
 @ExtendWith(SpringExtension.class)
@@ -41,21 +49,30 @@ class ReportControllerTest {
 	MockMvc mockMvc;
 	@MockBean
 	ReportServiceImpl reportService;
+	@MockBean
+	private JwtUtil jwtUtil;
+	@MockBean
+	private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	@MockBean
+	private CustomAccessDeniedHandler customAccessDeniedHandler;
 
 	@Test
 	@DisplayName("신고된 사용자 조회")
 	@WithCustomMockUser(role = UserRoleEnum.ADMIN)
 	void getReportedUsers() throws Exception {
 		//given
-		User user = User.builder().username("jun").content("aaaaa").build();
+		Pageable pageable = PageRequest.of(0, 10);
+		User user = User.builder().id(1L).email("aaaaa@aaa.com").role(UserRoleEnum.USER)
+			.username("jun").password("afsdafsadfs").content("aaaaa").build();
 		Report report = new Report(user, "ssss", "ggggg");
 		List<ReportResponseDto> list = new ArrayList<>();
 		list.add(new ReportResponseDto(report));
-		when(reportService.getReportedUsers()).thenReturn(list);
+		Page<ReportResponseDto> page = new PageImpl<>(list, pageable, list.size());
+		when(reportService.getReportedUsers(any(Pageable.class))).thenReturn(page);
 		//when
 		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/admin/report"));
 		//then
-		resultActions.andExpect(jsonPath("$[0]['reporterName']").value("ssss"));
+		resultActions.andExpect(jsonPath("$['data']['content'][0]['reporterName']").value("ssss"));
 		resultActions.andExpect(status().isOk());
 	}
 
@@ -72,7 +89,7 @@ class ReportControllerTest {
 			.content(new Gson().toJson(requestDto))
 			.with(csrf()));
 		//then
-		resultActions.andExpect(status().isOk());
+		resultActions.andExpect(status().isCreated()).andExpect(jsonPath("data").value("사용자 신고가 완료 되었습니다."));
 	}
 
 	@Test
@@ -83,8 +100,8 @@ class ReportControllerTest {
 		doNothing().when(reportService).deleteReport(anyLong());
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			MockMvcRequestBuilders.delete("/admin/report/{reportId}", 1L).with(csrf()));
+			MockMvcRequestBuilders.delete("/admin/reports/{reportId}", 1L).with(csrf()));
 		//then
-		resultActions.andExpect(status().isOk()).andExpect(jsonPath("message").value("신고 삭제 완료"));
+		resultActions.andExpect(status().isOk()).andExpect(jsonPath("data").value("신고 삭제가 완료 되었습니다."));
 	}
 }

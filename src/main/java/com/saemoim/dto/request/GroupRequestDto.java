@@ -35,6 +35,7 @@ public class GroupRequestDto {
 
 	@NotBlank
 	private String firstRegion;
+
 	@NotBlank
 	private String secondRegion;
 

@@ -3,8 +3,6 @@ package com.saemoim.domain;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import com.saemoim.dto.request.ReviewRequestDto;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,10 +39,10 @@ public class Review extends TimeStamped {
 	@Column(nullable = false)
 	private String content;
 
-	public Review(ReviewRequestDto requestDto, Participant participant) {
+	public Review(Participant participant, String content) {
 		this.user = participant.getUser();
 		this.group = participant.getGroup();
-		this.content = requestDto.getContent();
+		this.content = content;
 	}
 
 	public Long getGroupId() {
@@ -59,8 +57,8 @@ public class Review extends TimeStamped {
 		return this.user.getUsername();
 	}
 
-	public void update(ReviewRequestDto requestDto) {
-		this.content = requestDto.getContent();
+	public void update(String content) {
+		this.content = content;
 	}
 
 	public boolean isReviewWriter(String username) {

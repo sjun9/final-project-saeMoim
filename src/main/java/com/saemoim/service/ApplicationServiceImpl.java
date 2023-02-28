@@ -30,9 +30,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<ApplicationResponseDto> getMyApplications(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
+		User user = _getUserById(userId);
 		List<Application> applications = applicationRepository.findAllByUserOrderByCreatedAtDesc(user);
 		return applications.stream().map(ApplicationResponseDto::new).toList();
 	}
@@ -43,22 +41,21 @@ public class ApplicationServiceImpl implements ApplicationService {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		User user = userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
+		User user = _getUserById(userId);
 		if (applicationRepository.existsByUserAndGroup(user, group)) {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_APPLICATION.getMessage());
+		}
+		if (group.isLeader(user.getId())) {
+			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
 		applicationRepository.save(new Application(user, group));
 	}
 
 	@Transactional
 	@Override
-	public void cancelApplication(Long applicationId, String username) {
-		Application application = applicationRepository.findById(applicationId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_APPLICATION.getMessage())
-		);
-		if (!application.isRightUserWhoApllied(username)) {
+	public void deleteApplication(Long applicationId, Long userId) {
+		Application application = _getApplicationById(applicationId);
+		if (!application.isRightUserWhoApplied(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
 		applicationRepository.delete(application);
@@ -66,8 +63,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ApplicationResponseDto> getApplications(String username) {
-		List<Group> groups = groupRepository.findByUser_username(username);
+	public List<ApplicationResponseDto> getApplications(Long userId) {
+		List<Group> groups = groupRepository.findByUser_userId(userId);
 		List<Application> applications = applicationRepository.findAllByGroups(groups);
 
 		return applications.stream().map(ApplicationResponseDto::new).toList();
@@ -75,40 +72,46 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Transactional
 	@Override
-	public void permitApplication(Long applicationId, String username) {
-		Application application = applicationRepository.findById(applicationId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_APPLICATION.getMessage())
-		);
+	public void permitApplication(Long applicationId, Long userId) {
+		Application application = _getApplicationById(applicationId);
 		Group group = groupRepository.findById(application.getGroupId()).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		if (!group.isLeader(username)) {
+		if (!group.isLeader(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
 		application.permit();
 		applicationRepository.save(application);
 
 		// 모임 참여자 추가
-		User user = userRepository.findById(application.getUserId()).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
+		User user = _getUserById(application.getUserId());
 		Participant participant = new Participant(user, group);
 		participantRepository.save(participant);
 	}
 
 	@Transactional
 	@Override
-	public void rejectApplication(Long applicationId, String username) {
-		Application application = applicationRepository.findById(applicationId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_APPLICATION.getMessage())
-		);
+	public void rejectApplication(Long applicationId, Long userId) {
+		Application application = _getApplicationById(applicationId);
 		Group group = groupRepository.findById(application.getGroupId()).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		if (!group.isLeader(username)) {
+		if (!group.isLeader(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
 		application.reject();
 		applicationRepository.save(application);
+	}
+
+	private User _getUserById(Long userId) {
+		return userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
+	}
+
+	private Application _getApplicationById(Long applicationId) {
+		return applicationRepository.findById(applicationId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_APPLICATION.getMessage())
+		);
 	}
 }

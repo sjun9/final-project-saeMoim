@@ -1,7 +1,5 @@
 package com.saemoim.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,45 +14,43 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.saemoim.dto.request.CommentRequestDto;
 import com.saemoim.dto.response.CommentResponseDto;
-import com.saemoim.dto.response.MessageResponseDto;
+import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.security.UserDetailsImpl;
-import com.saemoim.service.CommentServiceImpl;
+import com.saemoim.service.CommentService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 public class CommentController {
+	private final CommentService commentService;
 
-	private final CommentServiceImpl commentService;
+	// 댓글 조회
+	@GetMapping("/posts/{postId}/comment")
+	public ResponseEntity<GenericsResponseDto> getComments(@PathVariable Long postId) {
+		return ResponseEntity.ok().body(new GenericsResponseDto(commentService.getComments(postId)));
+	}
+
 	// 댓글 작성
 	@PostMapping("/posts/{postId}/comment")
-	public CommentResponseDto createComment(@PathVariable Long postId,
+	public ResponseEntity<CommentResponseDto> createComment(@PathVariable Long postId,
 		@Validated @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-		return commentService.createComment(postId, requestDto, userDetails.getId());
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(commentService.createComment(postId, requestDto, userDetails.getId()));
 	}
 
 	// 댓글 수정
 	@PutMapping("/comments/{commentId}")
-	public CommentResponseDto updateComment(@PathVariable Long commentId,
+	public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long commentId,
 		@Validated @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return commentService.updateComment(commentId,requestDto,userDetails.getId());
+		return ResponseEntity.ok().body(commentService.updateComment(commentId, requestDto, userDetails.getId()));
 	}
 
 	// 댓글 삭제
 	@DeleteMapping("/comments/{commentId}")
-	public ResponseEntity<MessageResponseDto> deleteComment(@PathVariable Long commentId,
+	public ResponseEntity<GenericsResponseDto> deleteComment(@PathVariable Long commentId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		commentService.deleteComment(commentId, userDetails.getId());
-
-		return new ResponseEntity<>(new MessageResponseDto("삭제 완료"), HttpStatus.OK);
+		return ResponseEntity.ok().body(new GenericsResponseDto("삭제 완료"));
 	}
-
-	// 댓글 조회
-	@GetMapping("/comments/{postId}")
-	public List<CommentResponseDto> getComments(@PathVariable Long postId) {
-		return commentService.getComments(postId);
-	}
-
 }

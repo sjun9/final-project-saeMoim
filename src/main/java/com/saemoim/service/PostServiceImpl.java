@@ -1,9 +1,7 @@
 package com.saemoim.service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,11 +9,9 @@ import com.saemoim.domain.Group;
 import com.saemoim.domain.Post;
 import com.saemoim.domain.User;
 import com.saemoim.dto.request.PostRequestDto;
-import com.saemoim.dto.response.PostListResponseDto;
 import com.saemoim.dto.response.PostResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.GroupRepository;
-import com.saemoim.repository.LikeRepository;
 import com.saemoim.repository.PostRepository;
 import com.saemoim.repository.UserRepository;
 
@@ -24,88 +20,49 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final GroupRepository groupRepository;
-	private final LikeRepository likeRepository;
 
-	// 전체 게시글 조회
+	// 모임 전체 게시글 조회
 	@Transactional(readOnly = true)
 	@Override
-	public List<PostListResponseDto> getAllPosts() {
-
-		List<Post> postList = postRepository.findAll();
-
-
-		List<PostListResponseDto> postListResponseDto = new ArrayList<>();
-		for (Post post : postList) {
-			Long postId = post.getId();
-			String title = post.getTitle();
-			String username = post.getUser().getUsername();
-			LocalDateTime createdAt = post.getCreatedAt();
-			LocalDateTime modifiedAt = post.getModifiedAt();
-
-			PostListResponseDto postResponseDto = new PostListResponseDto(postId, title, username, createdAt, modifiedAt);
-			postListResponseDto.add(postResponseDto);
-		}
-
-		return postListResponseDto;
+	public Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable) {
+		return postRepository.findAllByGroup_Id(group_id, pageable).map(PostResponseDto::new);
 	}
+
 	// 특정 게시글 조회
 	@Transactional(readOnly = true)
 	@Override
 	public PostResponseDto getPost(Long postId, Long userId) {
-		Post post = postRepository.findById(postId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
+		Post post = _getPostById(postId);
 
-		String title = post.getTitle();
-		Long id = post.getUserId();
-		String username = post.getUser().getUsername();
-		String content = post.getContent();
-		LocalDateTime createdAt = post.getCreatedAt();
-		LocalDateTime modifiedAt = post.getModifiedAt();
-		int likeCount = post.getLikeCount();
-
-		boolean isLikeChecked = likeRepository.existsByPost_IdAndUserId(postId, userId);
-
-		return PostResponseDto.builder()
-			.title(title)
-			.id(id)
-			.username(username)
-			.content(content)
-			.createdAt(createdAt)
-			.modifiedAt(modifiedAt)
-			.likeCount(likeCount)
-			.isLikeChecked(isLikeChecked)
-			.build();
+		return new PostResponseDto(post);
 	}
 
 	@Transactional
 	@Override
 	public PostResponseDto createPost(Long groupId, PostRequestDto requestDto, Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
-		Group group = groupRepository.findById(groupId).orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage()));
-		String title = requestDto.getTitle();
-		String content = requestDto.getContent();
-		Post savedPost = postRepository.save(new Post(group, title, content, user));
+		User user = userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
+		Group group = groupRepository.findById(groupId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
+		);
 
+		Post savedPost = postRepository.save(new Post(group, requestDto.getTitle(), requestDto.getContent(), user));
 		return new PostResponseDto(savedPost);
 	}
 
 	@Transactional
 	@Override
 	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId) {
-		Post savedPost = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
+		Post savedPost = _getPostById(postId);
 
-		if(savedPost.isWriter(userId)){
-			String title = requestDto.getTitle();
-			String content = requestDto.getContent();
-
-			savedPost.update(title, content);
-		}else {
+		if (!savedPost.isWriter(userId)) {
 			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
 		}
+		savedPost.update(requestDto.getTitle(), requestDto.getContent());
 
 		return new PostResponseDto(savedPost);
 	}
@@ -113,24 +70,25 @@ public class PostServiceImpl implements PostService {
 	@Transactional
 	@Override
 	public void deletePost(Long postId, Long userId) {
-		Post savedPost = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage()));
+		Post savedPost = _getPostById(postId);
 
-		if(savedPost.isWriter(userId)){
-			postRepository.delete(savedPost);
-
-		}else {
+		if (!savedPost.isWriter(userId)) {
 			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
 		}
 
+		postRepository.delete(savedPost);
 	}
 
 	@Transactional
 	@Override
 	public void deletePostByAdmin(Long postId) {
-		Post post = postRepository.findById(postId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_EXIST_POST.getMessage())
-		);
+		Post post = _getPostById(postId);
 
 		postRepository.delete(post);
+	}
+
+	private Post _getPostById(Long postId) {
+		return postRepository.findById(postId)
+			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage()));
 	}
 }
