@@ -44,7 +44,7 @@
                 <button type="button" class="btn btn-primary"
                         onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴
                 </button>
-                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal" onclick="getGroup(document.getElementById('moimDetailId').value)">모임 수정
+                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal" onclick="relayoutMap()">모임 수정
                 </button>
                 <button type="button" class="btn btn-secondary"
                         onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제
@@ -55,7 +55,9 @@
                 <button type="button" class="btn btn-success"
                         onclick="gotoBoard(document.getElementById('moimDetailId').value)">게시판 입장
                 </button>
-                <div id="moimMap" style="width:700px; margin: auto; height:400px;"></div>
+                <div id="detailAddress">
+                </div>
+                <div id="detailMoimMap" style="width:700px; margin: auto; height:400px;"></div>
                 <div class="moimDetailModal_reviews" id="moimDetail_reviews">
                 </div>
             </div>
@@ -115,9 +117,8 @@
                         <label for="newPost-image" class="col-form-label">한줄소개</label>
                         <input type="text" class="form-control" id="newMoim-content">
                     </div>
-                    <input type="text" id="sample5_address" placeholder="주소">
-                    <input type="button" onclick="sample5_execDaumPostcode()" value="주소 검색"><br>
-                    <div id="map" style="width:300px;height:300px;margin-top:10px;display:none"></div>
+                    <input type="text" id="save_address" placeholder="주소">
+                    <input type="button" onclick="save_execDaumPostcode()" value="주소 검색"><br>
                     <div class="mb-3">
                         <div id="saveMoimMap" style="width:700px; margin: auto; height:400px;"></div>
                     </div>
@@ -184,6 +185,8 @@
                         <label for="newPost-image" class="col-form-label">한줄소개</label>
                         <input type="text" class="form-control" id="modifyMoim-content">
                     </div>
+                    <input type="text" id="modify_address" placeholder="주소">
+                    <input type="button" onclick="modify_execDaumPostcode()" value="주소 검색"><br>
                     <div class="mb-3">
                         <div id="modifyMoimMap" style="width:700px; margin: auto; height:400px;"></div>
                     </div>

@@ -43,28 +43,42 @@ const body = document.querySelector('body');
 const modal = document.querySelector('.modal');
 const btnOpenPopup = document.querySelector('.btn-open-popup');
 
+
+// 모임 생성 지도
 // 주소-좌표 변환 객체 생성
 let geocoder = new kakao.maps.services.Geocoder();
-
 // kakao map
-let mapContainer = document.getElementById('saveMoimMap'),
-    mapOption = {
-        center: new kakao.maps.LatLng(37.57205, 126.9615),	// 지도의 중심 좌표(임의 설정)
-        level: 5					// 지도의 확대 레벨(임의 설정)
-    };
-
-//설정한 지도 생성
+let mapContainer = document.getElementById('saveMoimMap');
+let mapOption = {
+    center: new kakao.maps.LatLng(37.57205, 126.9615),	// 지도의 중심 좌표(임의 설정)
+    level: 5					// 지도의 확대 레벨(임의 설정)
+};
+// 설정한 지도 생성
 let map = new kakao.maps.Map(mapContainer, mapOption);
-
 //마커 초기화(초기화 시 지도에 미리 지정 가능 : 카카오맵 API 문서 참조)
 let marker = new kakao.maps.Marker({position: map.getCenter});
+
+// 모임 생성,수정 시 넣을 변수
 let address;
 let firstRegion;
 let secondRegion;
 let latitude;
 let longitude;
 
-//카카오맵 클릭 이벤트 추가
+//모임 조회 지도
+let detailMapContainer = document.getElementById('detailMoimMap');
+let detailMap = new kakao.maps.Map(detailMapContainer, mapOption);
+let detailMarker = new kakao.maps.Marker({position: detailMap.getCenter});
+
+// 모임 수정 지도
+// kakao map
+let modifyMapContainer = document.getElementById('modifyMoimMap');
+// 설정한 지도 생성
+let modifyMap = new kakao.maps.Map(modifyMapContainer, mapOption);
+//마커 초기화(초기화 시 지도에 미리 지정 가능 : 카카오맵 API 문서 참조)
+let modifyMarker = new kakao.maps.Marker({position: modifyMap.getCenter});
+
+// 생성하기 카카오맵 클릭 이벤트 추가
 kakao.maps.event.addListener(map, 'click', (mouseEvent) => {
     searchDetailAddrFromCoords(mouseEvent.latLng, function (result, status) {
         if (status === kakao.maps.services.Status.OK) {
@@ -79,7 +93,7 @@ kakao.maps.event.addListener(map, 'click', (mouseEvent) => {
             marker.setPosition(mouseEvent.latLng);
             marker.setMap(map);
 
-            document.getElementById("sample5_address").value = result[0]['address']['address_name'];
+            document.getElementById("save_address").value = result[0]['address']['address_name'];
         }
     });
 });
@@ -88,13 +102,13 @@ function searchDetailAddrFromCoords(coords, callback) {
     geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
 }
 
-// 주소 검색
-function sample5_execDaumPostcode() {
+// 생성하기 주소 검색
+function save_execDaumPostcode() {
     new daum.Postcode({
         oncomplete: function (data) {
             let addr = data.address; // 최종 주소 변수
             // 주소 정보를 해당 필드에 넣는다.
-            document.getElementById("sample5_address").value = addr;
+            document.getElementById("save_address").value = addr;
             // 주소로 상세 정보를 검색
             geocoder.addressSearch(addr, function (results, status) {
                 // 정상적으로 검색이 완료됐으면
@@ -118,6 +132,58 @@ function sample5_execDaumPostcode() {
         }
     }).open();
 }
+
+// 수정하기 카카오맵 클릭 이벤트 추가
+kakao.maps.event.addListener(modifyMap, 'click', (mouseEvent) => {
+    searchDetailAddrFromCoords(mouseEvent.latLng, function (result, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            address = result[0]['address']['address_name'];
+            firstRegion = result[0]['address']['region_1depth_name']
+            secondRegion = result[0]['address']['region_2depth_name']
+            latitude = mouseEvent.latLng['Ma'];
+            longitude = mouseEvent.latLng['La'];
+
+            //마커 위치를 클릭한 위치로 이동
+            modifyMap.setCenter(mouseEvent.latLng);
+            modifyMarker.setPosition(mouseEvent.latLng);
+            modifyMarker.setMap(modifyMap);
+
+            document.getElementById("modify_address").value = result[0]['address']['address_name'];
+        }
+    });
+});
+
+// 수정하기 주소 검색
+function modify_execDaumPostcode() {
+    new daum.Postcode({
+        oncomplete: function (data) {
+            let addr = data.address; // 최종 주소 변수
+            // 주소 정보를 해당 필드에 넣는다.
+            document.getElementById("modify_address").value = addr;
+            // 주소로 상세 정보를 검색
+            geocoder.addressSearch(addr, function (results, status) {
+                // 정상적으로 검색이 완료됐으면
+                if (status === daum.maps.services.Status.OK) {
+                    // 해당 주소에 대한 좌표를 받아서
+                    let coords = new daum.maps.LatLng(results[0].y, results[0].x);
+
+                    address = data['address']
+                    firstRegion = data['sido']
+                    secondRegion = data['sigungu']
+                    latitude = coords['Ma'];
+                    longitude = coords['La'];
+
+                    // 지도 중심을 변경한다.
+                    map.setCenter(coords);
+                    // 마커를 결과값으로 받은 위치로 옮긴다.
+                    marker.setPosition(coords)
+                    marker.setMap(map);
+                }
+            });
+        }
+    }).open();
+}
+
 
 function showModal() {
     modal.classList.toggle('show');
@@ -143,6 +209,7 @@ modal.addEventListener('click', modalEscape);
 function relayoutMap() {
     setTimeout(function () {
         map.relayout();
+        modifyMap.relayout();
     }, 300);
 }
 
@@ -396,25 +463,17 @@ function showPopularMoim() {
                 for (let i = 0; i < response.length; i++) {
                     let id = response[i]['id']
                     let groupName = response[i]['groupName']
-                    let content = response[i]['content']
                     let categoryName = response[i]['categoryName']
                     let participantCount = response[i]['participantCount']
                     let recruitNumber = response[i]['recruitNumber']
                     let wishCount = response[i]['wishCount']
                     let status = response[i]['status']
-                    let tags = response[i]['tags']
-                    let leaderId = response[i]['userId']
-                    let leaderName = response[i]['username']
 
                     let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
                                         <img src="../static/images/main-running.jpg" alt="">
                                             <span>${groupName}</span>
-                                            <input type="hidden" value=${content}>
-                                            <input type="hidden" value=${tags}>
-                                            <input type="hidden" value=${leaderName}>
-                                            <input type="hidden" value=${leaderId}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
@@ -836,20 +895,34 @@ function cancelApplication(applicationId) {
 
 
 function showMoimDetail(event, id) {
-    let targetTitle = event.currentTarget.firstChild.nextSibling.children[1].innerText;
-    let targetContent = event.currentTarget.firstChild.nextSibling.children[2].value;
-    let tags = event.currentTarget.firstChild.nextSibling.children[3].value;
-    //위에 꺼 지우고 getGroup해서 밑에 넣어주자
+    $.ajax({
+        type: "get",
+        url: "http://localhost:8080/groups/" + id
+    }).done(function (data) {
+        document.querySelector('#moimDetail_Title').innerText = data.groupName;
+        // document.querySelector('#moimLeader').innerText = leaderName;
+        document.querySelector('#moimTag').innerText = data.tags;
+        document.querySelector('#moimDetail_introduce').innerText = data.content;
+        document.getElementById('moimDetailId').value = data.id;
+        $('#detailAddress').empty().append(`<h5>모임장소</h5>
+                                    <h6>${data.address}</h6>`)
+        console.log(data.address)
+        let detailLatLng = new kakao.maps.LatLng(data.latitude, data.longitude);
+        detailMarker.setPosition(detailLatLng);
+        detailMarker.setMap(detailMap);
+        detailMap.setCenter(detailLatLng);
 
-    document.querySelector('#moimDetail_Title').innerText = targetTitle;
-    // document.querySelector('#moimLeader').innerText = leaderName;
-    document.querySelector('#moimTag').innerText = tags;
-    document.querySelector('#moimDetail_introduce').innerText = targetContent;
-    document.getElementById('moimDetailId').value = id;
+        setTimeout(function () {
+            detailMap.relayout();
+        }, 200);
+    }).fail(function (e) {
+        if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
+            alert(e.responseJSON['message'])
+        } else {
+            alert(e.responseText['message'])
+        }
+    });
     showReview(id);
-    setTimeout(function () {
-        map.relayout();
-    }, 300);
 }
 
 
@@ -954,19 +1027,28 @@ function withdrawMoim(id) {
 }
 
 function editMoim(id) {
-
+    if (address === undefined) {
+        alert("지도에서 주소를 체크 해주세요.")
+    }
     let jsonData = { // Body에 첨부할 json 데이터
         "name": $('#modifyMoim-title').val(),
         "tagNames": [$('#modifyMoim-tag').val()],
         "categoryName": $('#modifyMoim-category').val(),
         "content": $('#modifyMoim-content').val(),
         "recruitNumber": $('#modifyMoim-recruit').val(),
-        "address": "address",
-        "firstRegion": "firstRegion",
-        "secondRegion": "secondRegion",
-        "latitude": "latitude",
-        "longitude": "longitude"
+        "address": address,
+        "firstRegion": firstRegion,
+        "secondRegion": secondRegion,
+        "latitude": latitude,
+        "longitude": longitude
     };
+
+    address = undefined;
+    firstRegion = undefined;
+    secondRegion = undefined;
+    latitude = undefined;
+    longitude = undefined;
+
     $.ajax({
         type: "put",
         url: "http://localhost:8080/groups/" + id,
