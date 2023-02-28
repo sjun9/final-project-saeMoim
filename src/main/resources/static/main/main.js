@@ -489,7 +489,7 @@ function showFilter(categoryId, status) {
 
 
 function showReview(id) {
-    $('#moimDetail_reviews').empty().append(`<textarea style="width:150%" rows="3" cols="30" id="reviewText" value=""> </textarea>
+    $('#moimDetail_reviews').empty().append(`<textarea style="width:100%" rows="3" cols="30" id="reviewText" value=""> </textarea>
                                      <button type="button" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">후기 등록</button>`);
 
     $.ajax({
@@ -1040,6 +1040,7 @@ function gotoBoard(id) {
                         headers: {'Authorization': localStorage.getItem('Authorization')},
                         async: false,
                         success: function (data) {
+                            data = data['data']
                             for (let i = 0; i < data.length; i++) {
                                 if (data[i]['userId'] === myId) {
                                     isParticipant = true

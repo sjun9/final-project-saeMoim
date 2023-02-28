@@ -31,7 +31,7 @@ public class PostController {
 	// 그룹 전체 게시글 조회
 	@GetMapping("/groups/{groupId}/post")
 	public ResponseEntity<Page<PostResponseDto>> getAllPostsByGroup(@PathVariable Long groupId,
-		@PageableDefault(size = 10, page = 0) Pageable pageable,
+		@PageableDefault(size = 15, page = 0) Pageable pageable,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ResponseEntity.ok().body(postService.getAllPostsByGroup(groupId, pageable,  userDetails.getId()));
 	}

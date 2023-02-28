@@ -13,6 +13,26 @@ let Refresh_Token = localStorage.getItem("Refresh_Token")
 let tempGroupId = localStorage.getItem("current_group_id")
 let tempUserId = localStorage.getItem("current_user_id")
 
+getGroupInfo(tempGroupId)
+const groupInfo = JSON.parse(localStorage.getItem("group_info"))
+
+
+function getGroupInfo(groupId) {
+  $.ajax({
+    type: "GET",
+    url: `http://localhost:8080/groups/${groupId}`,
+    async: false,
+    data: {},
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader("Authorization", Authorization);
+      xhr.setRequestHeader("Refresh_Token", Refresh_Token);
+    },
+    success: function (response) {
+      localStorage.setItem("group_info", JSON.stringify(response))
+    }
+  });
+}
+
 /**
  * 우측 프로필 리스트
  */
@@ -37,21 +57,49 @@ function getGroupProfileIdList() {
 }
 
 
+// 리더 프로필 버튼 요소 추가
+function renderLeaderProfile() {
+  const leaderZone = document.querySelector(".leader")
+
+  while (leaderZone.firstChild) {
+    leaderZone.firstChild.remove()
+  }
+
+  var settings = {
+    "url": `http://localhost:8080/profile/users/${groupInfo["userId"]}`,
+    "method": "GET",
+    "timeout": 0,
+    "headers": {
+      "Authorization": Authorization,
+      "Refresh_Token": Refresh_Token
+    },
+  };
+  $.ajax(settings).done(function (response) {
+    let temp_html = `
+        <div class="userzone__user userzone__leader" onclick="openProfile(event)" data-bs-toggle="modal" data-bs-target="#profileModal">
+          <img src="../static/images/mountain.jpg">
+          <div class="userzone__user__name">${response["username"]} (모임장)</div>
+        </div>
+      `
+      $('#leader_zone').append(temp_html)
+  });
+}
+
+
 // 기존 프로필 리스트 전체 삭제
 function deleteProfileList() {
-    const userZone = document.querySelector('#user_zone');
-    while (userZone.firstChild) {
-        userZone.firstChild.remove()
-    }
+  const userZone = document.querySelector('#user_zone');
+  while (userZone.firstChild) {
+      userZone.firstChild.remove()
+  }
 }
 
 
 // localStorage에서 참여자 리스트 가져와서 페이지 우측에 표시
-// 참여자 리스트 로컬스토리지에 저장해두고 모달창 열 때 활용해도 될 듯
-// -> openprofile 시 api 요청 줄이기
 function renderProfileList() {
   const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
   profileIdList.forEach((user) => {
+    if (user["userId"] === groupInfo["userId"]) { return }
     var settings = {
       "url": `http://localhost:8080/profile/users/${user["userId"]}`,
       "method": "GET",
@@ -62,22 +110,21 @@ function renderProfileList() {
       },
     };
         $.ajax(settings).done(function (response) {
-            appendProfileButton(response)
+            appendProfileButton(response["username"])
         });
     })
 }
 
 
 // 프로필 버튼 요소 추가
-function appendProfileButton(response) {
-    let temp_html = `
+function appendProfileButton(username) {
+  let temp_html = `
     <div class="userzone__user" onclick="openProfile(event)" data-bs-toggle="modal" data-bs-target="#profileModal">
-      <div class="userzone__user__img">
-      </div>
-      <div class="userzone__user__name">${response["username"]}</div>
+      <img src="../static/images/mountain.jpg">
+      <div class="userzone__user__name">${username}</div>
     </div>
   `
-    $('#user_zone').append(temp_html)
+  $('#user_zone').append(temp_html)
 }
 
 
@@ -85,12 +132,16 @@ function appendProfileButton(response) {
 function openProfile(event) {
   let username = event.currentTarget.children[1].innerText
   let userId;
-  const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
-  profileIdList.forEach((user) => {
-    if (user["username"] === username) {
-      userId = user["userId"]
-    }
-  })
+  if (event.currentTarget.parentElement.classList.contains('leader')) {
+    userId = groupInfo["userId"]
+  } else {
+    const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
+    profileIdList.forEach((user) => {
+      if (user["username"] === username) {
+        userId = user["userId"]
+      }
+    })
+  }
   var settings = {
     "url": `http://localhost:8080/profile/users/${userId}`,
     "method": "GET",
@@ -100,11 +151,11 @@ function openProfile(event) {
       "Refresh_Token": Refresh_Token
     },
   };
-    $.ajax(settings).done(function (response) {
-        const profile_modal_page = document.querySelector("#profile_modal_page")
-        profile_modal_page.children[2].children[0].innerText = username
-        profile_modal_page.children[3].innerText = response["content"]
-    });
+  $.ajax(settings).done(function (response) {
+    const profile_modal_page = document.querySelector("#profile_modal_page")
+    profile_modal_page.children[2].children[0].innerText = username
+    profile_modal_page.children[3].innerText = response["content"]
+  });
 }
 
 function profile() {
@@ -112,6 +163,7 @@ function profile() {
     getGroupProfileIdList()
     deleteProfileList()
     // 리더프로필 추가
+    renderLeaderProfile()
     renderProfileList()
 }
 
@@ -294,33 +346,18 @@ function gotoDeletePost(event) {
 const contents = document.querySelector(".contents");
 const buttons = document.querySelector(".buttons");
 
-// setPostsCount(); 지움
 let numOfContent = localStorage.getItem("postsCount");// 전체 게시글 갯수
-const maxContent = 10; // 표시할 게시글 갯수
+const maxContent = 15; // 표시할 게시글 갯수
 const maxButton = 5; // 표시할 버튼 갯수
 let maxPage = Math.ceil(numOfContent / maxContent);
 let page = 1; // 새로고침 시 1페이지부터 시작
 
-// 게시글 전체 갯수 가져오기 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-// function setPostsCount() {
-//   $.ajax({
-//     type: 'GET',
-//     url: `http://localhost:8080/posts/groups/${tempGroupId}/count`,
-//     data: {},
-//     async: false, // 비동기 해제
-//     success: function (response) {
-//       localStorage.setItem("postsCount", response)
-//     }
-//   });
-// }
 
-// pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable
 // 해당 페이지 게시글 리스트 가져오기 
 function getPosts(pageNum, sizeNum) {
   $.ajax({
     type: 'GET',
     url: `http://localhost:8080/groups/${tempGroupId}/post?page=${pageNum}&size=${sizeNum}`,
-    // url: `http://localhost:8080/groups/${tempGroupId}/post?page=0&size=10`,
     data: {},
     beforeSend: function (xhr) {
       xhr.setRequestHeader("Authorization", Authorization);
@@ -331,7 +368,7 @@ function getPosts(pageNum, sizeNum) {
       console.log(data)
       localStorage.setItem("postsCount", data["totalElements"])
 
-      localStorage.setItem("pagedPostList", JSON.stringify(data["content"])); // response에서 게시글 리스트 부분
+      localStorage.setItem("pagedPostList", JSON.stringify(data["content"]));
       // const postArray = JSON.parse(localStorage.getItem("pagedPostList"))
     }
   });
@@ -361,7 +398,7 @@ const makeContent = (i) => {
         simpleCreatedAt = ""
         simpleCreatedAt = simpleCreatedAtDate + " " + simpleCreatedAtHour + ":" + simpleCreatedAtMin
     }
-    // console.log(currentPost)
+    
     content__header.innerHTML = `
     <span class="content__header__id">${currentPost["id"]}</span>
     <a href="#" class="like-button content__header__likeButton ${likeChecked}">
@@ -371,7 +408,7 @@ const makeContent = (i) => {
     </a>
     <span class="content__header__title" onclick="openBody(event)" data-bs-toggle="modal" data-bs-target="#readPostModal">${currentPost["title"]}</span>
     <span class="content__header__author">${currentPost["username"]}</span>
-    <span class="content__header__date">${simpleCreatedAt}</span>
+    <span class="content__header__date" style="color: #afafaf">${simpleCreatedAt}</span>
   `;
 
     contentwrap.appendChild(content__header);
@@ -422,7 +459,7 @@ const renderContent = (page) => {
         contents.removeChild(contents.lastChild);
     }
 
-    getPosts(page - 1, 10); // 페이징 처리된 게시글 리스트 가져옴
+    getPosts(page - 1, 15); // 페이징 처리된 게시글 리스트 가져옴
 
     const postArray = JSON.parse(localStorage.getItem("pagedPostList")) // 가져온 게시글 리스트 갯수를 계산하기 위해
 
@@ -469,7 +506,7 @@ function gotoPageNum(event) {
 
 // 해당 페이지 게시글 및 버튼 렌더링
 const render = (page) => {
-    document.querySelector('#moim_title').innerText = tempGroupId + "번 게시판"
+    document.querySelector('#moim_title').innerText = groupInfo["groupName"]
     renderContent(page);
     renderButton(page);
 };
