@@ -174,10 +174,10 @@ function modify_execDaumPostcode() {
                     longitude = coords['La'];
 
                     // 지도 중심을 변경한다.
-                    map.setCenter(coords);
+                    modifyMap.setCenter(coords);
                     // 마커를 결과값으로 받은 위치로 옮긴다.
-                    marker.setPosition(coords)
-                    marker.setMap(map);
+                    modifyMarker.setPosition(coords)
+                    modifyMarker.setMap(modifyMap);
                 }
             });
         }
