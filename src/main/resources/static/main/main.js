@@ -43,30 +43,81 @@ const body = document.querySelector('body');
 const modal = document.querySelector('.modal');
 const btnOpenPopup = document.querySelector('.btn-open-popup');
 
+// 주소-좌표 변환 객체 생성
+let geocoder = new kakao.maps.services.Geocoder();
 
-const mapContainer = document.getElementById('saveMoimMap'),
+// kakao map
+let mapContainer = document.getElementById('saveMoimMap'),
     mapOption = {
-        center: new kakao.maps.LatLng(37.5881, 126.9378),	// 지도의 중심 좌표(임의 설정)
-        level: 7					// 지도의 확대 레벨(임의 설정)
+        center: new kakao.maps.LatLng(37.57205, 126.9615),	// 지도의 중심 좌표(임의 설정)
+        level: 5					// 지도의 확대 레벨(임의 설정)
     };
 
 //설정한 지도 생성
-const map = new kakao.maps.Map(mapContainer, mapOption);
+let map = new kakao.maps.Map(mapContainer, mapOption);
 
 //마커 초기화(초기화 시 지도에 미리 지정 가능 : 카카오맵 API 문서 참조)
-const marker = new kakao.maps.Marker();
+let marker = new kakao.maps.Marker({position: map.getCenter});
+let address;
+let firstRegion;
+let secondRegion;
+let latitude;
+let longitude;
 
 //카카오맵 클릭 이벤트 추가
 kakao.maps.event.addListener(map, 'click', (mouseEvent) => {
-    //클릭한 위도, 경도 정보 불러오기
-    const latlng = mouseEvent.latLng;
-    //마커 위치를 클릭한 위치로 이동
-    marker.setPosition(latlng);
-    marker.setMap(map);
+    searchDetailAddrFromCoords(mouseEvent.latLng, function (result, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            address = result[0]['address']['address_name'];
+            firstRegion = result[0]['address']['region_1depth_name']
+            secondRegion = result[0]['address']['region_2depth_name']
+            latitude = mouseEvent.latLng['Ma'];
+            longitude = mouseEvent.latLng['La'];
 
-    alert(`위도 : ${latlng.getLat()}, 경도 : ${latlng.getLng()}`);
+            //마커 위치를 클릭한 위치로 이동
+            map.setCenter(mouseEvent.latLng);
+            marker.setPosition(mouseEvent.latLng);
+            marker.setMap(map);
+
+            document.getElementById("sample5_address").value = result[0]['address']['address_name'];
+        }
+    });
 });
 
+function searchDetailAddrFromCoords(coords, callback) {
+    geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
+}
+
+// 주소 검색
+function sample5_execDaumPostcode() {
+    new daum.Postcode({
+        oncomplete: function (data) {
+            let addr = data.address; // 최종 주소 변수
+            // 주소 정보를 해당 필드에 넣는다.
+            document.getElementById("sample5_address").value = addr;
+            // 주소로 상세 정보를 검색
+            geocoder.addressSearch(addr, function (results, status) {
+                // 정상적으로 검색이 완료됐으면
+                if (status === daum.maps.services.Status.OK) {
+                    // 해당 주소에 대한 좌표를 받아서
+                    let coords = new daum.maps.LatLng(results[0].y, results[0].x);
+
+                    address = data['address']
+                    firstRegion = data['sido']
+                    secondRegion = data['sigungu']
+                    latitude = coords['Ma'];
+                    longitude = coords['La'];
+
+                    // 지도 중심을 변경한다.
+                    map.setCenter(coords);
+                    // 마커를 결과값으로 받은 위치로 옮긴다.
+                    marker.setPosition(coords)
+                    marker.setMap(map);
+                }
+            });
+        }
+    }).open();
+}
 
 function showModal() {
     modal.classList.toggle('show');
@@ -270,8 +321,11 @@ function reissue() {
     });
 }
 
-function showMoimAjax(url, contentId) {
-    return {
+function showAllMoim() {
+    let contentId = '#find-content';
+    let url = "http://localhost:8080/group";
+    $(contentId).empty()
+    $.ajax({
         type: "GET",
         url: url,
         headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
@@ -314,14 +368,7 @@ function showMoimAjax(url, contentId) {
                 console.log(response)
             }
         }
-    };
-}
-
-function showAllMoim() {
-    let contentId = '#find-content';
-    let url = "http://localhost:8080/group";
-    $(contentId).empty()
-    $.ajax(showMoimAjax(url, contentId)).fail(function (e) {
+    }).fail(function (e) {
         console.log(e.status)
         if (e.status === 401) {
             reissue()
@@ -401,7 +448,50 @@ function showLeaderMoim() {
     let contentId = '#made-group';
     let url = "http://localhost:8080/leader/group";
     $(contentId).empty()
-    $.ajax(showMoimAjax(url, contentId)).fail(function (e) {
+    $.ajax({
+        type: "GET",
+        url: url,
+        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        success: function (response) {
+            console.log(response)
+            response = response['data']
+            for (let i = 0; i < response.length; i++) {
+                let id = response[i]['id']
+                let groupName = response[i]['groupName']
+                let content = response[i]['content']
+                let categoryName = response[i]['categoryName']
+                let participantCount = response[i]['participantCount']
+                let recruitNumber = response[i]['recruitNumber']
+                let wishCount = response[i]['wishCount']
+                let status = response[i]['status']
+                let tags = response[i]['tags']
+                let leaderId = response[i]['userId']
+                let leaderName = response[i]['username']
+
+                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+                                    onClick="showMoimDetail(event, ${id})">
+                                    <div class="product-cell image">
+                                        <img src="../static/images/main-running.jpg" alt="">
+                                            <span>${groupName}</span>
+                                            <input type="hidden" value=${content}>
+                                            <input type="hidden" value=${tags}>
+                                            <input type="hidden" value=${leaderName}>
+                                            <input type="hidden" value=${leaderId}>
+                                    </div>
+                                    <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
+                                    <div class="product-cell status-cell">
+                                        <span class="cell-label">모임상태:</span>
+                                        <span class="status active">${status}</span>
+                                    </div>
+                                    <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
+                                    <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
+                                    <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
+                                </div>`
+                $(contentId).append(temp_html)
+                console.log(response)
+            }
+        }
+    }).fail(function (e) {
         console.log(e.status)
         if (e.status === 401) {
             reissue()
@@ -419,7 +509,50 @@ function showParticipantMoim() { // 참여중인 모임 조회
     let contentId = '#participant-group';
     let url = "http://localhost:8080/participant/group";
     $(contentId).empty()
-    $.ajax(showMoimAjax(url, contentId)).fail(function (e) {
+    $.ajax({
+        type: "GET",
+        url: url,
+        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        success: function (response) {
+            console.log(response)
+            response = response['data']
+            for (let i = 0; i < response.length; i++) {
+                let id = response[i]['id']
+                let groupName = response[i]['groupName']
+                let content = response[i]['content']
+                let categoryName = response[i]['categoryName']
+                let participantCount = response[i]['participantCount']
+                let recruitNumber = response[i]['recruitNumber']
+                let wishCount = response[i]['wishCount']
+                let status = response[i]['status']
+                let tags = response[i]['tags']
+                let leaderId = response[i]['userId']
+                let leaderName = response[i]['username']
+
+                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+                                    onClick="showMoimDetail(event, ${id})">
+                                    <div class="product-cell image">
+                                        <img src="../static/images/main-running.jpg" alt="">
+                                            <span>${groupName}</span>
+                                            <input type="hidden" value=${content}>
+                                            <input type="hidden" value=${tags}>
+                                            <input type="hidden" value=${leaderName}>
+                                            <input type="hidden" value=${leaderId}>
+                                    </div>
+                                    <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
+                                    <div class="product-cell status-cell">
+                                        <span class="cell-label">모임상태:</span>
+                                        <span class="status active">${status}</span>
+                                    </div>
+                                    <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
+                                    <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
+                                    <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
+                                </div>`
+                $(contentId).append(temp_html)
+                console.log(response)
+            }
+        }
+    }).fail(function (e) {
         console.log(e.status)
         if (e.status === 401) {
             reissue()
@@ -556,6 +689,7 @@ function showRequestedGroup() {
         url: "http://localhost:8080/leader/application",
         headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         success: function (response) {
+            response = response['data']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
@@ -595,6 +729,7 @@ function showAppliedGroup() {
         url: "http://localhost:8080/participant/application",
         headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         success: function (response) {
+            response = response['data']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
@@ -724,19 +859,26 @@ function saveMoim() {
     for (let i = 0; i < $('[name="tagsA"]').length; i++) {
         tags.push($('[name="tagsA"]')[i].value)
     }
-    console.log(tags)
+    if (address === undefined) {
+        alert("지도에서 주소를 체크 해주세요.")
+    }
     let jsonData = { // Body에 첨부할 json 데이터
         "name": $('#newMoim-title').val(),
         "tagNames": tags,
         "categoryName": $('#newMoim-category').val(),
         "content": $('#newMoim-content').val(),
         "recruitNumber": $('#newMoim-recruit').val(),
-        "address": "address",
-        "firstRegion": "firstRegion",
-        "secondRegion": "secondRegion",
-        "latitude": "aaa",
-        "longitude": "bbb"
+        "address": address,
+        "firstRegion": firstRegion,
+        "secondRegion": secondRegion,
+        "latitude": latitude,
+        "longitude": longitude
     };
+    address = undefined;
+    firstRegion = undefined;
+    secondRegion = undefined;
+    latitude = undefined;
+    longitude = undefined;
 
     $.ajax({
         type: "post",
@@ -746,8 +888,6 @@ function saveMoim() {
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8" //헤더의 Content-Type을 설정
     }).done(function (data) {
-        console.log(data);
-        console.log(jsonData["tagNames"])
         alert("작성 완료")
         location.reload()
     }).fail(function (e) {
@@ -1040,6 +1180,7 @@ function gotoBoard(id) {
                         headers: {'Authorization': localStorage.getItem('Authorization')},
                         async: false,
                         success: function (data) {
+                            data = data['data']
                             for (let i = 0; i < data.length; i++) {
                                 if (data[i]['userId'] === myId) {
                                     isParticipant = true
