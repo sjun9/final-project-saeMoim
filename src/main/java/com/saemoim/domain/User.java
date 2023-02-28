@@ -36,6 +36,7 @@ public class User extends TimeStamped {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private UserRoleEnum role;
+	private String provider;
 
 	public User(String email, String password, String username, UserRoleEnum role) {
 		this.email = email;

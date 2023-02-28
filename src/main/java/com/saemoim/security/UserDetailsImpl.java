@@ -2,18 +2,21 @@ package com.saemoim.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.saemoim.domain.enums.UserRoleEnum;
 
-public class UserDetailsImpl implements UserDetails {
+public class UserDetailsImpl implements UserDetails, OAuth2User {
 
 	private final String username;    // 인증된 유저 객체
 	private final Long id;
 	private final UserRoleEnum role;
+	private Map<String, Object> attributes;
 
 	private final Collection<GrantedAuthority> authorities = new ArrayList<>();
 
@@ -22,6 +25,18 @@ public class UserDetailsImpl implements UserDetails {
 		this.username = username;
 		this.role = role;
 		authorities.add(new SimpleGrantedAuthority(this.role.getAuthority()));
+	}
+
+	public UserDetailsImpl(Long id, String username, UserRoleEnum role, Map<String, Object> attributes) {
+		this.username = username;
+		this.id = id;
+		this.role = role;
+		this.attributes = attributes;
+	}
+
+	@Override
+	public Map<String, Object> getAttributes() {
+		return attributes;
 	}
 
 	@Override
@@ -65,5 +80,10 @@ public class UserDetailsImpl implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	@Override
+	public String getName() {
+		return null;
 	}
 }
