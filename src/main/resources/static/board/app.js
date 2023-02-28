@@ -4,7 +4,7 @@
 // const Authorization = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiTmFtZSI6ImJiYiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjc3MTY3NDg4LCJpYXQiOjE2NzcxNjYyODh9.sMYFSF56Hobd0qsCvuENY6cxlGIGylIU1dfj5aOT_ns"
 // const Refresh_Token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiZXhwIjoxNjc3MTY5ODg4LCJpYXQiOjE2NzcxNjYyODh9.OxXhznYD-J6_VcEAIW3WROaitYp59bWOJopLB7jB2Ms"
 
-// const tempGroupId = "1"dw
+// const tempGroupId = "1"
 // const tempUserId = "2"
 
 let Authorization = localStorage.getItem("Authorization")
@@ -20,7 +20,6 @@ let tempUserId = localStorage.getItem("current_user_id")
 
 // 현재 그룹 참여자 리스트 가져와서 localStorage에 저장
 function getGroupProfileIdList() {
-<<<<<<< HEAD
   $.ajax({
     type: "GET",
     url: `http://localhost:8080/participant/groups/${tempGroupId}`,
@@ -35,22 +34,6 @@ function getGroupProfileIdList() {
       // const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
     }
   });
-=======
-    $.ajax({
-        type: "GET",
-        url: "http://localhost:8080/participant/groups/" + tempGroupId,
-        async: false,
-        data: {},
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader("Authorization", Authorization);
-            xhr.setRequestHeader("Refresh_Token", Refresh_Token);
-        },
-        success: function (response) {
-            localStorage.setItem("profileIdList", JSON.stringify(response));
-            // const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
-        }
-    });
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
 }
 
 
@@ -67,7 +50,6 @@ function deleteProfileList() {
 // 참여자 리스트 로컬스토리지에 저장해두고 모달창 열 때 활용해도 될 듯
 // -> openprofile 시 api 요청 줄이기
 function renderProfileList() {
-<<<<<<< HEAD
   const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
   profileIdList.forEach((user) => {
     var settings = {
@@ -79,20 +61,6 @@ function renderProfileList() {
         "Refresh_Token": Refresh_Token
       },
     };
-=======
-    const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
-    profileIdList.forEach((user) => {
-        var settings = {
-            "url": "http://localhost:8080/profile/users/" + String(user["userId"]),
-            "method": "GET",
-            "timeout": 0,
-            "headers": {
-                "Authorization": Authorization,
-                "Refresh_Token": Refresh_Token
-            },
-        };
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
-
         $.ajax(settings).done(function (response) {
             appendProfileButton(response)
         });
@@ -115,7 +83,6 @@ function appendProfileButton(response) {
 
 // 클릭 시 해당 유저 프로필 모달창 열기
 function openProfile(event) {
-<<<<<<< HEAD
   let username = event.currentTarget.children[1].innerText
   let userId;
   const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
@@ -133,26 +100,6 @@ function openProfile(event) {
       "Refresh_Token": Refresh_Token
     },
   };
-=======
-    let username = event.currentTarget.children[1].innerText
-    let userId;
-    const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
-    profileIdList.forEach((user) => {
-        if (user["username"] === username) {
-            userId = user["userId"]
-        }
-    })
-    var settings = {
-        "url": "http://localhost:8080/profile/users/" + String(userId),
-        "method": "GET",
-        "timeout": 0,
-        "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
-        },
-    };
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
-
     $.ajax(settings).done(function (response) {
         const profile_modal_page = document.querySelector("#profile_modal_page")
         profile_modal_page.children[2].children[0].innerText = username
@@ -182,7 +129,6 @@ function newPost() {
     const newPostContent = document.querySelector("#newPost-content").value
     // const imageUrl  = 이미지 경로 추가
 
-<<<<<<< HEAD
   var settings = {
     "url": `http://localhost:8080/groups/${tempGroupId}/post`,
     "method": "POST",
@@ -197,23 +143,6 @@ function newPost() {
       "content": newPostContent
     }),
   };
-=======
-    var settings = {
-        "url": "http://localhost:8080/groups/" + tempGroupId + "/post",
-        "method": "POST",
-        "timeout": 0,
-        "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
-            "Content-Type": "application/json"
-        },
-        "data": JSON.stringify({
-            "title": newPostTitle,
-            "content": newPostContent
-        }),
-    };
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
-
     $.ajax(settings).done(function (response) {
         alert('작성 완료!');
         location.reload();
@@ -251,7 +180,6 @@ function editPost(event) {
     const new_content = document.querySelector("#editPost-content").value
     const currentPostId = localStorage.getItem("current_post_id")
 
-<<<<<<< HEAD
   var settings = {
     "url": `http://localhost:8080/posts/${currentPostId}`,
     "method": "PUT",
@@ -279,34 +207,6 @@ function editPost(event) {
     // document.querySelector("#closeEditPostModal").click() // 수정 모달창 닫고
     // document.querySelector("#openRead").click() // 읽기 모달창 열고
   });
-=======
-    var settings = {
-        "url": "http://localhost:8080/posts/" + currentPostId,
-        "method": "PUT",
-        "timeout": 0,
-        "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
-            "Content-Type": "application/json"
-        },
-        "data": JSON.stringify({
-            "title": new_title,
-            "content": new_content
-        }),
-    };
-
-    $.ajax(settings).done(function (response) {
-        console.log(response);
-        alert("수정 완료")
-
-        // 게시글 최신화 (임시로 겉보기만...)
-        document.querySelector('#readPostModalLabel').innerText = new_title
-        document.querySelector('#readPostModalContent').innerText = new_content
-
-        document.querySelector("#closeEditPostModal").click() // 수정 모달창 닫고
-        document.querySelector("#openRead").click() // 읽기 모달창 열고
-    });
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
 }
 
 
@@ -348,7 +248,6 @@ function cancleEdit(event) {
 function deletePost(event) {
     const currentPostId = localStorage.getItem("current_post_id")
 
-<<<<<<< HEAD
   var settings = {
     "url": `http://localhost:8080/posts/${currentPostId}`,
     "method": "DELETE",
@@ -358,17 +257,6 @@ function deletePost(event) {
       "Refresh_Token": Refresh_Token
     },
   };
-=======
-    var settings = {
-        "url": "http://localhost:8080/posts/" + currentPostId,
-        "method": "DELETE",
-        "timeout": 0,
-        "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
-        },
-    };
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
 
     $.ajax(settings).done(function (response) {
         alert("삭제 되었습니다.");
@@ -413,8 +301,6 @@ const maxButton = 5; // 표시할 버튼 갯수
 let maxPage = Math.ceil(numOfContent / maxContent);
 let page = 1; // 새로고침 시 1페이지부터 시작
 
-
-<<<<<<< HEAD
 // 게시글 전체 갯수 가져오기 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // function setPostsCount() {
 //   $.ajax({
@@ -427,26 +313,10 @@ let page = 1; // 새로고침 시 1페이지부터 시작
 //     }
 //   });
 // }
-=======
-// 게시글 전체 길이 가져오기
-function setPostsCount() {
-    $.ajax({
-        type: 'GET',
-        url: "http://localhost:8080/posts/groups/" + tempGroupId + "/count",
-        data: {},
-        async: false, // 비동기 해제
-        success: function (response) {
-            localStorage.setItem("postsCount", response)
-        }
-    });
-}
-
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
 
 // pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable pageable
 // 해당 페이지 게시글 리스트 가져오기 
 function getPosts(pageNum, sizeNum) {
-<<<<<<< HEAD
   $.ajax({
     type: 'GET',
     url: `http://localhost:8080/groups/${tempGroupId}/post?page=${pageNum}&size=${sizeNum}`,
@@ -465,18 +335,6 @@ function getPosts(pageNum, sizeNum) {
       // const postArray = JSON.parse(localStorage.getItem("pagedPostList"))
     }
   });
-=======
-    $.ajax({
-        type: 'GET',
-        url: "http://localhost:8080/posts/groups/" + tempGroupId + "?page=" + pageNum + "&size=" + sizeNum,
-        data: {},
-        async: false, // 비동기 해제
-        success: function (data) {
-            localStorage.setItem("pagedPostList", JSON.stringify(data));
-            const postArray = JSON.parse(localStorage.getItem("pagedPostList"))
-        }
-    });
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
 }
 
 
@@ -490,22 +348,10 @@ const makeContent = (i) => {
     const content__header = document.createElement("div");
     content__header.classList.add("content__header");
 
-<<<<<<< HEAD
   let simpleCreatedAt = "null"
   let currentLikeCount = currentPost["likeCount"]
   let likeChecked = ""
   if (currentPost["likeChecked"] == true) { likeChecked += "active"}
-=======
-    let simpleCreatedAt = "null"
-    let likeChecked = ""
-    let currentLikeCount = currentPost["likeCount"]
-
-    // 좋아요 체크여부 가져오기
-    checkLike(currentPost["id"]) // localStorage에 현재 게시글 좋아요 체크 여부를 저장
-    if (localStorage.getItem("currentLikeChecked") === true) {
-        likeChecked += "active"
-    }
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
 
     if (currentPost["createdAt"]) { // createdAt이 null일 경우 페이지 로딩 안됨... 임시로 if문 적용
         const createdAt = String(currentPost["createdAt"])
@@ -589,7 +435,6 @@ const renderContent = (page) => {
 
 // 버튼 렌더링
 const renderButton = (page) => {
-<<<<<<< HEAD
   while (buttons.hasChildNodes()) {
     buttons.removeChild(buttons.lastChild);
   }
@@ -598,16 +443,6 @@ const renderButton = (page) => {
   }
   // console.log(page)
   buttons.children[0].classList.add("active"); // 첫 로딩시 가장 왼쪽 페이지 선택
-=======
-    while (buttons.hasChildNodes()) {
-        buttons.removeChild(buttons.lastChild);
-    }
-    for (let i = page; i < page + maxButton && i <= maxPage; i++) {
-        buttons.appendChild(makeButton(i));
-    }
-    console.log(page)
-    buttons.children[0].classList.add("active"); // 첫 로딩시 가장 왼쪽 페이지 선택
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
 
     const createdButtons = document.querySelectorAll('.button');
     createdButtons.forEach((createdButton) => {
@@ -644,13 +479,11 @@ const render = (page) => {
 render(page);
 
 
-<<<<<<< HEAD
 
 
 
 
-=======
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
+
 /**
  * 댓글 관련 기능
  */
@@ -664,7 +497,6 @@ function renderComments(currentPostId) {
         commentList.firstChild.remove()
     }
 
-<<<<<<< HEAD
   var settings = {
     "url": `http://localhost:8080/posts/${currentPostId}/comment`,
     "method": "GET",
@@ -680,21 +512,6 @@ function renderComments(currentPostId) {
     // console.log(response)
     var cCnt = commentList.length;
     document.querySelector("#cCnt").innerText = cCnt;
-=======
-    var settings = {
-        "url": "http://localhost:8080/posts/" + currentPostId + "/comment",
-        "method": "GET",
-        "timeout": 0,
-        "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
-        },
-    };
-
-    $.ajax(settings).done(function (response) {
-        var cCnt = response.length;
-        document.querySelector("#cCnt").innerText = cCnt;
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
 
         if (cCnt > 0) {
             for (i = 0; i < cCnt; i++) {
@@ -739,7 +556,6 @@ function renderComments(currentPostId) {
 
 // 댓글 작성
 function writeComment() {
-<<<<<<< HEAD
   const commentStr = document.querySelector("#comment").value
   const currentPostId = localStorage.getItem("current_post_id")
   var settings = {
@@ -755,23 +571,6 @@ function writeComment() {
       "comment": commentStr
     }),
   };
-=======
-    const commentStr = document.querySelector("#comment").value
-    const currentPostId = localStorage.getItem("current_post_id")
-    var settings = {
-        "url": "http://localhost:8080/posts/" + currentPostId + "/comment",
-        "method": "POST",
-        "timeout": 0,
-        "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
-            "Content-Type": "application/json"
-        },
-        "data": JSON.stringify({
-            "comment": commentStr
-        }),
-    };
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
 
     $.ajax(settings).done(function (response) {
         alert("댓글작성 완료")
@@ -784,7 +583,6 @@ function writeComment() {
 
 // 댓글 수정
 function editComment(event) {
-<<<<<<< HEAD
   const currentPostId = localStorage.getItem("current_post_id")
   const currentCommentId = event.currentTarget.parentElement.previousElementSibling.children[2].innerText
   const newCommentStr = event.currentTarget.parentElement.previousElementSibling.previousElementSibling.value
@@ -801,24 +599,6 @@ function editComment(event) {
       "comment": newCommentStr
     }),
   };
-=======
-    const currentPostId = localStorage.getItem("current_post_id")
-    const currentCommentId = event.currentTarget.parentElement.previousElementSibling.children[2].innerText
-    const newCommentStr = event.currentTarget.parentElement.previousElementSibling.previousElementSibling.value
-    var settings = {
-        "url": "http://localhost:8080/comments/" + currentCommentId,
-        "method": "PUT",
-        "timeout": 0,
-        "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
-            "Content-Type": "application/json"
-        },
-        "data": JSON.stringify({
-            "comment": newCommentStr
-        }),
-    };
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
 
     $.ajax(settings).done(function (response) {
         alert("수정 완료")
@@ -855,7 +635,6 @@ function deleteComment(event) {
     const currentPostId = localStorage.getItem("current_post_id")
     const currentCommentId = event.currentTarget.nextElementSibling.nextElementSibling.innerText
 
-<<<<<<< HEAD
   var settings = {
     "url": `http://localhost:8080/comments/${currentCommentId}`,
     "method": "DELETE",
@@ -866,18 +645,6 @@ function deleteComment(event) {
       "Content-Type": "application/json"
     },
   };
-=======
-    var settings = {
-        "url": "http://localhost:8080/comments/" + currentCommentId,
-        "method": "DELETE",
-        "timeout": 0,
-        "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
-            "Content-Type": "application/json"
-        },
-    };
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
 
     $.ajax(settings).done(function (response) {
         alert("삭제 완료")
@@ -944,7 +711,6 @@ function randomInt(min, max) {
 }
 
 
-<<<<<<< HEAD
 // 좋아요 누르기
 function doLike(postId) {
   var settings = {
@@ -963,55 +729,11 @@ function doLike(postId) {
     alert("like failed")
     location.reload()
   });
-=======
-// 좋아요 여부 확인 -> 좋아요 선택되어있게 표시
-function checkLike(postId) {
-    // console.log(String(postId))
-    $.ajax({
-        type: "GET",
-        url: "http://localhost:8080/posts/" + String(postId) + "/likeCheck",
-        async: false,
-        data: {},
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader("Authorization", Authorization);
-            xhr.setRequestHeader("Refresh_Token", Refresh_Token);
-        },
-        success: function (response) {
-            if (response["message"] === "true") {
-                localStorage.setItem("currentLikeChecked", true)
-            } else {
-                localStorage.setItem("currentLikeChecked", false)
-            }
-        }
-    });
-}
-
-
-// 좋아요 누르기
-function doLike(postId) {
-    var settings = {
-        "url": "http://localhost:8080/posts/" + String(postId) + "/like",
-        "method": "POST",
-        "timeout": 0,
-        "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
-        },
-    };
-
-    $.ajax(settings).done(function (response) {
-        console.log(response);
-    }).fail(function () {
-        alert("like failed")
-        location.reload()
-    });
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
 }
 
 
 // 좋아요 취소
 function unLike(postId) {
-<<<<<<< HEAD
   var settings = {
     "url": `http://localhost:8080/posts/${postId}/like`,
     "method": "DELETE",
@@ -1029,26 +751,6 @@ function unLike(postId) {
     location.reload()
   });
 }
-=======
-    var settings = {
-        "url": "http://localhost:8080/posts/" + String(postId) + "/like",
-        "method": "DELETE",
-        "timeout": 0,
-        "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
-        },
-    };
->>>>>>> d314029eff17ddf05ce5e31e6686da9fc4ce9479
-
-    $.ajax(settings).done(function (response) {
-        console.log(response);
-    }).fail(function () {
-        alert("unlike failed")
-        location.reload()
-    });
-}
-
 
 /**
  * 채팅

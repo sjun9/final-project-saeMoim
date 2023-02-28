@@ -7,6 +7,6 @@ import com.saemoim.domain.Post;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-	Page<Post> findAllByGroup_Id(Long group_id, Pageable pageable);
+	Page<Post> findAllByGroup_IdOrderByCreatedAtDesc(Long group_id, Pageable pageable);
 
 }

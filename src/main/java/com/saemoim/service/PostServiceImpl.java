@@ -34,7 +34,7 @@ public class PostServiceImpl implements PostService {
 	@Transactional(readOnly = true)
 	@Override
 	public Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable, Long userId) {
-		Page<Post> postList = postRepository.findAllByGroup_Id(group_id, pageable);
+		Page<Post> postList = postRepository.findAllByGroup_IdOrderByCreatedAtDesc(group_id, pageable);
 		return postList.map(post -> {
 			Long id = post.getId();
 			Long postUserId = post.getUserId();
