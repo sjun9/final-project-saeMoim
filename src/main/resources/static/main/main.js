@@ -908,9 +908,15 @@ function showMoimDetail(event, id) {
                                     <h6>${data.address}</h6>`)
         console.log(data.address)
         let detailLatLng = new kakao.maps.LatLng(data.latitude, data.longitude);
-        detailMarker.setPosition(detailLatLng);
-        detailMarker.setMap(detailMap);
-        detailMap.setCenter(detailLatLng);
+        // detailMarker.setPosition(detailLatLng);
+        // detailMarker.setMap(detailMap);
+        // detailMap.setCenter(detailLatLng);
+
+        kakao.maps.event.addListener(detailMap, 'tilesloaded', function () {
+            detailMap.setCenter(detailLatLng);
+            detailMarker.setPosition(detailLatLng);
+            detailMarker.setMap(detailMap);
+        }, {once: true});
 
         setTimeout(function () {
             detailMap.relayout();
