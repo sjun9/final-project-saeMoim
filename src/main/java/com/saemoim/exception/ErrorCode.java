@@ -52,6 +52,7 @@ public enum ErrorCode {
 
 	// 파일 업로드
 	NOT_IMAGE_FILE("이미지 파일이 아닙니다."),
+	EMPTY_FILE("파일이 없습니다."),
 
 	// 모임
 	NOT_FOUND_GROUP("해당 모임은 존재하지 않습니다."),

@@ -1230,3 +1230,29 @@ $(document).ready(function () {
     });
 
 });
+
+// $('#btn-save').on('click', uploadImage);
+
+function uploadImage() {
+    var file = $('#img')[0].files[0];
+    console.log(file);
+    var form = new FormData();
+    form.append("img", file);
+
+    var settings = {
+        "url": "http://localhost:8080/profile/image",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Authorization": localStorage.getItem("Authorization")
+        },
+        "processData": false,
+        "mimeType": "multipart/form-data",
+        "contentType": false,
+        "data": form
+    };
+
+    $.ajax(settings).done(function (response) {
+        console.log(response);
+    });
+}

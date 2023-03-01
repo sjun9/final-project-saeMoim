@@ -4,14 +4,19 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.saemoim.domain.User;
+import com.saemoim.exception.ErrorCode;
+import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AWSS3Service {
 
 	private final AmazonS3Client amazonS3Client;
-
+	private final UserRepository userRepository;
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
@@ -32,13 +37,36 @@ public class AWSS3Service {
 			() -> new IllegalArgumentException("MultipartFile -> 파일로 전환 실패"));
 		return upload(uploadFile, dirName);
 	}
+	@Transactional
+	public String upload(MultipartFile multipartFile, String dirName, Long userId) throws IOException {
+		System.out.println(multipartFile.getContentType());
+		if (multipartFile.isEmpty()) {
+			throw new IllegalArgumentException(ErrorCode.EMPTY_FILE.getMessage());
+		}
+		if (multipartFile.getContentType() == null || !multipartFile.getContentType().startsWith("image")) {
+			throw new IllegalArgumentException(ErrorCode.NOT_IMAGE_FILE.getMessage());
+		}
+
+		File uploadFile = convert(multipartFile).orElseThrow(
+			() -> new IllegalArgumentException("MultipartFile -> 파일로 전환 실패"));
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
+		String imageUrl = upload(uploadFile, dirName);
+
+		user.updateProfileImage(imageUrl);
+		return imageUrl;
+	}
 
 	// S3 버킷에 파일 업로드
 	private String upload(File uploadFile, String dirName) {
-		String fileName = dirName + "/" + uploadFile.getName();
+		String fileName = dirName + "/" + addUUID(uploadFile.getName());
 		String uploadImageUrl = putS3(uploadFile, fileName);
 		removeNewFile(uploadFile);
 		return uploadImageUrl;
+	}
+
+	private String addUUID(String fileName) {
+		return UUID.randomUUID().toString() + fileName;
 	}
 
 	// 로컬에 생성된 파일 삭제
@@ -69,5 +97,6 @@ public class AWSS3Service {
 		}
 		return Optional.empty();
 	}
+
 
 }
