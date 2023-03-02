@@ -1,20 +1,19 @@
 package com.saemoim.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,10 +22,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.saemoim.annotation.WithCustomMockUser;
@@ -41,7 +46,7 @@ import com.saemoim.security.CustomAccessDeniedHandler;
 import com.saemoim.security.CustomAuthenticationEntryPoint;
 import com.saemoim.service.AdminServiceImpl;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @WebMvcTest(controllers = AdminController.class)
 @MockBean(JpaMetamodelMappingContext.class)
 class AdminControllerTest {
@@ -56,28 +61,51 @@ class AdminControllerTest {
 	@MockBean
 	private CustomAccessDeniedHandler customAccessDeniedHandler;
 
+	@BeforeEach
+	public void setUp(WebApplicationContext context, RestDocumentationContextProvider restDocumentation) {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
+			.apply(documentationConfiguration(restDocumentation)).build();
+	}
+
 	@Test
 	@DisplayName("관리자 로그인")
 	@WithCustomMockUser
 	void signInByAdmin() throws Exception {
 		//given
-		AdminTokenResponseDto responseDto = new AdminTokenResponseDto("aaaaa");
+		AdminTokenResponseDto responseDto = new AdminTokenResponseDto("adminAccessToken");
 		AdminRequestDto requestDto = AdminRequestDto.builder()
-			.password("asdf1234!")
-			.username("장성준")
+			.password("adminPass!1")
+			.username("admin")
 			.build();
 
 		when(adminService.signInByAdmin(any(AdminRequestDto.class))).thenReturn(responseDto);
+		// given(adminService.signInByAdmin(any(AdminRequestDto.class))).willReturn(responseDto);
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			MockMvcRequestBuilders.post("/admin/sign-in")
+			RestDocumentationRequestBuilders.post("/admin/sign-in")
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(csrf())
 				.content(new Gson().toJson(requestDto)));//then
 		//then
 		verify(adminService).signInByAdmin(any(AdminRequestDto.class));
-		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", "aaaaa"))
-			.andExpect(jsonPath("data").value("관리자 로그인 완료"));
+		resultActions
+			.andExpect(status().isOk())
+			.andExpect(header().string("Authorization", "adminAccessToken"))
+			.andExpect(jsonPath("data").value("관리자 로그인 완료"))
+			.andDo(document("AdminSignIn",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestFields(
+					fieldWithPath("username").description("어드민 계정ID").type(JsonFieldType.STRING),
+					fieldWithPath("password").description("어드민 패스워드").type(JsonFieldType.STRING)
+				),
+				responseHeaders(
+					headerWithName("Authorization").description("엑세스토큰")
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
+				)
+			));
 	}
 
 	@Test
