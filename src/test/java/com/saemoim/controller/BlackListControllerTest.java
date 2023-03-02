@@ -28,7 +28,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -167,9 +166,23 @@ class BlackListControllerTest {
 		doNothing().when(blackListService).deleteBlacklist(anyLong());
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			MockMvcRequestBuilders.delete("/admin/blacklists/{blacklistId}", 1L));
+			RestDocumentationRequestBuilders.delete("/admin/blacklists/{blacklistId}", 1L)
+				.header("Authorization", "Bearer adminAccessToken"));
 		//then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("data", responseDto.getData()).exists());
+			.andExpect(jsonPath("data", responseDto.getData()).exists())
+			.andDo(document("blacklist/delete",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(
+					parameterWithName("blacklistId").description("블랙리스트 id")
+				),
+				requestHeaders(
+					headerWithName("Authorization").description("어드민계정 엑세스토큰")
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지")
+				)
+			));
 	}
 }
