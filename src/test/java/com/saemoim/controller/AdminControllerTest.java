@@ -39,6 +39,9 @@ import com.saemoim.dto.request.AdminRequestDto;
 import com.saemoim.dto.response.AdminResponseDto;
 import com.saemoim.dto.response.AdminTokenResponseDto;
 import com.saemoim.dto.response.GenericsResponseDto;
+import com.saemoim.jwt.JwtUtil;
+import com.saemoim.security.CustomAccessDeniedHandler;
+import com.saemoim.security.CustomAuthenticationEntryPoint;
 import com.saemoim.service.AdminServiceImpl;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
@@ -49,6 +52,12 @@ class AdminControllerTest {
 	private AdminServiceImpl adminService;
 	@Autowired
 	private MockMvc mockMvc;
+	@MockBean
+	private JwtUtil jwtUtil;
+	@MockBean
+	private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	@MockBean
+	private CustomAccessDeniedHandler customAccessDeniedHandler;
 
 	@BeforeEach
 	public void setUp(WebApplicationContext context, RestDocumentationContextProvider restDocumentation) {
