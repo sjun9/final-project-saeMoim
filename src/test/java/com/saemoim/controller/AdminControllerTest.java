@@ -7,7 +7,6 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
@@ -29,7 +28,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -88,7 +86,7 @@ class AdminControllerTest {
 		verify(adminService).signInByAdmin(any(AdminRequestDto.class));
 		resultActions
 			.andExpect(status().isOk())
-			.andExpect(header().string("Authorization", "adminAccessToken"))
+			.andExpect(header().string("Authorization", "Bearer accessToken"))
 			.andExpect(jsonPath("data").value("관리자 로그인 완료"))
 			.andDo(document("admin/sign-in",
 				preprocessRequest(prettyPrint()),
@@ -187,7 +185,7 @@ class AdminControllerTest {
 		//then
 		resultActions.andExpect(status().isOk())
 			.andExpect(jsonPath("data").value("관리자 계정 삭제가 완료 되었습니다."))
-			.andDo(document("admin/createAdmin",
+			.andDo(document("admin/deleteAdmin",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				pathParameters(
@@ -207,16 +205,30 @@ class AdminControllerTest {
 	@WithCustomMockUser(role = UserRoleEnum.ADMIN)
 	void reissueAdmin() throws Exception {
 		//given
-		String accessToken = "aaaaa";
+		String accessToken = "Bearer newAccessToken";
 
 		when(adminService.issueToken(anyLong(), anyString(), any(UserRoleEnum.class))).thenReturn(accessToken);
 
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			MockMvcRequestBuilders.post("/admin/reissue").with(csrf()));
+			RestDocumentationRequestBuilders.post("/admin/reissue")
+				.header("Authorization", "Bearer accessToken"));
 
 		//then
-		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", "aaaaa"))
-			.andExpect(jsonPath("data").value("토큰 연장이 완료 되었습니다."));
+		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", "Bearer newAccessToken"))
+			.andExpect(jsonPath("data").value("토큰 연장이 완료 되었습니다."))
+			.andDo(document("admin/reissueAdmin",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("어드민계정 엑세스토큰")
+				),
+				responseHeaders(
+					headerWithName("Authorization").description("엑세스토큰")
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
+				)
+			));
 	}
 }
