@@ -30,13 +30,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			oAuth2User.getAttributes());
 		Optional<User> userOptional = userRepository.findByEmail(attributes.getEmail());
 
-		if (userOptional.isEmpty()) {
-			User user = attributes.toEntity();
-			userRepository.save(user);
-			return new UserDetailsImpl(user.getId(), user.getUsername(), user.getRole(), attributes.getAttributes());
+		User user;
+		if (userOptional.isPresent()) {
+			user = userOptional.get().updateKakaoId(attributes.getAttributes().get(userNameAttributeName).toString());
 		} else {
-			User user = userOptional.get();
-			return new UserDetailsImpl(user.getId(), user.getUsername(), user.getRole());
+			user = attributes.toEntity();
+			userRepository.save(user);
 		}
+		return new UserDetailsImpl(user.getId(), user.getUsername(), user.getRole(), attributes.getAttributes());
 	}
 }

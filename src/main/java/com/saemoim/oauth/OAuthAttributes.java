@@ -45,10 +45,11 @@ public class OAuthAttributes {
 			.username(profile.get("nickname").toString())
 			.email(account.get("email").toString())
 			.image(profile.get("profile_image_url").toString())
+			.attributes(attributes)
 			.nameAttributeKey(userNameAttributeName).build();
 	}
 
 	public User toEntity() {
-		return new User(email, password, username, UserRoleEnum.USER);
+		return new User(email, password, username, UserRoleEnum.USER, attributes.get(nameAttributeKey).toString());
 	}
 }
