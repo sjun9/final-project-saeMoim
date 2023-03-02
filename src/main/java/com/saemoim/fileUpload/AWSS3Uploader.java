@@ -24,18 +24,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AWSS3Service {
+public class AWSS3Uploader {
 
 	private final AmazonS3Client amazonS3Client;
 	private final UserRepository userRepository;
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
-	// MultipartFile 가져와 변환하기. S3에는 MultipartFile 업로드 안 되기 때문
 	public String upload(MultipartFile multipartFile, String dirName) throws IOException {
-		File uploadFile = convert(multipartFile).orElseThrow(
-			() -> new IllegalArgumentException("MultipartFile -> 파일로 전환 실패"));
-		return upload(uploadFile, dirName);
+		if(multipartFile != null) {
+			File uploadFile = convert(multipartFile).orElseThrow(
+				() -> new IllegalArgumentException("MultipartFile -> 파일로 전환 실패"));
+			return upload(uploadFile, dirName);
+		}
+		return null;
 	}
 	@Transactional
 	public String upload(MultipartFile multipartFile, String dirName, Long userId) throws IOException {
@@ -52,11 +54,8 @@ public class AWSS3Service {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
 		String imageUrl = upload(uploadFile, dirName);
-
-		user.updateProfileImage(imageUrl);
 		return imageUrl;
 	}
-
 	// S3 버킷에 파일 업로드
 	private String upload(File uploadFile, String dirName) {
 		String fileName = dirName + "/" + addUUID(uploadFile.getName());
@@ -88,15 +87,13 @@ public class AWSS3Service {
 
 	// 파일 타입 전환 (MultipartFile -> File)
 	private Optional<File> convert(MultipartFile multipartFile) throws IOException {
-		File convertFile = new File(multipartFile.getOriginalFilename());
-		if (convertFile.createNewFile()) {
-			try (FileOutputStream fileOutputStream = new FileOutputStream(convertFile)) {
-				fileOutputStream.write(multipartFile.getBytes());
+			File convertFile = new File(multipartFile.getOriginalFilename());
+			if (convertFile.createNewFile()) {
+				try (FileOutputStream fileOutputStream = new FileOutputStream(convertFile)) {
+					fileOutputStream.write(multipartFile.getBytes());
+				}
+				return Optional.of(convertFile);
 			}
-			return Optional.of(convertFile);
-		}
 		return Optional.empty();
 	}
-
-
 }

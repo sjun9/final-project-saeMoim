@@ -1,5 +1,6 @@
 package com.saemoim.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
@@ -20,12 +22,14 @@ import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.exception.ErrorCode;
+import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
 import com.saemoim.repository.ParticipantRepository;
 import com.saemoim.repository.TagRepository;
 import com.saemoim.repository.UserRepository;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -37,6 +41,7 @@ public class GroupServiceImpl implements GroupService {
 	private final ParticipantRepository participantRepository;
 	private final UserRepository userRepository;
 	private final TagRepository tagRepository;
+	private final AWSS3Uploader awss3Uploader;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -132,7 +137,7 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional
-	public GroupResponseDto createGroup(GroupRequestDto requestDto, Long userId) {
+	public GroupResponseDto createGroup(GroupRequestDto requestDto, Long userId, MultipartFile multipartFile) {
 		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
@@ -146,7 +151,21 @@ public class GroupServiceImpl implements GroupService {
 		if (category.getParentId() == null) {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
-		Group newGroup = new Group(requestDto, category, user);
+		String dirName = "group";
+		String imgPath;
+		if(multipartFile == null){
+			Group newGroup = new Group(requestDto, category, user);
+			groupRepository.save(newGroup);
+
+			return new GroupResponseDto(newGroup);
+		}
+
+		try {
+			imgPath = awss3Uploader.upload(multipartFile, dirName);
+		} catch (IOException e) {
+			throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+		}
+		Group newGroup = new Group(requestDto, category, user, imgPath);
 		groupRepository.save(newGroup);
 
 		return new GroupResponseDto(newGroup);

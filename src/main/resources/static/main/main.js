@@ -328,7 +328,6 @@ function showSearch(name) {
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
-
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
@@ -411,11 +410,12 @@ function showAllMoim() {
                 let tags = response[i]['tags']
                 let leaderId = response[i]['userId']
                 let leaderName = response[i]['username']
-
+                let imgPath = response[i]['imagePath']
+                console.log(imgPath)
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
-                                        <img src="../static/images/main-running.jpg" alt="">
+                                        <img src="${imgPath}" alt="">
                                             <span>${groupName}</span>
                                             <input type="hidden" value=${content}>
                                             <input type="hidden" value=${tags}>
@@ -932,9 +932,15 @@ function showMoimDetail(event, id) {
 }
 
 
-//미완
+//미완 - 모임생성
 function saveMoim() {
+
     let tags = []
+    let file = $('#newMoim-image')[0].files[0];
+    console.log(file)
+    let formData = new FormData();
+    formData.append("img", file);
+
     for (let i = 0; i < $('[name="tagsA"]').length; i++) {
         tags.push($('[name="tagsA"]')[i].value)
     }
@@ -959,13 +965,18 @@ function saveMoim() {
     latitude = undefined;
     longitude = undefined;
 
+    formData.append("requestDto", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
+
+
     $.ajax({
         type: "post",
         url: "http://localhost:8080/group",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
-        data: JSON.stringify(jsonData), //전송 데이터
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        data: formData, //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
-        contentType: "application/json; charset=utf-8" //헤더의 Content-Type을 설정
+        contentType: false, //헤더의 Content-Type을 설정
+        mimeType: "multipart/form-data",
+        processData: false
     }).done(function (data) {
         alert("작성 완료")
         location.reload()

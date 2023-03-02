@@ -2,6 +2,7 @@ package com.saemoim.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -81,6 +82,24 @@ public class Group extends TimeStamped {
 	private int recruitNumber;
 	@Column(nullable = false)
 	private int participantCount = 0;
+
+	@Column(nullable = true)
+	private String imagePath = "src/main/documents/wireFrame.png";
+
+	public Group(GroupRequestDto request, Category category, User user, String imgPath) {
+		this.user = user;
+		this.category = category;
+		request.getTagNames().forEach(t -> this.tags.add(new Tag(t, this)));
+		this.name = request.getName();
+		this.content = request.getContent();
+		this.address = request.getAddress();
+		this.firstRegion = request.getFirstRegion();
+		this.secondRegion = request.getSecondRegion();
+		this.latitude = request.getLatitude();
+		this.longitude = request.getLongitude();
+		this.recruitNumber = request.getRecruitNumber();
+		this.imagePath = imgPath;
+	}
 
 	public Group(GroupRequestDto request, Category category, User user) {
 		this.user = user;

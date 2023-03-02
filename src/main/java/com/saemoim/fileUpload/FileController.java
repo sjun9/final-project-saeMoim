@@ -16,21 +16,21 @@ import lombok.RequiredArgsConstructor;
 @RestController
 public class FileController {
 
-	private final AWSS3Service awss3Service;
+	private final AWSS3Uploader awss3Uploader;
 	// s3에 파일 업로드 해보기
 	@PostMapping("/upload")
 	public String upload(@RequestParam("img") MultipartFile multipartFile ) throws IOException {
-		return awss3Service.upload(multipartFile, "static");
+		return awss3Uploader.upload(multipartFile, "static");
 	}
 
 	@PostMapping("/profile/image")
 	public String uploadProfileImage(@RequestParam("img") MultipartFile multipartFile
 		,@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-		return awss3Service.upload(multipartFile, "profile",userDetails.getId());
+		return awss3Uploader.upload(multipartFile, "profile",userDetails.getId());
 	}
 
 	@PostMapping("/post/image")
 	public String uploadPostImage(@RequestParam("img") MultipartFile multipartFile) throws IOException {
-		return awss3Service.upload(multipartFile, "post");
+		return awss3Uploader.upload(multipartFile, "post");
 	}
 }
