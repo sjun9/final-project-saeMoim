@@ -6,8 +6,8 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
@@ -125,13 +125,14 @@ class AdminControllerTest {
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				requestHeaders(
-					headerWithName("Authorization").description("어드민계정 엑세스토큰")
+					headerWithName("Authorization").description("루트어드민계정 엑세스토큰")
 				),
 				responseFields(
 					subsectionWithPath("data").description("어드민계정리스트"),
 					fieldWithPath("data.[].adminId").description("어드민 id").type(JsonFieldType.NUMBER),
 					fieldWithPath("data.[].adminName").description("어드민 계정 아이디").type(JsonFieldType.STRING)
-				)));
+				)
+			));
 	}
 
 	@Test
@@ -141,19 +142,34 @@ class AdminControllerTest {
 		//given
 		GenericsResponseDto responseDto = new GenericsResponseDto("관리자 계정 생성이 완료 되었습니다.");
 		AdminRequestDto requestDto = AdminRequestDto.builder()
-			.username("장성준")
-			.password("asdf1234!")
+			.username("admin")
+			.password("adminPass1!")
 			.build();
 
 		doNothing().when(adminService).createAdmin(any(AdminRequestDto.class));
 		//when
-		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/admin")
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.post("/admin")
+			.header("Authorization", "Bearer accessToken")
 			.contentType(MediaType.APPLICATION_JSON)
-			.with(csrf())
 			.content(new Gson().toJson(requestDto)));
 		//then
 		resultActions.andExpect(status().isCreated())
-			.andExpect(jsonPath("data").value(responseDto.getData()));
+			.andExpect(jsonPath("data").value(responseDto.getData()))
+			.andDo(document("admin/createAdmin",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("루트어드민계정 엑세스토큰")
+				),
+				requestFields(
+					fieldWithPath("username").description("어드민 아이디").type(JsonFieldType.STRING),
+					fieldWithPath("password").description("어드민 패스워드").type(JsonFieldType.STRING)
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
+				)
+			));
+
 	}
 
 	@Test
@@ -165,14 +181,27 @@ class AdminControllerTest {
 
 		doNothing().when(adminService).deleteAdmin(adminId);
 		//when
-		ResultActions resultActions = mockMvc.perform(delete("/admins/{adminId}", adminId)
-			.with(csrf()));
+		ResultActions resultActions = mockMvc.perform(
+			RestDocumentationRequestBuilders.delete("/admins/{adminId}", adminId)
+				.header("Authorization", "Bearer accessToken"));
 		//then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("data").value("관리자 계정 삭제가 완료 되었습니다."));
+			.andExpect(jsonPath("data").value("관리자 계정 삭제가 완료 되었습니다."))
+			.andDo(document("admin/createAdmin",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(
+					parameterWithName("adminId").description("어드민 id")
+				),
+				requestHeaders(
+					headerWithName("Authorization").description("루트어드민계정 엑세스토큰")
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
+				)
+			));
 	}
 
-	//수정 필요
 	@Test
 	@DisplayName("관리자 토큰 연장")
 	@WithCustomMockUser(role = UserRoleEnum.ADMIN)
