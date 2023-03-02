@@ -135,14 +135,13 @@ ion-icon {
     border-left: 1px solid #d3d3d3;
 }
 .leader {
-    flex-basis: 10%;
+    flex-basis: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-y: none;
 }
 .userzone {
-    flex-basis: 90%;
+    flex-basis: calc(100vh - 100px);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -160,6 +159,7 @@ ion-icon {
 .userzone__user {
     width: 100%;
     height: 100px;
+    padding: 15px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -179,14 +179,14 @@ ion-icon {
     cursor: pointer;
 }
 
-.userzone__user__img {
+/* .userzone__user__img {
     margin: 0 25px 0 15px;
     width: 70px;
     height: 70px;
     background-color: aqua;
     border-radius: 100%;
     cursor: pointer;
-}
+} */
 
 .userzone__user__name {
     margin-left: 10px;
