@@ -6,6 +6,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
@@ -110,10 +111,24 @@ class BlackListControllerTest {
 		doNothing().when(blackListService).addBlacklist(anyLong());
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			MockMvcRequestBuilders.post("/admin/blacklist/users/{userId}", 1L));
+			RestDocumentationRequestBuilders.post("/admin/blacklist/users/{userId}", 1L)
+				.header("Authorization", "Bearer adminAccessToken"));
 		//then
 		resultActions.andExpect(status().isCreated())
-			.andExpect(jsonPath("data").value(responseDto.getData()));
+			.andExpect(jsonPath("data").value(responseDto.getData()))
+			.andDo(document("blacklist/add",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(
+					parameterWithName("userId").description("블랙리스트 등록 할 사용자 id")
+				),
+				requestHeaders(
+					headerWithName("Authorization").description("어드민계정 엑세스토큰")
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지")
+				)
+			));
 	}
 
 	@Test
@@ -124,10 +139,24 @@ class BlackListControllerTest {
 		doNothing().when(blackListService).imposePermanentBan(anyLong());
 		//when
 		ResultActions resultActions = mockMvc.perform(
-			MockMvcRequestBuilders.patch("/admin/blacklists/{blacklistId}", 1L));
+			RestDocumentationRequestBuilders.patch("/admin/blacklists/{blacklistId}", 1L)
+				.header("Authorization", "Bearer adminAccessToken"));
 		//then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("data", responseDto.getData()).exists());
+			.andExpect(jsonPath("data").value(responseDto.getData()))
+			.andDo(document("blacklist/addPermanent",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(
+					parameterWithName("blacklistId").description("블랙리스트 id")
+				),
+				requestHeaders(
+					headerWithName("Authorization").description("어드민계정 엑세스토큰")
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지")
+				)
+			));
 	}
 
 	@Test
