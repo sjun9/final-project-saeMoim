@@ -39,9 +39,6 @@ import com.saemoim.dto.request.AdminRequestDto;
 import com.saemoim.dto.response.AdminResponseDto;
 import com.saemoim.dto.response.AdminTokenResponseDto;
 import com.saemoim.dto.response.GenericsResponseDto;
-import com.saemoim.jwt.JwtUtil;
-import com.saemoim.security.CustomAccessDeniedHandler;
-import com.saemoim.security.CustomAuthenticationEntryPoint;
 import com.saemoim.service.AdminServiceImpl;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
@@ -52,12 +49,6 @@ class AdminControllerTest {
 	private AdminServiceImpl adminService;
 	@Autowired
 	private MockMvc mockMvc;
-	@MockBean
-	private JwtUtil jwtUtil;
-	@MockBean
-	private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-	@MockBean
-	private CustomAccessDeniedHandler customAccessDeniedHandler;
 
 	@BeforeEach
 	public void setUp(WebApplicationContext context, RestDocumentationContextProvider restDocumentation) {
@@ -70,7 +61,7 @@ class AdminControllerTest {
 	@WithCustomMockUser
 	void signInByAdmin() throws Exception {
 		//given
-		AdminTokenResponseDto responseDto = new AdminTokenResponseDto("adminAccessToken");
+		AdminTokenResponseDto responseDto = new AdminTokenResponseDto("Bearer accessToken");
 		AdminRequestDto requestDto = AdminRequestDto.builder()
 			.password("adminPass!1")
 			.username("admin")
@@ -119,7 +110,7 @@ class AdminControllerTest {
 		//then
 		resultActions.andExpect(status().isOk())
 			.andExpect(jsonPath("$['data'][0]['adminName']").value("admin"))
-			.andDo(document("admin/getAdmins",
+			.andDo(document("admin/getAll",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				requestHeaders(
@@ -153,7 +144,7 @@ class AdminControllerTest {
 		//then
 		resultActions.andExpect(status().isCreated())
 			.andExpect(jsonPath("data").value(responseDto.getData()))
-			.andDo(document("admin/createAdmin",
+			.andDo(document("admin/create",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				requestHeaders(
@@ -185,7 +176,7 @@ class AdminControllerTest {
 		//then
 		resultActions.andExpect(status().isOk())
 			.andExpect(jsonPath("data").value("관리자 계정 삭제가 완료 되었습니다."))
-			.andDo(document("admin/deleteAdmin",
+			.andDo(document("admin/delete",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				pathParameters(
@@ -217,7 +208,7 @@ class AdminControllerTest {
 		//then
 		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", "Bearer newAccessToken"))
 			.andExpect(jsonPath("data").value("토큰 연장이 완료 되었습니다."))
-			.andDo(document("admin/reissueAdmin",
+			.andDo(document("admin/reissue",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				requestHeaders(
