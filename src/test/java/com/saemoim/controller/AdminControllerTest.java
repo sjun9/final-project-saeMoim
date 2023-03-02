@@ -79,12 +79,10 @@ class AdminControllerTest {
 			.build();
 
 		when(adminService.signInByAdmin(any(AdminRequestDto.class))).thenReturn(responseDto);
-		// given(adminService.signInByAdmin(any(AdminRequestDto.class))).willReturn(responseDto);
 		//when
 		ResultActions resultActions = mockMvc.perform(
 			RestDocumentationRequestBuilders.post("/admin/sign-in")
 				.contentType(MediaType.APPLICATION_JSON)
-				.with(csrf())
 				.content(new Gson().toJson(requestDto)));//then
 		//then
 		verify(adminService).signInByAdmin(any(AdminRequestDto.class));
@@ -92,11 +90,11 @@ class AdminControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(header().string("Authorization", "adminAccessToken"))
 			.andExpect(jsonPath("data").value("관리자 로그인 완료"))
-			.andDo(document("AdminSignIn",
+			.andDo(document("admin/sign-in",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				requestFields(
-					fieldWithPath("username").description("어드민 계정ID").type(JsonFieldType.STRING),
+					fieldWithPath("username").description("어드민 아이디").type(JsonFieldType.STRING),
 					fieldWithPath("password").description("어드민 패스워드").type(JsonFieldType.STRING)
 				),
 				responseHeaders(
@@ -114,14 +112,26 @@ class AdminControllerTest {
 	void getAdmins() throws Exception {
 		//given
 		List<AdminResponseDto> list = new ArrayList<>();
-		list.add(new AdminResponseDto(new Admin("admin", "password")));
+		list.add(new AdminResponseDto(Admin.builder().id(1L).username("admin").build()));
 
 		when(adminService.getAdmins()).thenReturn(list);
 		//when
-		ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/admin"));
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.get("/admin")
+			.header("Authorization", "Bearer accessToken"));
 		//then
 		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("$['data'][0]['adminName']").value("admin"));
+			.andExpect(jsonPath("$['data'][0]['adminName']").value("admin"))
+			.andDo(document("admin/getAdmins",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("어드민계정 엑세스토큰")
+				),
+				responseFields(
+					subsectionWithPath("data").description("어드민계정리스트"),
+					fieldWithPath("data.[].adminId").description("어드민 id").type(JsonFieldType.NUMBER),
+					fieldWithPath("data.[].adminName").description("어드민 계정 아이디").type(JsonFieldType.STRING)
+				)));
 	}
 
 	@Test
