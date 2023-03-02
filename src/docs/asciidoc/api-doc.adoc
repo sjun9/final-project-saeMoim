@@ -6,111 +6,108 @@
 == 1. Admin API
 
 === 1-1. 관리자 로그인
-
 ==== Request
-
 include::{snippets}/admin/sign-in/request-fields.adoc[]
-
 ==== Request Example
-
 include::{snippets}/admin/sign-in/http-request.adoc[]
-
 ==== Response
-
 - header
-
 include::{snippets}/admin/sign-in/response-headers.adoc[]
-
 - body
 include::{snippets}/admin/sign-in/response-fields.adoc[]
-
 ==== Response Example
-
 include::{snippets}/admin/sign-in/response-body.adoc[]
 
 === 1-2. 관리자 계정 목록 조회
-
 ==== Request
-
 include::{snippets}/admin/getAll/request-headers.adoc[]
-
 ==== Request Example
-
 include::{snippets}/admin/getAll/http-request.adoc[]
-
 ==== Response
-
-- body
 include::{snippets}/admin/getAll/response-fields.adoc[]
-
 ==== Response Example
-
 include::{snippets}/admin/getAll/response-body.adoc[]
 
 === 1-3. 관리자 계정 생성
-
 ==== Request
-
 - header
 include::{snippets}/admin/create/request-headers.adoc[]
 - body
-
 include::{snippets}/admin/create/request-fields.adoc[]
-
 ==== Request Example
-
 include::{snippets}/admin/create/http-request.adoc[]
-
 ==== Response
-
-- body
 include::{snippets}/admin/create/response-fields.adoc[]
-
 ==== Response Example
-
 include::{snippets}/admin/create/response-body.adoc[]
 
 === 1-4. 관리자 계정 삭제
-
-==== Request
-
-- header
+include::{snippets}/admin/delete/path-parameters.adoc[]
+==== Request - header
 include::{snippets}/admin/delete/request-headers.adoc[]
-
 ==== Request Example
-
 include::{snippets}/admin/delete/http-request.adoc[]
-
 ==== Response
-
-- body
 include::{snippets}/admin/delete/response-fields.adoc[]
-
 ==== Response Example
-
 include::{snippets}/admin/delete/response-body.adoc[]
 
 === 1-5. 관리자 토큰 연장
-
-==== Request
-
-- header
+==== Request - header
 include::{snippets}/admin/reissue/request-headers.adoc[]
-
 ==== Request Example
-
 include::{snippets}/admin/reissue/http-request.adoc[]
-
 ==== Response
-
 - header
-
 include::{snippets}/admin/reissue/response-headers.adoc[]
-
 - body
 include::{snippets}/admin/reissue/response-fields.adoc[]
-
 ==== Response Example
-
 include::{snippets}/admin/reissue/response-body.adoc[]
+
+== 2. Blacklist API
+
+=== 2-1. 블랙리스트 조회
+==== Request - header
+include::{snippets}/blacklist/getAll/request-headers.adoc[]
+==== Request Example
+include::{snippets}/blacklist/getAll/http-request.adoc[]
+==== Response
+include::{snippets}/blacklist/getAll/response-fields.adoc[]
+==== Response Example
+include::{snippets}/blacklist/getAll/response-body.adoc[]
+
+=== 2-2. 블랙리스트 등록
+include::{snippets}/blacklist/add/path-parameters.adoc[]
+==== Request - header
+include::{snippets}/blacklist/add/request-headers.adoc[]
+==== Request Example
+include::{snippets}/blacklist/add/http-request.adoc[]
+==== Response
+include::{snippets}/blacklist/add/response-fields.adoc[]
+==== Response Example
+include::{snippets}/blacklist/add/response-body.adoc[]
+
+=== 2-3. 블랙리스트 영구 등록
+include::{snippets}/blacklist/addPermanent/path-parameters.adoc[]
+==== Request - header
+include::{snippets}/blacklist/addPermanent/request-headers.adoc[]
+==== Request Example
+include::{snippets}/blacklist/addPermanent/http-request.adoc[]
+==== Response
+include::{snippets}/blacklist/addPermanent/response-fields.adoc[]
+==== Response Example
+include::{snippets}/blacklist/addPermanent/response-body.adoc[]
+
+=== 2-4. 블랙리스트 해제
+include::{snippets}/blacklist/delete/path-parameters.adoc[]
+==== Request - header
+include::{snippets}/blacklist/delete/request-headers.adoc[]
+==== Request Example
+include::{snippets}/blacklist/delete/http-request.adoc[]
+==== Response
+include::{snippets}/blacklist/delete/response-fields.adoc[]
+==== Response Example
+include::{snippets}/blacklist/delete/response-body.adoc[]
+
 
