@@ -95,11 +95,40 @@ function relayoutMap() {
     }, 300);
 }
 
+const STORAGE_ACCESS_TOKEN_KEY = "Authorization";
+const STORAGE_Refresh_TOKEN_KEY = "Refresh_Token";
+
+function getCookieValue(cookieName) {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(`${cookieName}=`)) {
+            return cookie.substring(`${cookieName}=`.length, cookie.length);
+        }
+    }
+    return null;
+}
+
+function setLocalStorageToken() {
+    let accessToken = getCookieValue("Authorization");
+    let refreshToken = getCookieValue("Authorization");
+    // 쿠키 값을 가져왔다면 localStorage에 값을 저장합니다.
+    if (accessToken) {
+        localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, "Bearer " + accessToken);
+        localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, "Bearer " + refreshToken);
+    } else {
+        // 쿠키 값이 없다면 localStorage에서 값을 제거합니다.
+        localStorage.removeItem(STORAGE_ACCESS_TOKEN_KEY);
+        localStorage.removeItem(STORAGE_Refresh_TOKEN_KEY);
+    }
+}
+
 $(document).ready(function () {
     showUsername()
     showAllMoim()
     showPopularMoim()
     showCategory()
+    setLocalStorageToken()
 });
 
 function changeNewValue(event) {

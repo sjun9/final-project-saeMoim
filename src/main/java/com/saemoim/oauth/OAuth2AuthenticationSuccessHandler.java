@@ -11,6 +11,7 @@ import com.saemoim.redis.RedisUtil;
 import com.saemoim.security.UserDetailsImpl;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +36,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		String accessToken = jwtUtil.createAccessToken(id, username, role);
 		String refreshToken = _issueRefreshToken(id, accessToken);
 
-		response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
-		response.addHeader(JwtUtil.REFRESH_TOKEN_HEADER, refreshToken);
-		// response.sendRedirect("http://localhost:63342/final-project-saeMoim/project_saemoim.main/templates/main.html");
+		Cookie cookie = new Cookie("Authorization", accessToken.substring(7));
+		Cookie cookie2 = new Cookie("Refresh_Token", refreshToken.substring(7));
+		cookie.setPath("/");
+		cookie2.setPath("/");
+		response.addCookie(cookie);
+		response.addCookie(cookie2);
+		response.sendRedirect("http://localhost:63342/project_saeMoim/project_saemoim.main/templates/main.html");
 	}
 
 	private String _issueRefreshToken(Long userId, String accessToken) {
