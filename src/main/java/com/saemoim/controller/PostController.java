@@ -1,6 +1,8 @@
 package com.saemoim.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,8 +30,10 @@ public class PostController {
 
 	// 그룹 전체 게시글 조회
 	@GetMapping("/groups/{groupId}/post")
-	public ResponseEntity<GenericsResponseDto> getAllPostsByGroup(@PathVariable Long groupId, Pageable pageable) {
-		return ResponseEntity.ok().body(new GenericsResponseDto(postService.getAllPostsByGroup(groupId, pageable)));
+	public ResponseEntity<Page<PostResponseDto>> getAllPostsByGroup(@PathVariable Long groupId,
+		@PageableDefault(size = 15, page = 0) Pageable pageable,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ResponseEntity.ok().body(postService.getAllPostsByGroup(groupId, pageable,  userDetails.getId()));
 	}
 
 	// 선택한 게시글 조회

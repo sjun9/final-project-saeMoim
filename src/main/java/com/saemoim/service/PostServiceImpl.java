@@ -1,7 +1,11 @@
 package com.saemoim.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +16,7 @@ import com.saemoim.dto.request.PostRequestDto;
 import com.saemoim.dto.response.PostResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.GroupRepository;
+import com.saemoim.repository.LikeRepository;
 import com.saemoim.repository.PostRepository;
 import com.saemoim.repository.UserRepository;
 
@@ -23,12 +28,37 @@ public class PostServiceImpl implements PostService {
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final GroupRepository groupRepository;
+	private final LikeRepository likeRepository;
 
 	// 모임 전체 게시글 조회
 	@Transactional(readOnly = true)
 	@Override
-	public Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable) {
-		return postRepository.findAllByGroup_Id(group_id, pageable).map(PostResponseDto::new);
+	public Page<PostResponseDto> getAllPostsByGroup(Long group_id, Pageable pageable, Long userId) {
+		Page<Post> postList = postRepository.findAllByGroup_IdOrderByCreatedAtDesc(group_id, pageable);
+		return postList.map(post -> {
+			Long id = post.getId();
+			Long postUserId = post.getUserId();
+			String title = post.getTitle();
+			String username = post.getUsername();
+			String content = post.getContent();
+			LocalDateTime createdAt = post.getCreatedAt();
+			LocalDateTime modifiedAt = post.getModifiedAt();
+			int likeCount = post.getLikeCount();
+
+			boolean isLikeChecked = likeRepository.existsByPost_IdAndUserId(id, userId);
+
+			return PostResponseDto.builder()
+				.id(id)
+				.userId(postUserId)
+				.title(title)
+				.username(username)
+				.content(content)
+				.createdAt(createdAt)
+				.modifiedAt(modifiedAt)
+				.likeCount(likeCount)
+				.isLikeChecked(isLikeChecked)
+				.build();
+		});
 	}
 
 	// 특정 게시글 조회
@@ -36,8 +66,28 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public PostResponseDto getPost(Long postId, Long userId) {
 		Post post = _getPostById(postId);
+		Long id = post.getId();
+		Long postUserId = post.getUserId();
+		String title = post.getTitle();
+		String username = post.getUsername();
+		String content = post.getContent();
+		LocalDateTime createdAt = post.getCreatedAt();
+		LocalDateTime modifiedAt = post.getModifiedAt();
+		int likeCount = post.getLikeCount();
 
-		return new PostResponseDto(post);
+		boolean isLikeChecked = likeRepository.existsByPost_IdAndUserId(id, userId);
+
+		return PostResponseDto.builder()
+			.id(id)
+			.userId(postUserId)
+			.title(title)
+			.username(username)
+			.content(content)
+			.createdAt(createdAt)
+			.modifiedAt(modifiedAt)
+			.likeCount(likeCount)
+			.isLikeChecked(isLikeChecked)
+			.build();
 	}
 
 	@Transactional

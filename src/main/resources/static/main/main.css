@@ -229,12 +229,12 @@ a:visited {
 
 .find.active {
     display: grid;
-    grid-template-rows: 50px 50px 1fr;
+    grid-template-rows: 50px 1fr;
 }
 
 .mypage.active {
     display: grid;
-    grid-template-rows: 50px;
+    grid-template-rows: 50px 1fr;
 }
 
 .profile.active {
@@ -783,11 +783,28 @@ P, H1 {
 }
 
 p {
-    color: #ccc;
+    color: #9c9c9c;
 }
 
 .mypageTable {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+
+.modal__tag__title,
+.modal__introduce__title {
+    color: black;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.modal__tag__tags {
+    color: black;
+}
+.moimDetailModal_introduce {
+    color: black;
+    font-size: 1.1rem;
+}
+.form-control-myprofile {
+    width: 50%;
 }

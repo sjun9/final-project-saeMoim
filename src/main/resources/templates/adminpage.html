@@ -150,29 +150,32 @@
     <div class="app-content profile" id="side-profile-content">
         <div class="app-content-header">
             <h1 class="app-content-headerText">카테고리 설정</h1>
-            <div class="input-group mb-3">
-                <input type="number" id="iid" placeholder="수정카테고리번호" style="width: 40px;">
-                <input type="text" class="form-control" id="updateName" placeholder="수정할 이름" aria-label="카테고리 수정"
-                       aria-describedby="button-addon2">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2"
-                        onclick="updateCate($('#iid').val(), $('#updateName').val())">수정
-                </button>
+            <div style="text-align: right; margin-right: 30px;">
+                <div class="input-group mb-3">
+                    <input type="number" id="iid" placeholder="수정카테고리번호" style="width: 140px;">
+                    <input type="text" class="form-control" id="updateName" placeholder="수정할 이름" aria-label="카테고리 수정"
+                           aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                            onclick="updateCate($('#iid').val(), $('#updateName').val())">수정
+                    </button>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="number" id="papaId" placeholder="상위카테고리번호" style="width: 140px;">
+                    <input type="text" class="form-control" id="newName" placeholder="하위 카테고리 추가" aria-label="카테고리 추가"
+                           aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                            onclick="addChildCate($('#papaId').val(), $('#newName').val())">추가
+                    </button>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="newPaName" placeholder="상위 카테고리 추가" aria-label="카테고리 추가"
+                           aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                            onclick="addPapaCate($('#newPaName').val())">추가
+                    </button>
+                </div>
             </div>
-            <div class="input-group mb-3">
-                <input type="number" id="papaId" placeholder="상위카테고리번호입력" style="width: 40px;">
-                <input type="text" class="form-control" id="newName" placeholder="하위 카테고리 추가" aria-label="카테고리 추가"
-                       aria-describedby="button-addon2">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2"
-                        onclick="addChildCate($('#papaId').val(), $('#newName').val())">추가
-                </button>
-            </div>
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" id="newPaName" placeholder="상위 카테고리 추가" aria-label="카테고리 추가"
-                       aria-describedby="button-addon2">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2"
-                        onclick="addPapaCate($('#newPaName').val())">추가
-                </button>
-            </div>
+            
         </div>
         <div class="app-content-section">
 
