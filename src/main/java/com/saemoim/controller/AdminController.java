@@ -41,6 +41,13 @@ public class AdminController {
 		return ResponseEntity.ok().headers(headers).body(new GenericsResponseDto("관리자 로그인 완료"));
 	}
 
+	@PostMapping("/admin/log-out")
+	public ResponseEntity<GenericsResponseDto> logoutByAdmin() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(JwtUtil.AUTHORIZATION_HEADER, "");
+		return ResponseEntity.ok().headers(headers).body(new GenericsResponseDto("로그아웃이 완료 되었습니다."));
+	}
+
 	@GetMapping("/admin")
 	public ResponseEntity<GenericsResponseDto> getAdmins() {
 		return ResponseEntity.ok().body(new GenericsResponseDto(adminService.getAdmins()));
