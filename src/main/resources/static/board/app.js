@@ -816,7 +816,9 @@ function chat() {
     }
   })
 
-  const websocket = new WebSocket("ws://localhost:8080/ws/chat");
+  // const websocket = new WebSocket("ws://localhost:8080/ws/chat");
+  // var websocket = new SockJS("/ws/chat", null, {transports: ["websocket", "xhr-streaming", "xhr-polling"]});
+  var websocket = new SockJS("http://localhost:8080/ws/chat", null, {transports: ["websocket", "xhr-streaming", "xhr-polling"]});
 
   websocket.onmessage = onMessage;
   websocket.onopen = onOpen;

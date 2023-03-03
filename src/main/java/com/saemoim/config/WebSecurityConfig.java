@@ -61,6 +61,8 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+		http.headers().frameOptions().sameOrigin(); // for SockJS WebSocket (chatting)
+
 		http.authorizeHttpRequests()
 			.requestMatchers("/**").permitAll() // ddd
 			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
