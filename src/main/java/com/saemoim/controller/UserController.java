@@ -3,6 +3,7 @@ package com.saemoim.controller;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,7 +43,7 @@ public class UserController {
 	@PostMapping("/sign-up")
 	public ResponseEntity<GenericsResponseDto> signUp(@Validated @RequestBody SignUpRequestDto requestDto) {
 		userService.signUp(requestDto);
-		return ResponseEntity.ok().body(new GenericsResponseDto("회원가입이 완료 되었습니다."));
+		return ResponseEntity.status(HttpStatus.CREATED).body(new GenericsResponseDto("회원가입이 완료 되었습니다."));
 	}
 
 	// 이메일 중복 확인

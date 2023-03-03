@@ -1,23 +1,21 @@
 package com.saemoim.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +24,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.saemoim.annotation.WithCustomMockUser;
@@ -49,7 +53,7 @@ import com.saemoim.security.CustomAccessDeniedHandler;
 import com.saemoim.security.CustomAuthenticationEntryPoint;
 import com.saemoim.service.UserServiceImpl;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @WebMvcTest(controllers = UserController.class)
 @MockBean(JpaMetamodelMappingContext.class)
 class UserControllerTest {
@@ -64,24 +68,44 @@ class UserControllerTest {
 	@MockBean
 	private CustomAccessDeniedHandler customAccessDeniedHandler;
 
+	@BeforeEach
+	public void setUp(WebApplicationContext context, RestDocumentationContextProvider restDocumentation) {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
+			.apply(documentationConfiguration(restDocumentation)).build();
+	}
+
 	@Test
 	@WithCustomMockUser
 	@DisplayName("회원 가입")
 	void signUp() throws Exception {
 		//given
 		SignUpRequestDto requestDto = SignUpRequestDto.builder()
-			.username("장성준")
-			.password("asdf1234!")
-			.email("aaaaa@naver.com")
+			.username("nickName")
+			.password("Password1!")
+			.email("email@naver.com")
 			.build();
 		doNothing().when(userService).signUp(any(SignUpRequestDto.class));
+
 		//when
-		ResultActions resultActions = mockMvc.perform(post("/sign-up")
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.post("/sign-up")
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(requestDto))
-			.with(csrf()));
+			.content(new Gson().toJson(requestDto)));
+
 		//then
-		resultActions.andExpect(status().isOk()).andExpect(jsonPath("data").value("회원가입이 완료 되었습니다."));
+		resultActions.andExpect(status().isCreated())
+			.andExpect(jsonPath("data").value("회원가입이 완료 되었습니다."))
+			.andDo(document("user/sign-up",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestFields(
+					fieldWithPath("email").description("이메일").type(JsonFieldType.STRING),
+					fieldWithPath("password").description("비밀번호").type(JsonFieldType.STRING),
+					fieldWithPath("username").description("닉네임").type(JsonFieldType.STRING)
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
+				)
+			));
 	}
 
 	@Test
@@ -90,34 +114,54 @@ class UserControllerTest {
 	void checkEmailDuplication() throws Exception {
 		//given
 		EmailRequestDto requestDto = EmailRequestDto.builder()
-			.email("aaaaa@naver.com")
+			.email("email@naver.com")
 			.build();
 		doNothing().when(userService).checkEmailDuplication(any(EmailRequestDto.class));
 		//when
-		ResultActions resultActions = mockMvc.perform(post("/sign-up/email")
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.post("/sign-up/email")
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(requestDto))
-			.with(csrf()));
+			.content(new Gson().toJson(requestDto)));
 		//then
-		resultActions.andExpect(status().isOk()).andExpect(jsonPath("data").value("이메일 중복 검사가 완료 되었습니다."));
+		resultActions.andExpect(status().isOk())
+			.andExpect(jsonPath("data").value("이메일 중복 검사가 완료 되었습니다."))
+			.andDo(document("user/email-check",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestFields(
+					fieldWithPath("email").description("이메일").type(JsonFieldType.STRING)
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
+				)
+			));
 	}
 
 	@Test
 	@WithCustomMockUser
-	@DisplayName("이름 중복 검사")
+	@DisplayName("닉네임 중복 검사")
 	void checkUsernameDuplication() throws Exception {
 		//given
 		UsernameRequestDto requestDto = UsernameRequestDto.builder()
-			.username("장성준")
+			.username("nickName")
 			.build();
 		doNothing().when(userService).checkUsernameDuplication(any(UsernameRequestDto.class));
 		//when
-		ResultActions resultActions = mockMvc.perform(post("/sign-up/username")
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.post("/sign-up/username")
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(requestDto))
-			.with(csrf()));
+			.content(new Gson().toJson(requestDto)));
 		//then
-		resultActions.andExpect(status().isOk()).andExpect(jsonPath("data").value("이름 중복 검사가 완료 되었습니다."));
+		resultActions.andExpect(status().isOk())
+			.andExpect(jsonPath("data").value("이름 중복 검사가 완료 되었습니다."))
+			.andDo(document("user/username-check",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestFields(
+					fieldWithPath("username").description("닉네임").type(JsonFieldType.STRING)
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
+				)
+			));
 	}
 
 	@Test
@@ -127,21 +171,37 @@ class UserControllerTest {
 		//given
 		TokenResponseDto responseDto = mock(TokenResponseDto.class);
 		SignInRequestDto requestDto = SignInRequestDto.builder()
-			.email("asdfs@naver.com")
-			.password("asdf1234!")
+			.email("email@naver.com")
+			.password("Pass1234!")
 			.build();
 
-		when(responseDto.getAccessToken()).thenReturn("accessToken");
-		when(responseDto.getRefreshToken()).thenReturn("refreshToken");
+		when(responseDto.getAccessToken()).thenReturn("Bearer accessToken");
+		when(responseDto.getRefreshToken()).thenReturn("Bearer refreshToken");
 		when(userService.signIn(any(SignInRequestDto.class))).thenReturn(responseDto);
 		//when
-		ResultActions resultActions = mockMvc.perform(post("/sign-in")
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.post("/sign-in")
 			.contentType(MediaType.APPLICATION_JSON)
-			.with(csrf())
 			.content(new Gson().toJson(requestDto)));
 		//then
-		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", "accessToken"))
-			.andExpect(jsonPath("data").value("로그인이 완료 되었습니다."));
+		resultActions.andExpect(status().isOk())
+			.andExpect(header().string("Authorization", "Bearer accessToken"))
+			.andExpect(header().string("Refresh_Token", "Bearer refreshToken"))
+			.andExpect(jsonPath("data").value("로그인이 완료 되었습니다."))
+			.andDo(document("user/login",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestFields(
+					fieldWithPath("email").description("이메일").type(JsonFieldType.STRING),
+					fieldWithPath("password").description("비밀번호").type(JsonFieldType.STRING)
+				),
+				responseHeaders(
+					headerWithName("Authorization").description("엑세스토큰"),
+					headerWithName("Refresh_Token").description("리프레시토큰")
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
+				)
+			));
 	}
 
 	@Test
@@ -152,15 +212,26 @@ class UserControllerTest {
 		doNothing().when(userService).logout(anyString());
 
 		//when
-		ResultActions resultActions = mockMvc.perform(post("/log-out")
-			.header(JwtUtil.AUTHORIZATION_HEADER, "accessToken")
-			.header(JwtUtil.REFRESH_TOKEN_HEADER, "refreshToken")
-			.contentType(MediaType.APPLICATION_JSON)
-			.with(csrf()));
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.post("/log-out")
+			.header(JwtUtil.AUTHORIZATION_HEADER, "Bearer accessToken")
+			.header(JwtUtil.REFRESH_TOKEN_HEADER, "Bearer refreshToken")
+			.contentType(MediaType.APPLICATION_JSON));
 
 		//then
-		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", ""))
-			.andExpect(jsonPath("data").value("로그아웃이 완료 되었습니다."));
+		resultActions.andExpect(status().isOk())
+			.andExpect(header().string("Authorization", ""))
+			.andExpect(jsonPath("data").value("로그아웃이 완료 되었습니다."))
+			.andDo(document("user/logout",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("엑세스토큰"),
+					headerWithName("Refresh_Token").description("리프레시토큰")
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
+				)
+			));
 	}
 
 	@Test
@@ -169,19 +240,35 @@ class UserControllerTest {
 	void withdraw() throws Exception {
 		//given
 		WithdrawRequestDto requestDto = WithdrawRequestDto.builder()
-			.password("asdf1234!")
+			.password("Pass1234!")
 			.build();
 
-		doNothing().when(userService).withdraw(requestDto, 1L, "refreshToken");
+		doNothing().when(userService).withdraw(requestDto, 1L, "Bearer refreshToken");
 		//when
-		ResultActions resultActions = mockMvc.perform(delete("/withdrawal")
-			.header(JwtUtil.REFRESH_TOKEN_HEADER, "refreshToken")
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.delete("/withdrawal")
+			.header(JwtUtil.AUTHORIZATION_HEADER, "Bearer accessToken")
+			.header(JwtUtil.REFRESH_TOKEN_HEADER, "Bearer refreshToken")
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(requestDto))
-			.with(csrf()));
+			.content(new Gson().toJson(requestDto)));
+
 		//then
-		resultActions.andExpect(status().isOk()).andExpect(header().string("Authorization", ""))
-			.andExpect(jsonPath("data").value("회원탈퇴가 완료 되었습니다."));
+		resultActions.andExpect(status().isOk())
+			.andExpect(header().string("Authorization", ""))
+			.andExpect(jsonPath("data").value("회원탈퇴가 완료 되었습니다."))
+			.andDo(document("user/withdrawal",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("엑세스토큰"),
+					headerWithName("Refresh_Token").description("리프레시토큰")
+				),
+				requestFields(
+					fieldWithPath("password").description("비밀번호").type(JsonFieldType.STRING)
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
+				)
+			));
 	}
 
 	@Test
@@ -190,24 +277,37 @@ class UserControllerTest {
 	void getAllUsers() throws Exception {
 		//given
 		List<UserResponseDto> list = new ArrayList<>();
-		User user = User.builder()
+		UserResponseDto responseDto = UserResponseDto.builder()
 			.id(1L)
 			.banCount(0)
-			.content("asdfasfsdfsaf")
-			.email("aaaaa@naver.com")
-			.password("aaasdf1234!")
-			.role(UserRoleEnum.USER)
-			.username("장성준")
+			.email("email@naver.com")
+			.username("nickName")
+			.createdAt(LocalDateTime.now())
 			.build();
 
-		UserResponseDto responseDto = new UserResponseDto(user);
 		list.add(responseDto);
 
 		when(userService.getAllUsers()).thenReturn(list);
 		//when
-		ResultActions resultActions = mockMvc.perform(get("/admin/user"));
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.get("/admin/user")
+			.header(JwtUtil.AUTHORIZATION_HEADER, "Bearer adminAccessToken"));
 		//then
-		resultActions.andExpect(jsonPath("$['data'][0]['username']").value("장성준"));
+		resultActions.andExpect(status().isOk())
+			.andDo(document("user/getAll",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("관리자엑세스토큰")
+				),
+				responseFields(
+					subsectionWithPath("data").description("유저목록"),
+					fieldWithPath("data.[].id").description("유저 id").type(JsonFieldType.NUMBER),
+					fieldWithPath("data.[].email").description("유저 이메일").type(JsonFieldType.STRING),
+					fieldWithPath("data.[].username").description("유저 닉네임").type(JsonFieldType.STRING),
+					fieldWithPath("data.[].banCount").description("정지당한 횟수").type(JsonFieldType.NUMBER),
+					fieldWithPath("data.[].createdAt").description("가입일자").type(JsonFieldType.STRING)
+				)
+			));
 	}
 
 	@Test
@@ -218,20 +318,37 @@ class UserControllerTest {
 		User user = User.builder()
 			.id(1L)
 			.banCount(0)
-			.content("asdfasfsdfsaf")
-			.email("aaaaa@naver.com")
-			.password("aaasdf1234!")
+			.content("안녕하시렵니까")
+			.email("email@naver.com")
+			.password("Pass1234!")
 			.role(UserRoleEnum.USER)
-			.username("장성준")
+			.username("닉넹미")
 			.build();
 
 		ProfileResponseDto response = new ProfileResponseDto(user);
 
 		when(userService.getProfile(anyLong())).thenReturn(response);
 		//when
-		ResultActions resultActions = mockMvc.perform(get("/profile/users/{userId}", 1L));
+		ResultActions resultActions = mockMvc.perform(
+			RestDocumentationRequestBuilders.get("/profile/users/{userId}", 1L)
+				.header("Authorization", "Bearer accessToken"));
 		//then
-		resultActions.andExpect(jsonPath("$['username']").value("장성준"));
+		resultActions.andExpect(status().isOk())
+			.andDo(document("user/profile",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(
+					parameterWithName("userId").description("유저 id")
+				),
+				requestHeaders(
+					headerWithName("Authorization").description("엑세스토큰")
+				),
+				responseFields(
+					fieldWithPath("id").description("유저 id").type(JsonFieldType.NUMBER),
+					fieldWithPath("username").description("유저 닉네임").type(JsonFieldType.STRING),
+					fieldWithPath("content").description("소개글").type(JsonFieldType.STRING)
+				)
+			));
 	}
 
 	@Test
@@ -239,15 +356,15 @@ class UserControllerTest {
 	@DisplayName("내 정보 조회")
 	void getMyProfile() throws Exception {
 		// given
-		var request = CurrentPasswordRequestDto.builder().password("aaasdf1234!").build();
+		var request = CurrentPasswordRequestDto.builder().password("Pass1234!").build();
 		User user = User.builder()
 			.id(1L)
 			.banCount(0)
-			.content("asdfasfsdfsaf")
-			.email("aaaaa@naver.com")
-			.password("aaasdf1234!")
+			.content("안녕하시렵니까")
+			.email("email@naver.com")
+			.password("Pass1234!")
 			.role(UserRoleEnum.USER)
-			.username("장성준")
+			.username("닉넹미")
 			.build();
 		ProfileResponseDto response = new ProfileResponseDto(user);
 
@@ -255,13 +372,28 @@ class UserControllerTest {
 			response);
 
 		// when
-		ResultActions resultActions = mockMvc.perform(post("/profile")
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.post("/profile")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(new Gson().toJson(request))
-			.with(csrf()));
+			.header(JwtUtil.AUTHORIZATION_HEADER, "Bearer accessToken"));
 
 		// then
-		resultActions.andExpect(jsonPath("$['username']").value("장성준"));
+		resultActions.andExpect(status().isOk())
+			.andDo(document("user/myProfile",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("엑세스토큰")
+				),
+				requestFields(
+					fieldWithPath("password").description("비밀번호").type(JsonFieldType.STRING)
+				),
+				responseFields(
+					fieldWithPath("id").description("유저 id").type(JsonFieldType.NUMBER),
+					fieldWithPath("username").description("유저 닉네임").type(JsonFieldType.STRING),
+					fieldWithPath("content").description("소개글").type(JsonFieldType.STRING)
+				)
+			));
 	}
 
 	@Test
