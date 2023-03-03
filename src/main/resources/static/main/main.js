@@ -296,6 +296,7 @@ function showUsername() {
         headers: {'Authorization': localStorage.getItem('Authorization')},
         success: function (data) {
             let username = data['username']
+
             $('#username').append(`${username}`)
         }, error: function (e) {
             $('#username').append(`로그인이 필요합니다`)
@@ -357,10 +358,11 @@ function showSearch(name) {
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
+                let imagePath = response[i]['imagePath']
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
-                                        <img src="../static/images/main-running.jpg" alt="">
+                                        <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
                                             <input type="hidden" value=${content}>
                                     </div>
@@ -497,11 +499,12 @@ function showPopularMoim() {
                     let recruitNumber = response[i]['recruitNumber']
                     let wishCount = response[i]['wishCount']
                     let status = response[i]['status']
+                    let imgPath =response[i]['imagePath']
 
                     let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
-                                        <img src="../static/images/main-running.jpg" alt="">
+                                        <img src=${imgPath} alt="">
                                             <span>${groupName}</span>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
@@ -555,11 +558,12 @@ function showLeaderMoim() {
                 let tags = response[i]['tags']
                 let leaderId = response[i]['userId']
                 let leaderName = response[i]['username']
+                let imagePath = response[i]['imagePath']
 
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
-                                        <img src="../static/images/main-running.jpg" alt="">
+                                        <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
                                             <input type="hidden" value=${content}>
                                             <input type="hidden" value=${tags}>
@@ -616,11 +620,12 @@ function showParticipantMoim() { // 참여중인 모임 조회
                 let tags = response[i]['tags']
                 let leaderId = response[i]['userId']
                 let leaderName = response[i]['username']
+                let imagePath = response[i]['imagePath']
 
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
-                                        <img src="../static/images/main-running.jpg" alt="">
+                                        <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
                                             <input type="hidden" value=${content}>
                                             <input type="hidden" value=${tags}>
@@ -928,6 +933,8 @@ function showMoimDetail(event, id) {
         type: "get",
         url: "http://localhost:8080/groups/" + id
     }).done(function (data) {
+        // data.imagePath
+        document.getElementById("moimDetail_Image").src = data.imagePath;
         document.querySelector('#moimDetail_Title').innerText = data.groupName;
         // document.querySelector('#moimLeader').innerText = leaderName;
         document.querySelector('#moimTag').innerText = data.tags;

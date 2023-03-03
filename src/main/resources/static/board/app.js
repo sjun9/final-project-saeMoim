@@ -179,23 +179,31 @@ profile()
 function newPost() {
     const newPostTitle = document.querySelector("#newPost-title").value
     const newPostContent = document.querySelector("#newPost-content").value
+    const currentGroupId = Number(localStorage.getItem("current_group_id"))
     // const imageUrl  = 이미지 경로 추가
+    let file = $('#newPost-image')[0].files[0];
+    let formData = new FormData;
+    console.log(file)
+    formData.append("img", file)
 
-  var settings = {
-    "url": `http://localhost:8080/groups/${tempGroupId}/post`,
-    "method": "POST",
-    "timeout": 0,
-    "headers": {
-      "Authorization": Authorization,
-      "Refresh_Token": Refresh_Token,
-      "Content-Type": "application/json"
-    },
-    "data": JSON.stringify({
-      "title": newPostTitle,
-      "content": newPostContent
-    }),
-  };
-    $.ajax(settings).done(function (response) {
+    let jsonData =
+        {
+          "title": newPostTitle,
+          "content": newPostContent
+        }
+    formData.append("requestDto", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
+
+    $.ajax({
+        type: "post",
+        url: `http://localhost:8080/groups/${currentGroupId}/post`,
+        headers: {'Authorization': Authorization, "Refresh_Token": Refresh_Token},
+        data: formData, //전송 데이터
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: false, //헤더의 Content-Type을 설정
+        mimeType: "multipart/form-data",
+        timeout: 0,
+        processData: false
+    }).done(function (response) {
         alert('작성 완료!');
         location.reload();
     });
@@ -216,6 +224,12 @@ function openBody(event) {
 
     document.querySelector('#readPostModalLabel').innerText = postArray[index]["title"]
     document.querySelector('#readPostModalContent').innerText = postArray[index]["content"]
+
+    if(postArray[index]["imagePath"] != null){
+        document.getElementById('post-image').src = postArray[index]["imagePath"];
+    }else{
+        document.getElementById('post-image').src ="../static/images/main-english.jpg";
+    }
 
     let currentPostId = postArray[index]["id"]
     let currentPostUserId = postArray[index]["userId"]

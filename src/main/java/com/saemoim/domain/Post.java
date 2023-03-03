@@ -38,12 +38,15 @@ public class Post extends TimeStamped {
 	private String content;
 	@Column(nullable = false)
 	private int likeCount = 0;
+	@Column(nullable = true)
+	private String imagePath;
 
-	public Post(Group group, String title, String content, User user) {
+	public Post(Group group, String title, String content, User user, String imagePath) {
 		this.group = group;
 		this.title = title;
 		this.content = content;
 		this.user = user;
+		this.imagePath = imagePath;
 	}
 
 	public void update(String title, String content) {

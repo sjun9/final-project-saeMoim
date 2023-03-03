@@ -388,7 +388,7 @@
                     <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal"
                          onclick="showMoimDetail(event)">
                         <div class="product-cell image">
-                            <img src="../static/images/main-running.jpg" alt="">
+                            <img id="participant-group-image" src="../static/images/main-running.jpg" alt="">
                             <span>한강정기러닝동호회[초보가능, 상시모집]</span>
                         </div>
                         <div class="product-cell category"><span class="cell-label">카테고리:</span>Decoration</div>
@@ -408,22 +408,20 @@
         <div class="app-content-header">
             <h1 class="app-content-headerText">마이프로필 수정</h1>
         </div>
-        <h1>
-            S3 이미지 업로더
-        </h1>
+
         <div class="col-md-12">
             <div class="col-md-2">
                 <form>
                     <div class="form-group">
+                        <h6>
+                            프로필 이미지
+                            <img src="../static/images/bird.png" width="150px" height="150px"/>
+                        </h6>
                         <label for="img">파일 업로드</label>
                         <input type="file" id="img" accept="image/*" multiple>
                     </div>
                     <button type="button" class="btn btn-primary" id="btn-save" onclick="uploadImage()">저장</button>
                 </form>
-            </div>
-            <div class="col-md-10">
-                <p><strong>결과 이미지</strong></p>
-                <img src="" id="result-image">
             </div>
         </div>
 

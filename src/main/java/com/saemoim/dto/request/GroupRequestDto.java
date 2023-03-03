@@ -33,16 +33,16 @@ public class GroupRequestDto {
 	@NotBlank
 	private String address;
 
-	@NotBlank
+	// @NotBlank
 	private String firstRegion;
 
-	@NotBlank
+	// @NotBlank
 	private String secondRegion;
 
-	@NotBlank
+	// @NotBlank
 	private String latitude;
 
-	@NotBlank
+	// @NotBlank
 	private String longitude;
 
 	@Min(1)

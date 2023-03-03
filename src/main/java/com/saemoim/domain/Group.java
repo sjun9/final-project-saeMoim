@@ -84,7 +84,7 @@ public class Group extends TimeStamped {
 	private int participantCount = 0;
 
 	@Column(nullable = true)
-	private String imagePath = "src/main/documents/wireFrame.png";
+	private String imagePath = "/src/main/resources/static/images/bird.png";
 
 	public Group(GroupRequestDto request, Category category, User user, String imgPath) {
 		this.user = user;
