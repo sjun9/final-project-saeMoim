@@ -62,6 +62,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		http.authorizeHttpRequests()
+			.requestMatchers("/**").permitAll() // ddd
 			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 			.requestMatchers("/sign-up/**").permitAll()
 			.requestMatchers("/sign-in").permitAll()
@@ -72,6 +73,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 			.requestMatchers("/tag").permitAll()
 			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/groups/**").permitAll()
+			.requestMatchers("/ws").permitAll()
+			.requestMatchers("/chat").permitAll() //ddd
+			.requestMatchers("/chatting/**").permitAll() // ddd
 			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admins/**").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString(), UserRoleEnum.ROOT.toString())

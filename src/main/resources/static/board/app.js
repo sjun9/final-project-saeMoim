@@ -168,7 +168,7 @@ function profile() {
 }
 
 profile()
-
+chat()
 
 /**
  * 게시글
@@ -789,15 +789,115 @@ function unLike(postId) {
   });
 }
 
+const chatHistory = document.querySelector(".chat-history")
+const unread_messages = document.querySelector("#unread_messages")
+let unread_messages_num = parseInt(unread_messages.innerText)
+
 /**
  * 채팅
  */
+const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
+let username = ''
+profileIdList.forEach((user) => {
+  if (String(user["userId"]) === tempUserId) {
+    username = String(user["username"])
+  }
+})
+document.querySelector("#current_user").innerText = username
 
+function chat() {
 
-// 프로필 DM
-function gotochat() {
-    alert('채팅 기록을 불러옵니다. 추후 구현 예정')
-    window.open('./chattingPage.html');
+  $("#button-send").on("click", (e) => {
+    send();
+  });
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      send();
+    }
+  })
+
+  const websocket = new WebSocket("ws://localhost:8080/ws/chat");
+
+  websocket.onmessage = onMessage;
+  websocket.onopen = onOpen;
+  websocket.onclose = onClose;
+
+  function send() {
+    let msg = document.getElementById("msg");
+    if (msg.value === '') { return }
+    websocket.send(username + ":" + msg.value);
+    msg.value = '';
+  }
+
+  //채팅창에서 나갔을 때
+  function onClose(evt) {
+    var str = username + ": " + username + "님이 방을 나가셨습니다.";
+    websocket.send(str);
+  }
+
+  //채팅창에 들어왔을 때
+  function onOpen(evt) {
+    var str = username + ": " + username + "님이 입장하셨습니다.";
+    websocket.send(str);
+  }
+
+  function onMessage(msg) {
+    var data = msg.data;
+    var sessionId = null;
+    //데이터를 보낸 사람
+    var message = null;
+    var arr = data.split(":");
+
+    var cur_session = username;
+
+    //현재 세션에 로그인 한 사람
+    sessionId = arr[0];
+    message = arr[1];
+
+    //로그인 한 클라이언트와 타 클라이언트를 분류하기 위함
+    if (sessionId == cur_session) {
+      var str = `
+                <li class="clearfix">
+                  <div class="message-data align-right">
+                    <span class="message-data-time">10:10 AM, Today</span> &nbsp; &nbsp;
+                    <span class="message-data-name">${sessionId}</span> <i class="fa fa-circle me"></i>
+                  </div>
+                  <div class="message other-message float-right">
+                    ${message}
+                  </div>
+                </li>
+      `
+      // var str = "<div class='col-6'>";
+      // str += "<div class='alert alert-secondary'>";
+      // str += "<b>" + sessionId + " : " + message + "</b>";
+      // str += "</div></div>";
+      $("#msgArea").append(str);
+    }
+    else {
+      var str = `
+                <li>
+                  <div class="message-data">
+                    <span class="message-data-name"><i class="fa fa-circle online"></i>${sessionId}</span>
+                    <span class="message-data-time">10:20 AM, Today</span>
+                  </div>
+                  <div class="message my-message">
+                    ${message}
+                  </div>
+                </li>
+      `
+      // var str = "<div class='col-6'>";
+      // str += "<div class='alert alert-warning'>";
+      // str += "<b>" + sessionId + " : " + message + "</b>";
+      // str += "</div></div>";
+      $("#msgArea").append(str);
+      unread_messages_num += 1
+      unread_messages.innerText = String(unread_messages_num)
+    }
+    chatHistory.scrollTop = chatHistory.scrollHeight
+  }
 }
 
-
+function unread_zero() {
+  document.querySelector("#unread_messages").innerText = "0"
+  unread_messages_num = 0
+}

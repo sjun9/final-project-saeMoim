@@ -11,9 +11,90 @@
   <!-- Styles -->
   <link rel="stylesheet" href="../static/board/style.css" />
   <link rel="stylesheet" href="../static/board/profilePage.css" />
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+    <link rel="stylesheet" href="../static/board/chattingPage.css">
 </head>
 
 <body>
+
+  <!-- chat modal -->
+  <div class="modal fade" id="staticBackdropChat" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropChatLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropChatLabel">채팅방</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="unread_zero()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="chat clearfix">
+            <div class="chat-history">
+              <ul id="msgArea" style="padding-left: 0;">
+                <li class="clearfix">
+                  <div class="message-data align-right">
+                    <span class="message-data-time">10:10 AM, Today</span> &nbsp; &nbsp;
+                    <span class="message-data-name">Olia</span> <i class="fa fa-circle me"></i>
+                  </div>
+                  <div class="message other-message float-right">
+                    My messages
+                  </div>
+                </li>
+        
+                <li>
+                  <div class="message-data">
+                    <span class="message-data-name"><i class="fa fa-circle online"></i> Vincent</span>
+                    <span class="message-data-time">10:20 AM, Today</span>
+                  </div>
+                  <div class="message my-message">
+                    Other messages
+                  </div>
+                </li>
+              </ul>
+        
+            </div> <!-- end chat-history -->
+        
+            <div class="chat-message clearfix">
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" name="msg" id="msg" placeholder="Type your message">
+                <button class="btn btn-outline-secondary" type="button" id="button-send">Send</button>
+              </div>
+              <!-- <div class="input-group mb-3"> -->
+                <!-- <input type="text" class="form-control" name="msg" id="msg" placeholder="Type your message"> -->
+              <!-- </div> -->
+              <!-- <button id="button-send">Send</button> -->
+            </div> <!-- end chat-message -->
+        
+          </div> <!-- end chat -->
+        
+          <script id="message-template" type="text/x-handlebars-template">
+              <li class="clearfix">
+                <div class="message-data align-right">
+                  <span class="message-data-time" >{{time}}, Today</span> &nbsp; &nbsp;
+                  <span class="message-data-name" >Olia</span> <i class="fa fa-circle me"></i>
+                </div>
+                <div class="message other-message float-right">
+                  {{messageOutput}}
+                </div>
+              </li>
+            </script>
+        
+          <script id="message-response-template" type="text/x-handlebars-template">
+              <li>
+                <div class="message-data">
+                  <span class="message-data-name"><i class="fa fa-circle online"></i> Vincent</span>
+                  <span class="message-data-time">{{time}}, Today</span>
+                </div>
+                <div class="message my-message">
+                  {{response}}
+                </div>
+              </li>
+            </script>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
   <!-- profile -->
   <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
@@ -195,6 +276,13 @@
           <img src="../static/images/bird.png" alt="" style="display: inline;">
         </div>
         <h1 id="moim_title">OOO 모임 게시판입니다</h1>
+        <div>
+          <button type="button" class="btn btn-primary chat_button" data-bs-toggle="modal" data-bs-target="#staticBackdropChat"
+          data-bs-whatever="@mdo" onclick="unread_zero()">채팅방 입장</button>
+          <div class="chat_button">읽지 않은 메세지 : <span id="unread_messages">0</span></div>
+          <div class="chat_button">현재 사용자 : <span id="current_user">asdfasdf</span></div>
+        </div>
+        
       </div>
       <div class="article__header">
         <span class="article__header__id">번호</span>
@@ -250,7 +338,6 @@
     integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
     crossorigin="anonymous"></script>
   <script src="../static/board/app.js"></script>
-
 </body>
 
 </html>
