@@ -36,7 +36,7 @@ public class User extends TimeStamped {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private UserRoleEnum role;
-
+	private String kakaoId;
 	@Column(nullable = true)
 	private String profileImgUrl;
 
@@ -45,6 +45,14 @@ public class User extends TimeStamped {
 		this.password = password;
 		this.username = username;
 		this.role = role;
+	}
+
+	public User(String email, String password, String username, UserRoleEnum role, String kakaoId) {
+		this.email = email;
+		this.password = password;
+		this.username = username;
+		this.role = role;
+		this.kakaoId = kakaoId;
 	}
 
 	public void plusBanCount() {
@@ -70,5 +78,10 @@ public class User extends TimeStamped {
 
 	public void updateProfileImage(String profileImgUrl) {
 		this.profileImgUrl = profileImgUrl;
+	}
+
+	public User updateKakaoId(String kakaoId) {
+		this.kakaoId = kakaoId;
+		return this;
 	}
 }

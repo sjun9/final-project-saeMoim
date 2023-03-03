@@ -213,7 +213,34 @@ function relayoutMap() {
     }, 300);
 }
 
+const STORAGE_ACCESS_TOKEN_KEY = "Authorization";
+const STORAGE_Refresh_TOKEN_KEY = "Refresh_Token";
+
+function getCookieValue(cookieName) {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(`${cookieName}=`)) {
+            return cookie.substring(`${cookieName}=`.length, cookie.length);
+        }
+    }
+    return null;
+}
+
+function setLocalStorageToken() {
+    let accessToken = getCookieValue(STORAGE_ACCESS_TOKEN_KEY);
+    let refreshToken = getCookieValue(STORAGE_Refresh_TOKEN_KEY);
+    // 쿠키 값을 가져왔다면 localStorage에 값을 저장합니다.
+    if (accessToken) {
+        localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, "Bearer " + accessToken);
+        localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, "Bearer " + refreshToken);
+    }
+    document.cookie = STORAGE_ACCESS_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = STORAGE_Refresh_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+
 $(document).ready(function () {
+    setLocalStorageToken()
     showUsername()
     showAllMoim()
     showPopularMoim()
@@ -237,24 +264,26 @@ function logout() {
     $.ajax({
         type: "POST",
         url: "http://localhost:8080/log-out",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        headers: {
+            'Authorization': localStorage.getItem('Authorization'),
+            'Refresh_Token': localStorage.getItem('Refresh_Token')
+        },
         success: function (response) {
             console.log(response)
         }
     }).done(function (response, status, xhr) {
         localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
         localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
-        window.location = './main.html'
+        location.replace("./welcome.html")
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 401) {
-            reissue()
-            setTimeout(logout, 150)
-            setTimeout(showUsername, 150)
+            // reissue()
+            // setTimeout(logout, 150)
+            // setTimeout(showUsername, 150)
         } else if (e.responseJSON['httpStatus'] === "BAD_REQUEST") {
-            alert(e.responseJSON['message'])
+            alert(e.responseJSON['data'])
         } else {
-            alert(e.responseText['message'])
+            alert(e.responseJSON['data'])
         }
     });
 }
@@ -681,7 +710,7 @@ function showFilter(categoryId, status) {
 
 
 function showReview(id) {
-    $('#moimDetail_reviews').empty().append(`<textarea style="width:150%" rows="3" cols="30" id="reviewText" value=""> </textarea>
+    $('#moimDetail_reviews').empty().append(`<textarea style="width:100%" rows="3" cols="30" id="reviewText" value=""> </textarea>
                                      <button type="button" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">후기 등록</button>`);
 
     $.ajax({

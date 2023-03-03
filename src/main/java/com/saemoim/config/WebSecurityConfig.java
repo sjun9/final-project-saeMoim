@@ -20,6 +20,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.jwt.JwtAuthFilter;
 import com.saemoim.jwt.JwtUtil;
+import com.saemoim.oauth.CustomOAuth2UserService;
+import com.saemoim.oauth.OAuth2AuthenticationSuccessHandler;
 import com.saemoim.security.CustomAccessDeniedHandler;
 import com.saemoim.security.CustomAuthenticationEntryPoint;
 import com.saemoim.security.CustomAuthenticationFailureHandler;
@@ -34,6 +36,8 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 	private final JwtUtil jwtUtil;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	private final CustomAccessDeniedHandler customAccessDeniedHandler;
+	private final CustomOAuth2UserService oAuth2UserService;
+	private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -76,6 +80,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 
 		http.cors();
 		http.formLogin().disable();
+		http.oauth2Login()
+			.successHandler(oAuth2AuthenticationSuccessHandler)
+			.userInfoEndpoint().userService(oAuth2UserService);
 
 		http.exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint);
 		http.exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);

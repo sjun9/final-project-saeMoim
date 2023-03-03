@@ -24,7 +24,7 @@
 <!-- moimDetailModal -->
 <div class="modal fade" id="moimDetailModal" tabindex="-1" aria-labelledby="moimDetail_Title" aria-hidden="true">
     <input type="hidden" id="moimDetailId" value="">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="moimDetail_Title">모임 제목이 여기에 들어갑니다</h1>
@@ -33,31 +33,31 @@
             <div class="modal-body moimDetailModalBody">
                 <img id="moimDetail_Image" src="../static/images/main-running.jpg" alt="">
                 <div>
-                    <p>모임 태그</p>
-                    <p id="moimTag"></p>
+                    <p class="modal__tag__title">모임 태그</p>
+                    <p id="moimTag" class="modal__tag_tags"></p>
                 </div>
-                <p>모임 소개글</p>
+                <p class="modal__introduce__title">모임 소개글</p>
                 <p class="moimDetailModal_introduce" id="moimDetail_introduce"></p>
+                <button type="button" class="btn btn-warning"
+                        onclick="wishMoim(document.getElementById('moimDetailId').value)">찜 등록
+                </button>
                 <button type="button" class="btn btn-primary"
                         onclick="attendMoim(document.getElementById('moimDetailId').value)">모임 참여 신청
                 </button>
                 <button type="button" class="btn btn-primary"
-                        onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴
+                        onclick="gotoBoard(document.getElementById('moimDetailId').value)">게시판 입장
                 </button>
                 <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal" onclick="relayoutMap()">모임 수정
                 </button>
-                <button type="button" class="btn btn-secondary"
+                <button type="button" class="btn btn-danger"
+                        onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴
+                </button>
+                <button type="button" class="btn btn-danger"
                         onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제
-                </button>
-                <button type="button" class="btn btn-warning"
-                        onclick="wishMoim(document.getElementById('moimDetailId').value)">찜 등록
-                </button>
-                <button type="button" class="btn btn-success"
-                        onclick="gotoBoard(document.getElementById('moimDetailId').value)">게시판 입장
                 </button>
                 <div id="detailAddress">
                 </div>
-                <div id="detailMoimMap" style="width:700px; margin: auto; height:400px;"></div>
+                <div id="detailMoimMap" style="width:100%; margin: auto; height:400px;"></div>
                 <div class="moimDetailModal_reviews" id="moimDetail_reviews">
                 </div>
             </div>
@@ -325,98 +325,84 @@
         <div class="app-content-header">
             <h1 class="app-content-headerText">마이페이지</h1>
         </div>
-        <div class="mypageTable">
-            <div>
-                <h3 style="font-size: 30px;">참가 신청 받은 목록</h3>
-                <div style="height: 100px; overflow-y: scroll;">
-                    <table class="fixed_headers" style="width: 100%;">
-                        <thead>
-                        <tr>
-                            <th>모임 이름</th>
-                            <th>참가 신청자 이름</th>
-                            <th>신청 상태</th>
-                        </tr>
-                        </thead>
-                        <tbody id="requested-group">
-                        </tbody>
-                    </table>
+        <div>
+            <div class="mypageTable">
+                <div>
+                    <h3 style="font-size: 30px;">참가 신청 받은 목록</h3>
+                    <div style="height: 150px; overflow-y: scroll;">
+                        <table class="fixed_headers" style="width: 100%;">
+                            <thead>
+                            <tr>
+                                <th>모임 이름</th>
+                                <th>참가 신청자 이름</th>
+                                <th>신청 상태</th>
+                            </tr>
+                            </thead>
+                            <tbody id="requested-group">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <h3 style="font-size: 30px;">참가 신청한 목록</h3>
+                    <div style="height: 150px; overflow-y: scroll;">
+                        <table class="fixed_headers" style="width: 100%;">
+                            <thead>
+                            <tr>
+                                <th>모임 이름</th>
+                                <th>모임 리더 이름</th>
+                                <th>신청 상태</th>
+                            </tr>
+                            </thead>
+                            <tbody id="applied-group">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-            <div>
-                <h3 style="font-size: 30px;">참가 신청한 목록</h3>
-                <div style="overflow-y: scroll;">
-                    <table class="fixed_headers" style="width: 100%;">
-                        <thead>
-                        <tr>
-                            <th>모임 이름</th>
-                            <th>모임 리더 이름</th>
-                            <th>신청 상태</th>
-                        </tr>
-                        </thead>
-                        <tbody id="applied-group">
-                        </tbody>
-                    </table>
+            <hr style="margin: 3px;">
+            <h3 style="font-size: 30px;">내가 개설한 모임</h3>
+            <div style="overflow-y: scroll;">
+                <div class="app-content-section gridView" id="made-group" style="overflow: hidden;">
+                    <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal"
+                         onclick="showMoimDetail(event)">
+                        <div class="product-cell image">
+                            <img src="../static/images/main-chicken.jpg" alt="">
+                            <span>홍대 사시는분 간단하게 치맥ㄱ???</span>
+                        </div>
+                        <div class="product-cell category"><span class="cell-label">카테고리:</span>Furniture</div>
+                        <div class="product-cell status-cell">
+                            <span class="cell-label">모임상태:</span>
+                            <span class="status active">Active</span>
+                        </div>
+                        <div class="product-cell sales"><span class="cell-label">참가인원:</span>32</div>
+                        <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>40</div>
+                        <div class="product-cell price"><span class="cell-label">후기수:</span>350</div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <hr>
-        <h3 style="font-size: 30px;">내가 개설한 모임</h3>
-        <div style="overflow-y: scroll;">
-            <div class="app-content-section gridView" id="made-group" style="overflow: hidden;">
-                <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal"
-                     onclick="showMoimDetail(event)">
-                    <div class="product-cell image">
-                        <img src="../static/images/main-chicken.jpg" alt="">
-                        <span>홍대 사시는분 간단하게 치맥ㄱ???</span>
+            <hr style="margin: 3px;">
+            <h3 style="font-size: 30px;">내가 참여한 모임</h3>
+            <div style="overflow-y: scroll;">
+                <div class="app-content-section gridView" id="participant-group" style="overflow: hidden;">
+                    <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal"
+                         onclick="showMoimDetail(event)">
+                        <div class="product-cell image">
+                            <img src="../static/images/main-running.jpg" alt="">
+                            <span>한강정기러닝동호회[초보가능, 상시모집]</span>
+                        </div>
+                        <div class="product-cell category"><span class="cell-label">카테고리:</span>Decoration</div>
+                        <div class="product-cell status-cell">
+                            <span class="cell-label">모임상태:</span>
+                            <span class="status active">Active</span>
+                        </div>
+                        <div class="product-cell sales"><span class="cell-label">참가인원:</span>61</div>
+                        <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>56</div>
+                        <div class="product-cell price"><span class="cell-label">후기수:</span>360</div>
                     </div>
-                    <div class="product-cell category"><span class="cell-label">카테고리:</span>Furniture</div>
-                    <div class="product-cell status-cell">
-                        <span class="cell-label">모임상태:</span>
-                        <span class="status active">Active</span>
-                    </div>
-                    <div class="product-cell sales"><span class="cell-label">참가인원:</span>32</div>
-                    <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>40</div>
-                    <div class="product-cell price"><span class="cell-label">후기수:</span>350</div>
-                </div>
-            </div>
-        </div>
-        <hr>
-        <h3 style="font-size: 30px;">내가 참여한 모임</h3>
-        <div style="overflow-y: scroll;">
-            <div class="app-content-section gridView" id="participant-group" style="overflow: hidden;">
-                <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal"
-                     onclick="showMoimDetail(event)">
-                    <div class="product-cell image">
-                        <img src="../static/images/main-running.jpg" alt="">
-                        <span>한강정기러닝동호회[초보가능, 상시모집]</span>
-                    </div>
-                    <div class="product-cell category"><span class="cell-label">카테고리:</span>Decoration</div>
-                    <div class="product-cell status-cell">
-                        <span class="cell-label">모임상태:</span>
-                        <span class="status active">Active</span>
-                    </div>
-                    <div class="product-cell sales"><span class="cell-label">참가인원:</span>61</div>
-                    <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>56</div>
-                    <div class="product-cell price"><span class="cell-label">후기수:</span>360</div>
-                </div>
-                <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal"
-                     onclick="showMoimDetail(event)">
-                    <div class="product-cell image">
-                        <img src="../static/images/main-baking.jpg" alt="">
-                        <span>베이킹 원데이클래스 재료비만 들고오세요~</span>
-                    </div>
-                    <div class="product-cell category"><span class="cell-label">카테고리:</span>Bedroom</div>
-                    <div class="product-cell status-cell">
-                        <span class="cell-label">모임상태:</span>
-                        <span class="status disabled">Disabled</span>
-                    </div>
-                    <div class="product-cell sales"><span class="cell-label">참가인원:</span>41</div>
-                    <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>66</div>
-                    <div class="product-cell price"><span class="cell-label">후기수:</span>260</div>
                 </div>
             </div>
         </div>
-
     </div>
     <div class="app-content profile" id="side-profile-content">
         <div class="app-content-header">
@@ -463,11 +449,9 @@
                     <span id="alert-danger"
                           style="display: none; color: #d92742; font-weight: bold; ">비밀번호가 일치하지 않습니다.</span>
                 </div>
-
-
+                <div class="content_title">소개글</div>
                 <div class="form-floating">
-                    <textarea type="text" class="form-control" id="floatingInput" placeholder="내용수정"></textarea>
-                    <label for="floatingPassword">소개글</label>
+                    <textarea type="text" class="form-control-myprofile" id="floatingInput" placeholder="소개글"></textarea>
                 </div>
                 <button type="button"
                         onclick="updateProfile($('#floatingInput').val(), $('#password_1').val())">수정
