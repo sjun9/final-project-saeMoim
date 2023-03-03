@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.saemoim.dto.request.CurrentPasswordRequestDto;
 import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
@@ -110,11 +109,9 @@ public class UserController {
 
 	// 내 정보 조회 - 마이페이지
 	@PostMapping("/profile")
-	public ResponseEntity<ProfileResponseDto> getMyProfile(
-		@Validated @RequestBody CurrentPasswordRequestDto passwordRequestDto,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+	public ResponseEntity<ProfileResponseDto> getMyProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ResponseEntity.ok()
-			.body(userService.checkPasswordAndGetMyProfile(userDetails.getId(), passwordRequestDto));
+			.body(userService.getMyProfile(userDetails.getId()));
 	}
 
 	@GetMapping("/user")

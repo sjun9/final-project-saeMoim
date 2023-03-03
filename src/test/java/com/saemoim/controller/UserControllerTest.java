@@ -1,19 +1,10 @@
 package com.saemoim.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +25,6 @@ import com.google.gson.Gson;
 import com.saemoim.annotation.WithCustomMockUser;
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
-import com.saemoim.dto.request.CurrentPasswordRequestDto;
 import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
@@ -239,7 +229,6 @@ class UserControllerTest {
 	@DisplayName("내 정보 조회")
 	void getMyProfile() throws Exception {
 		// given
-		var request = CurrentPasswordRequestDto.builder().password("aaasdf1234!").build();
 		User user = User.builder()
 			.id(1L)
 			.banCount(0)
@@ -251,13 +240,10 @@ class UserControllerTest {
 			.build();
 		ProfileResponseDto response = new ProfileResponseDto(user);
 
-		when(userService.checkPasswordAndGetMyProfile(anyLong(), any(CurrentPasswordRequestDto.class))).thenReturn(
-			response);
+		when(userService.getMyProfile(anyLong())).thenReturn(response);
 
 		// when
 		ResultActions resultActions = mockMvc.perform(post("/profile")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(request))
 			.with(csrf()));
 
 		// then
@@ -269,7 +255,7 @@ class UserControllerTest {
 	@DisplayName("내 정보 수정")
 	void updateProfile() throws Exception {
 		// given
-		ProfileRequestDto request = new ProfileRequestDto("aaasdf1234!", "content");
+		ProfileRequestDto request = new ProfileRequestDto("content");
 		User user = User.builder()
 			.id(1L)
 			.banCount(0)

@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
-import com.saemoim.dto.request.CurrentPasswordRequestDto;
 import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
@@ -142,20 +141,15 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public ProfileResponseDto checkPasswordAndGetMyProfile(Long userId, CurrentPasswordRequestDto passwordRequestDto) {
-		User user = _getUserById(userId);
-		if (!passwordEncoder.matches(passwordRequestDto.getPassword(), user.getPassword())) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_PASSWORD.getMessage());
-		}
-		return new ProfileResponseDto(user);
+	public ProfileResponseDto getMyProfile(Long userId) {
+		return new ProfileResponseDto(_getUserById(userId));
 	}
 
 	@Transactional
 	@Override
 	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto) {
 		User user = _getUserById(userId);
-		String changedPassword = passwordEncoder.encode(requestDto.getPassword());
-		user.updateProfile(requestDto.getContent(), changedPassword);
+		user.updateProfile(requestDto.getContent());
 		userRepository.save(user);
 		return new ProfileResponseDto(user);
 	}
