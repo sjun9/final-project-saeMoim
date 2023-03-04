@@ -80,6 +80,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 		if (!group.isLeader(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
+		if (participantRepository.existsByUser_Id(application.getUserId())) {
+			throw new IllegalArgumentException(ErrorCode.DUPLICATED_PARTICIPANT.getMessage());
+		}
 		application.permit();
 		applicationRepository.save(application);
 

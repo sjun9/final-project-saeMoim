@@ -60,6 +60,7 @@ public enum ErrorCode {
 	NOT_FOUND_REVIEW("해당 후기는 존재하지 않습니다."),
 	NOT_FOUND_WISH("찜한 모임이 아닙니다."),
 	DUPLICATED_WISH("이미 찜한 모임입니다."),
+	DUPLICATED_PARTICIPANT("이미 존재하는 참여자입니다."),
 	NOT_FOUND_PARTICIPANT("해당 참여자는 존재하지 않습니다."),
 
 	NOT_READABLE_JSON("올바르지 않은 JSON 형식입니다."),
