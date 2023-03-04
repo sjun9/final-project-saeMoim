@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saemoim.dto.response.GenericsResponseDto;
+import com.saemoim.exception.ErrorCode;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,7 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	private static final ResponseEntity<GenericsResponseDto> exceptionDto =
 		ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-			.body(new GenericsResponseDto(HttpStatus.UNAUTHORIZED.getReasonPhrase()));
+			.body(new GenericsResponseDto(ErrorCode.UNAUTHORIZED_TOKEN));
 
 	@Override
 	public void commence(HttpServletRequest request,

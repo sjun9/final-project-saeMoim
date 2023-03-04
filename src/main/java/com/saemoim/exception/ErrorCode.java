@@ -64,6 +64,7 @@ public enum ErrorCode {
 
 	NOT_READABLE_JSON("올바르지 않은 JSON 형식입니다."),
 	NOT_SUPPORTED_HTTP_MEDIA_TYPE("지원하지 않는 Content-Type 입니다."),
-	NOT_ACCEPTABLE_HTTP_MEDIA_TYPE("지원하지 않는 Accept 입니다.");
+	NOT_ACCEPTABLE_HTTP_MEDIA_TYPE("지원하지 않는 Accept 입니다."),
+	UNAUTHORIZED_TOKEN("재로그인이 필요합니다.");
 	private final String message;
 }
