@@ -98,11 +98,13 @@ public class GroupController {
 	}
 
 	// 모임 수정
-	@PutMapping("/groups/{groupId}")
+	@PutMapping(value = "/groups/{groupId}" ,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<GroupResponseDto> updateGroup(@PathVariable Long groupId,
-		@Validated @RequestBody GroupRequestDto requestDto,
+		@Validated @RequestPart GroupRequestDto requestDto,
+		@RequestPart(required = false ,name = "img") MultipartFile multipartFile,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(groupService.updateGroup(groupId, requestDto, userDetails.getId()));
+		System.out.println("aaaaaa" + requestDto.getName()); //
+		return ResponseEntity.ok().body(groupService.updateGroup(groupId, requestDto, userDetails.getId(),multipartFile));
 	}
 
 	// 모임 삭제

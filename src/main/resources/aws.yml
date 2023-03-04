@@ -18,15 +18,3 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-
-
-#cloud.aws.region.static=ap-northeast-2
-#cloud.aws.stack.auto=false
-#
-#cloud.aws.credentials.access-key= AKIAR7XX66NJTW2UVOSZ
-#cloud.aws.credentials.secret-key= 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
-#
-#cloud.aws.s3.bucket= saemoimbk
-#
-#spring.config.import=aws.yml
-#

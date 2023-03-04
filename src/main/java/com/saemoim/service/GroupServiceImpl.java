@@ -29,11 +29,12 @@ import com.saemoim.repository.ParticipantRepository;
 import com.saemoim.repository.TagRepository;
 import com.saemoim.repository.UserRepository;
 
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GroupServiceImpl implements GroupService {
 
 	private final GroupRepository groupRepository;
@@ -41,7 +42,8 @@ public class GroupServiceImpl implements GroupService {
 	private final ParticipantRepository participantRepository;
 	private final UserRepository userRepository;
 	private final TagRepository tagRepository;
-	private final AWSS3Uploader awss3Uploader;
+	private final AWSS3Uploader awsS3Uploader;
+	String dirName = "group";
 
 	@Override
 	@Transactional(readOnly = true)
@@ -151,7 +153,6 @@ public class GroupServiceImpl implements GroupService {
 		if (category.getParentId() == null) {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
-		String dirName = "group";
 		String imagePath;
 		if(multipartFile == null){
 			Group newGroup = new Group(requestDto, category, user);
@@ -161,7 +162,7 @@ public class GroupServiceImpl implements GroupService {
 		}
 
 		try {
-			imagePath = awss3Uploader.upload(multipartFile, dirName);
+			imagePath = awsS3Uploader.upload(multipartFile, dirName);
 		} catch (IOException e) {
 			throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
 		}
@@ -173,7 +174,8 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional
-	public GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, Long userId) {
+	public GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, Long userId,
+		MultipartFile multipartFile) {
 		Category category = categoryRepository.findByName(requestDto.getCategoryName()).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_CATEGORY.getMessage())
 		);
@@ -184,9 +186,21 @@ public class GroupServiceImpl implements GroupService {
 		if (!group.isLeader(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
-
-		group.update(requestDto, category, group.getUser());
+		String imagePath;
+		if(multipartFile == null){
+			group.update(requestDto, category, group.getUser());
+		}else {
+			try {
+				imagePath = awsS3Uploader.upload(multipartFile, dirName);
+				group.update(requestDto, category, group.getUser(), imagePath);
+				System.out.println(group.getUser().getUsername());
+			} catch (IOException e) {
+				throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+			}
+		}
+		System.out.println("aaaaaa" + group.getName());
 		groupRepository.save(group);
+
 		return new GroupResponseDto(group);
 	}
 

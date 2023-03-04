@@ -23,11 +23,7 @@ public class FileController {
 		return awss3Uploader.upload(multipartFile, "static");
 	}
 
-	@PostMapping("/profile/image")
-	public String uploadProfileImage(@RequestParam("img") MultipartFile multipartFile
-		,@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-		return awss3Uploader.upload(multipartFile, "profile",userDetails.getId());
-	}
+
 
 	@PostMapping("/post/image")
 	public String uploadPostImage(@RequestParam("img") MultipartFile multipartFile) throws IOException {

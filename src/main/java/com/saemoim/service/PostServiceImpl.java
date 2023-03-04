@@ -13,6 +13,7 @@ import com.saemoim.domain.Group;
 import com.saemoim.domain.Post;
 import com.saemoim.domain.User;
 import com.saemoim.dto.request.PostRequestDto;
+import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.dto.response.PostResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.fileUpload.AWSS3Uploader;
@@ -30,7 +31,8 @@ public class PostServiceImpl implements PostService {
 	private final UserRepository userRepository;
 	private final GroupRepository groupRepository;
 	private final LikeRepository likeRepository;
-	private final AWSS3Uploader awss3Uploader;
+	private final AWSS3Uploader awsS3Uploader;
+	String dirName = "post";
 
 	// 모임 전체 게시글 조회
 	@Transactional(readOnly = true)
@@ -103,10 +105,16 @@ public class PostServiceImpl implements PostService {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
-		String dirName = "post";
+
 		String imagePath;
+		if(multipartFile == null){
+			Post post = new Post(group, requestDto.getTitle(), requestDto.getContent(), user);
+			Post savedPost = postRepository.save(post);
+			return new PostResponseDto(savedPost);
+		}
+
 		try {
-			imagePath = awss3Uploader.upload(multipartFile, dirName);
+			imagePath = awsS3Uploader.upload(multipartFile, dirName);
 		} catch (IOException e) {
 			throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
 		}
@@ -117,14 +125,23 @@ public class PostServiceImpl implements PostService {
 
 	@Transactional
 	@Override
-	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId) {
+	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId, MultipartFile multipartFile) {
 		Post savedPost = _getPostById(postId);
 
 		if (!savedPost.isWriter(userId)) {
 			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
 		}
-		savedPost.update(requestDto.getTitle(), requestDto.getContent());
-
+		String imagePath;
+		if(multipartFile == null){
+			savedPost.update(requestDto.getTitle(), requestDto.getContent());
+		}else {
+			try {
+				imagePath = awsS3Uploader.upload(multipartFile, dirName);
+				savedPost.update(requestDto.getTitle(), requestDto.getContent(),imagePath);
+			} catch (IOException e) {
+				throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+			}
+		}
 		return new PostResponseDto(savedPost);
 	}
 

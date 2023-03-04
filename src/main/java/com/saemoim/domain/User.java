@@ -38,7 +38,7 @@ public class User extends TimeStamped {
 	private UserRoleEnum role;
 	private String kakaoId;
 	@Column(nullable = true)
-	private String profileImgUrl;
+	private String imagePath;
 
 	public User(String email, String password, String username, UserRoleEnum role) {
 		this.email = email;
@@ -76,8 +76,8 @@ public class User extends TimeStamped {
 		this.content = content;
 	}
 
-	public void updateProfileImage(String profileImgUrl) {
-		this.profileImgUrl = profileImgUrl;
+	public void updateProfileImage(String imagePath) {
+		this.imagePath = imagePath;
 	}
 
 	public User updateKakaoId(String kakaoId) {

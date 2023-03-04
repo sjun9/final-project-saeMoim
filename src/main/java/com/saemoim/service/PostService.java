@@ -15,7 +15,7 @@ public interface PostService {
 
 	PostResponseDto createPost(Long groupId, PostRequestDto requestDto, Long userId, MultipartFile multipartFile);
 
-	PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId);
+	PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId, MultipartFile multipartFile);
 
 	void deletePost(Long postId, Long userId);
 

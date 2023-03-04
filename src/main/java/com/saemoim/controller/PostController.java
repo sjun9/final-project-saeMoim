@@ -57,10 +57,12 @@ public class PostController {
 	}
 
 	// 게시글 수정
-	@PutMapping("/posts/{postId}")
+	@PutMapping(value = "/posts/{postId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long postId,
-		@Validated @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(postService.updatePost(postId, requestDto, userDetails.getId()));
+		@Validated @RequestPart PostRequestDto requestDto,
+		@RequestPart(required = false ,name = "img") MultipartFile multipartFile,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ResponseEntity.ok().body(postService.updatePost(postId, requestDto, userDetails.getId(), multipartFile));
 	}
 
 	// 게시글 삭제

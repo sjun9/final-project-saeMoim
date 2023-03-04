@@ -1,10 +1,12 @@
 package com.saemoim.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
@@ -19,6 +21,7 @@ import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
 import com.saemoim.dto.response.UserResponseDto;
 import com.saemoim.exception.ErrorCode;
+import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.redis.RedisUtil;
 import com.saemoim.repository.UserRepository;
@@ -33,6 +36,8 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtUtil jwtUtil;
 	private final RedisUtil redisUtil;
+	private final AWSS3Uploader awss3Uploader;
+	private String dirName = "profile";
 
 	@Transactional
 	@Override
@@ -152,7 +157,7 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto) {
+	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto){
 		User user = _getUserById(userId);
 		String changedPassword = passwordEncoder.encode(requestDto.getPassword());
 		user.updateProfile(requestDto.getContent(), changedPassword);
@@ -178,5 +183,18 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
+	}
+
+	@Transactional
+	public void uploadProfileImage (MultipartFile multipartFile, Long userId) throws IOException {
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
+
+		if (!multipartFile.isEmpty()) {
+			String storedName = awss3Uploader.upload(multipartFile, dirName);
+			user.updateProfileImage(storedName);
+		}
+		userRepository.save(user);
 	}
 }

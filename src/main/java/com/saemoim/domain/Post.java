@@ -39,7 +39,7 @@ public class Post extends TimeStamped {
 	@Column(nullable = false)
 	private int likeCount = 0;
 	@Column(nullable = true)
-	private String imagePath;
+	private String imagePath = "/src/main/resources/static/images/bird.png";
 
 	public Post(Group group, String title, String content, User user, String imagePath) {
 		this.group = group;
@@ -48,10 +48,21 @@ public class Post extends TimeStamped {
 		this.user = user;
 		this.imagePath = imagePath;
 	}
+	public Post(Group group, String title, String content, User user) {
+		this.group = group;
+		this.title = title;
+		this.content = content;
+		this.user = user;
+	}
 
 	public void update(String title, String content) {
 		this.title = title;
 		this.content = content;
+	}
+	public void update(String title, String content, String imagePath) {
+		this.title = title;
+		this.content = content;
+		this.imagePath = imagePath;
 	}
 
 	public Long getUserId() {

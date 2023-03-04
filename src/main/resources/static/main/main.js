@@ -1080,6 +1080,7 @@ function withdrawMoim(id) {
 }
 
 function editMoim(id) {
+    console.log(id);
     if (address === undefined) {
         alert("지도에서 주소를 체크 해주세요.")
     }
@@ -1095,20 +1096,28 @@ function editMoim(id) {
         "latitude": latitude,
         "longitude": longitude
     };
-
+    console.log(jsonData['name'])
     address = undefined;
     firstRegion = undefined;
     secondRegion = undefined;
     latitude = undefined;
     longitude = undefined;
 
+    let file = $('#modifyMoim-image')[0].files[0];
+    let formData = new FormData;
+    console.log(file)
+    formData.append("img", file)
+    formData.append("requestDto", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
     $.ajax({
         type: "put",
         url: "http://localhost:8080/groups/" + id,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
-        data: JSON.stringify(jsonData), //전송 데이터
+        timeOut: 0,
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        data: formData,
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
-        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+        contentType: false, //헤더의 Content-Type을 설정
+        mimeType: "multipart/form-data",
+        processData: false
     }).done(function (data) {
         console.log(data);
         alert("작성 완료")

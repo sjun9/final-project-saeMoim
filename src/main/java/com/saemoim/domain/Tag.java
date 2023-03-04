@@ -27,7 +27,7 @@ public class Tag extends TimeStamped {
 	@JoinColumn(name = "group_id")
 	private Group group;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String name;
 
 	public Tag(String name, Group group) {

@@ -28,7 +28,7 @@ public interface GroupService {
 
 	GroupResponseDto createGroup(GroupRequestDto requestDto, Long userId, MultipartFile multipartFile);
 
-	GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, Long userId);
+	GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, Long userId, MultipartFile multipartFile);
 
 	void deleteGroup(Long groupId, Long userId);
 

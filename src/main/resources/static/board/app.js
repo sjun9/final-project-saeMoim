@@ -110,7 +110,9 @@ function renderProfileList() {
       },
     };
         $.ajax(settings).done(function (response) {
-            appendProfileButton(response["username"])
+            appendProfileButton(response["username"], response["imagePath"])
+            const imagePath = response["imagePath"]
+            document.getElementById('proflie-image').src = `${imagePath}`
         });
     })
 }
@@ -245,26 +247,32 @@ function editPost(event) {
     const new_title = document.querySelector("#editPost-title").value
     const new_content = document.querySelector("#editPost-content").value
     const currentPostId = localStorage.getItem("current_post_id")
+    let file = $('#editPost-image')[0].files[0];
+    let formData = new FormData;
+    formData.append("img", file)
+    let jsonData =
+        {
+            "title": new_title,
+            "content": new_content
+        }
+    formData.append("requestDto", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
 
-  var settings = {
-    "url": `http://localhost:8080/posts/${currentPostId}`,
-    "method": "PUT",
-    "timeout": 0,
-    "headers": {
-      "Authorization": Authorization,
-      "Refresh_Token": Refresh_Token,
-      "Content-Type": "application/json"
-    },
-    "data": JSON.stringify({
-      "title": new_title,
-      "content": new_content
-    }),
-  };
-
-  $.ajax(settings).done(function (response) {
-    console.log(response);
-    alert("수정 완료")
-    location.reload()
+    $.ajax({
+        type: "put",
+        url: `http://localhost:8080/posts/${currentPostId}`,
+        timeout: 0,
+        headers: {"Authorization": Authorization, "Refresh_Token": Refresh_Token},
+        data: formData,
+        dataType: "JSON",
+        contentType: false,
+        mimeType: "multipart/form-data",
+        processData: false
+    }).done(function (response) {
+        console.log(response);
+        alert("수정 완료")
+        location.reload();
+    });
+}
 
     // 게시글 최신화 (임시로 겉보기만...)
     // document.querySelector('#readPostModalLabel').innerText = new_title
@@ -272,8 +280,7 @@ function editPost(event) {
 
     // document.querySelector("#closeEditPostModal").click() // 수정 모달창 닫고
     // document.querySelector("#openRead").click() // 읽기 모달창 열고
-  });
-}
+
 
 
 // 게시글 수정 모달창 열기
@@ -412,7 +419,7 @@ const makeContent = (i) => {
         simpleCreatedAt = ""
         simpleCreatedAt = simpleCreatedAtDate + " " + simpleCreatedAtHour + ":" + simpleCreatedAtMin
     }
-    
+
     content__header.innerHTML = `
     <span class="content__header__id">${currentPost["id"]}</span>
     <a href="#" class="like-button content__header__likeButton ${likeChecked}">
@@ -773,7 +780,7 @@ function doLike(postId) {
       "Refresh_Token": Refresh_Token
     },
   };
-  
+
   $.ajax(settings).done(function (response) {
     console.log(response);
   }).fail(function () {
@@ -794,7 +801,7 @@ function unLike(postId) {
       "Refresh_Token": Refresh_Token
     },
   };
-  
+
   $.ajax(settings).done(function (response) {
     console.log(response);
   }).fail(function () {

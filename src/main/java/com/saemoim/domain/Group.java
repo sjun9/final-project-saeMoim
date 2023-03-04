@@ -130,6 +130,22 @@ public class Group extends TimeStamped {
 		this.recruitNumber = request.getRecruitNumber();
 	}
 
+	public void update(GroupRequestDto request, Category category, User user, String imagePath) {
+		this.user = user;
+		this.category = category;
+		this.tags.clear();
+		request.getTagNames().forEach(t -> this.tags.add(new Tag(t, this)));
+		this.name = request.getName();
+		this.content = request.getContent();
+		this.address = request.getAddress();
+		this.firstRegion = request.getFirstRegion();
+		this.secondRegion = request.getSecondRegion();
+		this.latitude = request.getLatitude();
+		this.longitude = request.getLongitude();
+		this.recruitNumber = request.getRecruitNumber();
+		this.imagePath = imagePath;
+	}
+
 	public String getUsername() {
 		return this.user.getUsername();
 	}
