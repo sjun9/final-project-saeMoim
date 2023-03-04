@@ -148,24 +148,21 @@
             <div class="modal-body">
                 <form>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">모임 이름</label>
+                        <label for="modifyMoim-title" class="col-form-label">모임 이름</label>
                         <input type="text" class="form-control" id="modifyMoim-title">
                     </div>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">희망 모집 인원</label>
+                        <label for="modifyMoim-recruit" class="col-form-label">희망 모집 인원</label>
                         <input type="number" class="form-control" id="modifyMoim-recruit">
                     </div>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">태그</label>
-                        <ul class="tags" id="modiTags">
-                            <!--                <li class="addedTag" id="added">-->
-                            <!--                   $(this).val()-->
-                            <!--                  <span class="tagRemove" onclick="$(this).parent().remove();">x</span>-->
-                            <!--                  <input type="hidden" id="tagt" value="$(this).val()" name="tags[]">-->
-                            <!--                </li>-->
-                            <!--                -->
-                            <li class="tagAdd taglist" id="modiTagAdd">
-                                <input type="text" id="modi-search-field">
+                        <label for="modify-tags" class="col-form-label">태그</label>
+                        <ul class="tags" id="modify-tags">
+                            <div id="modify-tatag">
+
+                            </div>
+                            <li class="tagAdd taglist" id="modify-tagAdd">
+                                <input type="text" id="modify-field">
                             </li>
                         </ul>
                     </div>

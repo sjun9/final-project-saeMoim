@@ -1068,12 +1068,16 @@ function withdrawMoim(id) {
 }
 
 function editMoim(id) {
+    let tags = []
+    for (let i = 0; i < $('[name="tagsM"]').length; i++) {
+        tags.push($('[name="tagsM"]')[i].value)
+    }
     if (address === undefined) {
         alert("지도에서 주소를 체크 해주세요.")
     }
     let jsonData = { // Body에 첨부할 json 데이터
         "name": $('#modifyMoim-title').val(),
-        "tagNames": [$('#modifyMoim-tag').val()],
+        "tagNames": tags,
         "categoryName": $('#modifyMoim-category').val(),
         "content": $('#modifyMoim-content').val(),
         "recruitNumber": $('#modifyMoim-recruit').val(),
@@ -1563,5 +1567,42 @@ $(document).ready(function () {
             }
         }
     });
+});
 
+// 모임수정태그
+$(document).ready(function () {
+    $('#addTagBtn').click(function () {
+        $('#modify-tags option:selected').each(function () {
+            $(this).appendTo($('#selectedTags'));
+        });
+    });
+    $('#removeTagBtn').click(function () {
+        $('#selectedTags option:selected').each(function (el) {
+            $(this).appendTo($('#modify-tags'));
+        });
+    });
+    $('.tagRemove').click(function (event) {
+        event.preventDefault();
+        $(this).parent().remove();
+    });
+    $('#modify-tags').click(function () {
+        $('#modify-field').focus();
+    });
+    $('#modify-field').keypress(function (event) {
+        if (event.which == '13') {
+            if (($(this).val() != '') && ($(".tags .addedTag:contains('" + $(this).val() + "') ").length == 0)) {
+                temp_html = `<li class="addedTag" id="modify-added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
+               <input type="hidden" value="` + $(this).val() + `" name="tagsM">
+             </li>`
+                $('#modify-tatag').append(temp_html)
+
+                console.log($('[name="tagsM"]').val())
+
+                $(this).val('');
+            } else {
+                $(this).val('');
+
+            }
+        }
+    });
 });
