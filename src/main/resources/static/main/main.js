@@ -1365,6 +1365,63 @@ function gotoDeleteReview(event) {
     event.currentTarget.parentNode.previousSibling.previousSibling.previousSibling.classList.toggle('button_hide');
 }
 
+function changeStatus(id) {
+    let status = document.querySelector('#moimStatus').innerText
+    console.log(moimStatus)
+    if (status === "CLOSE") {
+        var settings = {
+            "url": "http://localhost:8080/groups/" + id + "/open",
+            "method": "PATCH",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('Authorization')
+            },
+        };
+
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+            alert(response['data'])
+            location.reload()
+        }).fail(function (e) {
+            if (e.status === 400) {
+                console.log("=================")
+                alert(e.responseJSON['data'])
+            } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+                reissue()
+                setTimeout(gotoBoard(id), 150)
+                setTimeout(showUsername, 150)
+            } else {
+                alert(e.responseJSON['data'])
+            }
+        });
+    } else if (status === "OPEN") {
+        var settings = {
+            "url": "http://localhost:8080/groups/" + id + "/close",
+            "method": "PATCH",
+            "timeout": 0,
+            "headers": {
+                "Authorization": localStorage.getItem('Authorization')
+            },
+        };
+
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+            alert(response['data'])
+            location.reload()
+        }).fail(function (e) {
+            if (e.status === 400) {
+                console.log("=================")
+                alert(e.responseJSON['data'])
+            } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+                reissue()
+                setTimeout(gotoBoard(id), 150)
+                setTimeout(showUsername, 150)
+            } else {
+                alert(e.responseJSON['data'])
+            }
+        });
+    }
+}
 
 function getMyProfile() {
     $('#profileName').empty()
