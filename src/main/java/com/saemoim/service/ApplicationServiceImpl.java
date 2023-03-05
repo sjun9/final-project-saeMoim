@@ -102,6 +102,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 		if (!group.isLeader(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
+		if (!application.isWait()) {
+			throw new IllegalArgumentException(ErrorCode.ALREADY_PROCESSED.getMessage());
+		}
 		application.reject();
 		applicationRepository.save(application);
 	}

@@ -57,6 +57,7 @@ public enum ErrorCode {
 	ALREADY_CLOSE("이미 닫혀있는 모임입니다."),
 	DUPLICATED_APPLICATION("이미 신청되었습니다."),
 	NOT_FOUND_APPLICATION("해당 신청은 존재하지 않습니다."),
+	ALREADY_PROCESSED("이미 처리된 신청입니다."),
 	NOT_FOUND_REVIEW("해당 후기는 존재하지 않습니다."),
 	NOT_FOUND_WISH("찜한 모임이 아닙니다."),
 	DUPLICATED_WISH("이미 찜한 모임입니다."),
