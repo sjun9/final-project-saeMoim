@@ -37,6 +37,8 @@ public class User extends TimeStamped {
 	@Enumerated(EnumType.STRING)
 	private UserRoleEnum role;
 	private String kakaoId;
+	@Column(nullable = true)
+	private String imagePath = "/src/main/resources/static/images/bird.png";
 
 	public User(String email, String password, String username, UserRoleEnum role) {
 		this.email = email;
@@ -72,6 +74,10 @@ public class User extends TimeStamped {
 	public void updateProfile(String content, String changedPassword) {
 		this.password = changedPassword;
 		this.content = content;
+	}
+
+	public void updateProfileImage(String imagePath) {
+		this.imagePath = imagePath;
 	}
 
 	public User updateKakaoId(String kakaoId) {

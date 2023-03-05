@@ -25,7 +25,7 @@ bin/
 *.iml
 *.ipr
 **/application.properties
-**/mail.properties
+**/aws.yml
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/

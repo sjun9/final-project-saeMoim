@@ -49,6 +49,12 @@ public enum ErrorCode {
 	// 좋아요
 	DUPLICATED_LIKE("이미 '좋아요'를 누르셨습니다."),
 	ALREADY_DELETED("이미 '좋아요'가 취소되었습니다."),
+
+	// 파일 업로드
+	NOT_IMAGE_FILE("이미지 파일이 아닙니다."),
+	EMPTY_FILE("파일이 없습니다."),
+	FAIL_IMAGE_UPLOAD("이미지 업로드에 실패 했습니다."),
+
 	// 모임
 	NOT_FOUND_GROUP("해당 모임은 존재하지 않습니다."),
 	DUPLICATED_GROUP_NAME("존재하는 모임명입니다."),

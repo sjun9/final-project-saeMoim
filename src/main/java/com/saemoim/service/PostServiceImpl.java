@@ -1,20 +1,22 @@
 package com.saemoim.service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.domain.Group;
 import com.saemoim.domain.Post;
 import com.saemoim.domain.User;
 import com.saemoim.dto.request.PostRequestDto;
+import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.dto.response.PostResponseDto;
 import com.saemoim.exception.ErrorCode;
+import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.repository.GroupRepository;
 import com.saemoim.repository.LikeRepository;
 import com.saemoim.repository.PostRepository;
@@ -29,6 +31,8 @@ public class PostServiceImpl implements PostService {
 	private final UserRepository userRepository;
 	private final GroupRepository groupRepository;
 	private final LikeRepository likeRepository;
+	private final AWSS3Uploader awsS3Uploader;
+	String dirName = "post";
 
 	// 모임 전체 게시글 조회
 	@Transactional(readOnly = true)
@@ -44,7 +48,7 @@ public class PostServiceImpl implements PostService {
 			LocalDateTime createdAt = post.getCreatedAt();
 			LocalDateTime modifiedAt = post.getModifiedAt();
 			int likeCount = post.getLikeCount();
-
+			String imagePath = post.getImagePath();
 			boolean isLikeChecked = likeRepository.existsByPost_IdAndUserId(id, userId);
 
 			return PostResponseDto.builder()
@@ -57,6 +61,7 @@ public class PostServiceImpl implements PostService {
 				.modifiedAt(modifiedAt)
 				.likeCount(likeCount)
 				.isLikeChecked(isLikeChecked)
+				.imagePath(imagePath)
 				.build();
 		});
 	}
@@ -74,7 +79,7 @@ public class PostServiceImpl implements PostService {
 		LocalDateTime createdAt = post.getCreatedAt();
 		LocalDateTime modifiedAt = post.getModifiedAt();
 		int likeCount = post.getLikeCount();
-
+		String imagePath = post.getImagePath();
 		boolean isLikeChecked = likeRepository.existsByPost_IdAndUserId(id, userId);
 
 		return PostResponseDto.builder()
@@ -87,12 +92,13 @@ public class PostServiceImpl implements PostService {
 			.modifiedAt(modifiedAt)
 			.likeCount(likeCount)
 			.isLikeChecked(isLikeChecked)
+			.imagePath(imagePath)
 			.build();
 	}
 
 	@Transactional
 	@Override
-	public PostResponseDto createPost(Long groupId, PostRequestDto requestDto, Long userId) {
+	public PostResponseDto createPost(Long groupId, PostRequestDto requestDto, Long userId, MultipartFile multipartFile) {
 		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
@@ -100,20 +106,42 @@ public class PostServiceImpl implements PostService {
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
 
-		Post savedPost = postRepository.save(new Post(group, requestDto.getTitle(), requestDto.getContent(), user));
+		String imagePath;
+		if(multipartFile == null){
+			Post post = new Post(group, requestDto.getTitle(), requestDto.getContent(), user);
+			Post savedPost = postRepository.save(post);
+			return new PostResponseDto(savedPost);
+		}
+
+		try {
+			imagePath = awsS3Uploader.upload(multipartFile, dirName);
+		} catch (IOException e) {
+			throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+		}
+
+		Post savedPost = postRepository.save(new Post(group, requestDto.getTitle(), requestDto.getContent(), user, imagePath));
 		return new PostResponseDto(savedPost);
 	}
 
 	@Transactional
 	@Override
-	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId) {
+	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId, MultipartFile multipartFile) {
 		Post savedPost = _getPostById(postId);
 
 		if (!savedPost.isWriter(userId)) {
 			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
 		}
-		savedPost.update(requestDto.getTitle(), requestDto.getContent());
-
+		String imagePath;
+		if(multipartFile == null){
+			savedPost.update(requestDto.getTitle(), requestDto.getContent());
+		}else {
+			try {
+				imagePath = awsS3Uploader.upload(multipartFile, dirName);
+				savedPost.update(requestDto.getTitle(), requestDto.getContent(),imagePath);
+			} catch (IOException e) {
+				throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+			}
+		}
 		return new PostResponseDto(savedPost);
 	}
 
