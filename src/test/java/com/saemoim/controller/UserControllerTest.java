@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.saemoim.annotation.WithCustomMockUser;
@@ -266,7 +267,8 @@ class UserControllerTest {
 			.username("장성준")
 			.build();
 		ProfileResponseDto responseDto = new ProfileResponseDto(user);
-		when(userService.updateProfile(anyLong(), any(ProfileRequestDto.class))).thenReturn(responseDto);
+		when(userService.updateProfile(anyLong(), any(ProfileRequestDto.class), any(MultipartFile.class))).thenReturn(
+			responseDto);
 		// when
 		ResultActions resultActions = mockMvc.perform(put("/profile")
 			.contentType(MediaType.APPLICATION_JSON)

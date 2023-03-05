@@ -75,7 +75,8 @@ public class User extends TimeStamped {
 		this.content = content;
 	}
 
-	public void updateProfileImage(String imagePath) {
+	public void updateProfile(String content, String imagePath) {
+		this.content = content;
 		this.imagePath = imagePath;
 	}
 

@@ -409,28 +409,11 @@
         <div class="app-content-header">
             <h1 class="app-content-headerText">마이프로필</h1>
         </div>
-
-        <div class="col-md-12">
-            <div class="col-md-2">
-                <form>
-                    <div class="form-group">
-                        <h6>
-                            프로필 이미지
-                            <img id ="profile-image" src="../static/images/bird.png" width="150px" height="150px"/>
-                        </h6>
-                        <label for="img">파일 업로드</label>
-                        <input type="file" id="img" accept="image/*" multiple>
-                    </div>
-                    <button type="button" class="btn btn-primary" id="btn-save" onclick="uploadImage()">저장</button>
-                </form>
-            </div>
-        </div>
-
         <div class="app-content-section" id="myProfile">
             <div id="myProfile_2">
                 <h2 id="profileName"></h2>
                 <div>
-                    <img src="../static/images/bird.png" height="512" width="512"/>
+                    <img id="profile-image" src="../static/images/bird.png" width="300px" height="300px"/>
                 </div>
                 <div class="content_title">
                     소개글
@@ -440,7 +423,7 @@
                 <div class="babackground">
                     <div class="windowP">
                         <div class="popup">
-                            <button id="close">X</button>
+                            <button id="closeP">X</button>
                             <div class="momodal">
                                 <form>
                                     <div class="row mb-3">
@@ -450,8 +433,8 @@
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="inputImg" class="col-form-label">이미지 업로드</label>
-                                        <input type="file" class="form-control" id="inputImg">
+                                        <label for="img" class="col-form-label">이미지 업로드</label>
+                                        <input type="file" class="form-control" id="img" accept="image/*" multiple>
                                     </div>
                                     <button type="submit" class="btn btn-primary"
                                             onclick="updateProfile($('#inputContent').val())">

@@ -1,6 +1,5 @@
 package com.saemoim.controller;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.http.HttpHeaders;
@@ -125,18 +124,12 @@ public class UserController {
 	}
 
 	// 내 정보 수정 - 마이페이지
-	@PutMapping("/profile")
-	public ResponseEntity<ProfileResponseDto> updateProfile(@Validated @RequestBody ProfileRequestDto requestDto,
+	@PutMapping(value = "/profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<ProfileResponseDto> updateProfile(
+		@Validated @RequestPart ProfileRequestDto requestDto,
+		@RequestPart(required = false, name = "img") MultipartFile multipartFile,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(userService.updateProfile(userDetails.getId(), requestDto));
-	}
-
-	// 내 정보 수정 - 프로필 이미지
-	@PostMapping("/profile/image")
-	public ResponseEntity<GenericsResponseDto> uploadProfileImage(@RequestPart("img") MultipartFile multipartFile
-		,@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-		userService.uploadProfileImage(multipartFile, userDetails.getId());
-		return ResponseEntity.ok().body(new GenericsResponseDto("프로필 이미지가 수정 되었습니다."));
+		return ResponseEntity.ok().body(userService.updateProfile(userDetails.getId(), requestDto, multipartFile));
 	}
 
 	// 리프레쉬 토큰 재발급

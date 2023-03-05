@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
@@ -215,9 +216,10 @@ class UserServiceImplTest {
 		var userId = 1L;
 		var request = mock(ProfileRequestDto.class);
 		var user = mock(User.class);
+		var image = mock(MultipartFile.class);
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 		// when
-		userService.updateProfile(userId, request);
+		userService.updateProfile(userId, request, image);
 
 		// then
 		verify(userRepository).save(user);

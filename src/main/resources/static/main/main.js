@@ -502,7 +502,7 @@ function showPopularMoim() {
                     let recruitNumber = response[i]['recruitNumber']
                     let wishCount = response[i]['wishCount']
                     let status = response[i]['status']
-                    let imgPath =response[i]['imagePath']
+                    let imgPath = response[i]['imagePath']
 
                     let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
@@ -1507,28 +1507,39 @@ $('.pw').focusout(function () {
 });
 
 function updateProfile(content) {
+    var file = $('#img')[0].files[0];
+    console.log(file);
+    var form = new FormData();
+
+    let jsonData =
+        {
+            "content": content
+        }
+    form.append("requestDto", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
+    form.append("img", file);
+
     var settings = {
         "url": "http://localhost:8080/profile",
         "method": "PUT",
         "timeout": 0,
         "headers": {
-            "Authorization": localStorage.getItem('Authorization'),
-            "Content-Type": "application/json"
+            "Authorization": localStorage.getItem("Authorization")
         },
-        "data": JSON.stringify({
-            "content": content
-        }),
+        "processData": false,
+        "mimeType": "multipart/form-data",
+        "contentType": false,
+        "data": form
     };
 
     $.ajax(settings).done(function (response) {
         console.log(response);
-        alert("정보가 수정되었습니다.")
+        alert("프로필 수정이 완료되었습니다.")
         window.location.reload()
     }).fail(function (e) {
-        console.log(e)
+        console.log(JSON.parse(e.responseText).data)
         if (e.status === 400) {
             console.log("=================")
-            alert(e.responseJSON['data'])
+            alert(JSON.parse(e.responseText).data)
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
             setTimeout(updateProfile(content), 150)
@@ -1545,11 +1556,12 @@ function showP() {
 }
 
 function closeP() {
-    document.querySelector(".babackground").className = "background";
+    document.querySelector(".background show").className = "background";
 }
 
 document.querySelector("#showProfile").addEventListener("click", showP);
-document.querySelector("#close").addEventListener("click", closeP);
+// 작동안됨..
+document.querySelector("#closeP").addEventListener("click", closeP);
 
 
 $.expr[":"].contains = $.expr.createPseudo(function (arg) {
@@ -1631,28 +1643,3 @@ $(document).ready(function () {
         }
     });
 });
-
-function uploadImage() {
-    var file = $('#img')[0].files[0];
-    console.log(file);
-    var form = new FormData();
-    form.append("img", file);
-
-    var settings = {
-        "url": "http://localhost:8080/profile/image",
-        "method": "POST",
-        "timeout": 0,
-        "headers": {
-            "Authorization": localStorage.getItem("Authorization")
-        },
-        "processData": false,
-        "mimeType": "multipart/form-data",
-        "contentType": false,
-        "data": form
-    };
-
-    $.ajax(settings).done(function (response) {
-        alert("수정완료");
-        console.log(response);
-    });
-}
