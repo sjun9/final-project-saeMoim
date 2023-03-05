@@ -181,7 +181,7 @@ function profile() {
 profile()
 
 // 회원 신고 함수
-function report(id, content) { // 신고할 사람id
+function report(id, content) { // 신고할 사람id, 신고내용
     var settings = {
         "url": "http://localhost:8080/report/users/" + id,
         "method": "POST",
