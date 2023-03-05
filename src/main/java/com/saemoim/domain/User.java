@@ -71,12 +71,12 @@ public class User extends TimeStamped {
 		this.password = password;
 	}
 
-	public void updateProfile(String content, String changedPassword) {
-		this.password = changedPassword;
+	public void updateProfile(String content) {
 		this.content = content;
 	}
 
-	public void updateProfileImage(String imagePath) {
+	public void updateProfile(String content, String imagePath) {
+		this.content = content;
 		this.imagePath = imagePath;
 	}
 

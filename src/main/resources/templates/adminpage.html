@@ -134,6 +134,7 @@
                         <th scope="col">회원번호</th>
                         <th scope="col">닉네임</th>
                         <th scope="col">정지 당한 횟수</th>
+                        <th scope="col">정지 상태</th>
                         <th scope="col">생성일</th>
                         <th scope="col">수정일</th>
                         <th scope="col"></th>
@@ -175,7 +176,7 @@
                     </button>
                 </div>
             </div>
-            
+
         </div>
         <div class="app-content-section">
 
@@ -251,7 +252,7 @@
         };
         $.ajax(settings).done(function (response) {
             $('#user-list').empty()
-            let rows = response
+            let rows = response['data']
             for (let i = 0; i < rows.length; i++) {
                 let username = rows[i]['username']
                 let email = rows[i]['email']
@@ -282,6 +283,7 @@
         getBlacklist()
     })
 
+    // 페이징처리......
     function getReport() {
         // report
         var settings = {
@@ -293,8 +295,9 @@
             },
         };
         $.ajax(settings).done(function (response) {
+            console.log(response)
             $('#report-list').empty()
-            let rows = response
+            let rows = response['data']['content']
             for (let i = 0; i < rows.length; i++) {
                 let subjectUserId = rows[i]['subjectUserId']
                 let subjectUsername = rows[i]['subjectUsername']
@@ -334,9 +337,10 @@
             },
         };
 
-        $.ajax(settingss).done(function (responsee) {
+        $.ajax(settingss).done(function (response) {
+            console.log(response)
             $('#blacklist').empty()
-            let rows = responsee
+            let rows = response['data']
             for (let i = 0; i < rows.length; i++) {
                 let bkuserId = rows[i]['userId']
                 let bkusername = rows[i]['username']
@@ -344,11 +348,13 @@
                 let bkcreatedAt = rows[i]['createdAt']
                 let bkmodifiedAt = rows[i]['modifiedAt']
                 let bkId = rows[i]['id']
+                let status = rows[i]['status']
 
                 let temp_html = `<tr>
                 <td scope="row">${bkuserId}</td>
                 <td>${bkusername}</td>
                 <td>${bkbanCount}</td>
+                <td>${status}</td>
                 <td>${bkcreatedAt}</td>
                 <td>${bkmodifiedAt}</td>
                 <td>
@@ -359,8 +365,8 @@
               </tr>`
                 $('#blacklist').append(temp_html)
             }
-        }).fail(function (responsee) {
-            console.log(responsee.responseJSON);
+        }).fail(function (response) {
+            console.log(response.responseJSON);
             alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
             window.location.href = './adminlogin.html';
         });
@@ -382,7 +388,7 @@
         $.ajax(settings).done(function (response) {
             console.log(response);
             $('#categoryList').empty()
-            let rows = response
+            let rows = response['data']
             for (let i = 0; i < rows.length; i++) {
                 let categories = rows[i]['categories']
                 let parentName = rows[i]['name']
@@ -428,7 +434,7 @@
         $.ajax(settings).done(function (response) {
             console.log(response);
             $('#aadminn').empty()
-            let rows = response
+            let rows = response['data']
             for (let i = 0; i < rows.length; i++) {
                 let name = rows[i]['adminName']
                 let id = rows[i]['adminId']
@@ -440,14 +446,11 @@
             }
         }).fail(function (response) {
             console.log(response);
-            if (response.statusText === "error") {
+            if (response['status'] === 403) {
                 alert('root 관리자만 접근이 가능합니다.')
                 window.location.reload()
-            }
-            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-                alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
             } else {
-                alert('서버에 문제가 발생하였습니다.')
+                alert(response['data'])
             }
         });
     }
@@ -538,7 +541,7 @@
         };
 
         $.ajax(settings).done(function (response) {
-            alert(response['message']);
+            alert(response['data']);
             getReport()
         }).fail(function (response) {
             console.log(response.responseJSON);
@@ -558,15 +561,11 @@
         };
 
         $.ajax(settings).done(function (response) {
-            alert(response['message']);
+            alert(response['data']);
             getBlacklist()
         }).fail(function (response) {
             console.log(response.responseJSON);
-            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-                alert(response.responseJSON['message'])
-            } else {
-                alert('서버에 문제가 발생하였습니다.')
-            }
+            alert(response.responseJSON['data'])
         });
 
     }
@@ -583,15 +582,11 @@
         };
 
         $.ajax(settings).done(function (response) {
-            alert(response['message']);
+            alert(response['data']);
             getBlacklist()
         }).fail(function (response) {
             console.log(response.responseJSON);
-            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-                alert(response.responseJSON['message'])
-            } else {
-                alert('서버에 문제가 발생하였습니다.')
-            }
+            alert(response.responseJSON['data'])
         });
     }
 
@@ -606,18 +601,13 @@
         };
 
         $.ajax(settings).done(function (response) {
-            alert(response['message']);
+            alert(response['data']);
             getBlacklist()
             getReport()
         }).fail(function (response) {
             console.log(response.responseJSON);
-            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-                alert(response.responseJSON['message'])
-            } else {
-                alert('서버에 문제가 발생하였습니다.')
-            }
+            alert(response.responseJSON['data'])
         });
-
     }
 
     function deleteCate(categoryId) {
@@ -631,15 +621,11 @@
         };
 
         $.ajax(settings).done(function (response) {
-            alert(response['message']);
+            alert(response['data']);
             getCate()
         }).fail(function (response) {
             console.log(response.responseJSON);
-            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-                alert(response.responseJSON['message'])
-            } else {
-                alert('서버에 문제가 발생하였습니다.')
-            }
+            alert(response.responseJSON['data'])
         });
     }
 
@@ -658,15 +644,11 @@
         };
 
         $.ajax(settings).done(function (response) {
-            alert(response['message']);
+            alert(response['data']);
             getCate()
         }).fail(function (response) {
             console.log(response.responseJSON);
-            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-                alert(response.responseJSON['message'])
-            } else {
-                alert('서버에 문제가 발생하였습니다.')
-            }
+            alert(response.responseJSON['data'])
         });
     }
 
@@ -685,15 +667,11 @@
         };
 
         $.ajax(settings).done(function (response) {
-            alert(response['message']);
+            alert(response['data']);
             getCate()
         }).fail(function (response) {
             console.log(response.responseJSON);
-            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-                alert(response.responseJSON['message'])
-            } else {
-                alert('서버에 문제가 발생하였습니다.')
-            }
+            alert(response.responseJSON['data'])
         });
     }
 
@@ -712,15 +690,11 @@
         };
 
         $.ajax(settings).done(function (response) {
-            alert(response['message']);
+            alert(response['data']);
             getCate()
         }).fail(function (response) {
             console.log(response.responseJSON);
-            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-                alert(response.responseJSON['message'])
-            } else {
-                alert('서버에 문제가 발생하였습니다.')
-            }
+            alert(response.responseJSON['data'])
         });
     }
 
@@ -735,19 +709,11 @@
         };
 
         $.ajax(settings).done(function (response) {
-            alert(response['message']);
+            alert(response['data']);
             getAdmin()
         }).fail(function (response) {
             console.log(response);
-            if (response.statusText === "error") {
-                alert('root 관리자만 접근이 가능합니다.')
-                window.location.reload()
-            }
-            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-                alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-            } else {
-                alert('서버에 문제가 발생하였습니다.')
-            }
+            alert(response.responseJSON['data']);
         });
 
     }
@@ -768,26 +734,18 @@
         };
 
         $.ajax(settings).done(function (response) {
-            alert(response['message']);
+            alert(response['data']);
             close()
             getAdmin()
         }).fail(function (response) {
             console.log(response);
-            if (response.statusText === "error") {
-                alert('root 관리자만 접근이 가능합니다.')
-                window.location.reload()
-            }
-            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-                alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-            } else {
-                alert('서버에 문제가 발생하였습니다.')
-            }
+            alert(response.responseJSON['data']);
         });
     }
 
     function logout() {
         var settings = {
-            "url": "http://localhost:8080/log-out",
+            "url": "http://localhost:8080/admin/log-out",
             "method": "POST",
             "timeout": 0,
             "headers": {
@@ -795,15 +753,13 @@
             },
         };
 
-        $.ajax(settings).done(function (response) {
-            alert(response['message']);
+        $.ajax(settings).done(function (response, status, xhr) {
+            alert(response['data']);
+            localStorage.setItem('accessToken', xhr.getResponseHeader('Authorization'))
             window.location.href = './adminlogin.html'
         }).fail(function (response) {
-            if (response.responseJSON['httpStatus'] === "BAD_REQUEST") {
-                alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-            } else {
-                alert('서버에 문제가 발생하였습니다.')
-            }
+            console.log(response)
+            alert(response.responseJSON['data']);
         });
     }
 

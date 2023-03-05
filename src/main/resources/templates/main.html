@@ -47,10 +47,14 @@
                 <button type="button" class="btn btn-primary"
                         onclick="gotoBoard(document.getElementById('moimDetailId').value)">게시판 입장
                 </button>
-                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal" onclick="relayoutMap()">모임 수정
+                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal"
+                        onclick="relayoutMap()">모임 수정
                 </button>
                 <button type="button" class="btn btn-danger"
                         onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴
+                </button>
+                <button type="button" class="btn btn-primary" id="moimStatus"
+                        onclick="changeStatus(document.getElementById('moimDetailId').value)">
                 </button>
                 <button type="button" class="btn btn-danger"
                         onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제
@@ -78,27 +82,27 @@
             <div class="modal-body">
                 <form>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">모임 이름</label>
+                        <label for="newMoim-title" class="col-form-label">모임 이름</label>
                         <input type="text" class="form-control" id="newMoim-title">
                     </div>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">희망 모집 인원</label>
+                        <label for="newMoim-recruit" class="col-form-label">희망 모집 인원</label>
                         <input type="number" class="form-control" id="newMoim-recruit">
                     </div>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">태그</label>
+                        <label for="tags" class="col-form-label">태그</label>
                         <ul class="tags" id="tags">
                             <div id="tatag">
-                      
+
                             </div>
-                                          
+
                             <li class="tagAdd taglist" id="tagAdd">
                                 <input type="text" id="search-field">
                             </li>
                         </ul>
                     </div>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">카테고리</label>
+                        <label for="newMoim-category" class="col-form-label">카테고리</label>
                         <input type="text" class="form-control" id="newMoim-category" value="" readonly>
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
@@ -110,11 +114,11 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">이미지 업로드</label>
+                        <label for="newMoim-image" class="col-form-label">이미지 업로드</label>
                         <input type="file" class="form-control" id="newMoim-image">
                     </div>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">한줄소개</label>
+                        <label for="newMoim-content" class="col-form-label">한줄소개</label>
                         <input type="text" class="form-control" id="newMoim-content">
                     </div>
                     <input type="text" id="save_address" placeholder="주소">
@@ -144,29 +148,26 @@
             <div class="modal-body">
                 <form>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">모임 이름</label>
+                        <label for="modifyMoim-title" class="col-form-label">모임 이름</label>
                         <input type="text" class="form-control" id="modifyMoim-title">
                     </div>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">희망 모집 인원</label>
+                        <label for="modifyMoim-recruit" class="col-form-label">희망 모집 인원</label>
                         <input type="number" class="form-control" id="modifyMoim-recruit">
                     </div>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">태그</label>
-                        <ul class="tags" id="modiTags">
-                            <!--                <li class="addedTag" id="added">-->
-                            <!--                   $(this).val()-->
-                            <!--                  <span class="tagRemove" onclick="$(this).parent().remove();">x</span>-->
-                            <!--                  <input type="hidden" id="tagt" value="$(this).val()" name="tags[]">-->
-                            <!--                </li>-->
-                            <!--                -->
-                            <li class="tagAdd taglist" id="modiTagAdd">
-                                <input type="text" id="modi-search-field">
+                        <label for="modify-tags" class="col-form-label">태그</label>
+                        <ul class="tags" id="modify-tags">
+                            <div id="modify-tatag">
+
+                            </div>
+                            <li class="tagAdd taglist" id="modify-tagAdd">
+                                <input type="text" id="modify-field">
                             </li>
                         </ul>
                     </div>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">카테고리</label>
+                        <label for="modifyMoim-category" class="col-form-label">카테고리</label>
                         <input type="text" class="form-control" id="modifyMoim-category" readonly>
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
@@ -178,11 +179,11 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">이미지 업로드</label>
+                        <label for="modifyMoim-image" class="col-form-label">이미지 업로드</label>
                         <input type="file" class="form-control" id="modifyMoim-image"/>
                     </div>
                     <div class="mb-3">
-                        <label for="newPost-image" class="col-form-label">한줄소개</label>
+                        <label for="modifyMoim-content" class="col-form-label">한줄소개</label>
                         <input type="text" class="form-control" id="modifyMoim-content"/>
                     </div>
                     <input type="text" id="modify_address" placeholder="주소"/>
@@ -406,78 +407,69 @@
     </div>
     <div class="app-content profile" id="side-profile-content">
         <div class="app-content-header">
-            <h1 class="app-content-headerText">마이프로필 수정</h1>
+            <h1 class="app-content-headerText">마이프로필</h1>
         </div>
-
-        <div class="col-md-12">
-            <div class="col-md-2">
-                <form>
-                    <div class="form-group">
-                        <h6>
-                            프로필 이미지
-                            <img id ="profile-image" src="../static/images/bird.png" width="150px" height="150px"/>
-                        </h6>
-                        <label for="img">파일 업로드</label>
-                        <input type="file" id="img" accept="image/*" multiple>
-                    </div>
-                    <button type="button" class="btn btn-primary" id="btn-save" onclick="uploadImage()">저장</button>
-                </form>
-            </div>
-        </div>
-
         <div class="app-content-section" id="myProfile">
-            <div id="passpass">
-                <div>비밀번호를 입력하세요.</div>
-                <input type="password" id="checkPassword" rows="2" cols="20">
-                <input type="button" value="입력" id="checkPwd" onclick="getMyProfile()">`
-            </div>
-
-            <div id="myProfile_2" style="display: none;">
+            <div id="myProfile_2">
                 <h2 id="profileName"></h2>
-                <div class="content_title">비밀번호</div>
-                <div class="content_content">
-                    <input type="password" id="password_1" class="pw" placeholder="비밀번호">
-                    <span>8~15자리의 영문, 숫자, 특수문자(!@#$%^&*())를 혼합해주세요.</span>
+                <div>
+                    <img id="profile-image" src="../static/images/bird.png" width="300px" height="300px"/>
                 </div>
-
-                <div class="content_title">비밀번호 확인</div>
-                <div class="content_content">
-                    <input type="password" id="password_2" class="pw" placeholder="비밀번호 확인">
-                    <span id="alert-success" style="display: none;">비밀번호가 일치합니다.</span>
-                    <span id="alert-danger"
-                          style="display: none; color: #d92742; font-weight: bold; ">비밀번호가 일치하지 않습니다.</span>
+                <div class="content_title">
+                    소개글
+                    <h4 id="profileContent"></h4>
                 </div>
-                <div class="content_title">소개글</div>
-                <div class="form-floating">
-                    <textarea type="text" class="form-control-myprofile" id="floatingInput" placeholder="소개글"></textarea>
-                </div>
-                <button type="button"
-                        onclick="updateProfile($('#floatingInput').val(), $('#password_1').val())">수정
-                </button>
-            </div>
-        </div>
-    </div>
-    <div class="app-content chat" id="side-chat-content">
-        <div class="app-content-header">
-            <h1 class="app-content-headerText">채팅 목록</h1>
-        </div>
-        <div style="overflow-y: scroll;">
-            <div class="app-content-section gridView" style="overflow: hidden;">
-                <div class="products-row" onclick="gotochat()">
-                    <div class="product-cell image" style="text-align: center;">
-                        <img src="../static/images/bill_gates.jpg" alt="" style="max-width: 150px;">
-                        <div>ㅇㅇㅇ 님과의 대화방</div>
-                    </div>
-                </div>
-                <div class="products-row" onclick="gotochat()">
-                    <div class="product-cell image" style="text-align: center;">
-                        <img src="../static/images/steve_jobs.jpg" alt="" style="max-width: 150px;">
-                        <div>ㅇㅇㅇ 님과의 대화방</div>
+                <button type="button" id="showProfile">프로필수정</button>
+                <div class="babackground">
+                    <div class="windowP">
+                        <div class="popup">
+                            <button id="closeP">X</button>
+                            <div class="momodal">
+                                <form>
+                                    <div class="row mb-3">
+                                        <label for="inputContent" class="col-form-label">소개글</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="inputContent">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="img" class="col-form-label">이미지 업로드</label>
+                                        <input type="file" class="form-control" id="img" accept="image/*" multiple>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary"
+                                            onclick="updateProfile($('#inputContent').val())">
+                                        수정
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<div class="app-content chat" id="side-chat-content">
+    <div class="app-content-header">
+        <h1 class="app-content-headerText">채팅 목록</h1>
+    </div>
+    <div style="overflow-y: scroll;">
+        <div class="app-content-section gridView" style="overflow: hidden;">
+            <div class="products-row" onclick="gotochat()">
+                <div class="product-cell image" style="text-align: center;">
+                    <img src="../static/images/bill_gates.jpg" alt="" style="max-width: 150px;">
+                    <div>ㅇㅇㅇ 님과의 대화방</div>
+                </div>
+            </div>
+            <div class="products-row" onclick="gotochat()">
+                <div class="product-cell image" style="text-align: center;">
+                    <img src="../static/images/steve_jobs.jpg" alt="" style="max-width: 150px;">
+                    <div>ㅇㅇㅇ 님과의 대화방</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"

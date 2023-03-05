@@ -25,7 +25,6 @@ function getGroupInfo(groupId) {
         data: {},
         beforeSend: function (xhr) {
             xhr.setRequestHeader("Authorization", Authorization);
-            xhr.setRequestHeader("Refresh_Token", Refresh_Token);
         },
         success: function (response) {
             localStorage.setItem("group_info", JSON.stringify(response))
@@ -47,7 +46,6 @@ function getGroupProfileIdList() {
         data: {},
         beforeSend: function (xhr) {
             xhr.setRequestHeader("Authorization", Authorization);
-            xhr.setRequestHeader("Refresh_Token", Refresh_Token);
         },
         success: function (response) {
             localStorage.setItem("profileIdList", JSON.stringify(response["data"]));
@@ -70,8 +68,7 @@ function renderLeaderProfile() {
         "method": "GET",
         "timeout": 0,
         "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "Authorization": Authorization
         },
     };
     $.ajax(settings).done(function (response) {
@@ -108,8 +105,7 @@ function renderProfileList() {
             "method": "GET",
             "timeout": 0,
             "headers": {
-                "Authorization": Authorization,
-                "Refresh_Token": Refresh_Token
+                "Authorization": Authorization
             },
         };
         $.ajax(settings).done(function (response) {
@@ -151,8 +147,7 @@ function openProfile(event) {
         "method": "GET",
         "timeout": 0,
         "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "Authorization": Authorization
         },
     };
     $.ajax(settings).done(function (response) {
@@ -160,6 +155,17 @@ function openProfile(event) {
         profile_modal_page.children[2].children[0].innerText = username
         profile_modal_page.children[3].innerText = response["content"]
         profile_modal_page.children[0].children[1].src = response["imagePath"]
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 400) {
+            console.log("=================")
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(openProfile(event), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -174,6 +180,38 @@ function profile() {
 
 profile()
 
+// 회원 신고 함수
+function report(id, content) { // 신고할 사람id, 신고내용
+    var settings = {
+        "url": "http://localhost:8080/report/users/" + id,
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Authorization": Authorization,
+            "Content-Type": "application/json"
+        },
+        "data": JSON.stringify({
+            "content": content
+        }),
+    };
+
+    $.ajax(settings).done(function (response) {
+        console.log(response);
+        alert(response['data'])
+        location.reload()
+    }).fail(function (e) {
+        if (e.status === 400) {
+            console.log("=================")
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(report(id, content), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
+    });
+}
 
 /**
  * 게시글
@@ -211,6 +249,17 @@ function newPost() {
     }).done(function (response) {
         alert('작성 완료!');
         location.reload();
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 400) {
+            console.log("=================")
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(newPost, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -274,6 +323,17 @@ function editPost(event) {
         console.log(response);
         alert("수정 완료")
         location.reload();
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 400) {
+            console.log("=================")
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(editPost(event), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -328,14 +388,24 @@ function deletePost(event) {
         "method": "DELETE",
         "timeout": 0,
         "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "Authorization": Authorization
         },
     };
 
     $.ajax(settings).done(function (response) {
         alert("삭제 되었습니다.");
         location.reload()
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 400) {
+            console.log("=================")
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(deletePost(event), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -384,7 +454,6 @@ function getPosts(pageNum, sizeNum) {
         data: {},
         beforeSend: function (xhr) {
             xhr.setRequestHeader("Authorization", Authorization);
-            xhr.setRequestHeader("Refresh_Token", Refresh_Token);
         },
         async: false, // 비동기 해제
         success: function (data) {
@@ -559,8 +628,7 @@ function renderComments(currentPostId) {
         "method": "GET",
         "timeout": 0,
         "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "Authorization": Authorization
         },
     };
 
@@ -621,7 +689,6 @@ function writeComment() {
         "timeout": 0,
         "headers": {
             "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
             "Content-Type": "application/json"
         },
         "data": JSON.stringify({
@@ -633,6 +700,17 @@ function writeComment() {
         alert("댓글작성 완료")
         document.querySelector("#comment").value = ""
         renderComments(currentPostId) // 댓글목록 새로 불러오기
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 400) {
+            console.log("=================")
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(writeComment, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 
 }
@@ -649,7 +727,6 @@ function editComment(event) {
         "timeout": 0,
         "headers": {
             "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
             "Content-Type": "application/json"
         },
         "data": JSON.stringify({
@@ -660,6 +737,17 @@ function editComment(event) {
     $.ajax(settings).done(function (response) {
         alert("수정 완료")
         renderComments(currentPostId)
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 400) {
+            console.log("=================")
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(editComment(event), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -698,7 +786,6 @@ function deleteComment(event) {
         "timeout": 0,
         "headers": {
             "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
             "Content-Type": "application/json"
         },
     };
@@ -706,6 +793,17 @@ function deleteComment(event) {
     $.ajax(settings).done(function (response) {
         alert("삭제 완료")
         renderComments(currentPostId)
+    }).fail(function (e) {
+        console.log(e.status)
+        if (e.status === 400) {
+            console.log("=================")
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(deleteComment(event), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -775,16 +873,23 @@ function doLike(postId) {
         "method": "POST",
         "timeout": 0,
         "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "Authorization": Authorization
         },
     };
 
     $.ajax(settings).done(function (response) {
         console.log(response);
-    }).fail(function () {
-        alert("like failed")
-        location.reload()
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert("like failed")
+            location.reload()
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(doLike(postId), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
+
     });
 }
 
@@ -796,16 +901,22 @@ function unLike(postId) {
         "method": "DELETE",
         "timeout": 0,
         "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "Authorization": Authorization
         },
     };
 
     $.ajax(settings).done(function (response) {
         console.log(response);
     }).fail(function () {
-        alert("unlike failed")
-        location.reload()
+        if (e.status === 400) {
+            alert("unlike failed")
+            location.reload()
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(unLike(postId), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 

@@ -1,13 +1,8 @@
 package com.saemoim.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,10 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
-import com.saemoim.dto.request.CurrentPasswordRequestDto;
 import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
@@ -205,15 +200,11 @@ class UserServiceImplTest {
 	void getMyProfile() {
 		// given
 		var userId = 1L;
-		var passwordRequest = mock(CurrentPasswordRequestDto.class);
 		User user = mock(User.class);
 		when(user.getUsername()).thenReturn("name");
-		when(user.getPassword()).thenReturn("encoding");
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-		when(passwordRequest.getPassword()).thenReturn("pass");
-		when(passwordEncoder.matches(passwordRequest.getPassword(), user.getPassword())).thenReturn(true);
 		// when
-		ProfileResponseDto response = userService.checkPasswordAndGetMyProfile(userId, passwordRequest);
+		ProfileResponseDto response = userService.getMyProfile(userId);
 		// then
 		assertThat(response.getUsername()).isEqualTo("name");
 	}
@@ -225,14 +216,14 @@ class UserServiceImplTest {
 		var userId = 1L;
 		var request = mock(ProfileRequestDto.class);
 		var user = mock(User.class);
+		var image = mock(MultipartFile.class);
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-		when(request.getPassword()).thenReturn("pass");
 		// when
-		userService.updateProfile(userId, request);
+		userService.updateProfile(userId, request, image);
 
 		// then
 		verify(userRepository).save(user);
-		verify(user).updateProfile(request.getContent(), passwordEncoder.encode(request.getPassword()));
+		verify(user).updateProfile(request.getContent());
 	}
 
 	@Test
