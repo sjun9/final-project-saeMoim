@@ -39,9 +39,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:2.6.2'
 
-    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3
     implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.410'
-    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-aws
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.1.RELEASE'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

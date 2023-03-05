@@ -2,7 +2,6 @@ package com.saemoim.dto.request;
 
 import java.util.List;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -34,16 +33,16 @@ public class GroupRequestDto {
 	@NotBlank
 	private String address;
 
-	// @NotBlank
+	@NotBlank
 	private String firstRegion;
 
-	// @NotBlank
+	@NotBlank
 	private String secondRegion;
 
-	// @NotBlank
+	@NotBlank
 	private String latitude;
 
-	// @NotBlank
+	@NotBlank
 	private String longitude;
 
 	@Min(1)

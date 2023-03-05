@@ -2,7 +2,6 @@ package com.saemoim.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -115,8 +114,7 @@ public class Group extends TimeStamped {
 		this.recruitNumber = request.getRecruitNumber();
 	}
 
-	public void update(GroupRequestDto request, Category category, User user) {
-		this.user = user;
+	public void update(GroupRequestDto request, Category category) {
 		this.category = category;
 		this.tags.clear();
 		request.getTagNames().forEach(t -> this.tags.add(new Tag(t, this)));
@@ -130,8 +128,7 @@ public class Group extends TimeStamped {
 		this.recruitNumber = request.getRecruitNumber();
 	}
 
-	public void update(GroupRequestDto request, Category category, User user, String imagePath) {
-		this.user = user;
+	public void update(GroupRequestDto request, Category category, String imagePath) {
 		this.category = category;
 		this.tags.clear();
 		request.getTagNames().forEach(t -> this.tags.add(new Tag(t, this)));

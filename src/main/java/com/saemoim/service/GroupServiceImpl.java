@@ -154,7 +154,7 @@ public class GroupServiceImpl implements GroupService {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
 		String imagePath;
-		if(multipartFile == null){
+		if (multipartFile == null) {
 			Group newGroup = new Group(requestDto, category, user);
 			groupRepository.save(newGroup);
 
@@ -183,22 +183,18 @@ public class GroupServiceImpl implements GroupService {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
 		Group group = _getGroupById(groupId);
-		if (!group.isLeader(userId)) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
-		}
+		checkLeader(userId, group);
 		String imagePath;
-		if(multipartFile == null){
-			group.update(requestDto, category, group.getUser());
-		}else {
+		if (multipartFile == null) {
+			group.update(requestDto, category);
+		} else {
 			try {
 				imagePath = awsS3Uploader.upload(multipartFile, dirName);
-				group.update(requestDto, category, group.getUser(), imagePath);
-				System.out.println(group.getUser().getUsername());
+				group.update(requestDto, category, imagePath);
 			} catch (IOException e) {
 				throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
 			}
 		}
-		System.out.println("aaaaaa" + group.getName());
 		groupRepository.save(group);
 
 		return new GroupResponseDto(group);
@@ -208,9 +204,7 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional
 	public void deleteGroup(Long groupId, Long userId) {
 		Group group = _getGroupById(groupId);
-		if (!group.isLeader(userId)) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
-		}
+		checkLeader(userId, group);
 		groupRepository.delete(group);
 	}
 
@@ -221,9 +215,7 @@ public class GroupServiceImpl implements GroupService {
 		if (group.isOpen()) {
 			throw new IllegalArgumentException(ErrorCode.ALREADY_OPEN.getMessage());
 		}
-		if (!group.isLeader(userId)) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
-		}
+		checkLeader(userId, group);
 		group.updateStatusToOpen();
 	}
 
@@ -234,9 +226,7 @@ public class GroupServiceImpl implements GroupService {
 		if (group.isClose()) {
 			throw new IllegalArgumentException(ErrorCode.ALREADY_CLOSE.getMessage());
 		}
-		if (!group.isLeader(userId)) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
-		}
+		checkLeader(userId, group);
 		group.updateStatusToClose();
 	}
 
@@ -245,4 +235,11 @@ public class GroupServiceImpl implements GroupService {
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
 	}
+
+	private static void checkLeader(Long userId, Group group) {
+		if (!group.isLeader(userId)) {
+			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+		}
+	}
+
 }

@@ -69,8 +69,9 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public TokenResponseDto signIn(SignInRequestDto requestDto) {
-		User user = userRepository.findByEmail(requestDto.getEmail())
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
+		User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
 
 		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
 			throw new IllegalAccessError(ErrorCode.INVALID_PASSWORD.getMessage());
@@ -157,7 +158,7 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto){
+	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto) {
 		User user = _getUserById(userId);
 		String changedPassword = passwordEncoder.encode(requestDto.getPassword());
 		user.updateProfile(requestDto.getContent(), changedPassword);
@@ -179,23 +180,20 @@ public class UserServiceImpl implements UserService {
 		return refreshToken;
 	}
 
-	private User _getUserById(Long userId) {
-		return userRepository.findById(userId).orElseThrow(
-			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
-		);
-	}
-
 	@Transactional
-	public ProfileResponseDto uploadProfileImage (MultipartFile multipartFile, Long userId) throws IOException {
-
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
-
+	public ProfileResponseDto uploadProfileImage(MultipartFile multipartFile, Long userId) throws IOException {
+		User user = _getUserById(userId);
 		if (!multipartFile.isEmpty()) {
 			String storedName = awss3Uploader.upload(multipartFile, dirName);
 			user.updateProfileImage(storedName);
 		}
 		userRepository.save(user);
-	return new ProfileResponseDto(user);
+		return new ProfileResponseDto(user);
+	}
+
+	private User _getUserById(Long userId) {
+		return userRepository.findById(userId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
 	}
 }
