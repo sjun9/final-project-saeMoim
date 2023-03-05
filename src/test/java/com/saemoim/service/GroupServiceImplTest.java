@@ -1,12 +1,10 @@
 package com.saemoim.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -17,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
@@ -95,6 +94,7 @@ class GroupServiceImplTest {
 			.build();
 		var id = 1L;
 		var userId = 1L;
+		var imgPath = mock(MultipartFile.class);
 		User user = mock(User.class);
 		Group group = Group.builder().id(userId).user(user).name("name").build();
 		Category category = Category.builder().parentId(1L).name("named").build();
@@ -104,7 +104,7 @@ class GroupServiceImplTest {
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
 
 		// when
-		GroupResponseDto response = groupService.updateGroup(id, request, userId);
+		GroupResponseDto response = groupService.updateGroup(id, request, userId, imgPath);
 
 		// then
 		assertThat(response.getGroupName()).isEqualTo(group.getName());

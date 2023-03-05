@@ -13,4 +13,6 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 	List<Participant> findAllByUser_IdOrderByCreatedAtDesc(Long userId);
 
 	Optional<Participant> findByGroup_IdAndUser_Id(Long groupId, Long userId);
+
+	boolean existsByUser_Id(Long userId);
 }

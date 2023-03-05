@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.saemoim.dto.request.CurrentPasswordRequestDto;
 import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
@@ -26,6 +27,7 @@ import com.saemoim.dto.request.WithdrawRequestDto;
 import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
+import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.security.UserDetailsImpl;
 import com.saemoim.service.UserService;
@@ -38,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserService userService;
+	private final AWSS3Uploader awss3Uploader;
 
 	// 회원 가입
 	@PostMapping("/sign-up")
@@ -111,23 +114,23 @@ public class UserController {
 
 	// 내 정보 조회 - 마이페이지
 	@PostMapping("/profile")
-	public ResponseEntity<ProfileResponseDto> getMyProfile(
-		@Validated @RequestBody CurrentPasswordRequestDto passwordRequestDto,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+	public ResponseEntity<ProfileResponseDto> getMyProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ResponseEntity.ok()
-			.body(userService.checkPasswordAndGetMyProfile(userDetails.getId(), passwordRequestDto));
+			.body(userService.getMyProfile(userDetails.getId()));
 	}
 
 	@GetMapping("/user")
 	public ResponseEntity<ProfileResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(new ProfileResponseDto(userDetails.getId(), userDetails.getUsername(), null));
+		return ResponseEntity.ok().body(userService.getProfile(userDetails.getId()));
 	}
 
 	// 내 정보 수정 - 마이페이지
-	@PutMapping("/profile")
-	public ResponseEntity<ProfileResponseDto> updateProfile(@Validated @RequestBody ProfileRequestDto requestDto,
+	@PutMapping(value = "/profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<ProfileResponseDto> updateProfile(
+		@Validated @RequestPart ProfileRequestDto requestDto,
+		@RequestPart(required = false, name = "img") MultipartFile multipartFile,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(userService.updateProfile(userDetails.getId(), requestDto));
+		return ResponseEntity.ok().body(userService.updateProfile(userDetails.getId(), requestDto, multipartFile));
 	}
 
 	// 리프레쉬 토큰 재발급

@@ -1,14 +1,15 @@
 package com.saemoim.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
-import com.saemoim.dto.request.CurrentPasswordRequestDto;
 import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
@@ -19,6 +20,7 @@ import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
 import com.saemoim.dto.response.UserResponseDto;
 import com.saemoim.exception.ErrorCode;
+import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.redis.RedisUtil;
 import com.saemoim.repository.UserRepository;
@@ -33,6 +35,8 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtUtil jwtUtil;
 	private final RedisUtil redisUtil;
+	private final AWSS3Uploader awsS3Uploader;
+	private String dirName = "profile";
 
 	@Transactional
 	@Override
@@ -64,8 +68,9 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public TokenResponseDto signIn(SignInRequestDto requestDto) {
-		User user = userRepository.findByEmail(requestDto.getEmail())
-			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
+		User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
+		);
 
 		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
 			throw new IllegalAccessError(ErrorCode.INVALID_PASSWORD.getMessage());
@@ -142,20 +147,25 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public ProfileResponseDto checkPasswordAndGetMyProfile(Long userId, CurrentPasswordRequestDto passwordRequestDto) {
-		User user = _getUserById(userId);
-		if (!passwordEncoder.matches(passwordRequestDto.getPassword(), user.getPassword())) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_PASSWORD.getMessage());
-		}
-		return new ProfileResponseDto(user);
+	public ProfileResponseDto getMyProfile(Long userId) {
+		return new ProfileResponseDto(_getUserById(userId));
 	}
 
 	@Transactional
 	@Override
-	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto) {
+	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto, MultipartFile multipartFile) {
 		User user = _getUserById(userId);
-		String changedPassword = passwordEncoder.encode(requestDto.getPassword());
-		user.updateProfile(requestDto.getContent(), changedPassword);
+		String imagePath;
+		if (multipartFile == null) {
+			user.updateProfile(requestDto.getContent());
+		} else {
+			try {
+				imagePath = awsS3Uploader.upload(multipartFile, dirName);
+				user.updateProfile(requestDto.getContent(), imagePath);
+			} catch (IOException e) {
+				throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+			}
+		}
 		userRepository.save(user);
 		return new ProfileResponseDto(user);
 	}

@@ -28,8 +28,8 @@
             <div class="profile-user-page card" id="profile_modal_page">
               <div class="img-user-profile">
                 <img class="profile-bgHome"
-                  src="https://37.media.tumblr.com/88cbce9265c55a70a753beb0d6ecc2cd/tumblr_n8gxzn78qH1st5lhmo1_1280.jpg" />
-                <img class="avatar" src="http://gravatar.com/avatar/288ce55a011c709f4e17aef7e3c86c64?s=200"
+                  src="../static/images/mountain.jpg" />
+                <img class="avatar" id="proflie-image" src="../static/images/bird.png"
                   alt="jofpin" />
               </div>
               <button type="button" onclick="gotochat()">DM 보내기</button>
@@ -89,19 +89,24 @@
   </button>
   <div class="modal fade" id="readPostModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="readPostModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered ">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered ">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="readPostModalLabel"></h1>
-          <button type="button" class="btn-close" id="closeReadPostModal" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" id="closeReadPostModal" data-bs-dismiss="modal"
+            aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div style="width: auto; height: 400px; text-align: center;">
-            <img src="../static/images/main-english.jpg" alt="" style="max-width: 45%; margin: 20px 0;">
-            <p id="readPostModalContent"></p>
+            <img id="post-image" src="../static/images/main-english.jpg" alt="" style="max-width: 45%; margin: 20px 0;">
+            <div style="text-align: left;">
+              <p id="readPostModalContent" style="margin: 10px 0 0 10px;"></p>
+            </div>
           </div>
-          <button type="button" class="btn btn-danger" onclick="gotoDeletePost(event)" style="float: right;">게시글 삭제</button>
-          <button type="button" class="btn btn-secondary" onclick="gotoEditPost(event)" style="float: right; margin-right: 8px;">게시글 수정</button>
+          <button type="button" class="btn btn-danger" onclick="gotoDeletePost(event)" style="float: right;">게시글
+            삭제</button>
+          <button type="button" class="btn btn-secondary" onclick="gotoEditPost(event)"
+            style="float: right; margin-right: 8px;">게시글 수정</button>
           <div class="container">
             <form id="commentForm" name="commentForm" method="post">
               <br><br>
@@ -116,7 +121,8 @@
                         placeholder="댓글을 입력하세요"></textarea>
                       <br>
                       <div>
-                        <a href='#' onClick="writeComment()" class="btn pull-right btn-success" style="float: right;">댓글 등록</a>
+                        <a href='#' onClick="writeComment()" class="btn pull-right btn-success" style="float: right;">댓글
+                          등록</a>
                       </div>
                     </td>
                   </tr>
@@ -140,7 +146,8 @@
   </div>
 
   <!-- edit post modal -->
-  <button type="button" id="openEdit" style="display: none;" data-bs-toggle="modal" data-bs-target="#staticBackdrop_edit">
+  <button type="button" id="openEdit" style="display: none;" data-bs-toggle="modal"
+    data-bs-target="#staticBackdrop_edit">
     open edit button
   </button>
   <div class="modal fade" id="staticBackdrop_edit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -149,7 +156,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="staticBackdropLabel_edit">글 수정</h1>
-          <button type="button" class="btn-close" id="closeEditPostModal" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" id="closeEditPostModal" data-bs-dismiss="modal"
+            aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form>
@@ -166,7 +174,8 @@
               <input type="file" class="form-control" id="editPost-image">
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" onclick="cancleEdit(event)" data-bs-dismiss="modal">취소</button>
+              <button type="button" class="btn btn-secondary" onclick="cancleEdit(event)"
+                data-bs-dismiss="modal">취소</button>
               <button type="button" class="btn btn-primary" onclick="editPost(event)">수정</button>
             </div>
           </form>
@@ -177,35 +186,59 @@
   </div>
 
   <div class="gridView">
-    <div class="crudzone">
-      <h1 style="margin-top: 100px;" id="moim_title">OOO 모임 게시판입니다</h1>
+    <div class="crudzone article">
       <!-- Button trigger modal -->
-      <article class="article">
+      <!-- <article class="article"> -->
+      <div class="app-icon">
+        <div class="saemoim_bird" style="cursor: pointer; padding: 5px;">
+          <h1 style="display: inline;">SAEMOIM</h1>
+          <img src="../static/images/bird.png" alt="" style="display: inline;">
+        </div>
+        <h1 id="moim_title">OOO 모임 게시판입니다</h1>
+      </div>
+      <div class="article__header">
+        <span class="article__header__id">번호</span>
+        <span class="article__header__likeNumber">좋아요</span>
+        <span class="article__header__title">제목</span>
+        <span class="article__header__author">작성자</span>
+        <span class="article__header__date">작성일</span>
+      </div>
+      <hr style="margin: 5px;">
+      <ul class="contents" style="padding: 0;">
         <!-- 글 10개씩 -->
-        <ul class="contents"></ul>
+      </ul>
+      <div class="buttons">
         <!-- 페이징 버튼 -->
-        <div class="buttons"></div>
-      </article>
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-        data-bs-whatever="@mdo">새 글 작성하기</button>
+      </div>
+      <div>
+        <button type="button" class="btn btn-primary new_post_button" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+          data-bs-whatever="@mdo">새 글 작성하기</button>
+      </div>
+      <!-- </article> -->
     </div>
-    <div class="userzone" id="user_zone">
-      <div class="userzone__user" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
-        <div class="userzone__user__img">
+    <div class="userzone_wrap">
+      <div class="leader" id="leader_zone">
+        <div class="userzone__user userzone__leader" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
+          <img src="../static/images/mountain.jpg">
+          <div class="userzone__user__name">모임장</div>
         </div>
-        <div class="userzone__user__name">이름1</div>
       </div>
-      <div class="userzone__user" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
-        <div class="userzone__user__img">
+      <div class="userzone" id="user_zone">
+        <div class="userzone__user" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
+          <img src="../static/images/mountain.jpg">
+          <div class="userzone__user__name">이름1</div>
         </div>
-        <div class="userzone__user__name">이름2</div>
-      </div>
-      <div class="userzone__user" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
-        <div class="userzone__user__img">
+        <div class="userzone__user" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
+          <img src="../static/images/mountain.jpg">
+          <div class="userzone__user__name">이름2</div>
         </div>
-        <div class="userzone__user__name">이름3</div>
+        <div class="userzone__user" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
+          <img src="../static/images/mountain.jpg">
+          <div class="userzone__user__name">이름3</div>
+        </div>
       </div>
     </div>
+    
   </div>
 
 

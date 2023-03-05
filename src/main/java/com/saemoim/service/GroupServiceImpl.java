@@ -1,5 +1,6 @@
 package com.saemoim.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
@@ -20,6 +22,7 @@ import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.exception.ErrorCode;
+import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
 import com.saemoim.repository.ParticipantRepository;
@@ -27,9 +30,11 @@ import com.saemoim.repository.TagRepository;
 import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GroupServiceImpl implements GroupService {
 
 	private final GroupRepository groupRepository;
@@ -37,6 +42,8 @@ public class GroupServiceImpl implements GroupService {
 	private final ParticipantRepository participantRepository;
 	private final UserRepository userRepository;
 	private final TagRepository tagRepository;
+	private final AWSS3Uploader awsS3Uploader;
+	String dirName = "group";
 
 	@Override
 	@Transactional(readOnly = true)
@@ -132,7 +139,7 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional
-	public GroupResponseDto createGroup(GroupRequestDto requestDto, Long userId) {
+	public GroupResponseDto createGroup(GroupRequestDto requestDto, Long userId, MultipartFile multipartFile) {
 		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
@@ -146,7 +153,20 @@ public class GroupServiceImpl implements GroupService {
 		if (category.getParentId() == null) {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
-		Group newGroup = new Group(requestDto, category, user);
+		String imagePath;
+		if (multipartFile == null) {
+			Group newGroup = new Group(requestDto, category, user);
+			groupRepository.save(newGroup);
+
+			return new GroupResponseDto(newGroup);
+		}
+
+		try {
+			imagePath = awsS3Uploader.upload(multipartFile, dirName);
+		} catch (IOException e) {
+			throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+		}
+		Group newGroup = new Group(requestDto, category, user, imagePath);
 		groupRepository.save(newGroup);
 
 		return new GroupResponseDto(newGroup);
@@ -154,7 +174,8 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional
-	public GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, Long userId) {
+	public GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, Long userId,
+		MultipartFile multipartFile) {
 		Category category = categoryRepository.findByName(requestDto.getCategoryName()).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_CATEGORY.getMessage())
 		);
@@ -162,12 +183,20 @@ public class GroupServiceImpl implements GroupService {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
 		Group group = _getGroupById(groupId);
-		if (!group.isLeader(userId)) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+		checkLeader(userId, group);
+		String imagePath;
+		if (multipartFile == null) {
+			group.update(requestDto, category);
+		} else {
+			try {
+				imagePath = awsS3Uploader.upload(multipartFile, dirName);
+				group.update(requestDto, category, imagePath);
+			} catch (IOException e) {
+				throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+			}
 		}
-
-		group.update(requestDto, category, group.getUser());
 		groupRepository.save(group);
+
 		return new GroupResponseDto(group);
 	}
 
@@ -175,9 +204,7 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional
 	public void deleteGroup(Long groupId, Long userId) {
 		Group group = _getGroupById(groupId);
-		if (!group.isLeader(userId)) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
-		}
+		checkLeader(userId, group);
 		groupRepository.delete(group);
 	}
 
@@ -188,9 +215,7 @@ public class GroupServiceImpl implements GroupService {
 		if (group.isOpen()) {
 			throw new IllegalArgumentException(ErrorCode.ALREADY_OPEN.getMessage());
 		}
-		if (!group.isLeader(userId)) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
-		}
+		checkLeader(userId, group);
 		group.updateStatusToOpen();
 	}
 
@@ -201,9 +226,7 @@ public class GroupServiceImpl implements GroupService {
 		if (group.isClose()) {
 			throw new IllegalArgumentException(ErrorCode.ALREADY_CLOSE.getMessage());
 		}
-		if (!group.isLeader(userId)) {
-			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
-		}
+		checkLeader(userId, group);
 		group.updateStatusToClose();
 	}
 
@@ -212,4 +235,11 @@ public class GroupServiceImpl implements GroupService {
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_GROUP.getMessage())
 		);
 	}
+
+	private static void checkLeader(Long userId, Group group) {
+		if (!group.isLeader(userId)) {
+			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
+		}
+	}
+
 }

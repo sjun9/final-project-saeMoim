@@ -49,6 +49,12 @@ public enum ErrorCode {
 	// 좋아요
 	DUPLICATED_LIKE("이미 '좋아요'를 누르셨습니다."),
 	ALREADY_DELETED("이미 '좋아요'가 취소되었습니다."),
+
+	// 파일 업로드
+	NOT_IMAGE_FILE("이미지 파일이 아닙니다."),
+	EMPTY_FILE("파일이 없습니다."),
+	FAIL_IMAGE_UPLOAD("이미지 업로드에 실패 했습니다."),
+
 	// 모임
 	NOT_FOUND_GROUP("해당 모임은 존재하지 않습니다."),
 	DUPLICATED_GROUP_NAME("존재하는 모임명입니다."),
@@ -57,13 +63,16 @@ public enum ErrorCode {
 	ALREADY_CLOSE("이미 닫혀있는 모임입니다."),
 	DUPLICATED_APPLICATION("이미 신청되었습니다."),
 	NOT_FOUND_APPLICATION("해당 신청은 존재하지 않습니다."),
+	ALREADY_PROCESSED("이미 처리된 신청입니다."),
 	NOT_FOUND_REVIEW("해당 후기는 존재하지 않습니다."),
 	NOT_FOUND_WISH("찜한 모임이 아닙니다."),
 	DUPLICATED_WISH("이미 찜한 모임입니다."),
+	DUPLICATED_PARTICIPANT("이미 존재하는 참여자입니다."),
 	NOT_FOUND_PARTICIPANT("해당 참여자는 존재하지 않습니다."),
 
 	NOT_READABLE_JSON("올바르지 않은 JSON 형식입니다."),
 	NOT_SUPPORTED_HTTP_MEDIA_TYPE("지원하지 않는 Content-Type 입니다."),
-	NOT_ACCEPTABLE_HTTP_MEDIA_TYPE("지원하지 않는 Accept 입니다.");
+	NOT_ACCEPTABLE_HTTP_MEDIA_TYPE("지원하지 않는 Accept 입니다."),
+	UNAUTHORIZED_TOKEN("재로그인이 필요합니다.");
 	private final String message;
 }

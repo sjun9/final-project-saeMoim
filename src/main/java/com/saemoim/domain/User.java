@@ -36,12 +36,23 @@ public class User extends TimeStamped {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private UserRoleEnum role;
+	private String kakaoId;
+	@Column(nullable = true)
+	private String imagePath = "/src/main/resources/static/images/bird.png";
 
 	public User(String email, String password, String username, UserRoleEnum role) {
 		this.email = email;
 		this.password = password;
 		this.username = username;
 		this.role = role;
+	}
+
+	public User(String email, String password, String username, UserRoleEnum role, String kakaoId) {
+		this.email = email;
+		this.password = password;
+		this.username = username;
+		this.role = role;
+		this.kakaoId = kakaoId;
 	}
 
 	public void plusBanCount() {
@@ -60,8 +71,17 @@ public class User extends TimeStamped {
 		this.password = password;
 	}
 
-	public void updateProfile(String content, String changedPassword) {
-		this.password = changedPassword;
+	public void updateProfile(String content) {
 		this.content = content;
+	}
+
+	public void updateProfile(String content, String imagePath) {
+		this.content = content;
+		this.imagePath = imagePath;
+	}
+
+	public User updateKakaoId(String kakaoId) {
+		this.kakaoId = kakaoId;
+		return this;
 	}
 }

@@ -22,6 +22,8 @@ public class PostResponseDto {
 	private LocalDateTime createdAt;
 	private LocalDateTime modifiedAt;
 	private int likeCount;
+	private boolean isLikeChecked;
+	private String imagePath;
 
 	public PostResponseDto(Post post) {
 		this.id = post.getId();

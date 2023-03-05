@@ -2,7 +2,8 @@ package com.saemoim.service;
 
 import java.util.List;
 
-import com.saemoim.dto.request.CurrentPasswordRequestDto;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
@@ -30,9 +31,9 @@ public interface UserService {
 
 	ProfileResponseDto getProfile(Long userId);
 
-	ProfileResponseDto checkPasswordAndGetMyProfile(Long id, CurrentPasswordRequestDto passwordRequestDto);
+	ProfileResponseDto getMyProfile(Long id);
 
-	ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto);
+	ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto, MultipartFile multipartFile);
 
 	TokenResponseDto reissueToken(String accessToken, String refreshToken);
 }

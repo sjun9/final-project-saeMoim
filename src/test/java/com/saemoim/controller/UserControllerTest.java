@@ -356,25 +356,21 @@ class UserControllerTest {
 	@DisplayName("내 정보 조회")
 	void getMyProfile() throws Exception {
 		// given
-		var request = CurrentPasswordRequestDto.builder().password("Pass1234!").build();
 		User user = User.builder()
 			.id(1L)
 			.banCount(0)
-			.content("안녕하시렵니까")
-			.email("email@naver.com")
-			.password("Pass1234!")
+			.content("asdfasfsdfsaf")
+			.email("aaaaa@naver.com")
+			.password("aaasdf1234!")
 			.role(UserRoleEnum.USER)
-			.username("닉넹미")
+			.username("장성준")
 			.build();
 		ProfileResponseDto response = new ProfileResponseDto(user);
 
-		when(userService.checkPasswordAndGetMyProfile(anyLong(), any(CurrentPasswordRequestDto.class))).thenReturn(
-			response);
+		when(userService.getMyProfile(anyLong())).thenReturn(response);
 
 		// when
 		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.post("/profile")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(request))
 			.header(JwtUtil.AUTHORIZATION_HEADER, "Bearer accessToken"));
 
 		// then
@@ -384,9 +380,6 @@ class UserControllerTest {
 				preprocessResponse(prettyPrint()),
 				requestHeaders(
 					headerWithName("Authorization").description("엑세스토큰")
-				),
-				requestFields(
-					fieldWithPath("password").description("비밀번호").type(JsonFieldType.STRING)
 				),
 				responseFields(
 					fieldWithPath("id").description("유저 id").type(JsonFieldType.NUMBER),
@@ -401,7 +394,7 @@ class UserControllerTest {
 	@DisplayName("내 정보 수정")
 	void updateProfile() throws Exception {
 		// given
-		ProfileRequestDto request = new ProfileRequestDto("aaasdf1234!", "content");
+		ProfileRequestDto request = new ProfileRequestDto("content");
 		User user = User.builder()
 			.id(1L)
 			.banCount(0)
@@ -412,7 +405,8 @@ class UserControllerTest {
 			.username("장성준")
 			.build();
 		ProfileResponseDto responseDto = new ProfileResponseDto(user);
-		when(userService.updateProfile(anyLong(), any(ProfileRequestDto.class))).thenReturn(responseDto);
+		when(userService.updateProfile(anyLong(), any(ProfileRequestDto.class), any(MultipartFile.class))).thenReturn(
+			responseDto);
 		// when
 		ResultActions resultActions = mockMvc.perform(put("/profile")
 			.contentType(MediaType.APPLICATION_JSON)

@@ -1,7 +1,10 @@
 package com.saemoim.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -11,7 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.dto.request.PostRequestDto;
 import com.saemoim.dto.response.GenericsResponseDto;
@@ -28,8 +33,10 @@ public class PostController {
 
 	// 그룹 전체 게시글 조회
 	@GetMapping("/groups/{groupId}/post")
-	public ResponseEntity<GenericsResponseDto> getAllPostsByGroup(@PathVariable Long groupId, Pageable pageable) {
-		return ResponseEntity.ok().body(new GenericsResponseDto(postService.getAllPostsByGroup(groupId, pageable)));
+	public ResponseEntity<Page<PostResponseDto>> getAllPostsByGroup(@PathVariable Long groupId,
+		@PageableDefault(size = 15, page = 0) Pageable pageable,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ResponseEntity.ok().body(postService.getAllPostsByGroup(groupId, pageable,  userDetails.getId()));
 	}
 
 	// 선택한 게시글 조회
@@ -40,19 +47,22 @@ public class PostController {
 	}
 
 	// 게시글 생성
-	@PostMapping("/groups/{groupId}/post")
+	@PostMapping(value = "/groups/{groupId}/post" , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<PostResponseDto> createPost(@PathVariable Long groupId,
-		@Validated @RequestBody PostRequestDto requestDto,
+		@Validated @RequestPart("requestDto") PostRequestDto requestDto
+		, @RequestPart(required = false, name ="img") MultipartFile multipartFile,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(postService.createPost(groupId, requestDto, userDetails.getId()));
+			.body(postService.createPost(groupId, requestDto, userDetails.getId(),multipartFile));
 	}
 
 	// 게시글 수정
-	@PutMapping("/posts/{postId}")
+	@PutMapping(value = "/posts/{postId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long postId,
-		@Validated @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(postService.updatePost(postId, requestDto, userDetails.getId()));
+		@Validated @RequestPart PostRequestDto requestDto,
+		@RequestPart(required = false ,name = "img") MultipartFile multipartFile,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ResponseEntity.ok().body(postService.updatePost(postId, requestDto, userDetails.getId(), multipartFile));
 	}
 
 	// 게시글 삭제

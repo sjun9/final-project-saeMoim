@@ -5,17 +5,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
-    
+    <script src="https://code.jquery.com/jquery-3.6.3.js"
+            integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+
     <link rel="stylesheet" href="../static/welcome/welcomeSigninup.css">
     <link rel="stylesheet" href="../static/welcome/welcome.css">
-  
+
     <script src="http://code.jquery.com/jquery-latest.js"></script>
 </head>
 <body>
-      <!-- 첫화면 -->
-  <section class="et-hero-tabs" id="topSection">
-    
+<!-- 첫화면 -->
+<section class="et-hero-tabs" id="topSection">
+
     <!-- bird -->
     <div class="cloudsbox">
         <div class="cloudsbox__container">
@@ -43,98 +44,122 @@
                 <div class="bird bird5"></div>
             </div>
         </div>
-    </div>      
+    </div>
 
     <!-- login -->
-  <section class="user toggleRemove remove">
-    <div class="user_options-container">
-      <div class="user_options-text">
-        <div class="user_options-unregistered">
-          <h2 class="user_unregistered-title">계정이 없으신가요?</h2>
-          <p class="user_unregistered-text">간단한 회원가입으로 새 모임에 참여해보세요.</p>
-          <button class="user_unregistered-signup" id="signup-button">회원가입</button>
-        </div>
-  
-        <div class="user_options-registered">
-          <h2 class="user_registered-title">계정이 이미 있으신가요?</h2>
-          <p class="user_registered-text">다양한 모임들이 당신을 기다리고있습니다.</p>
-          <button class="user_registered-login" id="login-button">로그인</button>
-        </div>
-      </div>
-      
-      <div class="user_options-forms" id="user_options-forms">
-        <div class="user_forms-login">
-          <h2 class="forms_title" style="text-align: left;">로그인</h2>
-          <form class="forms_form">
-            <fieldset class="forms_fieldset">
-              <div class="forms_field">
-                <input type="email" placeholder="Email" class="forms_field-input" id="signin-email" required autofocus />
-              </div>
-              <div class="forms_field">
-                <input type="password" placeholder="Password" class="forms_field-input" id="signin-password" required />
-              </div>
-            </fieldset>
-            <div class="forms_buttons">
-              <input type="button" value="로그인" class="forms_buttons-action" onclick="login()">
-            </div>
-          </form>
-          <div id="container">
-            <button id="btn-modal">비밀번호를 잊으셨나요?</button>
-        </div>
-        <div id="modal" class="modal-overlay">
-            <div class="modal-window">
-                <div class="title">
-                    <h2>모달</h2>
+    <section class="user toggleRemove remove">
+        <div class="user_options-container">
+            <div class="user_options-text">
+                <div class="user_options-unregistered">
+                    <h2 class="user_unregistered-title">계정이 없으신가요?</h2>
+                    <p class="user_unregistered-text">간단한 회원가입으로 새 모임에 참여해보세요.</p>
+                    <button class="user_unregistered-signup" id="signup-button">회원가입</button>
                 </div>
-                <div class="close-area">X</div>
-                <div class="content">
-                  <input id="findPwd-email" type="email" placeholder="Email" class="forms_field-input" style="width: 84%; float: left;" required/>
-                  <input type="button" value="메일 보내기" class="forms_buttons-action" onclick="sendPasswordToEmail()" style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;" >
+
+                <div class="user_options-registered">
+                    <h2 class="user_registered-title">계정이 이미 있으신가요?</h2>
+                    <p class="user_registered-text">다양한 모임들이 당신을 기다리고있습니다.</p>
+                    <button class="user_registered-login" id="login-button">로그인</button>
                 </div>
             </div>
-        </div>
-        </div>
 
-        <div class="user_forms-signup">
-          <h2 class="forms_title" style="text-align: left;">회원가입</h2>
-          <form class="forms_form">
-            <fieldset class="forms_fieldset">
-              <div class="forms_field">
-                <input id="signup-email" type="email" placeholder="Email" class="forms_field-input" onchange="changeEmailDetection()" style="width: 84%; float: left;" required/>
-                <input type="button" value="인증코드" class="forms_buttons-action" onclick="checkAndSendCode()" style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;" >
-              </div>
-              <div class="forms_field">
-                <input id= "email-authentication-code" type="text" placeholder="Authentication Code" class="forms_field-input" onchange="" style="width: 84%; float: left;" required/>
-                <input type="button" value="코드확인" class="forms_buttons-action" onclick="checkAuthCode()" style="display: inline; float: right; width: 15%; height: 31px; padding: 0px; text-align: center;">
-              </div>
-              <div class="forms_field">
-                <input id="username"  type="text" placeholder="닉네임" class="forms_field-input" onchange="changeUsernameDetection()" style="width: 84%; float: left;" required/>
-                <input type="button" value="중복확인" class="forms_buttons-action" onclick="checkUsernameDuplication()" style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;">
-              </div>
-              <div class="forms_field">
-                <input id ="password" type="password" placeholder="비밀번호" onchange="changePwdDetection()" class="pwd-validation"  required/>
-              </div>
-              <div class="forms_field">
-                <input id="password-validation" type="password" placeholder="비밀번호 확인" class="pwd-validation"  />
-              </div>
-              <div class="alert alert-success" id="alert-success" style="display: none; color: royalblue;">비밀번호가 일치합니다.</div>
-              <div class="alert alert-danger" id="alert-danger" style="display: none; color: firebrick;" >비밀번호가 일치하지 않습니다.</div>
-              <div class="alert alert-danger" id="alert-match-rex" style=" color: gray;" >8자 이상 15자 이하로 영문,숫자, 특수 문자를 혼합 해주세요.</div>
-            </fieldset>
-            <div class="forms_buttons">
-              <input type="button" value="가입하기" class="forms_buttons-action" onclick="signup()">
+            <div class="user_options-forms" id="user_options-forms">
+                <div class="user_forms-login">
+                    <h2 class="forms_title" style="text-align: left;">로그인</h2>
+                    <form class="forms_form">
+                        <fieldset class="forms_fieldset">
+                            <div class="forms_field">
+                                <input type="email" placeholder="Email" class="forms_field-input" id="signin-email"
+                                       required autofocus/>
+                            </div>
+                            <div class="forms_field">
+                                <input type="password" placeholder="Password" class="forms_field-input"
+                                       id="signin-password" required/>
+                            </div>
+                        </fieldset>
+                        <div class="forms_buttons">
+                            <input type="button" value="로그인" class="forms_buttons-action" onclick="login()">
+                            <a href=http://localhost:8080/oauth2/authorization/kakao>
+                                <img src="../static/images/kakao.png" height="45" width="183"/>
+                            </a>
+                        </div>
+                    </form>
+                    <div id="container">
+                        <button id="btn-modal">비밀번호를 잊으셨나요?</button>
+                    </div>
+                    <div id="modal" class="modal-overlay">
+                        <div class="modal-window">
+                            <div class="title">
+                                <h2>모달</h2>
+                            </div>
+                            <div class="close-area">X</div>
+                            <div class="content">
+                                <input id="findPwd-email" type="email" placeholder="Email" class="forms_field-input"
+                                       style="width: 84%; float: left;" required/>
+                                <input type="button" value="메일 보내기" class="forms_buttons-action"
+                                       onclick="sendPasswordToEmail()"
+                                       style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user_forms-signup">
+                    <h2 class="forms_title" style="text-align: left;">회원가입</h2>
+                    <form class="forms_form">
+                        <fieldset class="forms_fieldset">
+                            <div class="forms_field">
+                                <input id="signup-email" type="email" placeholder="Email" class="forms_field-input"
+                                       onchange="changeEmailDetection()" style="width: 84%; float: left;" required/>
+                                <input type="button" value="인증코드" class="forms_buttons-action"
+                                       onclick="checkAndSendCode()"
+                                       style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;">
+                            </div>
+                            <div class="forms_field">
+                                <input id="email-authentication-code" type="text" placeholder="Authentication Code"
+                                       class="forms_field-input" onchange="" style="width: 84%; float: left;" required/>
+                                <input type="button" value="코드확인" class="forms_buttons-action" onclick="checkAuthCode()"
+                                       style="display: inline; float: right; width: 15%; height: 31px; padding: 0px; text-align: center;">
+                            </div>
+                            <div class="forms_field">
+                                <input id="username" type="text" placeholder="닉네임" class="forms_field-input"
+                                       onchange="changeUsernameDetection()" style="width: 84%; float: left;" required/>
+                                <input type="button" value="중복확인" class="forms_buttons-action"
+                                       onclick="checkUsernameDuplication()"
+                                       style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;">
+                            </div>
+                            <div class="forms_field">
+                                <input id="password" type="password" placeholder="비밀번호" onchange="changePwdDetection()"
+                                       class="pwd-validation" required/>
+                            </div>
+                            <div class="forms_field">
+                                <input id="password-validation" type="password" placeholder="비밀번호 확인"
+                                       class="pwd-validation"/>
+                            </div>
+                            <div class="alert alert-success" id="alert-success"
+                                 style="display: none; color: royalblue;">비밀번호가 일치합니다.
+                            </div>
+                            <div class="alert alert-danger" id="alert-danger" style="display: none; color: firebrick;">
+                                비밀번호가 일치하지 않습니다.
+                            </div>
+                            <div class="alert alert-danger" id="alert-match-rex" style=" color: gray;">8자 이상 15자 이하로
+                                영문,숫자, 특수 문자를 혼합 해주세요.
+                            </div>
+                        </fieldset>
+                        <div class="forms_buttons">
+                            <input type="button" value="가입하기" class="forms_buttons-action" onclick="signup()">
+                        </div>
+                    </form>
+                </div>
+
             </div>
-          </form>
-        </div>
 
-      </div>
-      
-    </div>
-    <button class="user_goback" id="goback_button" onclick="goback()">뒤로가기</button>
+        </div>
+        <button class="user_goback" id="goback_button" onclick="goback()">뒤로가기</button>
     </section>
 
 
-<!-- 제목 -->
+    <!-- 제목 -->
     <div class="et-hero-tabs-title toggleRemove">
         <img class="main-icon" src="../static/images/bird.png" alt="">
         <h1 class="et-hero-tabs-h1">SAEMOIM</h1>
@@ -148,17 +173,17 @@
         <a class="go-main" style="color: azure; font-size: 17px;" href="./main.html">둘러보기</a>
     </div>
     <div class="et-hero-tabs-container toggleRemove">
-      <a class="et-hero-tab" href="#tab-es6">모임</a>
-      <a class="et-hero-tab" href="#tab-flexbox">블랙리스트</a>
-      <a class="et-hero-tab" href="#tab-react">게시판</a>
-      <a class="et-hero-tab" href="#tab-angular">채팅</a>
-      <a class="et-hero-tab" href="#tab-other">팀 소개</a>
-      <span class="et-hero-tab-slider"></span>
+        <a class="et-hero-tab" href="#tab-es6">모임</a>
+        <a class="et-hero-tab" href="#tab-flexbox">블랙리스트</a>
+        <a class="et-hero-tab" href="#tab-react">게시판</a>
+        <a class="et-hero-tab" href="#tab-angular">채팅</a>
+        <a class="et-hero-tab" href="#tab-other">팀 소개</a>
+        <span class="et-hero-tab-slider"></span>
     </div>
-  </section>
+</section>
 
-  <!-- scroll -->
-  <main class="et-main">
+<!-- scroll -->
+<main class="et-main">
     <section class="et-slide" id="tab-es6">
         <div class="et-slide-wrap">
             <h1>모임</h1>
@@ -189,15 +214,16 @@
     </section>
     <section class="et-slide" id="tab-other">
         <div class="et-slide-wrap">
-            <h1 style="margin-top: -80px; margin-bottom: 50px;">최종프로젝트 5조</h1>
-            <div style="text-align: left;">
-                <h3>이송언, 장성준, 김현중, 이지섭, 정한얼</h3>
+            <h1 style="margin-top: -80px; margin-bottom: 50px;">스프링 최종 5조</h1>
+            <div style="text-align: center;">
+                <h3>이송언, 장성준, 김현중, 이지섭</h3>
             </div>
             <div style="margin-top: 50px;">
                 <a href="https://github.com/8essong30/final-project-saeMoim" target="_blank">
-                    <img class="github-icon" src="../static/images/github.png" alt="github icon" style="margin-right: 15px;">
+                    <img class="github-icon" src="../static/images/github.png" alt="github icon"
+                         style="margin-right: 15px;">
                 </a>
-                <a href="https://held-stork-8aa.notion.site/677fdf3414674d918cabd0a65cd09046" target="_blank">
+                <a href="https://held-stork-8aa.notion.site/526b2dc73aaf4037b3e55a6d7abdc3a4" target="_blank">
                     <img class="notion-icon" src="../static/images/notion.png" alt="">
                 </a>
             </div>
@@ -206,14 +232,11 @@
             <button class="custom-btn btn-14" onclick="goToTop()">상단으로 올라가기</button>
         </div>
     </section>
-  </main>
+</main>
 </body>
 
 <script src="../static/welcome/welcome.js"></script>
 <script src="../static/welcome/welcomeSigninup.js"></script>
-
-
-
 
 
 </html>
