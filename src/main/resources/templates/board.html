@@ -13,8 +13,13 @@
   <link rel="stylesheet" href="../static/board/profilePage.css" />
   <script type="text/javascript"
     src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
-    <link rel="stylesheet" href="../static/board/chattingPage.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js" integrity="sha512-aHuAnb+FZ/yM5zYvdiA8q0sxLdsBQ3PRwO8D/08qsenCLQ2gWsosB43Cn1X8esAz0IpaC7Ns5cAPyKIdJQ0hNw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="../static/board/chattingPage.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js"
+    integrity="sha512-aHuAnb+FZ/yM5zYvdiA8q0sxLdsBQ3PRwO8D/08qsenCLQ2gWsosB43Cn1X8esAz0IpaC7Ns5cAPyKIdJQ0hNw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"
+    integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body>
@@ -26,73 +31,30 @@
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="staticBackdropChatLabel">채팅방</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="unread_zero()"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            onclick="chatModalClose()"></button>
         </div>
         <div class="modal-body">
           <div class="chat clearfix">
             <div class="chat-history">
               <ul id="msgArea" style="padding-left: 0;">
-                <li class="clearfix">
-                  <div class="message-data align-right">
-                    <span class="message-data-time">10:10 AM, Today</span> &nbsp; &nbsp;
-                    <span class="message-data-name">Olia</span> <i class="fa fa-circle me"></i>
-                  </div>
-                  <div class="message other-message float-right">
-                    My messages
-                  </div>
-                </li>
-        
-                <li>
-                  <div class="message-data">
-                    <span class="message-data-name"><i class="fa fa-circle online"></i> Vincent</span>
-                    <span class="message-data-time">10:20 AM, Today</span>
-                  </div>
-                  <div class="message my-message">
-                    Other messages
-                  </div>
-                </li>
+                
               </ul>
-        
+
             </div> <!-- end chat-history -->
-        
+
             <div class="chat-message clearfix">
               <div class="input-group mb-3">
                 <input type="text" class="form-control" name="msg" id="msg" placeholder="Type your message">
                 <button class="btn btn-outline-secondary" type="button" id="button-send">Send</button>
               </div>
               <!-- <div class="input-group mb-3"> -->
-                <!-- <input type="text" class="form-control" name="msg" id="msg" placeholder="Type your message"> -->
+              <!-- <input type="text" class="form-control" name="msg" id="msg" placeholder="Type your message"> -->
               <!-- </div> -->
               <!-- <button id="button-send">Send</button> -->
             </div> <!-- end chat-message -->
-        
           </div> <!-- end chat -->
-        
-          <script id="message-template" type="text/x-handlebars-template">
-              <li class="clearfix">
-                <div class="message-data align-right">
-                  <span class="message-data-time" >{{time}}, Today</span> &nbsp; &nbsp;
-                  <span class="message-data-name" >Olia</span> <i class="fa fa-circle me"></i>
-                </div>
-                <div class="message other-message float-right">
-                  {{messageOutput}}
-                </div>
-              </li>
-            </script>
-        
-          <script id="message-response-template" type="text/x-handlebars-template">
-              <li>
-                <div class="message-data">
-                  <span class="message-data-name"><i class="fa fa-circle online"></i> Vincent</span>
-                  <span class="message-data-time">{{time}}, Today</span>
-                </div>
-                <div class="message my-message">
-                  {{response}}
-                </div>
-              </li>
-            </script>
         </div>
-
       </div>
     </div>
   </div>
@@ -109,10 +71,8 @@
           <div class="content-profile-page">
             <div class="profile-user-page card" id="profile_modal_page">
               <div class="img-user-profile">
-                <img class="profile-bgHome"
-                  src="../static/images/mountain.jpg" />
-                <img class="avatar" src="../static/images/bird.png"
-                  alt="jofpin" />
+                <img class="profile-bgHome" src="../static/images/mountain.jpg" />
+                <img class="avatar" src="../static/images/bird.png" alt="jofpin" />
               </div>
               <button type="button" onclick="gotochat()">DM 보내기</button>
               <div class="user-profile-data">
@@ -278,12 +238,12 @@
         </div>
         <h1 id="moim_title">OOO 모임 게시판입니다</h1>
         <div>
-          <button type="button" class="btn btn-primary chat_button" data-bs-toggle="modal" data-bs-target="#staticBackdropChat"
-          data-bs-whatever="@mdo" onclick="unread_zero()">채팅방 입장</button>
+          <button type="button" class="btn btn-primary chat_button" data-bs-toggle="modal"
+            data-bs-target="#staticBackdropChat" data-bs-whatever="@mdo" onclick="chatModalOpen()">채팅방 입장</button>
           <div class="chat_button">읽지 않은 메세지 : <span id="unread_messages">0</span></div>
-          <div class="chat_button">현재 사용자 : <span id="current_user">asdfasdf</span></div>
+          <div class="chat_button">현재 사용자 : <span id="current_user">새로고침을 눌러주세요</span></div>
         </div>
-        
+
       </div>
       <div class="article__header">
         <span class="article__header__id">번호</span>
@@ -300,14 +260,15 @@
         <!-- 페이징 버튼 -->
       </div>
       <div>
-        <button type="button" class="btn btn-primary new_post_button" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-          data-bs-whatever="@mdo">새 글 작성하기</button>
+        <button type="button" class="btn btn-primary new_post_button" data-bs-toggle="modal"
+          data-bs-target="#staticBackdrop" data-bs-whatever="@mdo">새 글 작성하기</button>
       </div>
       <!-- </article> -->
     </div>
     <div class="userzone_wrap">
       <div class="leader" id="leader_zone">
-        <div class="userzone__user userzone__leader" onclick="openProfile()" data-bs-toggle="modal" data-bs-target="#profileModal">
+        <div class="userzone__user userzone__leader" onclick="openProfile()" data-bs-toggle="modal"
+          data-bs-target="#profileModal">
           <img src="../static/images/mountain.jpg">
           <div class="userzone__user__name">모임장</div>
         </div>
@@ -327,7 +288,7 @@
         </div>
       </div>
     </div>
-    
+
   </div>
 
 

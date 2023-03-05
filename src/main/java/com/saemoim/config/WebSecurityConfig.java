@@ -75,9 +75,12 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 			.requestMatchers("/tag").permitAll()
 			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/groups/**").permitAll()
-			.requestMatchers("/ws").permitAll()
+			.requestMatchers("/ws").permitAll() // ddd
 			.requestMatchers("/chat").permitAll() //ddd
-			.requestMatchers("/chatting/**").permitAll() // ddd
+			.requestMatchers("/chat/**").permitAll() //ddd
+			.requestMatchers("/stomp").permitAll() //ddd
+			.requestMatchers("/stomp/**").permitAll() //ddd
+			// .requestMatchers("/chatting/**").permitAll() // ddd
 			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admins/**").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString(), UserRoleEnum.ROOT.toString())

@@ -16,6 +16,10 @@ let tempUserId = localStorage.getItem("current_user_id")
 getGroupInfo(tempGroupId)
 const groupInfo = JSON.parse(localStorage.getItem("group_info"))
 
+const chatHistory = document.querySelector(".chat-history")
+const unread_messages = document.querySelector("#unread_messages")
+let unread_messages_num = parseInt(unread_messages.innerText)
+
 
 function getGroupInfo(groupId) {
   $.ajax({
@@ -81,7 +85,7 @@ function renderLeaderProfile() {
           <div class="userzone__user__name">${response["username"]} (모임장)</div>
         </div>
       `
-      $('#leader_zone').append(temp_html)
+    $('#leader_zone').append(temp_html)
   });
 }
 
@@ -90,7 +94,7 @@ function renderLeaderProfile() {
 function deleteProfileList() {
   const userZone = document.querySelector('#user_zone');
   while (userZone.firstChild) {
-      userZone.firstChild.remove()
+    userZone.firstChild.remove()
   }
 }
 
@@ -109,10 +113,10 @@ function renderProfileList() {
         "Refresh_Token": Refresh_Token
       },
     };
-        $.ajax(settings).done(function (response) {
-            appendProfileButton(response["username"])
-        });
-    })
+    $.ajax(settings).done(function (response) {
+      appendProfileButton(response["username"])
+    });
+  })
 }
 
 
@@ -159,16 +163,19 @@ function openProfile(event) {
 }
 
 function profile() {
-    // 리더프로필정보 가져오기
-    getGroupProfileIdList()
-    deleteProfileList()
-    // 리더프로필 추가
-    renderLeaderProfile()
-    renderProfileList()
+  // 리더프로필정보 가져오기
+  getGroupProfileIdList()
+  deleteProfileList()
+  // 리더프로필 추가
+  renderLeaderProfile()
+  renderProfileList()
 }
 
 profile()
-chat()
+
+// chat
+renderChat();
+chat();
 
 /**
  * 게시글
@@ -177,9 +184,9 @@ chat()
 
 // 게시글 생성
 function newPost() {
-    const newPostTitle = document.querySelector("#newPost-title").value
-    const newPostContent = document.querySelector("#newPost-content").value
-    // const imageUrl  = 이미지 경로 추가
+  const newPostTitle = document.querySelector("#newPost-title").value
+  const newPostContent = document.querySelector("#newPost-content").value
+  // const imageUrl  = 이미지 경로 추가
 
   var settings = {
     "url": `http://localhost:8080/groups/${tempGroupId}/post`,
@@ -195,10 +202,10 @@ function newPost() {
       "content": newPostContent
     }),
   };
-    $.ajax(settings).done(function (response) {
-        alert('작성 완료!');
-        location.reload();
-    });
+  $.ajax(settings).done(function (response) {
+    alert('작성 완료!');
+    location.reload();
+  });
 }
 
 
@@ -210,27 +217,27 @@ function newPost() {
 // 추후 게시글 이미지 url 추가 필요함
 function openBody(event) {
 
-    const postArray = JSON.parse(localStorage.getItem("pagedPostList"))
-    const nodes = [...event.target.parentElement.parentElement.parentElement.children];
-    let index = nodes.indexOf(event.target.parentElement.parentElement);
+  const postArray = JSON.parse(localStorage.getItem("pagedPostList"))
+  const nodes = [...event.target.parentElement.parentElement.parentElement.children];
+  let index = nodes.indexOf(event.target.parentElement.parentElement);
 
-    document.querySelector('#readPostModalLabel').innerText = postArray[index]["title"]
-    document.querySelector('#readPostModalContent').innerText = postArray[index]["content"]
+  document.querySelector('#readPostModalLabel').innerText = postArray[index]["title"]
+  document.querySelector('#readPostModalContent').innerText = postArray[index]["content"]
 
-    let currentPostId = postArray[index]["id"]
-    let currentPostUserId = postArray[index]["userId"]
-    localStorage.setItem("current_post_id", currentPostId)
-    localStorage.setItem("current_post_user_id", currentPostUserId)
+  let currentPostId = postArray[index]["id"]
+  let currentPostUserId = postArray[index]["userId"]
+  localStorage.setItem("current_post_id", currentPostId)
+  localStorage.setItem("current_post_user_id", currentPostUserId)
 
-    renderComments(currentPostId)
+  renderComments(currentPostId)
 }
 
 
 // 게시글 수정
 function editPost(event) {
-    const new_title = document.querySelector("#editPost-title").value
-    const new_content = document.querySelector("#editPost-content").value
-    const currentPostId = localStorage.getItem("current_post_id")
+  const new_title = document.querySelector("#editPost-title").value
+  const new_content = document.querySelector("#editPost-content").value
+  const currentPostId = localStorage.getItem("current_post_id")
 
   var settings = {
     "url": `http://localhost:8080/posts/${currentPostId}`,
@@ -265,40 +272,40 @@ function editPost(event) {
 // 게시글 수정 모달창 열기
 // 추후 게시글 이미지 url 추가 필요함
 function editPostModal(event) {
-    // 값 가져와서 수정 api
+  // 값 가져와서 수정 api
 
-    const original_title = document.querySelector('#readPostModalLabel').innerText
-    const original_content = document.querySelector('#readPostModalContent').innerText
+  const original_title = document.querySelector('#readPostModalLabel').innerText
+  const original_content = document.querySelector('#readPostModalContent').innerText
 
-    document.querySelector("#closeReadPostModal").click() // 게시글 모달창 닫고
-    document.querySelector("#openEdit").click() // 수정 모달창 열기
+  document.querySelector("#closeReadPostModal").click() // 게시글 모달창 닫고
+  document.querySelector("#openEdit").click() // 수정 모달창 열기
 
-    document.querySelector("#editPost-title").value = original_title
-    document.querySelector("#editPost-content").value = original_content
+  document.querySelector("#editPost-title").value = original_title
+  document.querySelector("#editPost-content").value = original_content
 }
 
 
 // 게시글 수정모드 전환 전 유저검증
 function gotoEditPost(event) {
-    const currentPostUserId = localStorage.getItem("current_post_user_id")
-    if (tempUserId !== currentPostUserId) {
-        alert('작성자만 수정 가능합니다');
-        return;
-    }
-    editPostModal(event) // 댓글 수정모드 전환
+  const currentPostUserId = localStorage.getItem("current_post_user_id")
+  if (tempUserId !== currentPostUserId) {
+    alert('작성자만 수정 가능합니다');
+    return;
+  }
+  editPostModal(event) // 댓글 수정모드 전환
 }
 
 
 // 게시글 수정 취소
 function cancleEdit(event) {
-    document.querySelector("#closeReadPostModal").click() // 수정 모달창 닫고
-    document.querySelector("#openRead").click() // 게시글 모달창 열기
+  document.querySelector("#closeReadPostModal").click() // 수정 모달창 닫고
+  document.querySelector("#openRead").click() // 게시글 모달창 열기
 }
 
 
 // 게시글 삭제
 function deletePost(event) {
-    const currentPostId = localStorage.getItem("current_post_id")
+  const currentPostId = localStorage.getItem("current_post_id")
 
   var settings = {
     "url": `http://localhost:8080/posts/${currentPostId}`,
@@ -310,30 +317,30 @@ function deletePost(event) {
     },
   };
 
-    $.ajax(settings).done(function (response) {
-        alert("삭제 되었습니다.");
-        location.reload()
-    });
+  $.ajax(settings).done(function (response) {
+    alert("삭제 되었습니다.");
+    location.reload()
+  });
 }
 
 
 // 게시글 삭제 확인 메세지
 function AskDeletePost(event) {
-    // 유저 확인하고 글 삭제
-    if (confirm("게시글을 삭제하시겠습니까?")) {
-        deletePost(event)
-    }
+  // 유저 확인하고 글 삭제
+  if (confirm("게시글을 삭제하시겠습니까?")) {
+    deletePost(event)
+  }
 }
 
 
 // 게시글 삭제 전 유저검증
 function gotoDeletePost(event) {
-    const currentPostUserId = localStorage.getItem("current_post_user_id")
-    if (tempUserId !== currentPostUserId) {
-        alert('작성자만 삭제 가능합니다');
-        return;
-    }
-    AskDeletePost(event)// 댓글 수정모드 전환
+  const currentPostUserId = localStorage.getItem("current_post_user_id")
+  if (tempUserId !== currentPostUserId) {
+    alert('작성자만 삭제 가능합니다');
+    return;
+  }
+  AskDeletePost(event)// 댓글 수정모드 전환
 }
 
 
@@ -377,29 +384,29 @@ function getPosts(pageNum, sizeNum) {
 
 // 게시글 요소 생성
 const makeContent = (i) => {
-    const currentPost = JSON.parse(localStorage.getItem("pagedPostList"))[i];
+  const currentPost = JSON.parse(localStorage.getItem("pagedPostList"))[i];
 
-    const contentwrap = document.createElement("li");
-    contentwrap.classList.add("contentwrap");
+  const contentwrap = document.createElement("li");
+  contentwrap.classList.add("contentwrap");
 
-    const content__header = document.createElement("div");
-    content__header.classList.add("content__header");
+  const content__header = document.createElement("div");
+  content__header.classList.add("content__header");
 
   let simpleCreatedAt = "null"
   let currentLikeCount = currentPost["likeCount"]
   let likeChecked = ""
-  if (currentPost["likeChecked"] == true) { likeChecked += "active"}
+  if (currentPost["likeChecked"] == true) { likeChecked += "active" }
 
-    if (currentPost["createdAt"]) { // createdAt이 null일 경우 페이지 로딩 안됨... 임시로 if문 적용
-        const createdAt = String(currentPost["createdAt"])
-        const simpleCreatedAtDate = createdAt.split('.')[0].split('T')[0]
-        const simpleCreatedAtHour = createdAt.split('.')[0].split('T')[1].split(':')[0]
-        const simpleCreatedAtMin = createdAt.split('.')[0].split('T')[1].split(':')[1]
-        simpleCreatedAt = ""
-        simpleCreatedAt = simpleCreatedAtDate + " " + simpleCreatedAtHour + ":" + simpleCreatedAtMin
-    }
-    
-    content__header.innerHTML = `
+  if (currentPost["createdAt"]) { // createdAt이 null일 경우 페이지 로딩 안됨... 임시로 if문 적용
+    const createdAt = String(currentPost["createdAt"])
+    const simpleCreatedAtDate = createdAt.split('.')[0].split('T')[0]
+    const simpleCreatedAtHour = createdAt.split('.')[0].split('T')[1].split(':')[0]
+    const simpleCreatedAtMin = createdAt.split('.')[0].split('T')[1].split(':')[1]
+    simpleCreatedAt = ""
+    simpleCreatedAt = simpleCreatedAtDate + " " + simpleCreatedAtHour + ":" + simpleCreatedAtMin
+  }
+
+  content__header.innerHTML = `
     <span class="content__header__id">${currentPost["id"]}</span>
     <a href="#" class="like-button content__header__likeButton ${likeChecked}">
       <div class="content__header__likeNumber">${currentLikeCount}</div>
@@ -411,31 +418,31 @@ const makeContent = (i) => {
     <span class="content__header__date" style="color: #afafaf">${simpleCreatedAt}</span>
   `;
 
-    contentwrap.appendChild(content__header);
-    return contentwrap;
+  contentwrap.appendChild(content__header);
+  return contentwrap;
 };
 
 
 // 버튼 요소 생성
 const makeButton = (i) => {
-    const button = document.createElement("button");
-    button.classList.add("button");
-    button.innerText = i;
-    return button;
+  const button = document.createElement("button");
+  button.classList.add("button");
+  button.innerText = i;
+  return button;
 };
 
 
 // 이전 페이지 목록으로 이동
 const goPrevPage = () => {
-    page -= maxButton;
-    render(page);
+  page -= maxButton;
+  render(page);
 };
 
 
 // 다음 페이지 목록으로 이동
 const goNextPage = () => {
-    page += maxButton;
-    render(page);
+  page += maxButton;
+  render(page);
 };
 
 
@@ -455,18 +462,18 @@ next.addEventListener("click", goNextPage);
 
 // 게시글 렌더링 (10개씩)
 const renderContent = (page) => {
-    while (contents.hasChildNodes()) {
-        contents.removeChild(contents.lastChild);
-    }
+  while (contents.hasChildNodes()) {
+    contents.removeChild(contents.lastChild);
+  }
 
-    getPosts(page - 1, 15); // 페이징 처리된 게시글 리스트 가져옴
+  getPosts(page - 1, 15); // 페이징 처리된 게시글 리스트 가져옴
 
-    const postArray = JSON.parse(localStorage.getItem("pagedPostList")) // 가져온 게시글 리스트 갯수를 계산하기 위해
+  const postArray = JSON.parse(localStorage.getItem("pagedPostList")) // 가져온 게시글 리스트 갯수를 계산하기 위해
 
-    for (let i = 0; i <= postArray.length - 1; i++) {
-        contents.appendChild(makeContent(i));
-    }
-    addLikeFeatureToButtons()
+  for (let i = 0; i <= postArray.length - 1; i++) {
+    contents.appendChild(makeContent(i));
+  }
+  addLikeFeatureToButtons()
 };
 
 
@@ -481,34 +488,34 @@ const renderButton = (page) => {
   // console.log(page)
   buttons.children[0].classList.add("active"); // 첫 로딩시 가장 왼쪽 페이지 선택
 
-    const createdButtons = document.querySelectorAll('.button');
-    createdButtons.forEach((createdButton) => {
-        createdButton.addEventListener('click', gotoPageNum)
-    })
+  const createdButtons = document.querySelectorAll('.button');
+  createdButtons.forEach((createdButton) => {
+    createdButton.addEventListener('click', gotoPageNum)
+  })
 
-    buttons.prepend(prev);
-    buttons.append(next);
+  buttons.prepend(prev);
+  buttons.append(next);
 
-    if (page - maxButton < 1) buttons.removeChild(prev);
-    if (page + maxButton > maxPage) buttons.removeChild(next);
+  if (page - maxButton < 1) buttons.removeChild(prev);
+  if (page + maxButton > maxPage) buttons.removeChild(next);
 };
 
 
 // 버튼 클릭시 해당 페이지로 이동
 function gotoPageNum(event) {
-    document.querySelectorAll('.button').forEach((onebutton) => {
-        onebutton.classList.remove('active')
-    })
-    event.target.classList.add("active");
-    renderContent(event.target.innerText)
+  document.querySelectorAll('.button').forEach((onebutton) => {
+    onebutton.classList.remove('active')
+  })
+  event.target.classList.add("active");
+  renderContent(event.target.innerText)
 }
 
 
 // 해당 페이지 게시글 및 버튼 렌더링
 const render = (page) => {
-    document.querySelector('#moim_title').innerText = groupInfo["groupName"]
-    renderContent(page);
-    renderButton(page);
+  document.querySelector('#moim_title').innerText = groupInfo["groupName"]
+  renderContent(page);
+  renderButton(page);
 };
 
 
@@ -529,10 +536,10 @@ render(page);
 // 댓글 불러오기
 function renderComments(currentPostId) {
 
-    const commentList = document.querySelector('#commentList');
-    while (commentList.firstChild) {
-        commentList.firstChild.remove()
-    }
+  const commentList = document.querySelector('#commentList');
+  while (commentList.firstChild) {
+    commentList.firstChild.remove()
+  }
 
   var settings = {
     "url": `http://localhost:8080/posts/${currentPostId}/comment`,
@@ -550,9 +557,9 @@ function renderComments(currentPostId) {
     var cCnt = commentList.length;
     document.querySelector("#cCnt").innerText = cCnt;
 
-        if (cCnt > 0) {
-            for (i = 0; i < cCnt; i++) {
-                let temp_html = `
+    if (cCnt > 0) {
+      for (i = 0; i < cCnt; i++) {
+        let temp_html = `
         <table class='table'>
           <h6><strong>${commentList[i]["username"]}</strong></h6>
           <p style="overflow: hidden; word-wrap: break-word;">
@@ -577,17 +584,17 @@ function renderComments(currentPostId) {
           </div>
         </table>
         `
-                $('#commentList').append(temp_html)
-            }
-        } else {
-            let temp_html = `
+        $('#commentList').append(temp_html)
+      }
+    } else {
+      let temp_html = `
       <table class='table'>
         <h6><strong>등록된 댓글이 없습니다.</strong></h6>
       </table>
       `
-            $('#commentList').append(temp_html)
-        }
-    });
+      $('#commentList').append(temp_html)
+    }
+  });
 }
 
 
@@ -609,11 +616,11 @@ function writeComment() {
     }),
   };
 
-    $.ajax(settings).done(function (response) {
-        alert("댓글작성 완료")
-        document.querySelector("#comment").value = ""
-        renderComments(currentPostId) // 댓글목록 새로 불러오기
-    });
+  $.ajax(settings).done(function (response) {
+    alert("댓글작성 완료")
+    document.querySelector("#comment").value = ""
+    renderComments(currentPostId) // 댓글목록 새로 불러오기
+  });
 
 }
 
@@ -637,40 +644,40 @@ function editComment(event) {
     }),
   };
 
-    $.ajax(settings).done(function (response) {
-        alert("수정 완료")
-        renderComments(currentPostId)
-    });
+  $.ajax(settings).done(function (response) {
+    alert("수정 완료")
+    renderComments(currentPostId)
+  });
 }
 
 
 // 댓글 수정모드 전환
 function convert_edit_comment(event) {
-    const original_comment = event.currentTarget.parentNode.previousSibling.previousSibling.innerText;
-    event.currentTarget.parentNode.previousSibling.value = original_comment;
-    event.currentTarget.parentNode.classList.toggle('button_hide');
-    event.currentTarget.parentNode.nextSibling.classList.toggle('button_hide');
-    event.currentTarget.parentNode.previousSibling.classList.toggle('button_hide');
-    event.currentTarget.parentNode.previousSibling.previousSibling.classList.toggle('button_hide');
+  const original_comment = event.currentTarget.parentNode.previousSibling.previousSibling.innerText;
+  event.currentTarget.parentNode.previousSibling.value = original_comment;
+  event.currentTarget.parentNode.classList.toggle('button_hide');
+  event.currentTarget.parentNode.nextSibling.classList.toggle('button_hide');
+  event.currentTarget.parentNode.previousSibling.classList.toggle('button_hide');
+  event.currentTarget.parentNode.previousSibling.previousSibling.classList.toggle('button_hide');
 }
 
 
 // 댓글 수정모드 전환 전 유저검증
 function gotoEditComment(event) {
-    const currentCommentId = event.currentTarget.nextSibling.nextSibling.innerText
-    const currentCommentUserId = event.currentTarget.nextSibling.nextSibling.nextSibling.nextSibling.innerText
-    if (tempUserId !== currentCommentUserId) {
-        alert('작성자만 수정 가능합니다');
-        return;
-    }
-    convert_edit_comment(event) // 댓글 수정모드 전환
+  const currentCommentId = event.currentTarget.nextSibling.nextSibling.innerText
+  const currentCommentUserId = event.currentTarget.nextSibling.nextSibling.nextSibling.nextSibling.innerText
+  if (tempUserId !== currentCommentUserId) {
+    alert('작성자만 수정 가능합니다');
+    return;
+  }
+  convert_edit_comment(event) // 댓글 수정모드 전환
 }
 
 
 // 댓글 삭제
 function deleteComment(event) {
-    const currentPostId = localStorage.getItem("current_post_id")
-    const currentCommentId = event.currentTarget.nextElementSibling.nextElementSibling.innerText
+  const currentPostId = localStorage.getItem("current_post_id")
+  const currentCommentId = event.currentTarget.nextElementSibling.nextElementSibling.innerText
 
   var settings = {
     "url": `http://localhost:8080/comments/${currentCommentId}`,
@@ -683,19 +690,19 @@ function deleteComment(event) {
     },
   };
 
-    $.ajax(settings).done(function (response) {
-        alert("삭제 완료")
-        renderComments(currentPostId)
-    });
+  $.ajax(settings).done(function (response) {
+    alert("삭제 완료")
+    renderComments(currentPostId)
+  });
 }
 
 
 // 수정모드 취소 (삭제모드로 전환)
 function gotoDeleteComment(event) {
-    event.currentTarget.parentNode.classList.toggle('button_hide');
-    event.currentTarget.parentNode.previousSibling.classList.toggle('button_hide');
-    event.currentTarget.parentNode.previousSibling.previousSibling.classList.toggle('button_hide');
-    event.currentTarget.parentNode.previousSibling.previousSibling.previousSibling.classList.toggle('button_hide');
+  event.currentTarget.parentNode.classList.toggle('button_hide');
+  event.currentTarget.parentNode.previousSibling.classList.toggle('button_hide');
+  event.currentTarget.parentNode.previousSibling.previousSibling.classList.toggle('button_hide');
+  event.currentTarget.parentNode.previousSibling.previousSibling.previousSibling.classList.toggle('button_hide');
 }
 
 
@@ -705,46 +712,46 @@ function gotoDeleteComment(event) {
 
 // 좋아요 버튼
 function addLikeFeatureToButtons() {
-    const like_buttons = document.querySelectorAll(".like-button");
+  const like_buttons = document.querySelectorAll(".like-button");
 
-    like_buttons.forEach((button) => {
-        button.addEventListener("click", function (e) {
-            console.log('hi')
-            e.preventDefault();
-            this.classList.toggle("active"); // 좋아요 상태를 변경
+  like_buttons.forEach((button) => {
+    button.addEventListener("click", function (e) {
+      console.log('hi')
+      e.preventDefault();
+      this.classList.toggle("active"); // 좋아요 상태를 변경
 
-            let currentLikeCount = parseInt(this.firstElementChild.innerText)
+      let currentLikeCount = parseInt(this.firstElementChild.innerText)
 
-            const nodes = [...e.currentTarget.parentElement.parentElement.parentElement.children];
-            let index = nodes.indexOf(e.currentTarget.parentElement.parentElement);
+      const nodes = [...e.currentTarget.parentElement.parentElement.parentElement.children];
+      let index = nodes.indexOf(e.currentTarget.parentElement.parentElement);
 
-            const postArray = JSON.parse(localStorage.getItem("pagedPostList")) // to get postId
-            let currentPostId = postArray[index]["id"]
+      const postArray = JSON.parse(localStorage.getItem("pagedPostList")) // to get postId
+      let currentPostId = postArray[index]["id"]
 
-            // 변경된 상태에 따라 동작
-            if (this.classList.contains('active')) {
-                doLike(currentPostId)
-                e.currentTarget.classList.add("animated");
-                currentLikeCount = currentLikeCount + 1
-                this.firstElementChild.innerText = String(currentLikeCount)
-            } else {
-                unLike(currentPostId)
-                e.currentTarget.classList.remove("animated");
-                currentLikeCount = currentLikeCount - 1
-                this.firstElementChild.innerText = String(currentLikeCount)
-            }
-        });
-    })
+      // 변경된 상태에 따라 동작
+      if (this.classList.contains('active')) {
+        doLike(currentPostId)
+        e.currentTarget.classList.add("animated");
+        currentLikeCount = currentLikeCount + 1
+        this.firstElementChild.innerText = String(currentLikeCount)
+      } else {
+        unLike(currentPostId)
+        e.currentTarget.classList.remove("animated");
+        currentLikeCount = currentLikeCount - 1
+        this.firstElementChild.innerText = String(currentLikeCount)
+      }
+    });
+  })
 
 }
 
 
 function plusOrMinus() {
-    return Math.random() < 0.5 ? -1 : 1;
+  return Math.random() < 0.5 ? -1 : 1;
 }
 
 function randomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 
@@ -759,7 +766,7 @@ function doLike(postId) {
       "Refresh_Token": Refresh_Token
     },
   };
-  
+
   $.ajax(settings).done(function (response) {
     console.log(response);
   }).fail(function () {
@@ -780,7 +787,7 @@ function unLike(postId) {
       "Refresh_Token": Refresh_Token
     },
   };
-  
+
   $.ajax(settings).done(function (response) {
     console.log(response);
   }).fail(function () {
@@ -789,13 +796,18 @@ function unLike(postId) {
   });
 }
 
-const chatHistory = document.querySelector(".chat-history")
-const unread_messages = document.querySelector("#unread_messages")
-let unread_messages_num = parseInt(unread_messages.innerText)
+
+
+
+
+
+
 
 /**
  * 채팅
- */
+*/
+
+// to get username
 const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
 let username = ''
 profileIdList.forEach((user) => {
@@ -805,101 +817,136 @@ profileIdList.forEach((user) => {
 })
 document.querySelector("#current_user").innerText = username
 
+// chat
 function chat() {
 
-  $("#button-send").on("click", (e) => {
-    send();
+  var sockJs = new SockJS("http://localhost:8080/stomp/chat", null, { transports: ["websocket", "xhr-streaming", "xhr-polling"] });
+  //1. SockJS를 내부에 들고있는 stomp를 내어줌
+  var stomp = Stomp.over(sockJs);
+
+  //2. connection이 맺어지면 실행
+  stomp.connect({}, function () {
+    console.log("STOMP Connection")
+
+    //4. subscribe(path, callback)으로 메세지를 받을 수 있음
+    stomp.subscribe("/sub/chat/group/" + tempGroupId, function (chat) {
+      var content = JSON.parse(chat.body);
+
+      var writer = content.writer;
+      var message = content.message;
+
+      var str = makeMessageLi(username, writer, message);
+      $("#msgArea").append(str);
+
+      // 채팅창이 열려있는 경우
+      if (document.querySelector("#staticBackdropChat").classList.contains("show")) {
+        unread_messages_num = 0
+      } else { unread_messages_num += 1 }
+      // 첫 접속 (OOO님이 모임에 입장하셨습니다.)
+      if (writer === username) { unread_messages_num = 0 }
+      unread_messages.innerText = String(unread_messages_num)
+
+      chatHistory.scroll({
+        top: chatHistory.scrollHeight,
+        left: 0,
+        behavior: 'smooth'
+      })
+    });
+
+    //3. send(path, header, message)로 메세지를 보낼 수 있음
+    stomp.send('/pub/chat/enter', {}, JSON.stringify({ groupId: tempGroupId, writer: username }))
   });
+
+  function send() {
+    var msg = document.getElementById("msg");
+
+    stomp.send('/pub/chat/message', {}, JSON.stringify({ groupId: tempGroupId, message: msg.value, writer: username }));
+    msg.value = '';
+  }
+
+  $("#button-send").on("click", send);
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       send();
     }
   })
 
-  // const websocket = new WebSocket("ws://localhost:8080/ws/chat");
-  // var websocket = new SockJS("/ws/chat", null, {transports: ["websocket", "xhr-streaming", "xhr-polling"]});
-  var websocket = new SockJS("http://localhost:8080/ws/chat", null, {transports: ["websocket", "xhr-streaming", "xhr-polling"]});
-
-  websocket.onmessage = onMessage;
-  websocket.onopen = onOpen;
-  websocket.onclose = onClose;
-
-  function send() {
-    let msg = document.getElementById("msg");
-    if (msg.value === '') { return }
-    websocket.send(username + ":" + msg.value);
-    msg.value = '';
-  }
-
-  //채팅창에서 나갔을 때
-  function onClose(evt) {
-    var str = username + ": " + username + "님이 방을 나가셨습니다.";
-    websocket.send(str);
-  }
-
-  //채팅창에 들어왔을 때
-  function onOpen(evt) {
-    var str = username + ": " + username + "님이 입장하셨습니다.";
-    websocket.send(str);
-  }
-
-  function onMessage(msg) {
-    var data = msg.data;
-    var sessionId = null;
-    //데이터를 보낸 사람
-    var message = null;
-    var arr = data.split(":");
-
-    var cur_session = username;
-
-    //현재 세션에 로그인 한 사람
-    sessionId = arr[0];
-    message = arr[1];
-
-    //로그인 한 클라이언트와 타 클라이언트를 분류하기 위함
-    if (sessionId == cur_session) {
-      var str = `
-                <li class="clearfix">
-                  <div class="message-data align-right">
-                    <span class="message-data-time">10:10 AM, Today</span> &nbsp; &nbsp;
-                    <span class="message-data-name">${sessionId}</span> <i class="fa fa-circle me"></i>
-                  </div>
-                  <div class="message other-message float-right">
-                    ${message}
-                  </div>
-                </li>
-      `
-      // var str = "<div class='col-6'>";
-      // str += "<div class='alert alert-secondary'>";
-      // str += "<b>" + sessionId + " : " + message + "</b>";
-      // str += "</div></div>";
-      $("#msgArea").append(str);
-    }
-    else {
-      var str = `
-                <li>
-                  <div class="message-data">
-                    <span class="message-data-name"><i class="fa fa-circle online"></i>${sessionId}</span>
-                    <span class="message-data-time">10:20 AM, Today</span>
-                  </div>
-                  <div class="message my-message">
-                    ${message}
-                  </div>
-                </li>
-      `
-      // var str = "<div class='col-6'>";
-      // str += "<div class='alert alert-warning'>";
-      // str += "<b>" + sessionId + " : " + message + "</b>";
-      // str += "</div></div>";
-      $("#msgArea").append(str);
-      unread_messages_num += 1
-      unread_messages.innerText = String(unread_messages_num)
-    }
-    chatHistory.scrollTop = chatHistory.scrollHeight
-  }
 }
 
-function unread_zero() {
+
+function chatModalOpen() {
+  document.querySelector("#unread_messages").innerText = "0"
+  unread_messages_num = 0
+
+  setTimeout(function() {
+    chatHistory.scroll({
+      top: chatHistory.scrollHeight,
+      left: 0,
+      behavior: 'smooth'
+    })
+    // chatHistory.scrollTop = chatHistory.scrollHeight
+  }, 300);
+}
+
+
+function chatModalClose() {
   document.querySelector("#unread_messages").innerText = "0"
   unread_messages_num = 0
 }
+
+
+
+function makeMessageLi(username, writer, message) {
+  if (writer === username) {
+    var str = `
+              <li class="clearfix">
+                <div class="message-data align-right">
+                  <span class="message-data-time">10:10 AM, Today</span> &nbsp; &nbsp;
+                  <span class="message-data-name">${username}</span> <i class="fa fa-circle me"></i>
+                </div>
+                <div class="message other-message float-right">
+                  ${message}
+                </div>
+              </li>
+              `
+  } else {
+    var str = `
+              <li>
+                <div class="message-data">
+                  <span class="message-data-name"><i class="fa fa-circle online"></i>${writer}</span>
+                  <span class="message-data-time">10:20 AM, Today</span>
+                </div>
+                <div class="message my-message">
+                  ${message}
+                </div>
+              </li>
+              `
+  }
+  return str
+}
+
+
+// 채팅 기록 불러오기
+function renderChat() {
+  var settings = {
+    "url": `http://localhost:8080/chat/${tempGroupId}`,
+    "method": "GET",
+    "timeout": 0,
+    "headers": {
+      "Authorization": Authorization,
+      "Refresh_Token": Refresh_Token
+    },
+  };
+  
+  $.ajax(settings).done(function (response) {
+    response["data"].forEach((chat) => {
+      const writer = chat.writer
+      const message = chat.message
+
+      console.log(username ,writer, message)
+      var str = makeMessageLi(username, writer, message);
+      $("#msgArea").append(str);
+    })
+  });
+}
+

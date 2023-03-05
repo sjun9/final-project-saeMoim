@@ -22,8 +22,10 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	//이유는 왜 그런지 아직 찾지 못함
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/stomp/chat")
+		registry.addEndpoint("/stomp/chat") // 여기로 웹소켓 생성
 			.setAllowedOrigins("http://localhost:8080")
+			.setAllowedOrigins("http://*:8080", "http://*.*.*.*:8080")
+			.setAllowedOriginPatterns("http://*:63342", "http://*.*.*.*:63342") // for intelliJ
 			.withSockJS();
 	}
 
