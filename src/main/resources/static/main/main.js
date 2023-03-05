@@ -1316,7 +1316,6 @@ function gotoBoard(id) {
                                 }
                             }
                             if (isParticipant) {
-                                alert(id)
                                 alert('게시판으로 이동합니다.')
                                 localStorage.setItem("current_group_id", id)
                                 localStorage.setItem("current_user_id", myId)
