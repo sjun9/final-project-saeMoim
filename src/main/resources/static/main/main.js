@@ -296,7 +296,9 @@ function showUsername() {
         headers: {'Authorization': localStorage.getItem('Authorization')},
         success: function (data) {
             let username = data['username']
+            let imagePath = data['imagePath']
             $('#username').append(`${username}`)
+            document.getElementById('profile-image').src = imagePath
         }, error: function (e) {
             $('#username').append(`로그인이 필요합니다`)
         }
@@ -358,11 +360,11 @@ function showSearch(name) {
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
-
+                let imagePath = response[i]['imagePath']
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
-                                        <img src="../static/images/main-running.jpg" alt="">
+                                        <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
                                             <input type="hidden" value=${content}>
                                     </div>
@@ -441,11 +443,12 @@ function showAllMoim() {
                 let tags = response[i]['tags']
                 let leaderId = response[i]['userId']
                 let leaderName = response[i]['username']
-
+                let imgPath = response[i]['imagePath']
+                console.log(imgPath)
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
-                                        <img src="../static/images/main-running.jpg" alt="">
+                                        <img src="${imgPath}" alt="">
                                             <span>${groupName}</span>
                                             <input type="hidden" value=${content}>
                                             <input type="hidden" value=${tags}>
@@ -499,11 +502,12 @@ function showPopularMoim() {
                     let recruitNumber = response[i]['recruitNumber']
                     let wishCount = response[i]['wishCount']
                     let status = response[i]['status']
+                    let imgPath =response[i]['imagePath']
 
                     let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
-                                        <img src="../static/images/main-running.jpg" alt="">
+                                        <img src=${imgPath} alt="">
                                             <span>${groupName}</span>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
@@ -558,11 +562,12 @@ function showLeaderMoim() {
                 let tags = response[i]['tags']
                 let leaderId = response[i]['userId']
                 let leaderName = response[i]['username']
+                let imagePath = response[i]['imagePath']
 
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
-                                        <img src="../static/images/main-running.jpg" alt="">
+                                        <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
                                             <input type="hidden" value=${content}>
                                             <input type="hidden" value=${tags}>
@@ -620,11 +625,12 @@ function showParticipantMoim() { // 참여중인 모임 조회
                 let tags = response[i]['tags']
                 let leaderId = response[i]['userId']
                 let leaderName = response[i]['username']
+                let imagePath = response[i]['imagePath']
 
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
-                                        <img src="../static/images/main-running.jpg" alt="">
+                                        <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
                                             <input type="hidden" value=${content}>
                                             <input type="hidden" value=${tags}>
@@ -934,6 +940,8 @@ function showMoimDetail(event, id) {
         type: "get",
         url: "http://localhost:8080/groups/" + id
     }).done(function (data) {
+        // data.imagePath
+        document.getElementById("moimDetail_Image").src = data.imagePath;
         document.querySelector('#moimDetail_Title').innerText = data.groupName;
         document.querySelector('#moimStatus').innerText = data.status;
         document.querySelector('#moimTag').innerText = data.tags;
@@ -963,8 +971,13 @@ function showMoimDetail(event, id) {
 }
 
 
-//미완
+//미완 - 모임생성
 function saveMoim() {
+    let file = $('#newMoim-image')[0].files[0];
+    console.log(file)
+    let formData = new FormData();
+    formData.append("img", file);
+
     let tags = []
     for (let i = 0; i < $('[name="tagsA"]').length; i++) {
         tags.push($('[name="tagsA"]')[i].value)
@@ -990,13 +1003,17 @@ function saveMoim() {
     latitude = undefined;
     longitude = undefined;
 
+    formData.append("requestDto", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
+
     $.ajax({
         type: "post",
         url: "http://localhost:8080/group",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
-        data: JSON.stringify(jsonData), //전송 데이터
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        data: formData, //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
-        contentType: "application/json; charset=utf-8" //헤더의 Content-Type을 설정
+        contentType: false, //헤더의 Content-Type을 설정
+        mimeType: "multipart/form-data",
+        processData: false
     }).done(function (data) {
         alert("작성 완료")
         location.reload()
@@ -1094,13 +1111,21 @@ function editMoim(id) {
     latitude = undefined;
     longitude = undefined;
 
+    let file = $('#modifyMoim-image')[0].files[0];
+    let formData = new FormData;
+    console.log(file)
+    formData.append("img", file)
+    formData.append("requestDto", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
     $.ajax({
         type: "put",
         url: "http://localhost:8080/groups/" + id,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
-        data: JSON.stringify(jsonData), //전송 데이터
+        timeOut: 0,
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        data: formData,
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
-        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+        contentType: false, //헤더의 Content-Type을 설정
+        mimeType: "multipart/form-data",
+        processData: false
     }).done(function (data) {
         console.log(data);
         alert("작성 완료")
@@ -1440,8 +1465,10 @@ function getMyProfile() {
                 console.log(response)
                 let username = response['username']
                 let content = response['content']
+                let imagePath = response['imagePath']
                 $('#profileName').append(username)
                 $('#profileContent').append(content)
+                $('#profile-image').append(imagePath)
                 console.log(response)
             }, error: function (e) {
             console.log(e)
@@ -1480,7 +1507,6 @@ $('.pw').focusout(function () {
 });
 
 function updateProfile(content) {
-    // 이미지 추가해야함!!!!!!!!
     var settings = {
         "url": "http://localhost:8080/profile",
         "method": "PUT",
@@ -1605,3 +1631,28 @@ $(document).ready(function () {
         }
     });
 });
+
+function uploadImage() {
+    var file = $('#img')[0].files[0];
+    console.log(file);
+    var form = new FormData();
+    form.append("img", file);
+
+    var settings = {
+        "url": "http://localhost:8080/profile/image",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Authorization": localStorage.getItem("Authorization")
+        },
+        "processData": false,
+        "mimeType": "multipart/form-data",
+        "contentType": false,
+        "data": form
+    };
+
+    $.ajax(settings).done(function (response) {
+        alert("수정완료");
+        console.log(response);
+    });
+}

@@ -1,7 +1,9 @@
 package com.saemoim.service;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
 import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
@@ -34,4 +36,6 @@ public interface UserService {
 	ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto);
 
 	TokenResponseDto reissueToken(String accessToken, String refreshToken);
+
+	ProfileResponseDto uploadProfileImage(MultipartFile multipartFile, Long id) throws IOException;
 }

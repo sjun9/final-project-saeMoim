@@ -180,13 +180,13 @@
                     </div>
                     <div class="mb-3">
                         <label for="newPost-image" class="col-form-label">이미지 업로드</label>
-                        <input type="file" class="form-control" id="modifyMoim-image">
+                        <input type="file" class="form-control" id="modifyMoim-image"/>
                     </div>
                     <div class="mb-3">
                         <label for="newPost-image" class="col-form-label">한줄소개</label>
-                        <input type="text" class="form-control" id="modifyMoim-content">
+                        <input type="text" class="form-control" id="modifyMoim-content"/>
                     </div>
-                    <input type="text" id="modify_address" placeholder="주소">
+                    <input type="text" id="modify_address" placeholder="주소"/>
                     <input type="button" onclick="modify_execDaumPostcode()" value="주소 검색"><br>
                     <div class="mb-3">
                         <div id="modifyMoimMap" style="width:700px; margin: auto; height:400px;"></div>
@@ -262,7 +262,7 @@
         <div class="account-info">
             <div class="account-info-picture">
                 <img
-                        src="https://images.unsplash.com/photo-1527736947477-2790e28f3443?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTE2fHx3b21hbnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60"
+                        src="../static/images/bird.png"
                         onclick="goToHome()" alt="Account">
             </div>
             <div class="account-info-name" id="username"></div>
@@ -389,7 +389,7 @@
                     <div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal"
                          onclick="showMoimDetail(event)">
                         <div class="product-cell image">
-                            <img src="../static/images/main-running.jpg" alt="">
+                            <img id="participant-group-image" src="../static/images/main-running.jpg" alt="">
                             <span>한강정기러닝동호회[초보가능, 상시모집]</span>
                         </div>
                         <div class="product-cell category"><span class="cell-label">카테고리:</span>Decoration</div>
@@ -409,6 +409,23 @@
         <div class="app-content-header">
             <h1 class="app-content-headerText">마이프로필</h1>
         </div>
+
+        <div class="col-md-12">
+            <div class="col-md-2">
+                <form>
+                    <div class="form-group">
+                        <h6>
+                            프로필 이미지
+                            <img id ="profile-image" src="../static/images/bird.png" width="150px" height="150px"/>
+                        </h6>
+                        <label for="img">파일 업로드</label>
+                        <input type="file" id="img" accept="image/*" multiple>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="btn-save" onclick="uploadImage()">저장</button>
+                </form>
+            </div>
+        </div>
+
         <div class="app-content-section" id="myProfile">
             <div id="myProfile_2">
                 <h2 id="profileName"></h2>

@@ -25,7 +25,6 @@ function getGroupInfo(groupId) {
         data: {},
         beforeSend: function (xhr) {
             xhr.setRequestHeader("Authorization", Authorization);
-            xhr.setRequestHeader("Refresh_Token", Refresh_Token);
         },
         success: function (response) {
             localStorage.setItem("group_info", JSON.stringify(response))
@@ -47,7 +46,6 @@ function getGroupProfileIdList() {
         data: {},
         beforeSend: function (xhr) {
             xhr.setRequestHeader("Authorization", Authorization);
-            xhr.setRequestHeader("Refresh_Token", Refresh_Token);
         },
         success: function (response) {
             localStorage.setItem("profileIdList", JSON.stringify(response["data"]));
@@ -70,14 +68,14 @@ function renderLeaderProfile() {
         "method": "GET",
         "timeout": 0,
         "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "Authorization": Authorization
         },
     };
     $.ajax(settings).done(function (response) {
+        let imagePath = response["imagePath"]
         let temp_html = `
         <div class="userzone__user userzone__leader" onclick="openProfile(event)" data-bs-toggle="modal" data-bs-target="#profileModal">
-          <img src="../static/images/mountain.jpg">
+          <img src="${imagePath}">
           <div class="userzone__user__name">${response["username"]} (모임장)</div>
         </div>
       `
@@ -107,22 +105,22 @@ function renderProfileList() {
             "method": "GET",
             "timeout": 0,
             "headers": {
-                "Authorization": Authorization,
-                "Refresh_Token": Refresh_Token
+                "Authorization": Authorization
             },
         };
         $.ajax(settings).done(function (response) {
-            appendProfileButton(response["username"])
+            appendProfileButton(response["username"], response["imagePath"])
+            const imagePath = response["imagePath"]
         });
     })
 }
 
 
 // 프로필 버튼 요소 추가
-function appendProfileButton(username) {
+function appendProfileButton(username, imagePath) {
     let temp_html = `
     <div class="userzone__user" onclick="openProfile(event)" data-bs-toggle="modal" data-bs-target="#profileModal">
-      <img src="../static/images/mountain.jpg">
+      <img src="${imagePath}">
       <div class="userzone__user__name">${username}</div>
     </div>
   `
@@ -149,14 +147,14 @@ function openProfile(event) {
         "method": "GET",
         "timeout": 0,
         "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "Authorization": Authorization
         },
     };
     $.ajax(settings).done(function (response) {
         const profile_modal_page = document.querySelector("#profile_modal_page")
         profile_modal_page.children[2].children[0].innerText = username
         profile_modal_page.children[3].innerText = response["content"]
+        profile_modal_page.children[0].children[1].src = response["imagePath"]
     }).fail(function (e) {
         console.log(e.status)
         if (e.status === 400) {
@@ -224,23 +222,31 @@ function report(id, content) { // 신고할 사람id
 function newPost() {
     const newPostTitle = document.querySelector("#newPost-title").value
     const newPostContent = document.querySelector("#newPost-content").value
+    const currentGroupId = Number(localStorage.getItem("current_group_id"))
     // const imageUrl  = 이미지 경로 추가
+    let file = $('#newPost-image')[0].files[0];
+    let formData = new FormData;
+    console.log(file)
+    formData.append("img", file)
 
-    var settings = {
-        "url": `http://localhost:8080/groups/${tempGroupId}/post`,
-        "method": "POST",
-        "timeout": 0,
-        "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
-            "Content-Type": "application/json"
-        },
-        "data": JSON.stringify({
+    let jsonData =
+        {
             "title": newPostTitle,
             "content": newPostContent
-        }),
-    };
-    $.ajax(settings).done(function (response) {
+        }
+    formData.append("requestDto", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
+
+    $.ajax({
+        type: "post",
+        url: `http://localhost:8080/groups/${currentGroupId}/post`,
+        headers: {'Authorization': Authorization},
+        data: formData, //전송 데이터
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: false, //헤더의 Content-Type을 설정
+        mimeType: "multipart/form-data",
+        timeout: 0,
+        processData: false
+    }).done(function (response) {
         alert('작성 완료!');
         location.reload();
     }).fail(function (e) {
@@ -273,6 +279,12 @@ function openBody(event) {
     document.querySelector('#readPostModalLabel').innerText = postArray[index]["title"]
     document.querySelector('#readPostModalContent').innerText = postArray[index]["content"]
 
+    if (postArray[index]["imagePath"] != null) {
+        document.getElementById('post-image').src = postArray[index]["imagePath"];
+    } else {
+        document.getElementById('post-image').src = "../static/images/main-english.jpg";
+    }
+
     let currentPostId = postArray[index]["id"]
     let currentPostUserId = postArray[index]["userId"]
     localStorage.setItem("current_post_id", currentPostId)
@@ -287,33 +299,30 @@ function editPost(event) {
     const new_title = document.querySelector("#editPost-title").value
     const new_content = document.querySelector("#editPost-content").value
     const currentPostId = localStorage.getItem("current_post_id")
-
-    var settings = {
-        "url": `http://localhost:8080/posts/${currentPostId}`,
-        "method": "PUT",
-        "timeout": 0,
-        "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
-            "Content-Type": "application/json"
-        },
-        "data": JSON.stringify({
+    let file = $('#editPost-image')[0].files[0];
+    let formData = new FormData;
+    formData.append("img", file)
+    let jsonData =
+        {
             "title": new_title,
             "content": new_content
-        }),
-    };
+        }
+    formData.append("requestDto", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
 
-    $.ajax(settings).done(function (response) {
+    $.ajax({
+        type: "put",
+        url: `http://localhost:8080/posts/${currentPostId}`,
+        timeout: 0,
+        headers: {"Authorization": Authorization},
+        data: formData,
+        dataType: "JSON",
+        contentType: false,
+        mimeType: "multipart/form-data",
+        processData: false
+    }).done(function (response) {
         console.log(response);
         alert("수정 완료")
-        location.reload()
-
-        // 게시글 최신화 (임시로 겉보기만...)
-        // document.querySelector('#readPostModalLabel').innerText = new_title
-        // document.querySelector('#readPostModalContent').innerText = new_content
-
-        // document.querySelector("#closeEditPostModal").click() // 수정 모달창 닫고
-        // document.querySelector("#openRead").click() // 읽기 모달창 열고
+        location.reload();
     }).fail(function (e) {
         console.log(e.status)
         if (e.status === 400) {
@@ -327,6 +336,13 @@ function editPost(event) {
         }
     });
 }
+
+// 게시글 최신화 (임시로 겉보기만...)
+// document.querySelector('#readPostModalLabel').innerText = new_title
+// document.querySelector('#readPostModalContent').innerText = new_content
+
+// document.querySelector("#closeEditPostModal").click() // 수정 모달창 닫고
+// document.querySelector("#openRead").click() // 읽기 모달창 열고
 
 
 // 게시글 수정 모달창 열기
@@ -372,8 +388,7 @@ function deletePost(event) {
         "method": "DELETE",
         "timeout": 0,
         "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "Authorization": Authorization
         },
     };
 
@@ -439,7 +454,6 @@ function getPosts(pageNum, sizeNum) {
         data: {},
         beforeSend: function (xhr) {
             xhr.setRequestHeader("Authorization", Authorization);
-            xhr.setRequestHeader("Refresh_Token", Refresh_Token);
         },
         async: false, // 비동기 해제
         success: function (data) {
@@ -614,8 +628,7 @@ function renderComments(currentPostId) {
         "method": "GET",
         "timeout": 0,
         "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "Authorization": Authorization
         },
     };
 
@@ -676,7 +689,6 @@ function writeComment() {
         "timeout": 0,
         "headers": {
             "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
             "Content-Type": "application/json"
         },
         "data": JSON.stringify({
@@ -715,7 +727,6 @@ function editComment(event) {
         "timeout": 0,
         "headers": {
             "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
             "Content-Type": "application/json"
         },
         "data": JSON.stringify({
@@ -775,7 +786,6 @@ function deleteComment(event) {
         "timeout": 0,
         "headers": {
             "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token,
             "Content-Type": "application/json"
         },
     };
@@ -863,8 +873,7 @@ function doLike(postId) {
         "method": "POST",
         "timeout": 0,
         "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "Authorization": Authorization
         },
     };
 
@@ -892,8 +901,7 @@ function unLike(postId) {
         "method": "DELETE",
         "timeout": 0,
         "headers": {
-            "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "Authorization": Authorization
         },
     };
 

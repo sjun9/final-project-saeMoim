@@ -1,5 +1,6 @@
 package com.saemoim.controller;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.http.HttpHeaders;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
@@ -24,6 +27,7 @@ import com.saemoim.dto.request.WithdrawRequestDto;
 import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
+import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.security.UserDetailsImpl;
 import com.saemoim.service.UserService;
@@ -36,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserService userService;
+	private final AWSS3Uploader awss3Uploader;
 
 	// 회원 가입
 	@PostMapping("/sign-up")
@@ -116,7 +121,7 @@ public class UserController {
 
 	@GetMapping("/user")
 	public ResponseEntity<ProfileResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(new ProfileResponseDto(userDetails.getId(), userDetails.getUsername(), null));
+		return ResponseEntity.ok().body(userService.getProfile(userDetails.getId()));
 	}
 
 	// 내 정보 수정 - 마이페이지
@@ -124,6 +129,14 @@ public class UserController {
 	public ResponseEntity<ProfileResponseDto> updateProfile(@Validated @RequestBody ProfileRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ResponseEntity.ok().body(userService.updateProfile(userDetails.getId(), requestDto));
+	}
+
+	// 내 정보 수정 - 프로필 이미지
+	@PostMapping("/profile/image")
+	public ResponseEntity<GenericsResponseDto> uploadProfileImage(@RequestPart("img") MultipartFile multipartFile
+		,@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+		userService.uploadProfileImage(multipartFile, userDetails.getId());
+		return ResponseEntity.ok().body(new GenericsResponseDto("프로필 이미지가 수정 되었습니다."));
 	}
 
 	// 리프레쉬 토큰 재발급

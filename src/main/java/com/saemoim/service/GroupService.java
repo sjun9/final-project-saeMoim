@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
@@ -25,9 +26,9 @@ public interface GroupService {
 
 	List<GroupResponseDto> getMyGroupsByParticipant(Long userId);
 
-	GroupResponseDto createGroup(GroupRequestDto requestDto, Long userId);
+	GroupResponseDto createGroup(GroupRequestDto requestDto, Long userId, MultipartFile multipartFile);
 
-	GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, Long userId);
+	GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, Long userId, MultipartFile multipartFile);
 
 	void deleteGroup(Long groupId, Long userId);
 
