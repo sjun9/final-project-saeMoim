@@ -36,6 +36,8 @@ import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.response.BlackListResponseDto;
 import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.jwt.JwtUtil;
+import com.saemoim.oauth.CustomOAuth2UserService;
+import com.saemoim.oauth.OAuth2AuthenticationSuccessHandler;
 import com.saemoim.security.CustomAccessDeniedHandler;
 import com.saemoim.security.CustomAuthenticationEntryPoint;
 import com.saemoim.service.BlackListServiceImpl;
@@ -56,6 +58,10 @@ class BlackListControllerTest {
 	private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	@MockBean
 	private CustomAccessDeniedHandler customAccessDeniedHandler;
+	@MockBean
+	private CustomOAuth2UserService oAuth2UserService;
+	@MockBean
+	private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
 	@BeforeEach
 	public void setUp(WebApplicationContext context, RestDocumentationContextProvider restDocumentation) {
