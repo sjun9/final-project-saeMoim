@@ -38,7 +38,7 @@ public class User extends TimeStamped {
 	private UserRoleEnum role;
 	private String kakaoId;
 	@Column(nullable = true)
-	private String imagePath;
+	private String imagePath = "/src/main/resources/static/images/bird.png";
 
 	public User(String email, String password, String username, UserRoleEnum role) {
 		this.email = email;

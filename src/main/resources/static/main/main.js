@@ -296,8 +296,9 @@ function showUsername() {
         headers: {'Authorization': localStorage.getItem('Authorization')},
         success: function (data) {
             let username = data['username']
-
+            let imagePath = data['imagePath']
             $('#username').append(`${username}`)
+            document.getElementById('profile-image').src = imagePath
         }, error: function (e) {
             $('#username').append(`로그인이 필요합니다`)
         }
@@ -1397,8 +1398,10 @@ function getMyProfile() {
             function (response) {
                 let username = response['username']
                 let content = response['content']
+                let imagePath = response['imagePath']
                 $('#profileName').append(username)
                 $('#floatingInput').append(content)
+                $('#profile-image').append(imagePath)
                 console.log(response)
                 $('#passpass').hide()
                 $('#myProfile_2').show()
@@ -1516,8 +1519,6 @@ $(document).ready(function () {
 
 });
 
-// $('#btn-save').on('click', uploadImage);
-
 function uploadImage() {
     var file = $('#img')[0].files[0];
     console.log(file);
@@ -1538,6 +1539,7 @@ function uploadImage() {
     };
 
     $.ajax(settings).done(function (response) {
+        alert("수정완료");
         console.log(response);
     });
 }

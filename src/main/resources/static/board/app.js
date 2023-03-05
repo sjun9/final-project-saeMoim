@@ -75,9 +75,10 @@ function renderLeaderProfile() {
     },
   };
   $.ajax(settings).done(function (response) {
+    let imagePath = response["imagePath"]
     let temp_html = `
         <div class="userzone__user userzone__leader" onclick="openProfile(event)" data-bs-toggle="modal" data-bs-target="#profileModal">
-          <img src="../static/images/mountain.jpg">
+          <img src="${imagePath}">
           <div class="userzone__user__name">${response["username"]} (모임장)</div>
         </div>
       `
@@ -112,17 +113,16 @@ function renderProfileList() {
         $.ajax(settings).done(function (response) {
             appendProfileButton(response["username"], response["imagePath"])
             const imagePath = response["imagePath"]
-            document.getElementById('proflie-image').src = `${imagePath}`
         });
     })
 }
 
 
 // 프로필 버튼 요소 추가
-function appendProfileButton(username) {
+function appendProfileButton(username, imagePath) {
   let temp_html = `
     <div class="userzone__user" onclick="openProfile(event)" data-bs-toggle="modal" data-bs-target="#profileModal">
-      <img src="../static/images/mountain.jpg">
+      <img src="${imagePath}">
       <div class="userzone__user__name">${username}</div>
     </div>
   `
@@ -157,6 +157,7 @@ function openProfile(event) {
     const profile_modal_page = document.querySelector("#profile_modal_page")
     profile_modal_page.children[2].children[0].innerText = username
     profile_modal_page.children[3].innerText = response["content"]
+    profile_modal_page.children[0].children[1].src = response["imagePath"]
   });
 }
 

@@ -39,5 +39,5 @@ public interface UserService {
 
 	TokenResponseDto reissueToken(String accessToken, String refreshToken);
 
-	void uploadProfileImage(MultipartFile multipartFile, Long id) throws IOException;
+	ProfileResponseDto uploadProfileImage(MultipartFile multipartFile, Long id) throws IOException;
 }

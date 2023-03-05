@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Transactional
-	public void uploadProfileImage (MultipartFile multipartFile, Long userId) throws IOException {
+	public ProfileResponseDto uploadProfileImage (MultipartFile multipartFile, Long userId) throws IOException {
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage()));
@@ -196,5 +196,6 @@ public class UserServiceImpl implements UserService {
 			user.updateProfileImage(storedName);
 		}
 		userRepository.save(user);
+	return new ProfileResponseDto(user);
 	}
 }

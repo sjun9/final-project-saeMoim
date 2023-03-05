@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -124,7 +124,7 @@ public class UserController {
 
 	@GetMapping("/user")
 	public ResponseEntity<ProfileResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(new ProfileResponseDto(userDetails.getId(), userDetails.getUsername(), null));
+		return ResponseEntity.ok().body(userService.getProfile(userDetails.getId()));
 	}
 
 	// 내 정보 수정 - 마이페이지
@@ -136,7 +136,7 @@ public class UserController {
 
 	// 내 정보 수정 - 프로필 이미지
 	@PostMapping("/profile/image")
-	public ResponseEntity<GenericsResponseDto> uploadProfileImage(@RequestParam("img") MultipartFile multipartFile
+	public ResponseEntity<GenericsResponseDto> uploadProfileImage(@RequestPart("img") MultipartFile multipartFile
 		,@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
 		userService.uploadProfileImage(multipartFile, userDetails.getId());
 		return ResponseEntity.ok().body(new GenericsResponseDto("프로필 이미지가 수정 되었습니다."));
