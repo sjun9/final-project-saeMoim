@@ -13,10 +13,11 @@ public class ProfileResponseDto {
 	private Long id;
 	private String username;
 	private String content;
-
+	private String imagePath;
 	public ProfileResponseDto(User user) {
 		this.id = user.getId();
 		this.username = user.getUsername();
 		this.content = user.getContent();
+		this.imagePath = user.getImagePath();
 	}
 }

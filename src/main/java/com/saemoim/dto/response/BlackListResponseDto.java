@@ -3,6 +3,7 @@ package com.saemoim.dto.response;
 import java.time.LocalDateTime;
 
 import com.saemoim.domain.BlackList;
+import com.saemoim.domain.enums.BlacklistStatusEnum;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ public class BlackListResponseDto {
 	private Long userId;
 	private String username;
 	private int banCount;
+	private BlacklistStatusEnum status;
 	private LocalDateTime createdAt;
 	private LocalDateTime modifiedAt;
 
@@ -24,5 +26,6 @@ public class BlackListResponseDto {
 		this.banCount = blackList.getBanCount();
 		this.createdAt = blackList.getCreatedAt();
 		this.modifiedAt = blackList.getModifiedAt();
+		this.status = blackList.getStatus();
 	}
 }

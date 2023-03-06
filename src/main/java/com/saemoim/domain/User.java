@@ -23,20 +23,33 @@ public class User extends TimeStamped {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	@Column(nullable = false, unique = true)
 	private String email;
+
 	@Column(nullable = false)
 	private String password;
+
 	@Column(nullable = false, unique = true)
 	private String username;
+
+	@Builder.Default
 	@Column(nullable = false)
 	private String content = "안녕하세요. 잘 부탁드립니다.";
+
+	@Builder.Default
 	@Column
 	private int banCount = 0;
+
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private UserRoleEnum role;
+
 	private String kakaoId;
+
+	@Builder.Default
+	@Column(nullable = false)
+	private String imagePath = "/src/main/resources/static/images/bird.png";
 
 	public User(String email, String password, String username, UserRoleEnum role) {
 		this.email = email;
@@ -69,9 +82,13 @@ public class User extends TimeStamped {
 		this.password = password;
 	}
 
-	public void updateProfile(String content, String changedPassword) {
-		this.password = changedPassword;
+	public void updateProfile(String content) {
 		this.content = content;
+	}
+
+	public void updateProfile(String content, String imagePath) {
+		this.content = content;
+		this.imagePath = imagePath;
 	}
 
 	public User updateKakaoId(String kakaoId) {

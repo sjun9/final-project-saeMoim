@@ -53,6 +53,7 @@ public class Group extends TimeStamped {
 
 	@Column(nullable = false, unique = true)
 	private String name;
+
 	@Column(nullable = false)
 	private String content;
 
@@ -70,17 +71,40 @@ public class Group extends TimeStamped {
 	@Column(nullable = false)
 	private String longitude;
 
+	@Builder.Default
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private GroupStatusEnum status = GroupStatusEnum.OPEN;
 
+	@Builder.Default
 	@Column(nullable = false)
 	private int wishCount = 0;
 
 	@Column(nullable = false)
 	private int recruitNumber;
+
+	@Builder.Default
 	@Column(nullable = false)
 	private int participantCount = 0;
+
+	@Builder.Default
+	@Column(nullable = false)
+	private String imagePath = "/src/main/resources/static/images/bird.png";
+
+	public Group(GroupRequestDto request, Category category, User user, String imgPath) {
+		this.user = user;
+		this.category = category;
+		request.getTagNames().forEach(t -> this.tags.add(new Tag(t, this)));
+		this.name = request.getName();
+		this.content = request.getContent();
+		this.address = request.getAddress();
+		this.firstRegion = request.getFirstRegion();
+		this.secondRegion = request.getSecondRegion();
+		this.latitude = request.getLatitude();
+		this.longitude = request.getLongitude();
+		this.recruitNumber = request.getRecruitNumber();
+		this.imagePath = imgPath;
+	}
 
 	public Group(GroupRequestDto request, Category category, User user) {
 		this.user = user;
@@ -96,8 +120,7 @@ public class Group extends TimeStamped {
 		this.recruitNumber = request.getRecruitNumber();
 	}
 
-	public void update(GroupRequestDto request, Category category, User user) {
-		this.user = user;
+	public void update(GroupRequestDto request, Category category) {
 		this.category = category;
 		this.tags.clear();
 		request.getTagNames().forEach(t -> this.tags.add(new Tag(t, this)));
@@ -109,6 +132,21 @@ public class Group extends TimeStamped {
 		this.latitude = request.getLatitude();
 		this.longitude = request.getLongitude();
 		this.recruitNumber = request.getRecruitNumber();
+	}
+
+	public void update(GroupRequestDto request, Category category, String imagePath) {
+		this.category = category;
+		this.tags.clear();
+		request.getTagNames().forEach(t -> this.tags.add(new Tag(t, this)));
+		this.name = request.getName();
+		this.content = request.getContent();
+		this.address = request.getAddress();
+		this.firstRegion = request.getFirstRegion();
+		this.secondRegion = request.getSecondRegion();
+		this.latitude = request.getLatitude();
+		this.longitude = request.getLongitude();
+		this.recruitNumber = request.getRecruitNumber();
+		this.imagePath = imagePath;
 	}
 
 	public String getUsername() {

@@ -2,6 +2,7 @@ package com.saemoim.controller;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -11,9 +12,10 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GenericsResponseDto;
@@ -85,19 +87,24 @@ public class GroupController {
 	}
 
 	// 모임 생성
-	@PostMapping("/group")
-	public ResponseEntity<GroupResponseDto> createGroup(@Validated @RequestBody GroupRequestDto requestDto,
+	@PostMapping(value = "/group", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<GroupResponseDto> createGroup(
+		@Validated @RequestPart("requestDto") GroupRequestDto requestDto,
+		@RequestPart(required = false, name = "img") MultipartFile multipartFile,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(groupService.createGroup(requestDto, userDetails.getId()));
+			.body(groupService.createGroup(requestDto, userDetails.getId(), multipartFile));
 	}
 
 	// 모임 수정
-	@PutMapping("/groups/{groupId}")
+	@PutMapping(value = "/groups/{groupId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,
+		MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<GroupResponseDto> updateGroup(@PathVariable Long groupId,
-		@Validated @RequestBody GroupRequestDto requestDto,
+		@Validated @RequestPart GroupRequestDto requestDto,
+		@RequestPart(required = false, name = "img") MultipartFile multipartFile,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(groupService.updateGroup(groupId, requestDto, userDetails.getId()));
+		return ResponseEntity.ok()
+			.body(groupService.updateGroup(groupId, requestDto, userDetails.getId(), multipartFile));
 	}
 
 	// 모임 삭제
