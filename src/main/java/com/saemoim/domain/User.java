@@ -33,21 +33,19 @@ public class User extends TimeStamped {
 	@Column(nullable = false, unique = true)
 	private String username;
 
-	@Builder.Default
 	@Column(nullable = false)
 	private String content = "안녕하세요. 잘 부탁드립니다.";
 
-	@Builder.Default
-	@Column
+	@Column(nullable = false)
 	private int banCount = 0;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private UserRoleEnum role;
 
-	private String kakaoId;
+	@Column
+	private Long kakaoId;
 
-	@Builder.Default
 	@Column(nullable = false)
 	private String imagePath = "/src/main/resources/static/images/bird.png";
 
@@ -58,7 +56,7 @@ public class User extends TimeStamped {
 		this.role = role;
 	}
 
-	public User(String email, String password, String username, UserRoleEnum role, String kakaoId) {
+	public User(String email, String password, String username, UserRoleEnum role, Long kakaoId) {
 		this.email = email;
 		this.password = password;
 		this.username = username;
@@ -91,7 +89,7 @@ public class User extends TimeStamped {
 		this.imagePath = imagePath;
 	}
 
-	public User updateKakaoId(String kakaoId) {
+	public User updateKakaoId(Long kakaoId) {
 		this.kakaoId = kakaoId;
 		return this;
 	}

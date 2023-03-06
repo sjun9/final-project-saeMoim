@@ -32,7 +32,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 		User user;
 		if (userOptional.isPresent()) {
-			user = userOptional.get().updateKakaoId(attributes.getAttributes().get(userNameAttributeName).toString());
+			user = userOptional.get().updateKakaoId((Long)attributes.getAttributes().get(userNameAttributeName));
 		} else {
 			user = attributes.toEntity();
 			userRepository.save(user);

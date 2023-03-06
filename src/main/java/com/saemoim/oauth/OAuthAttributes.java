@@ -50,6 +50,6 @@ public class OAuthAttributes {
 	}
 
 	public User toEntity() {
-		return new User(email, password, username, UserRoleEnum.USER, attributes.get(nameAttributeKey).toString());
+		return new User(email, password, username, UserRoleEnum.USER, (Long)attributes.get(nameAttributeKey));
 	}
 }
