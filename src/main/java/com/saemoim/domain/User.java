@@ -23,21 +23,32 @@ public class User extends TimeStamped {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	@Column(nullable = false, unique = true)
 	private String email;
+
 	@Column(nullable = false)
 	private String password;
+
 	@Column(nullable = false, unique = true)
 	private String username;
+
+	@Builder.Default
 	@Column(nullable = false)
 	private String content = "안녕하세요. 잘 부탁드립니다.";
+
+	@Builder.Default
 	@Column
 	private int banCount = 0;
+
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private UserRoleEnum role;
+
 	private String kakaoId;
-	@Column(nullable = true)
+
+	@Builder.Default
+	@Column(nullable = false)
 	private String imagePath = "/src/main/resources/static/images/bird.png";
 
 	public User(String email, String password, String username, UserRoleEnum role) {
