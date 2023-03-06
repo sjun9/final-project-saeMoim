@@ -64,7 +64,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		http.headers().frameOptions().sameOrigin(); // for SockJS WebSocket (chatting)
 
 		http.authorizeHttpRequests()
-			.requestMatchers("/**").permitAll() // ddd
 			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 			.requestMatchers("/sign-up/**").permitAll()
 			.requestMatchers("/sign-in").permitAll()
@@ -75,12 +74,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 			.requestMatchers("/tag").permitAll()
 			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/groups/**").permitAll()
-			.requestMatchers("/ws").permitAll() // ddd
-			.requestMatchers("/chat").permitAll() //ddd
-			.requestMatchers("/chat/**").permitAll() //ddd
-			.requestMatchers("/stomp").permitAll() //ddd
-			.requestMatchers("/stomp/**").permitAll() //ddd
-			// .requestMatchers("/chatting/**").permitAll() // ddd
+			.requestMatchers("/stomp/**").permitAll() // for SockJS WebSocket (chatting)
 			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admins/**").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString(), UserRoleEnum.ROOT.toString())
@@ -104,6 +98,5 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		registry.addMapping("/**")
 			.allowedMethods("GET", "POST", "DELETE", "PUT", "OPTIONS", "PATCH")
 			.exposedHeaders("Authorization", "Refresh_Token");
-		//.allowedOrigins("*");
 	}
 }

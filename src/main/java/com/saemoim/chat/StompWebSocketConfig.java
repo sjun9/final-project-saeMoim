@@ -1,25 +1,21 @@
 package com.saemoim.chat;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
+import lombok.RequiredArgsConstructor;
 
 @EnableWebSocketMessageBroker
 @Configuration
+@RequiredArgsConstructor
 public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-	//endpoint를 /stomp로 하고, allowedOrigins를 "*"로 하면 페이지에서
-	//Get /info 404 Error가 발생한다. 그래서 아래와 같이 2개의 계층으로 분리하고
-	//origins를 개발 도메인으로 변경하니 잘 동작하였다.
-	//이유는 왜 그런지 아직 찾지 못함
+	private final StompHandler stompHandler;
+
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/stomp/chat") // 여기로 웹소켓 생성
@@ -29,10 +25,16 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 			.withSockJS();
 	}
 
-	/*어플리케이션 내부에서 사용할 path를 지정할 수 있음*/
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
 		registry.setApplicationDestinationPrefixes("/pub");
 		registry.enableSimpleBroker("/sub");
+	}
+
+	@Override
+	public void configureClientInboundChannel(ChannelRegistration registration){
+		// 들어오는 메세지들(Inbound)이 이 곳을 거치며 토큰값을 확인한다
+		// 토큰 불일치 시 예외 발생으로 통신 불가
+		registration.interceptors(stompHandler);
 	}
 }

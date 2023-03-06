@@ -19,7 +19,7 @@ public class ChatService {
 	private final ChatRepository chatRepository;
 
 	// 메세지 가져오기 - 최대 100개제한 있으면 좋을듯
-	// DB 메세지 - 한달 단위로 삭제 - 자동 크론?
+	// DB 메세지 - 한달 단위로 삭제 - DB Scheduler 적용 필요
 	@Transactional
 	public List<ChatResponseDto> getAllChatByGroupId(Long groupId) {
 		return chatRepository.findAllByGroupIdOrderByCreatedAtAsc(groupId).stream()
