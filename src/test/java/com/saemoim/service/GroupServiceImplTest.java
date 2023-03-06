@@ -1,11 +1,14 @@
 package com.saemoim.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -24,6 +27,7 @@ import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
+import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
 import com.saemoim.repository.TagRepository;
@@ -41,6 +45,9 @@ class GroupServiceImplTest {
 	private CategoryRepository categoryRepository;
 	@Mock
 	private TagRepository tagRepository;
+
+	@Mock
+	private AWSS3Uploader awss3Uploader;
 
 	@InjectMocks
 	private GroupServiceImpl groupService;
@@ -64,11 +71,18 @@ class GroupServiceImplTest {
 		var id = 1L;
 		User user = new User("dddd", "ddd", "name", UserRoleEnum.USER);
 		Category category = Category.builder().parentId(1L).name("named").build();
+		MultipartFile multipartFile = mock(MultipartFile.class);
+
 		when(categoryRepository.findByName(anyString())).thenReturn(Optional.of(category));
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+		try {
+			when(awss3Uploader.upload(multipartFile, "group")).thenReturn("aaaaaa");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 
 		// when
-		GroupResponseDto response = groupService.createGroup(request, id);
+		GroupResponseDto response = groupService.createGroup(request, id, multipartFile);
 		// then
 		assertThat(response.getGroupName()).isEqualTo("name");
 		assertThat(response.getUsername()).isEqualTo("name");
