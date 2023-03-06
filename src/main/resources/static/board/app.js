@@ -834,8 +834,9 @@ function chat() {
 
       var writer = content.writer;
       var message = content.message;
+      var createdAtUTC = content.createdAt;
 
-      var str = makeMessageLi(username, writer, message);
+      var str = makeMessageLi(username, writer, message, createdAtUTC);
       $("#msgArea").append(str);
 
       // 채팅창이 열려있는 경우
@@ -854,15 +855,31 @@ function chat() {
     });
 
     //3. send(path, header, message)로 메세지를 보낼 수 있음
-    stomp.send('/pub/chat/enter', {}, JSON.stringify({ groupId: tempGroupId, writer: username }))
+    // OOO님이 모임에 입장하셨습니다.
+    stomp.send('/pub/chat/enter', {}, JSON.stringify(
+      {
+        groupId: tempGroupId,
+        userId: tempUserId,
+        writer: username
+      }
+    ))
   });
+
 
   function send() {
     var msg = document.getElementById("msg");
 
-    stomp.send('/pub/chat/message', {}, JSON.stringify({ groupId: tempGroupId, message: msg.value, writer: username }));
+    stomp.send('/pub/chat/message', {}, JSON.stringify(
+      {
+        groupId: tempGroupId,
+        userId: tempUserId,
+        writer: username,
+        message: msg.value
+      }
+    ));
     msg.value = '';
   }
+
 
   $("#button-send").on("click", send);
   window.addEventListener('keydown', (e) => {
@@ -884,7 +901,6 @@ function chatModalOpen() {
       left: 0,
       behavior: 'smooth'
     })
-    // chatHistory.scrollTop = chatHistory.scrollHeight
   }, 300);
 }
 
@@ -895,13 +911,16 @@ function chatModalClose() {
 }
 
 
+function makeMessageLi(username, writer, message, createdAtUTC) {
+  const time = new Date(createdAtUTC).toString()
+  const splitTime = time.split(' ')
+  const dddMMMddTTTT =  splitTime[0] + " " +  splitTime[1] + " " +  splitTime[2] + ", " +  splitTime[4].substring(0, 5)
 
-function makeMessageLi(username, writer, message) {
   if (writer === username) {
     var str = `
               <li class="clearfix">
                 <div class="message-data align-right">
-                  <span class="message-data-time">10:10 AM, Today</span> &nbsp; &nbsp;
+                  <span class="message-data-time">${dddMMMddTTTT}</span> &nbsp; &nbsp;
                   <span class="message-data-name">${username}</span> <i class="fa fa-circle me"></i>
                 </div>
                 <div class="message other-message float-right">
@@ -914,7 +933,7 @@ function makeMessageLi(username, writer, message) {
               <li>
                 <div class="message-data">
                   <span class="message-data-name"><i class="fa fa-circle online"></i>${writer}</span>
-                  <span class="message-data-time">10:20 AM, Today</span>
+                  <span class="message-data-time">${dddMMMddTTTT}</span>
                 </div>
                 <div class="message my-message">
                   ${message}
@@ -940,11 +959,7 @@ function renderChat() {
   
   $.ajax(settings).done(function (response) {
     response["data"].forEach((chat) => {
-      const writer = chat.writer
-      const message = chat.message
-
-      console.log(username ,writer, message)
-      var str = makeMessageLi(username, writer, message);
+      var str = makeMessageLi(username, chat.writer, chat.message, chat.createdAt);
       $("#msgArea").append(str);
     })
   });

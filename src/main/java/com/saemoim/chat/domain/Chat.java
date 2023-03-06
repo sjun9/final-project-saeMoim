@@ -20,6 +20,9 @@ public class Chat extends TimeStamped {
 	private Long id;
 
 	@Column(nullable = false)
+	private Long userId;
+
+	@Column(nullable = false)
 	private Long groupId;
 
 	@Column(nullable = false)
@@ -29,6 +32,7 @@ public class Chat extends TimeStamped {
 	private String message;
 
 	public Chat(ChatRequestDto chatMessage) {
+		this.userId = chatMessage.getUserId();
 		this.groupId = chatMessage.getGroupId();
 		this.writer = chatMessage.getWriter();
 		this.message = chatMessage.getMessage();
