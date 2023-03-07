@@ -1,4 +1,4 @@
-let origin = `http://52.79.169.105:8080`
+const origin = `http://52.79.169.105:8080`
 
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
@@ -217,6 +217,8 @@ function relayoutMap() {
 
 const STORAGE_ACCESS_TOKEN_KEY = "Authorization";
 const STORAGE_Refresh_TOKEN_KEY = "Refresh_Token";
+const ACCESS_TOKEN_KEY = "Authorization";
+const Refresh_TOKEN_KEY = "Refresh_Token";
 
 function getCookieValue(cookieName) {
     const cookies = document.cookie.split(";");
@@ -267,8 +269,8 @@ function logout() {
         type: "POST",
         url: `${origin}/log-out`,
         headers: {
-            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
-            [STORAGE_Refresh_TOKEN_KEY]: localStorage.getItem(STORAGE_Refresh_TOKEN_KEY)
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
+            [Refresh_TOKEN_KEY]: localStorage.getItem(STORAGE_Refresh_TOKEN_KEY)
         },
         success: function (response) {
             console.log(response)
@@ -295,7 +297,7 @@ function showUsername() {
     $.ajax({
         type: "get",
         url: `${origin}/user`,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
             let username = data['username']
             let imagePath = data['imagePath']
@@ -390,8 +392,8 @@ function reissue() {
         "method": "POST",
         "timeout": 0,
         "headers": {
-            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
-            [STORAGE_Refresh_TOKEN_KEY]: localStorage.getItem(STORAGE_Refresh_TOKEN_KEY)
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
+            [Refresh_TOKEN_KEY]: localStorage.getItem(STORAGE_Refresh_TOKEN_KEY)
         },
     };
     $.ajax(settings).done(function (response, status, xhr) {
@@ -500,7 +502,7 @@ function showLeaderMoim() {
         url: url,
         headers: {
             'Content-Type': 'application/json',
-            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
         success: function (response) {
             response = response['data']
@@ -555,7 +557,7 @@ function showParticipantMoim() { // 참여중인 모임 조회
         url: url,
         headers: {
             'Content-Type': 'application/json',
-            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
         success: function (response) {
             response = response['data']
@@ -700,7 +702,7 @@ function showRequestedGroup() {
         url: `${origin}/leader/application`,
         headers: {
             'Content-Type': 'application/json',
-            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
         success: function (response) {
             response = response['data']
@@ -740,7 +742,7 @@ function showAppliedGroup() {
         url: `${origin}/participant/application`,
         headers: {
             'Content-Type': 'application/json',
-            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
         success: function (response) {
             response = response['data']
@@ -777,7 +779,7 @@ function permitApplication(applicationId) {
     $.ajax({
         type: "PUT",
         url: `${origin}/applications/${applicationId}/permit`,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
         alert(data['data'])
         showRequestedGroup()
@@ -798,7 +800,7 @@ function rejectApplication(applicationId) {
     $.ajax({
         type: "PUT",
         url: `${origin}/applications/${applicationId}/reject`,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
         alert(data['data'])
         showRequestedGroup()
@@ -819,7 +821,7 @@ function cancelApplication(applicationId) {
     $.ajax({
         type: "DELETE",
         url: `${origin}/applications/${applicationId}`,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
         alert(data['data'])
         showAppliedGroup()
@@ -905,7 +907,7 @@ function saveMoim() {
     $.ajax({
         type: "post",
         url: `${origin}/group`,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         data: formData, //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: false, //헤더의 Content-Type을 설정
@@ -932,7 +934,7 @@ function attendMoim(id) {
     $.ajax({
         type: "post",
         url: `${origin}/groups/${id}/application`,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
         alert(data['data'])
         location.reload()
@@ -953,7 +955,7 @@ function withdrawMoim(id) {
     $.ajax({
         type: "delete",
         url: `${origin}/participant/groups/${id}`,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
         alert(data['data'])
         location.reload()
@@ -1005,7 +1007,7 @@ function editMoim(id) {
         type: "put",
         url: `${origin}/groups/${id}`,
         timeOut: 0,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         data: formData,
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: false, //헤더의 Content-Type을 설정
@@ -1032,7 +1034,7 @@ function deleteMoim(id) {
     $.ajax({
         type: "delete",
         url: `${origin}/groups/${id}`,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
     }).done(function (data) {
         alert(data['data'])
         location.reload()
@@ -1053,7 +1055,7 @@ function wishMoim(id) {
     $.ajax({
         type: "post",
         url: `${origin}/groups/${id}/wish`,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
             alert(data['data'])
         },
@@ -1081,7 +1083,7 @@ function addReviewMoim(id) {
         url: `${origin}/groups/${id}/review`,
         headers: {
             'Content-Type': 'application/json',
-            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
@@ -1114,7 +1116,7 @@ function editReview(id) {
         url: `${origin}/reviews/${id}`,
         headers: {
             'Content-Type': 'application/json',
-            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
@@ -1141,7 +1143,7 @@ function deleteReview(id) {
     $.ajax({
         type: "delete",
         url: `${origin}/reviews/${id}`,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
             alert(data['data'])
             location.reload()
@@ -1171,7 +1173,7 @@ function gotoBoard(id) {
     $.ajax({ // 유저 정보 가져오기
         type: "get",
         url: `${origin}/user`,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         async: false,
         success: function (data) {
             myId = data['id']
@@ -1180,7 +1182,7 @@ function gotoBoard(id) {
         $.ajax({ // 그룹 정보 가져오기
             type: "get",
             url: `${origin}/groups/${id}`,
-            headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+            headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
             async: false,
             success: function (data) {
                 if (myId === data['userId']) { // 페이지 이동 조건 (done)
@@ -1193,7 +1195,7 @@ function gotoBoard(id) {
                     $.ajax({ // 특정 모임 참여자 조회
                         type: "get",
                         url: `${origin}/participant/groups/${id}`,
-                        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+                        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
                         async: false,
                         success: function (data) {
                             data = data['data']
@@ -1259,7 +1261,7 @@ function changeStatus(id) {
             "method": "PATCH",
             "timeout": 0,
             "headers": {
-                [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
 
@@ -1283,7 +1285,7 @@ function changeStatus(id) {
             "method": "PATCH",
             "timeout": 0,
             "headers": {
-                [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
         $.ajax(settings).done(function (response) {
@@ -1309,7 +1311,7 @@ function getMyProfile() {
     $.ajax({
         type: "post",
         url: `${origin}/profile`,
-        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success:
@@ -1368,7 +1370,7 @@ function updateProfile(content) {
         "method": "PUT",
         "timeout": 0,
         "headers": {
-            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
         "processData": false,
         "mimeType": "multipart/form-data",
