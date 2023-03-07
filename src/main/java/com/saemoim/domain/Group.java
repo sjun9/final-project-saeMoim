@@ -62,6 +62,7 @@ public class Group extends TimeStamped {
 
 	@Column(nullable = false)
 	private String firstRegion;
+	
 	@Column(nullable = false)
 	private String secondRegion;
 
@@ -71,23 +72,19 @@ public class Group extends TimeStamped {
 	@Column(nullable = false)
 	private String longitude;
 
-	@Builder.Default
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private GroupStatusEnum status = GroupStatusEnum.OPEN;
 
-	@Builder.Default
 	@Column(nullable = false)
 	private int wishCount = 0;
 
 	@Column(nullable = false)
 	private int recruitNumber;
 
-	@Builder.Default
 	@Column(nullable = false)
 	private int participantCount = 0;
 
-	@Builder.Default
 	@Column(nullable = false)
 	private String imagePath = "/src/main/resources/static/images/bird.png";
 
