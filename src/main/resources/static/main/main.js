@@ -1,6 +1,7 @@
+let origin = `http://localhost:8080`
+
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
-
 
 sidebarListItems.forEach((sidebarListItem) => {
     sidebarListItem.addEventListener('click', () => {
@@ -16,9 +17,11 @@ document.querySelector("#side-find").addEventListener("click", () => {
     showCategory()
     showAllMoim()
     showPopularMoim()
+    showUsername()
 })
 document.querySelector("#side-mypage").addEventListener("click", () => {
     document.querySelector("#side-mypage-content").classList.add("active");
+    showUsername()
     showLeaderMoim()
     showParticipantMoim()
     showRequestedGroup()
@@ -262,21 +265,20 @@ function gotochat() {
 function logout() {
     $.ajax({
         type: "POST",
-        url: "http://localhost:8080/log-out",
+        url: `${origin}/log-out`,
         headers: {
-            'Authorization': localStorage.getItem('Authorization'),
-            'Refresh_Token': localStorage.getItem('Refresh_Token')
+            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
+            [STORAGE_Refresh_TOKEN_KEY]: localStorage.getItem(STORAGE_Refresh_TOKEN_KEY)
         },
         success: function (response) {
             console.log(response)
         }
     }).done(function (response, status, xhr) {
-        localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
-        localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
+        localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader(STORAGE_ACCESS_TOKEN_KEY))
+        localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, xhr.getResponseHeader(STORAGE_Refresh_TOKEN_KEY))
         location.replace("./welcome.html")
     }).fail(function (e) {
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -292,8 +294,8 @@ function showUsername() {
     $('#username').empty()
     $.ajax({
         type: "get",
-        url: "http://localhost:8080/user",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/user`,
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
             let username = data['username']
             let imagePath = data['imagePath']
@@ -301,6 +303,15 @@ function showUsername() {
             document.getElementById('profile-image').src = imagePath
         }, error: function (e) {
             $('#username').append(`로그인이 필요합니다`)
+        }
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
         }
     });
 }
@@ -312,7 +323,7 @@ function showCategory() {
     $('#modifyCategoryMenu').empty()
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/category"
+        url: `${origin}/category`
     }).done(function (response) {
         for (let i = 0; i < response['data'].length; i++) {
             let categories = response['data'][i]
@@ -328,17 +339,7 @@ function showCategory() {
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
-        if (e.status === 400) {
-            console.log("=================")
-            alert(e.responseJSON['data'])
-        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-            reissue()
-            setTimeout(showCategory, 150)
-            setTimeout(showUsername, 150)
-        } else {
-            alert(e.responseJSON['data'])
-        }
+        alert(e.responseJSON['data'])
     });
 }
 
@@ -347,14 +348,13 @@ function showSearch(name) {
     $('#find-content').empty()
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/group/name",
+        url: `${origin}/group/name`,
         data: {groupName: name}, //전송 데이터
         success: function (response) {
             response = response['data']['content']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
-                let content = response[i]['content']
                 let categoryName = response[i]['categoryName']
                 let participantCount = response[i]['participantCount']
                 let recruitNumber = response[i]['recruitNumber']
@@ -366,7 +366,6 @@ function showSearch(name) {
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
-                                            <input type="hidden" value=${content}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
@@ -378,82 +377,59 @@ function showSearch(name) {
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
                 $('#find-content').append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
-        if (e.status === 400) {
-            console.log("=================")
-            alert(e.responseJSON['data'])
-        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-            reissue()
-            setTimeout(showSearch(name), 150)
-            setTimeout(showUsername, 150)
-        } else {
-            alert(e.responseJSON['data'])
-        }
+        alert(e.responseJSON['data'])
     });
 }
 
 function reissue() {
     var settings = {
-        "url": "http://localhost:8080/reissue",
+        "url": `${origin}/reissue`,
         "method": "POST",
         "timeout": 0,
         "headers": {
-            "Refresh_Token": localStorage.getItem('Refresh_Token'),
-            "Authorization": localStorage.getItem('Authorization')
+            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
+            [STORAGE_Refresh_TOKEN_KEY]: localStorage.getItem(STORAGE_Refresh_TOKEN_KEY)
         },
     };
     $.ajax(settings).done(function (response, status, xhr) {
-        console.log("성공성공")
-        localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
-        localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
+        console.log("토큰 재발급 성공")
+        localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader(STORAGE_ACCESS_TOKEN_KEY))
+        localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, xhr.getResponseHeader(STORAGE_Refresh_TOKEN_KEY))
     }).fail(function (e) {
-        console.log("실패실패")
-        console.log(e)
+        console.log("토큰 재발급 실패")
         alert("다시 로그인 해주세요.")
-        localStorage.removeItem('Authorization')
-        localStorage.removeItem('Refresh_Token')
+        localStorage.removeItem(STORAGE_ACCESS_TOKEN_KEY)
+        localStorage.removeItem(STORAGE_Refresh_TOKEN_KEY)
         window.location.replace('./welcome.html');
     });
 }
 
 function showAllMoim() {
     let contentId = '#find-content';
-    let url = "http://localhost:8080/group";
+    let url = `${origin}/group`;
     $(contentId).empty()
     $.ajax({
         type: "GET",
         url: url,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         success: function (response) {
-            console.log(response)
             response = response['data']['content']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
-                let content = response[i]['content']
                 let categoryName = response[i]['categoryName']
                 let participantCount = response[i]['participantCount']
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
-                let tags = response[i]['tags']
-                let leaderId = response[i]['userId']
-                let leaderName = response[i]['username']
                 let imgPath = response[i]['imagePath']
-                console.log(imgPath)
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
                                         <img src="${imgPath}" alt="">
                                             <span>${groupName}</span>
-                                            <input type="hidden" value=${content}>
-                                            <input type="hidden" value=${tags}>
-                                            <input type="hidden" value=${leaderName}>
-                                            <input type="hidden" value=${leaderId}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
@@ -465,34 +441,21 @@ function showAllMoim() {
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
                 $(contentId).append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
-        if (e.status === 400) {
-            console.log("=================")
-            alert(e.responseJSON['data'])
-        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-            reissue()
-            setTimeout(showAllMoim, 150)
-            setTimeout(showUsername, 150)
-        } else {
-            alert(e.responseJSON['data'])
-        }
+        alert(e.responseJSON['data'])
     });
 }
 
 function showPopularMoim() {
     let contentId = '#popular-content';
-    let url = "http://localhost:8080/group/popular";
+    let url = `${origin}/group/popular`;
     $(contentId).empty()
     $.ajax({
             type: "GET",
             url: url,
-            headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
             success: function (response) {
-                console.log(response)
                 response = response['data']
                 for (let i = 0; i < response.length; i++) {
                     let id = response[i]['id']
@@ -502,12 +465,12 @@ function showPopularMoim() {
                     let recruitNumber = response[i]['recruitNumber']
                     let wishCount = response[i]['wishCount']
                     let status = response[i]['status']
-                    let imgPath = response[i]['imagePath']
+                    let imagePath = response[i]['imagePath']
 
                     let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
-                                        <img src=${imgPath} alt="">
+                                        <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
@@ -520,48 +483,35 @@ function showPopularMoim() {
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
                     $(contentId).append(temp_html)
-                    console.log(response)
                 }
             }
         }
     ).fail(function (e) {
-        console.log(e.status)
-        if (e.status === 400) {
-            console.log("=================")
-            alert(e.responseJSON['data'])
-        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-            reissue()
-            setTimeout(showPopularMoim, 150)
-            setTimeout(showUsername, 150)
-        } else {
-            alert(e.responseJSON['data'])
-        }
+        alert(e.responseJSON['data'])
     });
 }
 
 function showLeaderMoim() {
     let contentId = '#made-group';
-    let url = "http://localhost:8080/leader/group";
+    let url = `${origin}/leader/group`;
     $(contentId).empty()
     $.ajax({
         type: "GET",
         url: url,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        headers: {
+            'Content-Type': 'application/json',
+            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
         success: function (response) {
-            console.log(response)
             response = response['data']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
-                let content = response[i]['content']
                 let categoryName = response[i]['categoryName']
                 let participantCount = response[i]['participantCount']
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
-                let tags = response[i]['tags']
-                let leaderId = response[i]['userId']
-                let leaderName = response[i]['username']
                 let imagePath = response[i]['imagePath']
 
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
@@ -569,10 +519,6 @@ function showLeaderMoim() {
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
-                                            <input type="hidden" value=${content}>
-                                            <input type="hidden" value=${tags}>
-                                            <input type="hidden" value=${leaderName}>
-                                            <input type="hidden" value=${leaderId}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
@@ -588,9 +534,7 @@ function showLeaderMoim() {
             }
         }
     }).fail(function (e) {
-        console.log(e)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -604,27 +548,25 @@ function showLeaderMoim() {
 
 function showParticipantMoim() { // 참여중인 모임 조회
     let contentId = '#participant-group';
-    let url = "http://localhost:8080/participant/group";
+    let url = `${origin}/participant/group`;
     $(contentId).empty()
     $.ajax({
         type: "GET",
         url: url,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        headers: {
+            'Content-Type': 'application/json',
+            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
         success: function (response) {
-            console.log(response)
             response = response['data']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
-                let content = response[i]['content']
                 let categoryName = response[i]['categoryName']
                 let participantCount = response[i]['participantCount']
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
-                let tags = response[i]['tags']
-                let leaderId = response[i]['userId']
-                let leaderName = response[i]['username']
                 let imagePath = response[i]['imagePath']
 
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
@@ -632,10 +574,6 @@ function showParticipantMoim() { // 참여중인 모임 조회
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
-                                            <input type="hidden" value=${content}>
-                                            <input type="hidden" value=${tags}>
-                                            <input type="hidden" value=${leaderName}>
-                                            <input type="hidden" value=${leaderId}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
@@ -647,13 +585,10 @@ function showParticipantMoim() { // 참여중인 모임 조회
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
                 $(contentId).append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -670,27 +605,25 @@ function showFilter(categoryId, status) {
     $('#find-content').empty()
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/group/categories/" + categoryId,
+        url: `${origin}/group/categories/${categoryId}`,
         data: {status: status}, //전송 데이터
         success: function (response) {
-            console.log(response)
             response = response['data']['content']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
-                let content = response[i]['content']
                 let categoryName = response[i]['categoryName']
                 let participantCount = response[i]['participantCount']
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
+                let imagePath = response[i]['imagePath']
 
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
-                                        <img src="../static/images/main-running.jpg" alt="">
+                                        <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
-                                            <input type="hidden" value=${content}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
@@ -702,21 +635,10 @@ function showFilter(categoryId, status) {
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
                 $('#find-content').append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
-        if (e.status === 400) {
-            console.log("=================")
-            alert(e.responseJSON['data'])
-        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-            reissue()
-            setTimeout(showFilter, 150)
-            setTimeout(showUsername, 150)
-        } else {
-            alert(e.responseJSON['data'])
-        }
+        alert(e.responseJSON['data'])
     });
 }
 
@@ -727,7 +649,7 @@ function showReview(id) {
 
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/groups/" + id + "/review",
+        url: `${origin}/groups/${id}/review`,
         success: function (response) {
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -763,21 +685,10 @@ function showReview(id) {
                                     </form>
                                   </div>`
                 $('#moimDetail_reviews').append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
-        if (e.status === 400) {
-            console.log("=================")
-            alert(e.responseJSON['data'])
-        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-            reissue()
-            setTimeout(showReview(id), 150)
-            setTimeout(showUsername, 150)
-        } else {
-            alert(e.responseJSON['data'])
-        }
+        alert(e.responseJSON['data'])
     });
 }
 
@@ -786,8 +697,11 @@ function showRequestedGroup() {
     $('#requested-group').empty();
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/leader/application",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/leader/application`,
+        headers: {
+            'Content-Type': 'application/json',
+            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
         success: function (response) {
             response = response['data']
             for (let i = 0; i < response.length; i++) {
@@ -804,13 +718,10 @@ function showRequestedGroup() {
                                     <td><input type="button" onclick="rejectApplication(${id})">거절</td>
                                   </tr>`
                 $('#requested-group').append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -826,8 +737,11 @@ function showAppliedGroup() {
     $('#applied-group').empty()
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/participant/application",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/participant/application`,
+        headers: {
+            'Content-Type': 'application/json',
+            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
         success: function (response) {
             response = response['data']
             for (let i = 0; i < response.length; i++) {
@@ -843,13 +757,10 @@ function showAppliedGroup() {
                                     <td><input type="button" onclick="cancelApplication(${id})">삭제</td>
                                   </tr>`
                 $('#applied-group').append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -865,16 +776,13 @@ function showAppliedGroup() {
 function permitApplication(applicationId) {
     $.ajax({
         type: "PUT",
-        url: "http://localhost:8080/applications/" + applicationId + "/permit",
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        url: `${origin}/applications/${applicationId}/permit`,
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
         alert(data['data'])
-        console.log(data);
         showRequestedGroup()
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -889,16 +797,13 @@ function permitApplication(applicationId) {
 function rejectApplication(applicationId) {
     $.ajax({
         type: "PUT",
-        url: "http://localhost:8080/applications/" + applicationId + "/reject",
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        url: `${origin}/applications/${applicationId}/reject`,
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
         alert(data['data'])
-        console.log(data);
         showRequestedGroup()
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -913,16 +818,13 @@ function rejectApplication(applicationId) {
 function cancelApplication(applicationId) {
     $.ajax({
         type: "DELETE",
-        url: "http://localhost:8080/applications/" + applicationId,
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        url: `${origin}/applications/${applicationId}`,
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
         alert(data['data'])
-        console.log(data);
         showAppliedGroup()
     }).fail(function (e) {
-        console.log(e)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -938,7 +840,7 @@ function cancelApplication(applicationId) {
 function showMoimDetail(event, id) {
     $.ajax({
         type: "get",
-        url: "http://localhost:8080/groups/" + id
+        url: `${origin}/groups/${id}`
     }).done(function (data) {
         // data.imagePath
         document.getElementById("moimDetail_Image").src = data.imagePath;
@@ -949,11 +851,7 @@ function showMoimDetail(event, id) {
         document.getElementById('moimDetailId').value = data.id;
         $('#detailAddress').empty().append(`<h5>모임장소</h5>
                                     <h6>${data.address}</h6>`)
-        console.log(data.address)
         let detailLatLng = new kakao.maps.LatLng(data.latitude, data.longitude);
-        // detailMarker.setPosition(detailLatLng);
-        // detailMarker.setMap(detailMap);
-        // detailMap.setCenter(detailLatLng);
 
         kakao.maps.event.addListener(detailMap, 'tilesloaded', function () {
             detailMap.setCenter(detailLatLng);
@@ -974,7 +872,6 @@ function showMoimDetail(event, id) {
 //미완 - 모임생성
 function saveMoim() {
     let file = $('#newMoim-image')[0].files[0];
-    console.log(file)
     let formData = new FormData();
     formData.append("img", file);
 
@@ -1007,8 +904,8 @@ function saveMoim() {
 
     $.ajax({
         type: "post",
-        url: "http://localhost:8080/group",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/group`,
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         data: formData, //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: false, //헤더의 Content-Type을 설정
@@ -1018,9 +915,7 @@ function saveMoim() {
         alert("작성 완료")
         location.reload()
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1036,17 +931,13 @@ function saveMoim() {
 function attendMoim(id) {
     $.ajax({
         type: "post",
-        url: "http://localhost:8080/groups/" + id + "/application",
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        url: `${origin}/groups/${id}/application`,
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
-        console.log(data);
         alert(data['data'])
         location.reload()
     }).fail(function (e) {
-        console.log(e.status)
-        console.log(e.responseJSON)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1061,18 +952,13 @@ function attendMoim(id) {
 function withdrawMoim(id) {
     $.ajax({
         type: "delete",
-        url: "http://localhost:8080/participant/groups/" + id,
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        url: `${origin}/participant/groups/${id}`,
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
-        console.log(data);
         alert(data['data'])
-        showParticipantMoim()
-        showAllMoim()
-        showPopularMoim()
+        location.reload()
     }).fail(function (e) {
-        console.log(e)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1113,27 +999,23 @@ function editMoim(id) {
 
     let file = $('#modifyMoim-image')[0].files[0];
     let formData = new FormData;
-    console.log(file)
     formData.append("img", file)
     formData.append("requestDto", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
     $.ajax({
         type: "put",
-        url: "http://localhost:8080/groups/" + id,
+        url: `${origin}/groups/${id}`,
         timeOut: 0,
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         data: formData,
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: false, //헤더의 Content-Type을 설정
         mimeType: "multipart/form-data",
         processData: false
     }).done(function (data) {
-        console.log(data);
         alert("작성 완료")
         location.reload()
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1149,19 +1031,13 @@ function editMoim(id) {
 function deleteMoim(id) {
     $.ajax({
         type: "delete",
-        url: "http://localhost:8080/groups/" + id,
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/groups/${id}`,
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
     }).done(function (data) {
-        console.log(data)
-        console.log(data['data']);
         alert(data['data'])
-        showAllMoim()
-        showPopularMoim()
-        showLeaderMoim()
+        location.reload()
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1176,17 +1052,13 @@ function deleteMoim(id) {
 function wishMoim(id) {
     $.ajax({
         type: "post",
-        url: "http://localhost:8080/groups/" + id + "/wish",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
-        ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
+        url: `${origin}/groups/${id}/wish`,
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
-            console.log(data);
             alert(data['data'])
         },
         error: function (e) {
-            console.log(e.responseJSON.data)
             if (e.status === 400) {
-                console.log("=================")
                 alert(e.responseJSON['data'])
             } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
                 reissue()
@@ -1197,8 +1069,6 @@ function wishMoim(id) {
             }
         }
     });
-
-    //alert('찜 등록 후 페이지 새로고침\n마이페이지에 찜목록 보기 추가예정')
 }
 
 
@@ -1208,22 +1078,21 @@ function addReviewMoim(id) {
     }
     $.ajax({
         type: "post",
-        url: "http://localhost:8080/groups/" + id + "/review",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/groups/${id}/review`,
+        headers: {
+            'Content-Type': 'application/json',
+            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
-        ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
-            console.log(data);
             alert(data['data'])
         }
     }).done(function () {
         showReview(id)
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1233,7 +1102,6 @@ function addReviewMoim(id) {
             alert(e.responseJSON['data'])
         }
     });
-    //alert('찜 등록 후 페이지 새로고침\n마이페이지에 찜목록 보기 추가예정')
 }
 
 
@@ -1243,21 +1111,20 @@ function editReview(id) {
     };
     $.ajax({
         type: "put",
-        url: "http://localhost:8080/reviews/" + id,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/reviews/${id}`,
+        headers: {
+            'Content-Type': 'application/json',
+            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
-        ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
-            console.log(data);
             alert(data['data'])
-            window.location = './main.html'
+            location.reload()
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1273,18 +1140,14 @@ function editReview(id) {
 function deleteReview(id) {
     $.ajax({
         type: "delete",
-        url: "http://localhost:8080/reviews/" + id,
-        headers: {'Authorization': localStorage.getItem('Authorization')},
-        ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
+        url: `${origin}/reviews/${id}`,
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
-            console.log(data);
             alert(data['data'])
-            window.location = './main.html'
+            location.reload()
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1307,8 +1170,8 @@ function gotoBoard(id) {
     let isParticipant = false
     $.ajax({ // 유저 정보 가져오기
         type: "get",
-        url: "http://localhost:8080/user",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/user`,
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         async: false,
         success: function (data) {
             myId = data['id']
@@ -1316,12 +1179,11 @@ function gotoBoard(id) {
     }).done(function () {
         $.ajax({ // 그룹 정보 가져오기
             type: "get",
-            url: "http://localhost:8080/groups/" + id,
-            headers: {'Authorization': localStorage.getItem('Authorization')},
+            url: `${origin}/groups/${id}`,
+            headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
             async: false,
             success: function (data) {
                 if (myId === data['userId']) { // 페이지 이동 조건 (done)
-
                     // data에서 리더 정보 가져와서 localStorage에 넣어준다 -> 프로필 최상단 리더프로필 고정용
                     localStorage.setItem("current_group_id", id)
                     localStorage.setItem("current_user_id", myId)
@@ -1330,8 +1192,8 @@ function gotoBoard(id) {
                 } else {
                     $.ajax({ // 특정 모임 참여자 조회
                         type: "get",
-                        url: "http://localhost:8080/participant/groups/" + id,
-                        headers: {'Authorization': localStorage.getItem('Authorization')},
+                        url: `${origin}/participant/groups/${id}`,
+                        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
                         async: false,
                         success: function (data) {
                             data = data['data']
@@ -1351,20 +1213,16 @@ function gotoBoard(id) {
                         },
                         error: function (e) {
                             alert(e.responseJSON['data'])
-                            console.log(e.responseJSON['data'])
                         }
                     });
                 }
             },
             error: function (e) {
                 alert(e.responseJSON['data'])
-                console.log(e.responseJSON['data'])
             }
         })
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1395,28 +1253,25 @@ function gotoDeleteReview(event) {
 
 function changeStatus(id) {
     let status = document.querySelector('#moimStatus').innerText
-    console.log(moimStatus)
     if (status === "CLOSE") {
         var settings = {
-            "url": "http://localhost:8080/groups/" + id + "/open",
+            "url": `${origin}/groups/${id}/open`,
             "method": "PATCH",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('Authorization')
+                [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
 
         $.ajax(settings).done(function (response) {
-            console.log(response);
             alert(response['data'])
             location.reload()
         }).fail(function (e) {
             if (e.status === 400) {
-                console.log("=================")
                 alert(e.responseJSON['data'])
             } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
                 reissue()
-                setTimeout(gotoBoard(id), 150)
+                setTimeout(changeStatus(id), 150)
                 setTimeout(showUsername, 150)
             } else {
                 alert(e.responseJSON['data'])
@@ -1424,25 +1279,22 @@ function changeStatus(id) {
         });
     } else if (status === "OPEN") {
         var settings = {
-            "url": "http://localhost:8080/groups/" + id + "/close",
+            "url": `${origin}/groups/${id}/close`,
             "method": "PATCH",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('Authorization')
+                [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
-
         $.ajax(settings).done(function (response) {
-            console.log(response);
             alert(response['data'])
             location.reload()
         }).fail(function (e) {
             if (e.status === 400) {
-                console.log("=================")
                 alert(e.responseJSON['data'])
             } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
                 reissue()
-                setTimeout(gotoBoard(id), 150)
+                setTimeout(changeStatus(id), 150)
                 setTimeout(showUsername, 150)
             } else {
                 alert(e.responseJSON['data'])
@@ -1456,27 +1308,21 @@ function getMyProfile() {
     $('#profileContent').empty()
     $.ajax({
         type: "post",
-        url: "http://localhost:8080/profile",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/profile`,
+        headers: {[STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success:
             function (response) {
-                console.log(response)
                 let username = response['username']
                 let content = response['content']
                 let imagePath = response['imagePath']
                 $('#profileName').append(username)
                 $('#profileContent').append(content)
                 $('#profile-image').append(imagePath)
-                console.log(response)
-            }, error: function (e) {
-            console.log(e)
-        }
+            }
     }).fail(function (e) {
-        console.log(e)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1508,7 +1354,6 @@ $('.pw').focusout(function () {
 
 function updateProfile(content) {
     var file = $('#img')[0].files[0];
-    console.log(file);
     var form = new FormData();
 
     let jsonData =
@@ -1519,11 +1364,11 @@ function updateProfile(content) {
     form.append("img", file);
 
     var settings = {
-        "url": "http://localhost:8080/profile",
+        "url": `${origin}/profile`,
         "method": "PUT",
         "timeout": 0,
         "headers": {
-            "Authorization": localStorage.getItem("Authorization")
+            [STORAGE_ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
         "processData": false,
         "mimeType": "multipart/form-data",
@@ -1532,13 +1377,10 @@ function updateProfile(content) {
     };
 
     $.ajax(settings).done(function (response) {
-        console.log(response);
         alert("프로필 수정이 완료되었습니다.")
-        window.location.reload()
+        location.reload()
     }).fail(function (e) {
-        console.log(JSON.parse(e.responseText).data)
         if (e.status === 400) {
-            console.log("=================")
             alert(JSON.parse(e.responseText).data)
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()

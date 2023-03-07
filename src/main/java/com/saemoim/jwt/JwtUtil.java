@@ -37,7 +37,7 @@ public class JwtUtil {
 	public static final String AUTHORIZATION_NAME = "Name";
 	private static final String BEARER_PREFIX = "Bearer ";
 	private static final long TOKEN_TIME = 20 * 60 * 1000L;
-	public static final long REFRESH_TOKEN_TIME = 60 * 60 * 1000L;
+	public static final long REFRESH_TOKEN_TIME = 24 * 60 * 60 * 1000L;
 
 	private final UserDetailsServiceImpl userDetailsService;
 

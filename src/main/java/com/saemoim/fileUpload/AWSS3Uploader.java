@@ -66,20 +66,22 @@ public class AWSS3Uploader {
 	}
 
 	public void delete(String imagePath) {
-		String substring = imagePath.substring(50);
+		int dotComIndex = imagePath.indexOf(".com/") + 5;
+		String substring = imagePath.substring(dotComIndex);
 		String key = URLDecoder.decode(substring, StandardCharsets.UTF_8);
 
-		amazonS3Client.deleteObject(bucket,key);
+		amazonS3Client.deleteObject(bucket, key);
 	}
+
 	// 파일 타입 전환 (MultipartFile -> File)
 	private Optional<File> convert(MultipartFile multipartFile) throws IOException {
-			File convertFile = new File(multipartFile.getOriginalFilename());
-			if (convertFile.createNewFile()) {
-				try (FileOutputStream fileOutputStream = new FileOutputStream(convertFile)) {
-					fileOutputStream.write(multipartFile.getBytes());
-				}
-				return Optional.of(convertFile);
+		File convertFile = new File(multipartFile.getOriginalFilename());
+		if (convertFile.createNewFile()) {
+			try (FileOutputStream fileOutputStream = new FileOutputStream(convertFile)) {
+				fileOutputStream.write(multipartFile.getBytes());
 			}
+			return Optional.of(convertFile);
+		}
 		return Optional.empty();
 	}
 
