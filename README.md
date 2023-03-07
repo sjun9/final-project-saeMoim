@@ -15,7 +15,7 @@ ___
 
 [![My Skills](https://skillicons.dev/icons?i=html,css,js,jquery)](https://skillicons.dev)
 
-[![My Skills](https://skillicons.dev/icons?i=idea,git,github,postman)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=idea,git,github)](https://skillicons.dev)
 
 [![My Skills](https://skillicons.dev/icons?i=mysql,redis)](https://skillicons.dev) <br>
 
