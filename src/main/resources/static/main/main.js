@@ -445,6 +445,11 @@ function showAllMoim() {
                 let leaderName = response[i]['username']
                 let imgPath = response[i]['imagePath']
                 console.log(imgPath)
+
+                let moim_status
+                if (status === "OPEN") { moim_status = "active" }
+                else { moim_status = "disabled" }
+
                 let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
@@ -458,7 +463,7 @@ function showAllMoim() {
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
@@ -947,7 +952,7 @@ function showMoimDetail(event, id) {
         document.querySelector('#moimTag').innerText = data.tags;
         document.querySelector('#moimDetail_introduce').innerText = data.content;
         document.getElementById('moimDetailId').value = data.id;
-        $('#detailAddress').empty().append(`<h5>모임장소</h5>
+        $('#detailAddress').empty().append(`<h5 style="margin-top: 20px; font-weight: bold;">모임 장소</h5>
                                     <h6>${data.address}</h6>`)
         console.log(data.address)
         let detailLatLng = new kakao.maps.LatLng(data.latitude, data.longitude);

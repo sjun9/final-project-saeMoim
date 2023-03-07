@@ -153,6 +153,7 @@ function checkAuthCode() {
     };
 
     $.ajax(settings).done(function (response) {
+        ischeckAuthCode = true;
         alert(response.data)
         console.log(response)
     }).fail(function (response) {

@@ -975,17 +975,12 @@ document.querySelector("#current_user").innerText = username
 function chat() {
 
   var sockJs = new SockJS("http://localhost:8080/stomp/chat", null, { transports: ["websocket", "xhr-streaming", "xhr-polling"] });
-  //1. SockJS를 내부에 들고있는 stomp를 내어줌
   var stomp = Stomp.over(sockJs);
 
   // token header
   let headers = { Authorization: Authorization };
 
-  //2. connection이 맺어지면 실행
   stomp.connect(headers, function () {
-    console.log("STOMP Connection")
-
-    //4. subscribe(path, callback)으로 메세지를 받을 수 있음
     stomp.subscribe("/sub/chat/group/" + tempGroupId, function (chat) {
       var content = JSON.parse(chat.body);
 
@@ -1003,7 +998,7 @@ function chat() {
       } else {
         unread_messages_num += 1
       }
-      // 첫 접속 (OOO님이 모임에 입장하셨습니다.)
+      // 첫 접속인 경우 (OOO님이 모임에 입장하셨습니다.)
       if (String(message_userId) === tempUserId) {
         unread_messages_num = 0
       }
@@ -1016,7 +1011,6 @@ function chat() {
       })
     });
 
-    //3. send(path, header, message)로 메세지를 보낼 수 있음
     // OOO님이 모임에 입장하셨습니다.
     stomp.send('/pub/chat/enter', headers, JSON.stringify(
       {
@@ -1031,6 +1025,7 @@ function chat() {
   function send() {
     var msg = document.getElementById("msg");
 
+    // 보내는 메세지
     stomp.send('/pub/chat/message', headers, JSON.stringify(
       {
         groupId: tempGroupId,
@@ -1049,7 +1044,6 @@ function chat() {
       send();
     }
   })
-
 }
 
 

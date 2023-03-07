@@ -38,6 +38,8 @@
                 </div>
                 <p class="modal__introduce__title">모임 소개글</p>
                 <p class="moimDetailModal_introduce" id="moimDetail_introduce"></p>
+                <div id="detailAddress"></div>
+                <div id="detailMoimMap" style="width:100%; margin-bottom: 20px; height:400px;"></div>
                 <button type="button" class="btn btn-warning"
                         onclick="wishMoim(document.getElementById('moimDetailId').value)">찜 등록
                 </button>
@@ -50,18 +52,15 @@
                 <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal"
                         onclick="relayoutMap()">모임 수정
                 </button>
+                <button type="button" class="btn btn-secondary" id="moimStatus"
+                        onclick="changeStatus(document.getElementById('moimDetailId').value)">
+                </button>
                 <button type="button" class="btn btn-danger"
                         onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴
-                </button>
-                <button type="button" class="btn btn-primary" id="moimStatus"
-                        onclick="changeStatus(document.getElementById('moimDetailId').value)">
                 </button>
                 <button type="button" class="btn btn-danger"
                         onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제
                 </button>
-                <div id="detailAddress">
-                </div>
-                <div id="detailMoimMap" style="width:100%; margin: auto; height:400px;"></div>
                 <div class="moimDetailModal_reviews" id="moimDetail_reviews">
                 </div>
             </div>
@@ -121,8 +120,10 @@
                         <label for="newMoim-content" class="col-form-label">한줄소개</label>
                         <input type="text" class="form-control" id="newMoim-content">
                     </div>
-                    <input type="text" id="save_address" placeholder="주소">
-                    <input type="button" onclick="save_execDaumPostcode()" value="주소 검색"><br>
+                    <div class="input-group mb-3">
+                        <input type="text" id="save_address" class="form-control" placeholder="지도에서 장소 선택 또는 주소 검색 버튼을 눌러주세요." disabled>
+                        <button type="button" id="button-addon2" onclick="save_execDaumPostcode()" class="btn btn-outline-secondary">주소 검색</button>
+                    </div>
                     <div class="mb-3">
                         <div id="saveMoimMap" style="width:700px; margin: auto; height:400px;"></div>
                     </div>
@@ -247,7 +248,7 @@
                     <span>MyProfile</span>
                 </a>
             </li>
-            <li class="sidebar-list-item" id="side-chat">
+            <li class="sidebar-list-item" id="side-chat" style="display: none;">
                 <a href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -255,7 +256,7 @@
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                         <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                     </svg>
-                    <span>Chat</span>
+                    <span>Chat : display none</span>
                 </a>
             </li>
         </ul>
@@ -374,7 +375,7 @@
                         <div class="product-cell category"><span class="cell-label">카테고리:</span>Furniture</div>
                         <div class="product-cell status-cell">
                             <span class="cell-label">모임상태:</span>
-                            <span class="status active">Active</span>
+                            <span class="status active" id="moim_status">Active</span>
                         </div>
                         <div class="product-cell sales"><span class="cell-label">참가인원:</span>32</div>
                         <div class="product-cell stock"><span class="cell-label">참여가능인원:</span>40</div>
@@ -411,15 +412,15 @@
         </div>
         <div class="app-content-section" id="myProfile">
             <div id="myProfile_2">
-                <h2 id="profileName"></h2>
+                <h2 id="profileName" style="margin: 20px 0;"></h2>
                 <div>
                     <img id="profile-image" src="../static/images/bird.png" width="300px" height="300px"/>
                 </div>
-                <div class="content_title">
-                    소개글
-                    <h4 id="profileContent"></h4>
+                <div class="content_title" style="margin: 25px 0;">
+                    <h3>소개글</h3>
+                    <p id="profileContent" style="text-align: left;"></p>
                 </div>
-                <button type="button" id="showProfile">프로필수정</button>
+                <button type="button" id="showProfile" class="btn btn-secondary">프로필 수정</button>
                 <div class="babackground">
                     <div class="windowP">
                         <div class="popup">
