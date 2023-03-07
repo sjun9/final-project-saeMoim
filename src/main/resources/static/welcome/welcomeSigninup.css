@@ -271,6 +271,7 @@ input::placeholder {
   font-family: "Montserrat", sans-serif;
   font-weight: 300;
   color: #fff;
+  cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.1rem;
   transition: background-color 0.2s ease-in-out;
@@ -350,4 +351,13 @@ input::placeholder {
 #signup-button,
 #login-button {
   cursor: pointer;
+}
+
+.pwd-validation {
+  padding-bottom: 5px;
+  border-bottom: 1px solid #ccc;
+  transition: border-color 0.2s ease-in-out;
+}
+.pwd-validation:focus {
+  border-color: gray;
 }

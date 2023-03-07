@@ -260,6 +260,7 @@ function gotochat() {
 }
 
 function logout() {
+    if (!confirm("로그아웃 하시겠습니까?")) { return }
     $.ajax({
         type: "POST",
         url: "http://localhost:8080/log-out",
@@ -446,11 +447,15 @@ function showAllMoim() {
                 let imgPath = response[i]['imagePath']
                 console.log(imgPath)
 
-                let moim_status
+                let moim_status = ''
+                let closed = ''
                 if (status === "OPEN") { moim_status = "active" }
-                else { moim_status = "disabled" }
+                else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
 
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
                                         <img src="${imgPath}" alt="">
@@ -509,7 +514,15 @@ function showPopularMoim() {
                     let status = response[i]['status']
                     let imgPath = response[i]['imagePath']
 
-                    let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+                    let moim_status = ''
+                    let closed = ''
+                    if (status === "OPEN") { moim_status = "active" }
+                    else {
+                        moim_status = "disabled"
+                        closed = 'closed'
+                    }
+
+                    let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
                                         <img src=${imgPath} alt="">
@@ -518,7 +531,7 @@ function showPopularMoim() {
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
@@ -569,7 +582,15 @@ function showLeaderMoim() {
                 let leaderName = response[i]['username']
                 let imagePath = response[i]['imagePath']
 
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") { moim_status = "active" }
+                else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
@@ -582,7 +603,7 @@ function showLeaderMoim() {
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
@@ -632,7 +653,15 @@ function showParticipantMoim() { // 참여중인 모임 조회
                 let leaderName = response[i]['username']
                 let imagePath = response[i]['imagePath']
 
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") { moim_status = "active" }
+                else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
@@ -645,7 +674,7 @@ function showParticipantMoim() { // 참여중인 모임 조회
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
@@ -727,8 +756,8 @@ function showFilter(categoryId, status) {
 
 
 function showReview(id) {
-    $('#moimDetail_reviews').empty().append(`<textarea style="width:100%" rows="3" cols="30" id="reviewText" value=""> </textarea>
-                                     <button type="button" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">후기 등록</button>`);
+    $('#moimDetail_reviews').empty().append(`<textarea style="margin-bottom: 10px; width:100%;" rows="3" cols="30" id="reviewText" value=""> </textarea>
+                                     <button type="button" style="margin-top: 10px;" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">후기 등록</button>`);
 
     $.ajax({
         type: "GET",
@@ -948,12 +977,46 @@ function showMoimDetail(event, id) {
         // data.imagePath
         document.getElementById("moimDetail_Image").src = data.imagePath;
         document.querySelector('#moimDetail_Title').innerText = data.groupName;
-        document.querySelector('#moimStatus').innerText = data.status;
         document.querySelector('#moimTag').innerText = data.tags;
         document.querySelector('#moimDetail_introduce').innerText = data.content;
         document.getElementById('moimDetailId').value = data.id;
         $('#detailAddress').empty().append(`<h5 style="margin-top: 20px; font-weight: bold;">모임 장소</h5>
                                     <h6>${data.address}</h6>`)
+        
+        if (data.status === 'OPEN') {
+            document.querySelector('#moimDetailContentId').classList.remove('closed_moimDetail')
+            
+            document.querySelector('#moimStatus').innerText = '모임 닫기'
+
+            if (document.querySelector('#moimStatus').classList.contains('btn-success')) {
+                document.querySelector('#moimApplication').classList.remove('btn-secondary')
+                document.querySelector('#moimGoToBoard').classList.remove('btn-secondary')
+                document.querySelector('#moimStatus').classList.remove('btn-success')
+            }
+
+            document.querySelector('#moimApplication').classList.add('btn-primary')
+            document.querySelector('#moimGoToBoard').classList.add('btn-primary')
+            document.querySelector('#moimStatus').classList.add('btn-secondary')
+            
+            
+        }
+        if (data.status === 'CLOSE') {
+            document.querySelector('#moimDetailContentId').classList.add('closed_moimDetail')
+            
+            document.querySelector('#moimStatus').innerText = '모임 열기'
+
+            if (document.querySelector('#moimStatus').classList.contains('btn-secondary')) {
+                document.querySelector('#moimApplication').classList.remove('btn-primary')
+                document.querySelector('#moimGoToBoard').classList.remove('btn-primary')
+                document.querySelector('#moimStatus').classList.remove('btn-secondary')
+            }
+
+            document.querySelector('#moimApplication').classList.add('btn-secondary')
+            document.querySelector('#moimGoToBoard').classList.add('btn-secondary')
+            document.querySelector('#moimStatus').classList.add('btn-success')
+            
+        }
+        
         console.log(data.address)
         let detailLatLng = new kakao.maps.LatLng(data.latitude, data.longitude);
         // detailMarker.setPosition(detailLatLng);
@@ -1330,7 +1393,7 @@ function gotoBoard(id) {
                     // data에서 리더 정보 가져와서 localStorage에 넣어준다 -> 프로필 최상단 리더프로필 고정용
                     localStorage.setItem("current_group_id", id)
                     localStorage.setItem("current_user_id", myId)
-                    alert('게시판으로 이동합니다.')
+                    // alert('게시판으로 이동합니다.')
                     window.location = './board.html'
                 } else {
                     $.ajax({ // 특정 모임 참여자 조회
@@ -1346,7 +1409,7 @@ function gotoBoard(id) {
                                 }
                             }
                             if (isParticipant) {
-                                alert('게시판으로 이동합니다.')
+                                // alert('게시판으로 이동합니다.')
                                 localStorage.setItem("current_group_id", id)
                                 localStorage.setItem("current_user_id", myId)
                                 window.location = './board.html'
@@ -1399,62 +1462,73 @@ function gotoDeleteReview(event) {
 }
 
 function changeStatus(id) {
-    let status = document.querySelector('#moimStatus').innerText
-    console.log(moimStatus)
-    if (status === "CLOSE") {
-        var settings = {
-            "url": "http://localhost:8080/groups/" + id + "/open",
-            "method": "PATCH",
-            "timeout": 0,
-            "headers": {
-                "Authorization": localStorage.getItem('Authorization')
-            },
-        };
-
-        $.ajax(settings).done(function (response) {
-            console.log(response);
-            alert(response['data'])
-            location.reload()
-        }).fail(function (e) {
-            if (e.status === 400) {
-                console.log("=================")
-                alert(e.responseJSON['data'])
-            } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-                reissue()
-                setTimeout(gotoBoard(id), 150)
-                setTimeout(showUsername, 150)
-            } else {
-                alert(e.responseJSON['data'])
-            }
-        });
-    } else if (status === "OPEN") {
-        var settings = {
-            "url": "http://localhost:8080/groups/" + id + "/close",
-            "method": "PATCH",
-            "timeout": 0,
-            "headers": {
-                "Authorization": localStorage.getItem('Authorization')
-            },
-        };
-
-        $.ajax(settings).done(function (response) {
-            console.log(response);
-            alert(response['data'])
-            location.reload()
-        }).fail(function (e) {
-            if (e.status === 400) {
-                console.log("=================")
-                alert(e.responseJSON['data'])
-            } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-                reissue()
-                setTimeout(gotoBoard(id), 150)
-                setTimeout(showUsername, 150)
-            } else {
-                alert(e.responseJSON['data'])
-            }
-        });
+    let changeStatusTo
+    if (document.querySelector('#moimStatus').innerText === '모임 닫기') {
+        changeStatusTo = 'close'
     }
+    if (document.querySelector('#moimStatus').innerText === '모임 열기') {
+        changeStatusTo = 'open'
+    }
+
+    console.log(moimStatus)
+    var settings = {
+        "url": `http://localhost:8080/groups/${id}/${changeStatusTo}`,
+        "method": "PATCH",
+        "timeout": 0,
+        "headers": {
+            "Authorization": localStorage.getItem('Authorization')
+        },
+    };
+
+    $.ajax(settings).done(function (response) {
+        console.log(response);
+        alert(response['data'])
+        location.reload()
+    }).fail(function (e) {
+        if (e.status === 400) {
+            console.log("=================")
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(gotoBoard(id), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
+    });
 }
+
+
+function getMySmallProfileImg() {
+    $.ajax({
+        type: "post",
+        url: "http://localhost:8080/profile",
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+        success:
+            function (response) {
+                let imagePath = response['imagePath']
+                $('#small_profile_image')[0].src = imagePath
+            }, error: function (e) {
+            console.log(e)
+        }
+    }).fail(function (e) {
+        console.log(e)
+        if (e.status === 400) {
+            console.log("=================")
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(getMyProfile, 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
+    });
+}
+getMySmallProfileImg();
+
 
 function getMyProfile() {
     $('#profileName').empty()
@@ -1471,9 +1545,11 @@ function getMyProfile() {
                 let username = response['username']
                 let content = response['content']
                 let imagePath = response['imagePath']
+                
                 $('#profileName').append(username)
                 $('#profileContent').append(content)
-                $('#profile-image').append(imagePath)
+                // $('#profile-image').append(imagePath)
+                $('#profile-image')[0].src = imagePath
                 console.log(response)
             }, error: function (e) {
             console.log(e)
@@ -1556,17 +1632,14 @@ function updateProfile(content) {
 }
 
 
-function showP() {
-    document.querySelector(".babackground").className = "background show";
-}
+function toggleProfileEdit() {
+    document.querySelector(".edit_profile").classList.toggle("hide")
+    document.querySelector(".content_title").classList.toggle("hide")
 
-function closeP() {
-    document.querySelector(".background show").className = "background";
+    if (document.querySelector(".content_title").classList.contains("hide")) {
+        document.querySelector("#inputContent").value = document.querySelector("#profileContent").innerText
+    }
 }
-
-document.querySelector("#showProfile").addEventListener("click", showP);
-// 작동안됨..
-document.querySelector("#closeP").addEventListener("click", closeP);
 
 
 $.expr[":"].contains = $.expr.createPseudo(function (arg) {

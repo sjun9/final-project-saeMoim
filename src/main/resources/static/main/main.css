@@ -186,14 +186,19 @@ a:visited {
 }
 
 .account-info-more {
-    width: 20px;
-    height: 20px;
+    width: 35px;
+    height: 35px;
     color: var(--sidebar-main-color);
     padding: 0;
     border: none;
     background-color: transparent;
     margin-left: auto;
     cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+.account-info-more:hover {
+    background-color: lightgray;
 }
 
 .app-icon {
@@ -509,7 +514,7 @@ a:visited {
 
 .status.active {
     color: #2ba972;
-    background-color: rgba(43, 169, 114, 0.2);
+    background-color: rgba(43, 169, 114, 0.253);
 }
 
 .status.active:before {
@@ -540,7 +545,10 @@ a:visited {
 .gridView .products-row {
     margin: 8px;
     width: calc(25% - 16px);
-    height: 100%;
+    /* height: 100%; */
+    overflow: hidden;
+    height: auto;
+
     background-color: var(--app-content-secondary-color);
     padding: 8px;
     border-radius: 4px;
@@ -621,8 +629,8 @@ a:visited {
 .gridView .product-cell img {
     width: 100%;
     height: 140px;
-    -o-object-fit: cover;
-    object-fit: cover;
+    -o-object-fit: contain;
+    object-fit: contain;
     border-radius: 4px;
     margin-bottom: 16px;
 }
@@ -651,7 +659,8 @@ a:visited {
 }
 
 .modal-body img {
-    max-width: 500px;
+    max-width: 100%;
+    max-height: 300px;
     margin-bottom: 20px;
 }
 
@@ -812,68 +821,22 @@ p {
     width: 50%;
 }
 
-
-.babackground {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-    padding: 16px;
-
-    height: 100%;
-    flex: 1;
-    max-height: 100%;
-
-    /* 숨기기 */
-    z-index: -1;
-    opacity: 0;
+.edit_profile {
+    width: 50%;
 }
 
-.showP {
-    opacity: 1;
-    z-index: 1000;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.3);
-    transition: all 0.5s;
+.edit_profile.hide {
+    display: none;
 }
 
-.windowP {
-    position: relative;
-    width: 100%;
-    height: 100%;
+.content_title.hide {
+    display: none;
 }
 
-.popup {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #ffffff;
-    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
-
-    /* 임시 지정 */
-    width: 600px;
-    height: 300px;
-
-    /* 초기에 약간 아래에 배치 */
-    transform: translate(-50%, -40%);
-
+.closed {
+    filter: brightness(85%);
 }
 
-.showP .popup {
-    transform: translate(-50%, -50%);
-    transition: all 0.5s;
-}
-
-.momodal {
-    margin: 40px;
-    align-items: flex-start;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-.row mb-3 {
-    padding: auto;
-
+.closed_moimDetail {
+    filter: brightness(70%);
 }
