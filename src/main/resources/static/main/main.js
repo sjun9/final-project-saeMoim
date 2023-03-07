@@ -1,4 +1,4 @@
-let origin = `http://localhost:8080`
+let origin = `http://52.79.169.105:8080`
 
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
