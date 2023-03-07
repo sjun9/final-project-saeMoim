@@ -3,20 +3,19 @@ package com.saemoim.fileUpload;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.saemoim.domain.User;
 import com.saemoim.exception.ErrorCode;
-import com.saemoim.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +45,7 @@ public class AWSS3Uploader {
 	}
 
 	private String addUUID(String fileName) {
-		return UUID.randomUUID().toString() + fileName;
+		return UUID.randomUUID() + fileName;
 	}
 
 	// 로컬에 생성된 파일 삭제
@@ -66,6 +65,12 @@ public class AWSS3Uploader {
 		return amazonS3Client.getUrl(bucket, fileName).toString();
 	}
 
+	public void delete(String imagePath) {
+		String substring = imagePath.substring(50);
+		String key = URLDecoder.decode(substring, StandardCharsets.UTF_8);
+
+		amazonS3Client.deleteObject(bucket,key);
+	}
 	// 파일 타입 전환 (MultipartFile -> File)
 	private Optional<File> convert(MultipartFile multipartFile) throws IOException {
 			File convertFile = new File(multipartFile.getOriginalFilename());

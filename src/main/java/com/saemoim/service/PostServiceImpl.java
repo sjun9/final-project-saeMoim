@@ -13,7 +13,6 @@ import com.saemoim.domain.Group;
 import com.saemoim.domain.Post;
 import com.saemoim.domain.User;
 import com.saemoim.dto.request.PostRequestDto;
-import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.dto.response.PostResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.fileUpload.AWSS3Uploader;
@@ -32,7 +31,7 @@ public class PostServiceImpl implements PostService {
 	private final GroupRepository groupRepository;
 	private final LikeRepository likeRepository;
 	private final AWSS3Uploader awsS3Uploader;
-	String dirName = "post";
+	private final String dirName = "post";
 
 	// 모임 전체 게시글 조회
 	@Transactional(readOnly = true)
@@ -137,6 +136,7 @@ public class PostServiceImpl implements PostService {
 		}else {
 			try {
 				imagePath = awsS3Uploader.upload(multipartFile, dirName);
+				awsS3Uploader.delete(savedPost.getImagePath());
 				savedPost.update(requestDto.getTitle(), requestDto.getContent(),imagePath);
 			} catch (IOException e) {
 				throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
@@ -155,6 +155,7 @@ public class PostServiceImpl implements PostService {
 		}
 
 		postRepository.delete(savedPost);
+		awsS3Uploader.delete(savedPost.getImagePath());
 	}
 
 	@Transactional
@@ -163,6 +164,7 @@ public class PostServiceImpl implements PostService {
 		Post post = _getPostById(postId);
 
 		postRepository.delete(post);
+		awsS3Uploader.delete(post.getImagePath());
 	}
 
 	private Post _getPostById(Long postId) {
