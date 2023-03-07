@@ -1,7 +1,7 @@
 package com.saemoim.controller;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -33,12 +33,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.saemoim.annotation.WithCustomMockUser;
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.UserRoleEnum;
-import com.saemoim.dto.request.CurrentPasswordRequestDto;
 import com.saemoim.dto.request.EmailRequestDto;
 import com.saemoim.dto.request.ProfileRequestDto;
 import com.saemoim.dto.request.SignInRequestDto;
@@ -48,7 +48,10 @@ import com.saemoim.dto.request.WithdrawRequestDto;
 import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
 import com.saemoim.dto.response.UserResponseDto;
+import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.jwt.JwtUtil;
+import com.saemoim.oauth.CustomOAuth2UserService;
+import com.saemoim.oauth.OAuth2AuthenticationSuccessHandler;
 import com.saemoim.security.CustomAccessDeniedHandler;
 import com.saemoim.security.CustomAuthenticationEntryPoint;
 import com.saemoim.service.UserServiceImpl;
@@ -62,11 +65,17 @@ class UserControllerTest {
 	@MockBean
 	private UserServiceImpl userService;
 	@MockBean
+	private AWSS3Uploader awsS3Uploader;
+	@MockBean
 	private JwtUtil jwtUtil;
 	@MockBean
 	private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	@MockBean
 	private CustomAccessDeniedHandler customAccessDeniedHandler;
+	@MockBean
+	private CustomOAuth2UserService oAuth2UserService;
+	@MockBean
+	private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
 	@BeforeEach
 	public void setUp(WebApplicationContext context, RestDocumentationContextProvider restDocumentation) {
@@ -323,6 +332,7 @@ class UserControllerTest {
 			.password("Pass1234!")
 			.role(UserRoleEnum.USER)
 			.username("닉넹미")
+			.imagePath("imgPath")
 			.build();
 
 		ProfileResponseDto response = new ProfileResponseDto(user);
@@ -346,7 +356,8 @@ class UserControllerTest {
 				responseFields(
 					fieldWithPath("id").description("유저 id").type(JsonFieldType.NUMBER),
 					fieldWithPath("username").description("유저 닉네임").type(JsonFieldType.STRING),
-					fieldWithPath("content").description("소개글").type(JsonFieldType.STRING)
+					fieldWithPath("content").description("소개글").type(JsonFieldType.STRING),
+					fieldWithPath("imagePath").description("이미지 저장경로").type(JsonFieldType.STRING)
 				)
 			));
 	}
@@ -359,11 +370,12 @@ class UserControllerTest {
 		User user = User.builder()
 			.id(1L)
 			.banCount(0)
-			.content("asdfasfsdfsaf")
-			.email("aaaaa@naver.com")
-			.password("aaasdf1234!")
+			.content("안녕하시렵니까")
+			.email("email@naver.com")
+			.password("Pass1234!")
 			.role(UserRoleEnum.USER)
-			.username("장성준")
+			.username("닉넹미")
+			.imagePath("imgPath")
 			.build();
 		ProfileResponseDto response = new ProfileResponseDto(user);
 
@@ -384,7 +396,48 @@ class UserControllerTest {
 				responseFields(
 					fieldWithPath("id").description("유저 id").type(JsonFieldType.NUMBER),
 					fieldWithPath("username").description("유저 닉네임").type(JsonFieldType.STRING),
-					fieldWithPath("content").description("소개글").type(JsonFieldType.STRING)
+					fieldWithPath("content").description("소개글").type(JsonFieldType.STRING),
+					fieldWithPath("imagePath").description("이미지 저장경로").type(JsonFieldType.STRING)
+				)
+			));
+	}
+
+	@Test
+	@WithCustomMockUser
+	@DisplayName("사용자정보조회")
+	void getUserInfo() throws Exception {
+		// given
+		User user = User.builder()
+			.id(1L)
+			.banCount(0)
+			.content("안녕하시렵니까")
+			.email("email@naver.com")
+			.password("Pass1234!")
+			.role(UserRoleEnum.USER)
+			.username("닉넹미")
+			.imagePath("imgPath")
+			.build();
+		ProfileResponseDto response = new ProfileResponseDto(user);
+
+		when(userService.getProfile(anyLong())).thenReturn(response);
+
+		// when
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.get("/user")
+			.header(JwtUtil.AUTHORIZATION_HEADER, "Bearer accessToken"));
+
+		// then
+		resultActions.andExpect(status().isOk())
+			.andDo(document("user/user-info",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("엑세스토큰")
+				),
+				responseFields(
+					fieldWithPath("id").description("유저 id").type(JsonFieldType.NUMBER),
+					fieldWithPath("username").description("유저 닉네임").type(JsonFieldType.STRING),
+					fieldWithPath("content").description("소개글").type(JsonFieldType.STRING),
+					fieldWithPath("imagePath").description("이미지 저장경로").type(JsonFieldType.STRING)
 				)
 			));
 	}
@@ -408,11 +461,32 @@ class UserControllerTest {
 		when(userService.updateProfile(anyLong(), any(ProfileRequestDto.class), any(MultipartFile.class))).thenReturn(
 			responseDto);
 		// when
-		ResultActions resultActions = mockMvc.perform(put("/profile")
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.put("/profile")
+			.param("img", "image file")
+			.header(JwtUtil.AUTHORIZATION_HEADER, "Bearer accessToken")
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(request)).with(csrf()));
+			.content(new Gson().toJson(request)));
 		// then
-		resultActions.andExpect(jsonPath("$['username']").value("장성준"));
+		resultActions.andExpect(status().isOk())
+			.andDo(document("user/profile",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestPartFields("requestDto",
+					fieldWithPath("content").description("소개글")
+				),
+				pathParameters(
+					parameterWithName("img").description("이미지 파일")
+				),
+				requestHeaders(
+					headerWithName("Authorization").description("엑세스토큰")
+				),
+				responseFields(
+					fieldWithPath("id").description("유저 id").type(JsonFieldType.NUMBER),
+					fieldWithPath("username").description("유저 닉네임").type(JsonFieldType.STRING),
+					fieldWithPath("content").description("소개글").type(JsonFieldType.STRING),
+					fieldWithPath("imagePath").description("이미지 저장경로").type(JsonFieldType.STRING)
+				)
+			));
 
 	}
 
