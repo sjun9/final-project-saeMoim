@@ -1,3 +1,5 @@
+let origin = `http://52.79.169.105:8080`
+
 /**
  * Variables
  */
@@ -40,7 +42,7 @@ let ischeckpassword = false;
 // 닉네임 중복 확인
 function checkUsernameDuplication() {
     const settings = {
-        "url": "http://localhost:8080/sign-up/username",
+        "url": `${origin}/sign-up/username`,
         "method": "POST",
         "timeout": 0,
         "headers": {
@@ -53,7 +55,6 @@ function checkUsernameDuplication() {
 
     $.ajax(settings).done(function (response) {
         alert("사용 가능한 닉네임 입니다.")
-        console.log(response)
         isCheckUsernameDuplication = true;
     }).fail(function (response) {
         if (response.responseJSON.httpStatus === 'BAD_REQUEST') {
@@ -70,7 +71,7 @@ function checkUsernameDuplication() {
 // 로그인
 function login() {
     const settings = {
-        "url": "http://localhost:8080/sign-in",
+        "url": `${origin}/sign-in`,
         "method": "POST",
         "timeout": 0,
         "headers": {
@@ -98,7 +99,7 @@ function login() {
 // 이메일(Id) 중복 확인 빛 인증 메일 발송
 function checkAndSendCode() {
     const checkEmailDuplicationSettings = {
-        "url": "http://localhost:8080/sign-up/email",
+        "url": `${origin}/sign-up/email`,
         "method": "POST",
         "timeout": 0,
         "headers": {
@@ -111,7 +112,7 @@ function checkAndSendCode() {
 
     $.ajax(checkEmailDuplicationSettings).done(function (response) {
         const sendAuthenticationCodesettings = {
-            "url": "http://localhost:8080/email",
+            "url": `${origin}/email`,
             "method": "POST",
             "timeout": 0,
             "headers": {
@@ -143,7 +144,7 @@ function checkAndSendCode() {
 // 메일로 보낸 인증 코드 확인
 function checkAuthCode() {
     var settings = {
-        "url": "http://localhost:8080/email/auth-code",
+        "url": `${origin}/email/auth-code`,
         "method": "POST",
         "timeout": 0,
         "headers": {
@@ -155,9 +156,7 @@ function checkAuthCode() {
     $.ajax(settings).done(function (response) {
         ischeckAuthCode = true;
         alert(response.data)
-        console.log(response)
     }).fail(function (response) {
-        console.log(response)
         alert(response.responseJSON['data'])
     });
 }
@@ -185,7 +184,7 @@ $('.pwd-validation').focusout(function () {
 
 function signup() {
     var settings = {
-        "url": "http://localhost:8080/sign-up",
+        "url": `${origin}/sign-up`,
         "method": "POST",
         "timeout": 0,
         "headers": {
@@ -222,7 +221,7 @@ function signup() {
 
 function sendPasswordToEmail() {
     var settings = {
-        "url": "http://localhost:8080/email/password",
+        "url": `${origin}/email/password`,
         "method": "PUT",
         "timeout": 0,
         "headers": {
@@ -234,7 +233,6 @@ function sendPasswordToEmail() {
     };
 
     $.ajax(settings).done(function (response) {
-        console.log(response);
         alert("해당 이메일로 임시번호가 발송 되었습니다.")
     }).fail(function (response) {
         alert(response.responseJSON['message'])
