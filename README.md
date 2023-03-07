@@ -11,7 +11,8 @@ ___
 각 모임의 참여자들은 게시판을 이용해 모임 구성원들과 소통할 수 있습니다.
 ___
 ### 기술 스택</br>
-[![My Skills](https://skillicons.dev/icons?i=java,spring,gradle)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=java,spring,gradle,hibernate)](https://skillicons.dev) <br>
+
 [![My Skills](https://skillicons.dev/icons?i=html,css,js,jquery)](https://skillicons.dev)
 
 [![My Skills](https://skillicons.dev/icons?i=idea,git,github,postman)](https://skillicons.dev)
@@ -25,7 +26,9 @@ ___
   <img src="https://img.shields.io/badge/Amazon Ec2-232f3e?style=for-the-badge&logo=Amazon EC2&logoColor=ec7211">
   <img src="https://img.shields.io/badge/Amazon S3-232f3e?style=for-the-badge&logo=Amazon S3&logoColor=ec7211">
   <img src="https://img.shields.io/badge/Amazon RDS-232f3e?style=for-the-badge&logo=Amazon RDS&logoColor=ec7211"> <br>
-  <img src="https://img.shields.io/badge/Github Actions-3373EF?style=for-the-badge&logo=Github Actions&logoColor=white">
+  <img src="https://img.shields.io/badge/Github Actions-3373EF?style=for-the-badge&logo=Github Actions&logoColor=white"> <br>
+<img src="https://img.shields.io/badge/KakaoAPI-FFCD00?style=for-the-badge&logo=&logoColor=black"> 
+
 </div>
 
 ___
