@@ -1,11 +1,5 @@
 # 새모임 프로젝트🕊️
-> 오프라인에서 취미활동을 함께 하거나, 혼자서는 갈 수 없는 곳에 함께 갈 파티원을 모집할 수 있는 서비스 
-
-___
-#### 팀원소개
-``리더`` 이송언 <br> 
-``부리더`` 장성준 <br>
-``팀원`` 이지섭,  김현중
+> 오프라인에서 취미활동을 함께 하거나, 혼자서는 갈 수 없는 곳에 함께 갈 파티원을 모집할 수 있는 서비스
 ___ 
 ### 프로젝트 설명 </br>
 새로운(New) 모임, 새(Bird)처럼 자유로운 모임 <br>
@@ -19,27 +13,32 @@ ___
 
 [![My Skills](https://skillicons.dev/icons?i=idea,git,github,postman)](https://skillicons.dev)
 
-[![My Skills](https://skillicons.dev/icons?i=mysql,redis)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=mysql,redis)](https://skillicons.dev) <br>
+
+
 
 <div>
   <img src="https://img.shields.io/badge/spring boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
   <img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=Spring-Security&logoColor=white"> <br>
-  <img src="https://img.shields.io/badge/JSON_Web_Token-EF2D5E?style=for-the-badge&logo=JSON Web Tokens&logoColor=white">
+  <img src="https://img.shields.io/badge/JSON_Web_Token-EF2D5E?style=for-the-badge&logo=JSON Web Tokens&logoColor=000000"> <br>
+  <img src="https://img.shields.io/badge/Amazon Ec2-232f3e?style=for-the-badge&logo=Amazon EC2&logoColor=ec7211">
+  <img src="https://img.shields.io/badge/Amazon S3-232f3e?style=for-the-badge&logo=Amazon S3&logoColor=ec7211">
+  <img src="https://img.shields.io/badge/Amazon RDS-232f3e?style=for-the-badge&logo=Amazon RDS&logoColor=ec7211"> <br>
+  <img src="https://img.shields.io/badge/Github Actions-3373EF?style=for-the-badge&logo=Github Actions&logoColor=white">
 </div>
-
 ___
-### 목차 
+
+### 목차
 <!-- TOC -->
 * [새모임 프로젝트🕊️](#-)
-   * [팀원소개](#)
     * [프로젝트 설명 </br>](#--br)
     * [기술 스택</br>](#--br)
-    * [목차](#)
     * [프로젝트 개발 환경](#--)
     * [와이어 프레임](#-)
     * [서비스 아키텍처](#-)
     * [Class UML](#class-uml)
     * [ERD](#erd)
+    * [팀소개](#)
 <!-- TOC -->
 ___
 ### 프로젝트 개발 환경
@@ -49,8 +48,8 @@ ___
 <details><summary> 의존 주입
 </summary>
 <blockquote>
+dependencies {
 
-    dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -75,6 +74,10 @@ ___
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:2.6.2'
+
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.410'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.1.RELEASE'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
@@ -92,15 +95,10 @@ ___
 ___
 
 ### 서비스 아키텍처
-<details><summary>현재
+<details><summary> 서비스 아키텍처
 </summary>
-<img src="src/main/documents/serviceArchitecturecurr.png">
+<img src="src/main/documents/serviceArchitecture.png">
 </details>  
-
-<details><summary>완성 구상도
-</summary>
-<img src="src/main/documents/serviceArchitectureCompl.png">
-</details>
 
 ___
 
@@ -116,4 +114,12 @@ ___
 </summary><img src="src/main/documents/ERD.png">
 </details>
 
----
+___
+### 팀소개
+
+| 역할  | 이름  | 블로그                          |
+|-----|-----|------------------------------|
+| `리더`  | 이송언 | https://velog.io/@8essong30  |
+| `부리더` | 장성준 | https://ace-jun.tistory.com  |
+| `팀원`  | 이지섭 | https://velog.io/@leejiseop  |
+| `팀원`  | 김현중 | https://pooca12.tistory.com  |
