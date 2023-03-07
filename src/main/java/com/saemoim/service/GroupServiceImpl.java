@@ -43,7 +43,7 @@ public class GroupServiceImpl implements GroupService {
 	private final UserRepository userRepository;
 	private final TagRepository tagRepository;
 	private final AWSS3Uploader awsS3Uploader;
-	String dirName = "group";
+	private final String dirName = "group";
 
 	@Override
 	@Transactional(readOnly = true)
@@ -190,6 +190,7 @@ public class GroupServiceImpl implements GroupService {
 		} else {
 			try {
 				imagePath = awsS3Uploader.upload(multipartFile, dirName);
+				awsS3Uploader.delete(group.getImagePath());
 				group.update(requestDto, category, imagePath);
 			} catch (IOException e) {
 				throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
@@ -206,6 +207,7 @@ public class GroupServiceImpl implements GroupService {
 		Group group = _getGroupById(groupId);
 		checkLeader(userId, group);
 		groupRepository.delete(group);
+		awsS3Uploader.delete(group.getImagePath());
 	}
 
 	@Override

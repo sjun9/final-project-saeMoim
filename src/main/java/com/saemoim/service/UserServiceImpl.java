@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
 	private final JwtUtil jwtUtil;
 	private final RedisUtil redisUtil;
 	private final AWSS3Uploader awsS3Uploader;
-	private String dirName = "profile";
+	private final String dirName = "profile";
 
 	@Transactional
 	@Override
@@ -160,6 +160,7 @@ public class UserServiceImpl implements UserService {
 			user.updateProfile(requestDto.getContent());
 		} else {
 			try {
+				awsS3Uploader.delete(user.getImagePath());
 				imagePath = awsS3Uploader.upload(multipartFile, dirName);
 				user.updateProfile(requestDto.getContent(), imagePath);
 			} catch (IOException e) {
