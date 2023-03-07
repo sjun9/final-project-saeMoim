@@ -155,10 +155,10 @@ function openProfile(event) {
     },
   };
   $.ajax(settings).done(function (response) {
-    const profile_modal_page = document.querySelector("#profile_modal_page")
-    profile_modal_page.children[2].children[0].innerText = username
-    profile_modal_page.children[3].innerText = response["content"]
-    profile_modal_page.children[0].children[1].src = response["imagePath"]
+    document.querySelector("#profile_name").innerText = username
+    document.querySelector("#profile_content").innerText = response["content"]
+    document.querySelector("#proflie-image").src = response["imagePath"]
+    localStorage.setItem("target_profile_id", response["id"])
   }).fail(function (e) {
     console.log(e.status)
     if (e.status === 400) {
@@ -207,7 +207,6 @@ function report(id, content) { // 신고할 사람id, 신고내용
   $.ajax(settings).done(function (response) {
     console.log(response);
     alert(response['data'])
-    location.reload()
   }).fail(function (e) {
     if (e.status === 400) {
       console.log("=================")
@@ -221,6 +220,26 @@ function report(id, content) { // 신고할 사람id, 신고내용
     }
   });
 }
+
+
+function askReportReason(event) {
+  const target_userId = localStorage.getItem("target_profile_id")
+
+  let reason = prompt('신고 사유를 입력해주세요.', '신고 사유를 입력해주세요.');
+  if (reason === null) {
+    alert('신고가 취소되었습니다.')
+    return
+  }
+  
+  let doReport = confirm(`신고 사유 : ${reason}\n\n정말로 신고하시겠습니까?`);
+  if (doReport === false) {
+    alert('신고가 취소되었습니다.')
+    return
+  }
+
+  report(target_userId, reason)
+}
+
 
 /**
  * 게시글

@@ -71,21 +71,14 @@
           <div class="content-profile-page">
             <div class="profile-user-page card" id="profile_modal_page">
               <div class="img-user-profile">
-                <img class="profile-bgHome"
-                  src="../static/images/mountain.jpg" />
-                <img class="avatar" id="proflie-image" src="../static/images/bird.png"
-                  alt="jofpin" />
+                <img class="profile-bgHome" src="../static/images/mountain.jpg" />
+                <img class="avatar" id="proflie-image" src="../static/images/bird.png" alt="image" />
               </div>
-              <button type="button" onclick="gotochat()">DM 보내기</button>
               <div class="user-profile-data">
-                <h1>Jose Pino</h1>
-                <!-- <p>github.com/jofpin</p> -->
+                <h1 id="profile_name">Jose Pino</h1>
               </div>
-              <div class="description-profile">여행을 좋아하는 어쩌고 저쩌고 입니다. 반갑습니다!</div>
-              <ul class="data-user">
-                <!-- <li><a><strong>2</strong><span>개설한 모임</span></a></li> -->
-                <!-- <li><a><strong>5</strong><span>참가중인 모임</span></a></li> -->
-              </ul>
+              <div class="description-profile" id="profile_content">여행을 좋아하는 어쩌고 저쩌고 입니다. 반갑습니다!</div>
+              <button type="button" class="btn btn-danger" onclick="askReportReason()">신고하기</button>
             </div>
           </div>
         </div>
