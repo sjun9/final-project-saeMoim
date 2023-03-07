@@ -428,7 +428,6 @@ function showAllMoim() {
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
                 let imgPath = response[i]['imagePath']
-<<<<<<< HEAD
                 console.log(imgPath)
 
                 let moim_status = ''
@@ -440,9 +439,6 @@ function showAllMoim() {
                 }
 
                 let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-=======
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
->>>>>>> c8058fa5b224bb4577b1e0d296f1c6418cc8c339
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
                                         <img src="${imgPath}" alt="">
@@ -891,7 +887,6 @@ function showMoimDetail(event, id) {
         document.getElementById('moimDetailId').value = data.id;
         $('#detailAddress').empty().append(`<h5 style="margin-top: 20px; font-weight: bold;">모임 장소</h5>
                                     <h6>${data.address}</h6>`)
-<<<<<<< HEAD
         
         if (data.status === 'OPEN') {
             document.querySelector('#moimDetailContentId').classList.remove('closed_moimDetail')
@@ -928,8 +923,6 @@ function showMoimDetail(event, id) {
         }
         
         console.log(data.address)
-=======
->>>>>>> c8058fa5b224bb4577b1e0d296f1c6418cc8c339
         let detailLatLng = new kakao.maps.LatLng(data.latitude, data.longitude);
 
         kakao.maps.event.addListener(detailMap, 'tilesloaded', function () {
@@ -1331,60 +1324,9 @@ function gotoDeleteReview(event) {
 }
 
 function changeStatus(id) {
-<<<<<<< HEAD
     let changeStatusTo
     if (document.querySelector('#moimStatus').innerText === '모임 닫기') {
         changeStatusTo = 'close'
-=======
-    let status = document.querySelector('#moimStatus').innerText
-    if (status === "CLOSE") {
-        var settings = {
-            "url": `${origin}/groups/${id}/open`,
-            "method": "PATCH",
-            "timeout": 0,
-            "headers": {
-                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
-            },
-        };
-
-        $.ajax(settings).done(function (response) {
-            alert(response['data'])
-            location.reload()
-        }).fail(function (e) {
-            if (e.status === 400) {
-                alert(e.responseJSON['data'])
-            } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-                reissue()
-                setTimeout(changeStatus(id), 150)
-                setTimeout(showUsername, 150)
-            } else {
-                alert(e.responseJSON['data'])
-            }
-        });
-    } else if (status === "OPEN") {
-        var settings = {
-            "url": `${origin}/groups/${id}/close`,
-            "method": "PATCH",
-            "timeout": 0,
-            "headers": {
-                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
-            },
-        };
-        $.ajax(settings).done(function (response) {
-            alert(response['data'])
-            location.reload()
-        }).fail(function (e) {
-            if (e.status === 400) {
-                alert(e.responseJSON['data'])
-            } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-                reissue()
-                setTimeout(changeStatus(id), 150)
-                setTimeout(showUsername, 150)
-            } else {
-                alert(e.responseJSON['data'])
-            }
-        });
->>>>>>> c8058fa5b224bb4577b1e0d296f1c6418cc8c339
     }
     if (document.querySelector('#moimStatus').innerText === '모임 열기') {
         changeStatusTo = 'open'
@@ -1467,17 +1409,12 @@ function getMyProfile() {
                 
                 $('#profileName').append(username)
                 $('#profileContent').append(content)
-<<<<<<< HEAD
                 // $('#profile-image').append(imagePath)
                 $('#profile-image')[0].src = imagePath
                 console.log(response)
             }, error: function (e) {
             console.log(e)
         }
-=======
-                $('#profile-image').append(imagePath)
-            }
->>>>>>> c8058fa5b224bb4577b1e0d296f1c6418cc8c339
     }).fail(function (e) {
         if (e.status === 400) {
             alert(e.responseJSON['data'])
