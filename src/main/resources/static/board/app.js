@@ -7,6 +7,8 @@
 // const tempGroupId = "1"
 // const tempUserId = "2"
 
+const origin = `http://52.79.169.105:8080`
+
 let Authorization = localStorage.getItem("Authorization")
 let Refresh_Token = localStorage.getItem("Refresh_Token")
 
@@ -24,7 +26,7 @@ let unread_messages_num = parseInt(unread_messages.innerText)
 function getGroupInfo(groupId) {
   $.ajax({
     type: "GET",
-    url: `http://localhost:8080/groups/${groupId}`,
+    url: `${origin}/groups/${groupId}`,
     async: false,
     data: {},
     beforeSend: function (xhr) {
@@ -46,7 +48,7 @@ let username = ''
 function getGroupProfileIdList() {
   $.ajax({
     type: "GET",
-    url: `http://localhost:8080/participant/groups/${tempGroupId}`,
+    url: `${origin}/participant/groups/${tempGroupId}`,
     async: false,
     data: {},
     beforeSend: function (xhr) {
@@ -76,7 +78,7 @@ function renderLeaderProfile() {
   }
 
   var settings = {
-    "url": `http://localhost:8080/profile/users/${groupInfo["userId"]}`,
+    "url": `${origin}/profile/users/${groupInfo["userId"]}`,
     "method": "GET",
     "timeout": 0,
     "headers": {
@@ -113,7 +115,7 @@ function renderProfileList() {
       return
     }
     var settings = {
-      "url": `http://localhost:8080/profile/users/${user["userId"]}`,
+      "url": `${origin}/profile/users/${user["userId"]}`,
       "method": "GET",
       "timeout": 0,
       "headers": {
@@ -155,7 +157,7 @@ function openProfile(event) {
     })
   }
   var settings = {
-    "url": `http://localhost:8080/profile/users/${userId}`,
+    "url": `${origin}/profile/users/${userId}`,
     "method": "GET",
     "timeout": 0,
     "headers": {
@@ -200,7 +202,7 @@ chat();
 // 회원 신고 함수
 function report(id, content) { // 신고할 사람id, 신고내용
   var settings = {
-    "url": "http://localhost:8080/report/users/" + id,
+    "url": `${origin}/report/users/${id}`,
     "method": "POST",
     "timeout": 0,
     "headers": {
@@ -274,7 +276,7 @@ function newPost() {
 
   $.ajax({
     type: "post",
-    url: `http://localhost:8080/groups/${currentGroupId}/post`,
+    url: `${origin}/groups/${currentGroupId}/post`,
     headers: { 'Authorization': Authorization },
     data: formData, //전송 데이터
     dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
@@ -347,7 +349,7 @@ function editPost(event) {
 
   $.ajax({
     type: "put",
-    url: `http://localhost:8080/posts/${currentPostId}`,
+    url: `${origin}/posts/${currentPostId}`,
     timeout: 0,
     headers: { "Authorization": Authorization },
     data: formData,
@@ -420,7 +422,7 @@ function deletePost(event) {
   const currentPostId = localStorage.getItem("current_post_id")
 
   var settings = {
-    "url": `http://localhost:8080/posts/${currentPostId}`,
+    "url": `${origin}/posts/${currentPostId}`,
     "method": "DELETE",
     "timeout": 0,
     "headers": {
@@ -486,7 +488,7 @@ let page = 1; // 새로고침 시 1페이지부터 시작
 function getPosts(pageNum, sizeNum) {
   $.ajax({
     type: 'GET',
-    url: `http://localhost:8080/groups/${tempGroupId}/post?page=${pageNum}&size=${sizeNum}`,
+    url: `${origin}/groups/${tempGroupId}/post?page=${pageNum}&size=${sizeNum}`,
     data: {},
     beforeSend: function (xhr) {
       xhr.setRequestHeader("Authorization", Authorization);
@@ -660,7 +662,7 @@ function renderComments(currentPostId) {
   }
 
   var settings = {
-    "url": `http://localhost:8080/posts/${currentPostId}/comment`,
+    "url": `${origin}/posts/${currentPostId}/comment`,
     "method": "GET",
     "timeout": 0,
     "headers": {
@@ -720,7 +722,7 @@ function writeComment() {
   const commentStr = document.querySelector("#comment").value
   const currentPostId = localStorage.getItem("current_post_id")
   var settings = {
-    "url": `http://localhost:8080/posts/${currentPostId}/comment`,
+    "url": `${origin}/posts/${currentPostId}/comment`,
     "method": "POST",
     "timeout": 0,
     "headers": {
@@ -758,7 +760,7 @@ function editComment(event) {
   const currentCommentId = event.currentTarget.parentElement.previousElementSibling.children[2].innerText
   const newCommentStr = event.currentTarget.parentElement.previousElementSibling.previousElementSibling.value
   var settings = {
-    "url": `http://localhost:8080/comments/${currentCommentId}`,
+    "url": `${origin}/comments/${currentCommentId}`,
     "method": "PUT",
     "timeout": 0,
     "headers": {
@@ -817,7 +819,7 @@ function deleteComment(event) {
   const currentCommentId = event.currentTarget.nextElementSibling.nextElementSibling.innerText
 
   var settings = {
-    "url": `http://localhost:8080/comments/${currentCommentId}`,
+    "url": `${origin}/comments/${currentCommentId}`,
     "method": "DELETE",
     "timeout": 0,
     "headers": {
@@ -905,7 +907,7 @@ function randomInt(min, max) {
 // 좋아요 누르기
 function doLike(postId) {
   var settings = {
-    "url": `http://localhost:8080/posts/${postId}/like`,
+    "url": `${origin}/posts/${postId}/like`,
     "method": "POST",
     "timeout": 0,
     "headers": {
@@ -933,7 +935,7 @@ function doLike(postId) {
 // 좋아요 취소
 function unLike(postId) {
   var settings = {
-    "url": `http://localhost:8080/posts/${postId}/like`,
+    "url": `${origin}/posts/${postId}/like`,
     "method": "DELETE",
     "timeout": 0,
     "headers": {
@@ -971,7 +973,7 @@ function unLike(postId) {
 // chat
 function chat() {
 
-  var sockJs = new SockJS("http://localhost:8080/stomp/chat", null, { transports: ["websocket", "xhr-streaming", "xhr-polling"] });
+  var sockJs = new SockJS(`${origin}/stomp/chat`, null, { transports: ["websocket", "xhr-streaming", "xhr-polling"] });
   var stomp = Stomp.over(sockJs);
 
   // token header
@@ -1105,7 +1107,7 @@ function makeMessageLi(message_userId, writer, message, createdAtUTC) {
 // 채팅 기록 불러오기
 function renderChat() {
   var settings = {
-    "url": `http://localhost:8080/chat/${tempGroupId}`,
+    "url": `${origin}/chat/${tempGroupId}`,
     "method": "GET",
     "timeout": 0,
     "headers": {
