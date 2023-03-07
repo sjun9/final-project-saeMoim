@@ -1,5 +1,8 @@
 # 새모임 프로젝트🕊️
 > 오프라인에서 취미활동을 함께 하거나, 혼자서는 갈 수 없는 곳에 함께 갈 파티원을 모집할 수 있는 서비스
+
+<img src="src/main/documents/saemoim.png">
+
 ___ 
 ### 프로젝트 설명 </br>
 새로운(New) 모임, 새(Bird)처럼 자유로운 모임 <br>
@@ -15,8 +18,6 @@ ___
 
 [![My Skills](https://skillicons.dev/icons?i=mysql,redis)](https://skillicons.dev) <br>
 
-
-
 <div>
   <img src="https://img.shields.io/badge/spring boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
   <img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=Spring-Security&logoColor=white"> <br>
@@ -26,8 +27,8 @@ ___
   <img src="https://img.shields.io/badge/Amazon RDS-232f3e?style=for-the-badge&logo=Amazon RDS&logoColor=ec7211"> <br>
   <img src="https://img.shields.io/badge/Github Actions-3373EF?style=for-the-badge&logo=Github Actions&logoColor=white">
 </div>
-___
 
+___
 ### 목차
 <!-- TOC -->
 * [새모임 프로젝트🕊️](#-)
@@ -115,11 +116,11 @@ ___
 </details>
 
 ___
-### 팀소개
+### 팀소개 
 
-| 역할  | 이름  | 블로그                          |
-|-----|-----|------------------------------|
-| `리더`  | 이송언 | https://velog.io/@8essong30  |
-| `부리더` | 장성준 | https://ace-jun.tistory.com  |
-| `팀원`  | 이지섭 | https://velog.io/@leejiseop  |
-| `팀원`  | 김현중 | https://pooca12.tistory.com  |
+| 역할  | 이름 | 담당역할                                                                                                                                                                                              | 블로그                         |
+|-----|----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|
+| `리더`  | 이송언 | - 모임CRUD<br/>- 모임 참여 시스템<br/> - 모임 탈퇴<br/>- 모임 검색<br/> - 모임 위시리스트<br/> - 모임 리뷰CRUD<br/> - 비밀번호 찾기<br/> - 프로필CRUD<br/> - RESTDocs                                                                  | https://velog.io/@8essong30 |
+| `부리더` | 장성준 | - JWT 토큰<br/> - 토큰 재발급<br/> - 스프링시큐리티<br/> - 로그인 및 로그아웃<br/> - 카테고리CRUD<br/> - 블랙리스트CRUD<br/> - 이메일 발송 기능<br/> - 인기모임조회<br/> - 신고하기CRUD<br/> - 회원 탈퇴<br/> - 카카오 로그인<br/> - 지도 API 연결<br/> - CI/CD | https://ace-jun.tistory.com |
+| `팀원`  | 이지섭 | - 전체 프론트 구현과 검수<br/> - 실시간 채팅<br/> - 채팅 저장/불러오기<br/>                                                                                                                                              | https://velog.io/@leejiseop |
+| `팀원`  | 김현중 | - 스프링 시큐리티<br/> - 회원가입 및 로그인<br/> - 게시판 CRUD<br/> - 좋아요기능<br/> - S3 이미지 구현 및 연결<br/>                                                                                                              | https://pooca12.tistory.com |
