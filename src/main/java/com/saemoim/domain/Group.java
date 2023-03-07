@@ -53,6 +53,7 @@ public class Group extends TimeStamped {
 
 	@Column(nullable = false, unique = true)
 	private String name;
+
 	@Column(nullable = false)
 	private String content;
 
@@ -61,6 +62,7 @@ public class Group extends TimeStamped {
 
 	@Column(nullable = false)
 	private String firstRegion;
+	
 	@Column(nullable = false)
 	private String secondRegion;
 
@@ -79,10 +81,11 @@ public class Group extends TimeStamped {
 
 	@Column(nullable = false)
 	private int recruitNumber;
+
 	@Column(nullable = false)
 	private int participantCount = 0;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private String imagePath = "/src/main/resources/static/images/bird.png";
 
 	public Group(GroupRequestDto request, Category category, User user, String imgPath) {

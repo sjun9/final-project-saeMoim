@@ -49,22 +49,17 @@ a {
     top: 20%;
     left: 50%;
     transform: translate(-50%, 0%);
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 10em; 
-  background: #2c87c4;
-  border: 1px solid #2487c9;
-  color: #fff;
-  outline: none;
-  border-radius: 0.6em;
-  padding: .80em;
-}
-
-.profile-user-page button:hover {
-  background: #51a7e0;
-  transition: background .2s ease-in-out;
-  border: 1px solid #2487c9;
+    margin-bottom: 25px;
+  /* font-size: 15px; */
+  /* font-weight: bold; */
+  /* cursor: pointer; */
+  width: 7em; 
+  background: #ffa0a0;
+  border: 1px solid #ffa0a0;
+  /* color: #fff; */
+  /* outline: none; */
+  /* border-radius: 0.6em; */
+  /* padding: .80em; */
 }
 .profile-user-page .user-profile-data, .profile-user-page .description-profile {
   text-align: center;

@@ -61,6 +61,8 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+		http.headers().frameOptions().sameOrigin(); // for SockJS WebSocket (chatting)
+
 		http.authorizeHttpRequests()
 			.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 			.requestMatchers("/sign-up/**").permitAll()
@@ -72,6 +74,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 			.requestMatchers("/tag").permitAll()
 			.requestMatchers(HttpMethod.GET, "/group/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/groups/**").permitAll()
+			.requestMatchers("/stomp/**").permitAll() // for SockJS WebSocket (chatting)
 			.requestMatchers("/admin").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admins/**").hasAnyRole(UserRoleEnum.ROOT.toString())
 			.requestMatchers("/admin/**").hasAnyRole(UserRoleEnum.ADMIN.toString(), UserRoleEnum.ROOT.toString())
@@ -95,6 +98,5 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		registry.addMapping("/**")
 			.allowedMethods("GET", "POST", "DELETE", "PUT", "OPTIONS", "PATCH")
 			.exposedHeaders("Authorization", "Refresh_Token");
-		//.allowedOrigins("*");
 	}
 }

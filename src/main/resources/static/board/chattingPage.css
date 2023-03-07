@@ -1,34 +1,15 @@
-@import url(https://fonts.googleapis.com/css?family=Lato:400,700);
-*, *:before, *:after {
-  box-sizing: border-box;
-}
-
-body {
-  background: #aec7f5;
-  font: 14px/20px "Lato", Arial, sans-serif;
-  padding: 40px 0;
-  color: white;
-}
-
 li {
     list-style: none;
 }
 
-.container {
-  margin: 0 auto;
-  width: 70vw;
-  background: #444753;
-  border-radius: 5px;
-}
-
 .chat {
-  position: absolute;
+  /* position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 490px;
+  transform: translate(-50%, -50%); */
+  width: 100%;
   float: left;
-  background: #F2F5F8;
+  /* background: #F2F5F8; */
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   color: #434651;
@@ -60,7 +41,7 @@ li {
   padding: 30px 30px 20px;
   border-bottom: 2px solid white;
   overflow-y: scroll;
-  height: 575px;
+  height: 70vh;
 }
 .chat .chat-history .message-data {
   margin-bottom: 15px;
@@ -68,6 +49,7 @@ li {
 .chat .chat-history .message-data-time {
   color: #a8aab1;
   padding-left: 6px;
+  font-size: 14px;
 }
 .chat .chat-history .message {
   color: white;
@@ -75,8 +57,8 @@ li {
   line-height: 26px;
   font-size: 16px;
   border-radius: 7px;
-  margin-bottom: 30px;
-  width: 90%;
+  margin-bottom: 10px;
+  width: 65%;
   position: relative;
 }
 .chat .chat-history .message:after {
@@ -88,23 +70,24 @@ li {
   width: 0;
   position: absolute;
   pointer-events: none;
-  border-bottom-color: #86BB71;
+  border-bottom-color: #6aad91;
   border-width: 10px;
   margin-left: -10px;
 }
 .chat .chat-history .my-message {
-  background: #86BB71;
+  background: #6aad91;
 }
 .chat .chat-history .other-message {
-  background: #94C2ED;
+  background: #759ec5;
 }
 .chat .chat-history .other-message:after {
-  border-bottom-color: #94C2ED;
+  border-bottom-color: #759ec5;
   left: 93%;
 }
 .chat .chat-message {
   background: #eee;
-  padding: 30px;
+  padding: 20px 30px 15px 30px;
+  border-radius: 7px;
 }
 .chat .chat-message textarea {
   width: 100%;
@@ -120,19 +103,6 @@ li {
   color: gray;
   cursor: pointer;
 }
-.chat .chat-message button {
-  float: right;
-  color: #94C2ED;
-  font-size: 16px;
-  text-transform: uppercase;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  background: #F2F5F8;
-}
-.chat .chat-message button:hover {
-  color: #75b1e8;
-}
 
 .online, .offline, .me {
   margin-right: 3px;
@@ -140,7 +110,7 @@ li {
 }
 
 .online {
-  color: #86BB71;
+  color: #6aad91;
 }
 
 .offline {
@@ -148,7 +118,7 @@ li {
 }
 
 .me {
-  color: #94C2ED;
+  color: #759ec5;
 }
 
 .align-left {
