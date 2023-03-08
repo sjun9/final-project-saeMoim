@@ -1,4 +1,5 @@
-let origin = `http://52.79.169.105:8080`
+// const origin = `http://localhost:8080`
+const origin = `https://api.saemoim.site`
 
 /**
  * Variables
@@ -154,6 +155,7 @@ function checkAuthCode() {
     };
 
     $.ajax(settings).done(function (response) {
+        ischeckAuthCode = true;
         alert(response.data)
     }).fail(function (response) {
         alert(response.responseJSON['data'])

@@ -7,6 +7,9 @@
 // const tempGroupId = "1"
 // const tempUserId = "2"
 
+// const origin = `http://localhost:8080`
+const origin = `https://api.saemoim.site`
+
 let Authorization = localStorage.getItem("Authorization")
 let Refresh_Token = localStorage.getItem("Refresh_Token")
 
@@ -24,7 +27,7 @@ let unread_messages_num = parseInt(unread_messages.innerText)
 function getGroupInfo(groupId) {
   $.ajax({
     type: "GET",
-    url: `http://localhost:8080/groups/${groupId}`,
+    url: `${origin}/groups/${groupId}`,
     async: false,
     data: {},
     beforeSend: function (xhr) {
@@ -41,11 +44,12 @@ function getGroupInfo(groupId) {
  */
 
 
+let username = ''
 // 현재 그룹 참여자 리스트 가져와서 localStorage에 저장
 function getGroupProfileIdList() {
   $.ajax({
     type: "GET",
-    url: `http://localhost:8080/participant/groups/${tempGroupId}`,
+    url: `${origin}/participant/groups/${tempGroupId}`,
     async: false,
     data: {},
     beforeSend: function (xhr) {
@@ -53,7 +57,14 @@ function getGroupProfileIdList() {
     },
     success: function (response) {
       localStorage.setItem("profileIdList", JSON.stringify(response["data"]));
-      // const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
+      // to get username
+      const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
+      profileIdList.forEach((user) => {
+        if (String(user["userId"]) === tempUserId) {
+          username = String(user["username"])
+        }
+      })
+      document.querySelector("#current_user").innerText = username
     }
   });
 }
@@ -68,7 +79,7 @@ function renderLeaderProfile() {
   }
 
   var settings = {
-    "url": `http://localhost:8080/profile/users/${groupInfo["userId"]}`,
+    "url": `${origin}/profile/users/${groupInfo["userId"]}`,
     "method": "GET",
     "timeout": 0,
     "headers": {
@@ -105,7 +116,7 @@ function renderProfileList() {
       return
     }
     var settings = {
-      "url": `http://localhost:8080/profile/users/${user["userId"]}`,
+      "url": `${origin}/profile/users/${user["userId"]}`,
       "method": "GET",
       "timeout": 0,
       "headers": {
@@ -147,7 +158,7 @@ function openProfile(event) {
     })
   }
   var settings = {
-    "url": `http://localhost:8080/profile/users/${userId}`,
+    "url": `${origin}/profile/users/${userId}`,
     "method": "GET",
     "timeout": 0,
     "headers": {
@@ -158,6 +169,19 @@ function openProfile(event) {
     document.querySelector("#profile_name").innerText = username
     document.querySelector("#profile_content").innerText = response["content"]
     document.querySelector("#proflie-image").src = response["imagePath"]
+
+    let report_button = document.querySelector("#report_button")
+
+    // 일단 신고버튼 보이게 만들고
+    if (report_button.classList.contains("disable")) {
+      report_button.classList.remove("disable")
+    }
+    
+    // 현재 사용자 프로필이라면 신고버튼 없애기
+    if (String(response["id"]) === tempUserId) {
+      report_button.classList.add("disable")
+    }
+
     localStorage.setItem("target_profile_id", response["id"])
   }).fail(function (e) {
     console.log(e.status)
@@ -192,7 +216,7 @@ chat();
 // 회원 신고 함수
 function report(id, content) { // 신고할 사람id, 신고내용
   var settings = {
-    "url": "http://localhost:8080/report/users/" + id,
+    "url": `${origin}/report/users/${id}`,
     "method": "POST",
     "timeout": 0,
     "headers": {
@@ -266,7 +290,7 @@ function newPost() {
 
   $.ajax({
     type: "post",
-    url: `http://localhost:8080/groups/${currentGroupId}/post`,
+    url: `${origin}/groups/${currentGroupId}/post`,
     headers: { 'Authorization': Authorization },
     data: formData, //전송 데이터
     dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
@@ -339,7 +363,7 @@ function editPost(event) {
 
   $.ajax({
     type: "put",
-    url: `http://localhost:8080/posts/${currentPostId}`,
+    url: `${origin}/posts/${currentPostId}`,
     timeout: 0,
     headers: { "Authorization": Authorization },
     data: formData,
@@ -412,7 +436,7 @@ function deletePost(event) {
   const currentPostId = localStorage.getItem("current_post_id")
 
   var settings = {
-    "url": `http://localhost:8080/posts/${currentPostId}`,
+    "url": `${origin}/posts/${currentPostId}`,
     "method": "DELETE",
     "timeout": 0,
     "headers": {
@@ -478,7 +502,7 @@ let page = 1; // 새로고침 시 1페이지부터 시작
 function getPosts(pageNum, sizeNum) {
   $.ajax({
     type: 'GET',
-    url: `http://localhost:8080/groups/${tempGroupId}/post?page=${pageNum}&size=${sizeNum}`,
+    url: `${origin}/groups/${tempGroupId}/post?page=${pageNum}&size=${sizeNum}`,
     data: {},
     beforeSend: function (xhr) {
       xhr.setRequestHeader("Authorization", Authorization);
@@ -528,7 +552,7 @@ const makeContent = (i) => {
       <?xml version="1.0" encoding="utf-8"?>
       <svg width="20" height="20" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M320 1344q0-26-19-45t-45-19q-27 0-45.5 19t-18.5 45q0 27 18.5 45.5t45.5 18.5q26 0 45-18.5t19-45.5zm160-512v640q0 26-19 45t-45 19h-288q-26 0-45-19t-19-45v-640q0-26 19-45t45-19h288q26 0 45 19t19 45zm1184 0q0 86-55 149 15 44 15 76 3 76-43 137 17 56 0 117-15 57-54 94 9 112-49 181-64 76-197 78h-129q-66 0-144-15.5t-121.5-29-120.5-39.5q-123-43-158-44-26-1-45-19.5t-19-44.5v-641q0-25 18-43.5t43-20.5q24-2 76-59t101-121q68-87 101-120 18-18 31-48t17.5-48.5 13.5-60.5q7-39 12.5-61t19.5-52 34-50q19-19 45-19 46 0 82.5 10.5t60 26 40 40.5 24 45 12 50 5 45 .5 39q0 38-9.5 76t-19 60-27.5 56q-3 6-10 18t-11 22-8 24h277q78 0 135 57t57 135z"/></svg>
     </a>
-    <span class="content__header__title" onclick="openBody(event)" data-bs-toggle="modal" data-bs-target="#readPostModal">${currentPost["title"]}</span>
+    <span class="content__header__title" style="padding: 1px 0" onclick="openBody(event)" data-bs-toggle="modal" data-bs-target="#readPostModal">${currentPost["title"]}</span>
     <span class="content__header__author">${currentPost["username"]}</span>
     <span class="content__header__date" style="color: #afafaf">${simpleCreatedAt}</span>
   `;
@@ -652,7 +676,7 @@ function renderComments(currentPostId) {
   }
 
   var settings = {
-    "url": `http://localhost:8080/posts/${currentPostId}/comment`,
+    "url": `${origin}/posts/${currentPostId}/comment`,
     "method": "GET",
     "timeout": 0,
     "headers": {
@@ -712,7 +736,7 @@ function writeComment() {
   const commentStr = document.querySelector("#comment").value
   const currentPostId = localStorage.getItem("current_post_id")
   var settings = {
-    "url": `http://localhost:8080/posts/${currentPostId}/comment`,
+    "url": `${origin}/posts/${currentPostId}/comment`,
     "method": "POST",
     "timeout": 0,
     "headers": {
@@ -750,7 +774,7 @@ function editComment(event) {
   const currentCommentId = event.currentTarget.parentElement.previousElementSibling.children[2].innerText
   const newCommentStr = event.currentTarget.parentElement.previousElementSibling.previousElementSibling.value
   var settings = {
-    "url": `http://localhost:8080/comments/${currentCommentId}`,
+    "url": `${origin}/comments/${currentCommentId}`,
     "method": "PUT",
     "timeout": 0,
     "headers": {
@@ -809,7 +833,7 @@ function deleteComment(event) {
   const currentCommentId = event.currentTarget.nextElementSibling.nextElementSibling.innerText
 
   var settings = {
-    "url": `http://localhost:8080/comments/${currentCommentId}`,
+    "url": `${origin}/comments/${currentCommentId}`,
     "method": "DELETE",
     "timeout": 0,
     "headers": {
@@ -855,7 +879,7 @@ function addLikeFeatureToButtons() {
 
   like_buttons.forEach((button) => {
     button.addEventListener("click", function (e) {
-      console.log('hi')
+      // console.log('hi')
       e.preventDefault();
       this.classList.toggle("active"); // 좋아요 상태를 변경
 
@@ -897,7 +921,7 @@ function randomInt(min, max) {
 // 좋아요 누르기
 function doLike(postId) {
   var settings = {
-    "url": `http://localhost:8080/posts/${postId}/like`,
+    "url": `${origin}/posts/${postId}/like`,
     "method": "POST",
     "timeout": 0,
     "headers": {
@@ -925,7 +949,7 @@ function doLike(postId) {
 // 좋아요 취소
 function unLike(postId) {
   var settings = {
-    "url": `http://localhost:8080/posts/${postId}/like`,
+    "url": `${origin}/posts/${postId}/like`,
     "method": "DELETE",
     "timeout": 0,
     "headers": {
@@ -960,32 +984,16 @@ function unLike(postId) {
 */
 
 
-// to get username
-const profileIdList = JSON.parse(localStorage.getItem("profileIdList"))
-let username = ''
-profileIdList.forEach((user) => {
-  if (String(user["userId"]) === tempUserId) {
-    username = String(user["username"])
-  }
-})
-document.querySelector("#current_user").innerText = username
-
-
 // chat
 function chat() {
 
-  var sockJs = new SockJS("http://localhost:8080/stomp/chat", null, { transports: ["websocket", "xhr-streaming", "xhr-polling"] });
-  //1. SockJS를 내부에 들고있는 stomp를 내어줌
+  var sockJs = new SockJS(`${origin}/stomp/chat`, null, { transports: ["websocket", "xhr-streaming", "xhr-polling"] });
   var stomp = Stomp.over(sockJs);
 
   // token header
   let headers = { Authorization: Authorization };
 
-  //2. connection이 맺어지면 실행
   stomp.connect(headers, function () {
-    console.log("STOMP Connection")
-
-    //4. subscribe(path, callback)으로 메세지를 받을 수 있음
     stomp.subscribe("/sub/chat/group/" + tempGroupId, function (chat) {
       var content = JSON.parse(chat.body);
 
@@ -1003,7 +1011,7 @@ function chat() {
       } else {
         unread_messages_num += 1
       }
-      // 첫 접속 (OOO님이 모임에 입장하셨습니다.)
+      // 첫 접속인 경우 (OOO님이 모임에 입장하셨습니다.)
       if (String(message_userId) === tempUserId) {
         unread_messages_num = 0
       }
@@ -1016,7 +1024,6 @@ function chat() {
       })
     });
 
-    //3. send(path, header, message)로 메세지를 보낼 수 있음
     // OOO님이 모임에 입장하셨습니다.
     stomp.send('/pub/chat/enter', headers, JSON.stringify(
       {
@@ -1027,10 +1034,15 @@ function chat() {
     ))
   });
 
+  // stomp.disconnect(function() {
+  //   alert("See you next time!");
+  // });
+
 
   function send() {
     var msg = document.getElementById("msg");
 
+    // 보내는 메세지
     stomp.send('/pub/chat/message', headers, JSON.stringify(
       {
         groupId: tempGroupId,
@@ -1049,7 +1061,6 @@ function chat() {
       send();
     }
   })
-
 }
 
 
@@ -1110,7 +1121,7 @@ function makeMessageLi(message_userId, writer, message, createdAtUTC) {
 // 채팅 기록 불러오기
 function renderChat() {
   var settings = {
-    "url": `http://localhost:8080/chat/${tempGroupId}`,
+    "url": `${origin}/chat/${tempGroupId}`,
     "method": "GET",
     "timeout": 0,
     "headers": {
