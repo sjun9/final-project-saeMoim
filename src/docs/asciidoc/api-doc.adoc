@@ -114,3 +114,17 @@ operation::user/getAll[snippets='http-request,request-headers,http-response,resp
 === 4-12. 회원 탈퇴
 
 operation::user/withdrawal[snippets='http-request,request-headers,request-fields,http-response,response-fields']
+
+== 5. Report API
+
+=== 5-1. 사용자 신고
+
+operation::report/do[snippets='http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 5-2. 신고내역 조회
+
+operation::report/getAll[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 5-3. 신고내역 삭제
+
+operation::report/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
