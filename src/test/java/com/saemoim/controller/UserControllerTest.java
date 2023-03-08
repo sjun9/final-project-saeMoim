@@ -7,7 +7,6 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -476,10 +475,10 @@ class UserControllerTest {
 			.file(image).file(request)
 			.header(JwtUtil.AUTHORIZATION_HEADER, "Bearer accessToken")
 			.accept(MediaType.APPLICATION_JSON));
-정
+
 		// then
 		resultActions.andExpect(status().isOk())
-			.andDo(document("user/profile",
+			.andDo(document("user/update-profile",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				requestPartFields("requestDto",
@@ -503,22 +502,34 @@ class UserControllerTest {
 	@DisplayName("리프레쉬 토큰 재발급")
 	void reissueSuccess() throws Exception {
 		// given
-		String accessToken = "accessToken";
-		String refreshToken = "refreshToken";
+		String accessToken = "Bearer accessToken";
+		String refreshToken = "Bearer refreshToken";
 		TokenResponseDto tokenResponseDto = new TokenResponseDto(accessToken, refreshToken);
 		when(userService.reissueToken(anyString(), anyString())).thenReturn(tokenResponseDto);
-
 		// when
-		ResultActions resultActions = mockMvc.perform(post("/reissue")
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.post("/reissue")
 			.header(JwtUtil.AUTHORIZATION_HEADER, accessToken)
-			.header(JwtUtil.REFRESH_TOKEN_HEADER, refreshToken)
-			.with(csrf()));
+			.header(JwtUtil.REFRESH_TOKEN_HEADER, refreshToken));
 
 		// then
 		resultActions.andExpect(status().isOk())
 			.andExpect(header().string(JwtUtil.AUTHORIZATION_HEADER, accessToken))
 			.andExpect(header().string(JwtUtil.REFRESH_TOKEN_HEADER, refreshToken))
-			.andExpect(jsonPath("$.data").value("토큰 재발급이 완료 되었습니다."));
+			.andDo(document("user/reissue",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("엑세스토큰"),
+					headerWithName("Refresh_Token").description("리프레시토큰")
+				),
+				responseHeaders(
+					headerWithName("Authorization").description("엑세스토큰"),
+					headerWithName("Refresh_Token").description("리프레시토큰")
+				),
+				responseFields(
+					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
+				)
+			));
 	}
 
 }

@@ -65,3 +65,52 @@ operation::category/update[snippets='path-parameters,http-request,request-header
 
 operation::category/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
 
+== 4. User API
+
+=== 4-1. 회원가입
+
+operation::user/sign-up[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 4-2. 이메일 중복 검사
+
+operation::user/email-check[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 4-3. 닉네임 중복 검사
+
+operation::user/username-check[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 4-4. 로그인
+
+operation::user/login[snippets='http-request,request-fields,http-response,response-headers,response-fields']
+
+=== 4-5. 로그아웃
+
+operation::user/logout[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 4-6. 토큰 재발급
+
+operation::user/reissue[snippets='http-request,request-headers,http-response,response-headers,response-fields']
+
+=== 4-7. 내 정보 조회
+
+operation::user/myProfile[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 4-8. 내 정보 수정
+
+operation::user/update-profile[snippets='http-request,request-headers,request-part-requestDto-fields,http-response,response-fields']
+
+=== 4-9. 사용자 정보 조회
+
+operation::user/user-info[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 4-10. 회원 프로필 조회
+
+operation::user/profile[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 4-11. 전체 회원 조회
+
+operation::user/getAll[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 4-12. 회원 탈퇴
+
+operation::user/withdrawal[snippets='http-request,request-headers,request-fields,http-response,response-fields']
