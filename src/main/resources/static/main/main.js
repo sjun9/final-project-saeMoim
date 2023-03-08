@@ -1,4 +1,5 @@
-const origin = `http://52.79.169.105:8080`
+// const origin = `http://52.79.169.105:8080`
+const origin = `http://localhost:8080`
 
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
@@ -31,8 +32,9 @@ document.querySelector("#side-profile").addEventListener("click", () => {
     document.querySelector("#side-profile-content").classList.add("active");
     getMyProfile()
 })
-document.querySelector("#side-chat").addEventListener("click", () => {
-    document.querySelector("#side-chat-content").classList.add("active");
+document.querySelector("#side-wish").addEventListener("click", () => {
+    document.querySelector("#side-wish-content").classList.add("active");
+    showWishMoim()
 })
 
 
@@ -418,6 +420,7 @@ function showAllMoim() {
         type: "GET",
         url: url,
         success: function (response) {
+            console.log(response)
             response = response['data']['content']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -638,6 +641,65 @@ function showParticipantMoim() { // 참여중인 모임 조회
 }
 
 
+
+function showWishMoim() {
+    let contentId = '#wish-content';
+    let url = `${origin}/group/wish`;
+    $(contentId).empty()
+    $.ajax({
+        type: "GET",
+        url: url,
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+        success: function (response) {
+            console.log(response)
+            response = response['data']
+            for (let i = 0; i < response.length; i++) {
+                let id = response[i]['id']
+                let groupName = response[i]['groupName']
+                let categoryName = response[i]['categoryName']
+                let participantCount = response[i]['participantCount']
+                let recruitNumber = response[i]['recruitNumber']
+                let wishCount = response[i]['wishCount']
+                let status = response[i]['status']
+                let imgPath = response[i]['imagePath']
+                console.log(imgPath)
+
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") { moim_status = "active" }
+                else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+                                    onClick="showMoimDetail(event, ${id})">
+                                    <div class="product-cell image">
+                                        <img src="${imgPath}" alt="">
+                                            <span>${groupName}</span>
+                                    </div>
+                                    <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
+                                    <div class="product-cell status-cell">
+                                        <span class="cell-label">모임상태:</span>
+                                        <span class="status ${moim_status}">${status}</span>
+                                    </div>
+                                    <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
+                                    <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
+                                    <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
+                                </div>`
+                $(contentId).append(temp_html)
+            }
+        }
+    }).fail(function (e) {
+        alert(e.responseJSON['data'])
+    });
+}
+
+
+
+
 function showFilter(categoryId, status) {
     $('#find-content').empty()
     $.ajax({
@@ -740,20 +802,29 @@ function showRequestedGroup() {
             [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
         success: function (response) {
+            console.log('before')
+            console.log(response)
             response = response['data']
+            alert('hi')
+            console.log('after')
+            console.log(response)
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
                 let username = response[i]['username']
                 let status = response[i]['status']
 
-                let temp_html = `<tr>
-                                    <td>${groupName}</td>
-                                    <td>${username}</td>
-                                    <td>${status}</td>
-                                    <td><input type="button" onclick="permitApplication(${id})">승인</td>
-                                    <td><input type="button" onclick="rejectApplication(${id})">거절</td>
-                                  </tr>`
+                let temp_html = `<div class="list-body">
+                                    <div class="list-title">${groupName}</div>
+                                    <div class="list-name">${userName}</div>
+                                    <div class="list-button">
+                                        <span>${status}</span>
+                                        <input type="button" onclick="permitApplication(${id})" value="승인">
+                                        <input type="button" onclick="rejectApplication(${id})" value="거절">
+                                    </div>
+                                  </div>
+                                  <hr>
+                                  `
                 $('#requested-group').append(temp_html)
             }
         }
@@ -787,12 +858,16 @@ function showAppliedGroup() {
                 let leaderName = response[i]['leaderName']
                 let status = response[i]['status']
 
-                let temp_html = `<tr>
-                                    <td>${groupName}</td>
-                                    <td>${leaderName}</td>
-                                    <td>${status}</td>
-                                    <td><input type="button" onclick="cancelApplication(${id})">삭제</td>
-                                  </tr>`
+                let temp_html = `<div class="list-body">
+                                    <div class="list-title">${groupName}</div>
+                                    <div class="list-name">${leaderName}</div>
+                                    <div class="list-button">
+                                        <span>${status}</span>
+                                        <input type="button" onclick="cancelApplication(${id})" value="삭제">
+                                    </div>
+                                  </div>
+                                  <hr>
+                                  `
                 $('#applied-group').append(temp_html)
             }
         }
@@ -1128,6 +1203,29 @@ function wishMoim(id) {
         headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
             alert(data['data'])
+        },
+        error: function (e) {
+            if (e.status === 400) {
+                alert(e.responseJSON['data'])
+            } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+                reissue()
+                setTimeout(wishMoim(id), 150)
+                setTimeout(showUsername, 150)
+            } else {
+                alert(e.responseJSON['data'])
+            }
+        }
+    });
+}
+
+function deleteWishMoim(id) {
+    $.ajax({
+        type: "delete",
+        url: `${origin}/groups/${id}/wish`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+        success: function (data) {
+            alert(data['data'])
+            location.reload()
         },
         error: function (e) {
             if (e.status === 400) {

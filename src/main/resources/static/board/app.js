@@ -7,7 +7,8 @@
 // const tempGroupId = "1"
 // const tempUserId = "2"
 
-const origin = `http://52.79.169.105:8080`
+// const origin = `http://52.79.169.105:8080`
+const origin = `http://localhost:8080`
 
 let Authorization = localStorage.getItem("Authorization")
 let Refresh_Token = localStorage.getItem("Refresh_Token")
@@ -168,6 +169,19 @@ function openProfile(event) {
     document.querySelector("#profile_name").innerText = username
     document.querySelector("#profile_content").innerText = response["content"]
     document.querySelector("#proflie-image").src = response["imagePath"]
+
+    let report_button = document.querySelector("#report_button")
+
+    // 일단 신고버튼 보이게 만들고
+    if (report_button.classList.contains("disable")) {
+      report_button.classList.remove("disable")
+    }
+    
+    // 현재 사용자 프로필이라면 신고버튼 없애기
+    if (String(response["id"]) === tempUserId) {
+      report_button.classList.add("disable")
+    }
+
     localStorage.setItem("target_profile_id", response["id"])
   }).fail(function (e) {
     console.log(e.status)

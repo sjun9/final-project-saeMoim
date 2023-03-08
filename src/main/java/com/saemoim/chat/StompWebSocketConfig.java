@@ -19,11 +19,11 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/stomp/chat") // 여기로 웹소켓 생성
-			// .setAllowedOrigins("http://localhost:8080")
-			// .setAllowedOrigins("http://*:8080", "http://*.*.*.*:8080")
-			// .setAllowedOriginPatterns("http://*:63342", "http://*.*.*.*:63342") // for intelliJ
-			.setAllowedOrigins("http://52.79.169.105:8080")
-			.setAllowedOriginPatterns("http://52.79.169.105:63342") // for intelliJ
+			.setAllowedOrigins("http://localhost:8080")
+			.setAllowedOrigins("http://*:8080", "http://*.*.*.*:8080")
+			.setAllowedOriginPatterns("http://*:63342", "http://*.*.*.*:63342") // for intelliJ
+			// .setAllowedOrigins("http://52.79.169.105:8080")
+			// .setAllowedOriginPatterns("http://52.79.169.105:63342") // for intelliJ
 			.withSockJS();
 	}
 

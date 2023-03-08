@@ -8,7 +8,7 @@
     <script src="https://kit.fontawesome.com/13a08ca775.js" crossorigin="anonymous"></script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script type="text/javascript"
-            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=06b0d21be95f7359297cfcaa65fc12bf&libraries=services"></script>
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=db46af3ae73024f086a9c30202fe238d&libraries=services"></script>
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
@@ -21,6 +21,25 @@
 
 <body>
 
+<!-- map search Modal -->
+<div class="modal fade" id="map_search_modal" tabindex="-1" aria-labelledby="map_search_modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="map_search_modalLabel">지도 검색</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+          <button type="button" class="btn btn-primary">확인</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <!-- moimDetailModal -->
 <div class="modal fade" id="moimDetailModal" tabindex="-1" aria-labelledby="moimDetail_Title" aria-hidden="true">
     <input type="hidden" id="moimDetailId" value="">
@@ -31,7 +50,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body moimDetailModalBody">
-                <img id="moimDetail_Image" src="../static/images/main-running.jpg" alt="">
+                <img id="moimDetail_Image" src="" alt="">
                 <div>
                     <p class="modal__tag__title">모임 태그</p>
                     <p id="moimTag" class="modal__tag_tags"></p>
@@ -40,27 +59,35 @@
                 <p class="moimDetailModal_introduce" id="moimDetail_introduce"></p>
                 <div id="detailAddress"></div>
                 <div id="detailMoimMap" style="width:100%; margin: 20px 0; height:400px;"></div>
-                <button type="button" class="btn btn-warning"
-                        onclick="wishMoim(document.getElementById('moimDetailId').value)">찜 등록
-                </button>
-                <button type="button" class="btn" id="moimApplication"
-                        onclick="attendMoim(document.getElementById('moimDetailId').value)">모임 참여 신청
-                </button>
-                <button type="button" class="btn" id="moimGoToBoard"
-                        onclick="gotoBoard(document.getElementById('moimDetailId').value)">게시판 입장
-                </button>
-                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal"
-                        onclick="relayoutMap()">모임 수정
-                </button>
-                <button type="button" class="btn" id="moimStatus"
-                        onclick="changeStatus(document.getElementById('moimDetailId').value)">
-                </button>
-                <button type="button" class="btn btn-danger"
-                        onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴
-                </button>
-                <button type="button" class="btn btn-danger"
-                        onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제
-                </button>
+                <div class="moim_detail_buttons" style="margin-bottom: 10px;">
+                    <button type="button" class="btn btn-warning"
+                    onclick="wishMoim(document.getElementById('moimDetailId').value)">찜 등록
+                    </button>
+                    <button type="button" class="btn btn-warning"
+                            onclick="deleteWishMoim(document.getElementById('moimDetailId').value)">찜 해제
+                    </button>
+                    <button type="button" class="btn" id="moimApplication"
+                            onclick="attendMoim(document.getElementById('moimDetailId').value)">참여 신청
+                    </button>
+                    <button type="button" class="btn" id="moimGoToBoard"
+                            onclick="gotoBoard(document.getElementById('moimDetailId').value)">게시판 입장
+                    </button>
+                </div>
+                <div class="moim_detail_buttons">
+                    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal"
+                            onclick="relayoutMap()">모임 수정
+                    </button>
+                    <button type="button" class="btn" id="moimStatus"
+                            onclick="changeStatus(document.getElementById('moimDetailId').value)">
+                    </button>
+                    <button type="button" class="btn btn-danger"
+                            onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴
+                    </button>
+                    <button type="button" class="btn btn-danger"
+                            onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제
+                    </button>
+                </div>
+                
                 <div class="moimDetailModal_reviews" id="moimDetail_reviews">
                 </div>
             </div>
@@ -210,55 +237,34 @@
 <div class="app-container">
     <div class="sidebar">
         <div class="sidebar-header">
-            <div class="app-icon">
-                <h1 style="display: inline;" onclick="goToHome()">SAEMOIM</h1>
-                <img src="../static/images/bird.png" alt="" style="display: inline;" onclick="goToHome()">
+            <div class="app-icon" onclick="goToHome()" style="margin-bottom: 10px; cursor: pointer;">
+                <h1 style="display: inline;">SAEMOIM</h1>
+                <img src="../static/images/bird.png" alt="" style="display: inline;">
             </div>
         </div>
         <ul class="sidebar-list">
             <li class="sidebar-list-item active" id="side-find">
                 <a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                         class="feather feather-home">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                        <polyline points="9 22 9 12 15 12 15 22"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="m19.6 21l-6.3-6.3q-.75.6-1.725.95T9.5 16q-2.725 0-4.612-1.888T3 9.5q0-2.725 1.888-4.612T9.5 3q2.725 0 4.612 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l6.3 6.3l-1.4 1.4ZM9.5 14q1.875 0 3.188-1.313T14 9.5q0-1.875-1.313-3.188T9.5 5Q7.625 5 6.312 6.313T5 9.5q0 1.875 1.313 3.188T9.5 14Z"/></svg>
                     <span>Find</span>
+                </a>
+            </li>
+            <li class="sidebar-list-item" id="side-wish">
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256"><path fill="currentColor" d="m235.32 81.37l-60.69-60.68a16 16 0 0 0-22.63 0l-53.63 53.8c-10.66-3.34-35-7.37-60.4 13.14a16 16 0 0 0-1.29 23.78L85 159.71l-42.66 42.63a8 8 0 0 0 11.32 11.32L96.29 171l48.29 48.29A16 16 0 0 0 155.9 224h1.13a15.93 15.93 0 0 0 11.64-6.33c19.64-26.1 17.75-47.32 13.19-60L235.33 104a16 16 0 0 0-.01-22.63ZM224 92.69l-57.27 57.46a8 8 0 0 0-1.49 9.22c9.46 18.93-1.8 38.59-9.34 48.62L48 100.08c12.08-9.74 23.64-12.31 32.48-12.31A40.13 40.13 0 0 1 96.81 91a8 8 0 0 0 9.25-1.51L163.32 32L224 92.68Z"/></svg>
+                    <span>WishList</span>
                 </a>
             </li>
             <li class="sidebar-list-item" id="side-mypage">
                 <a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                         class="feather feather-pie-chart">
-                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
-                        <path d="M22 12A10 10 0 0 0 12 2v10z"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M17.75 2a2.25 2.25 0 0 1 2.245 2.096L20 4.25v15.498a2.25 2.25 0 0 1-2.096 2.245l-.154.005H6.25a2.25 2.25 0 0 1-2.245-2.096L4 19.748V4.25a2.25 2.25 0 0 1 2.096-2.245L6.25 2h11.5Zm0 1.5H6.25a.75.75 0 0 0-.743.648L5.5 4.25v15.498c0 .38.282.694.648.743l.102.007h11.5a.75.75 0 0 0 .743-.648l.007-.102V4.25a.75.75 0 0 0-.648-.743L17.75 3.5ZM7 15.749a.75.75 0 0 1 .75-.75h8.5a.75.75 0 1 1 0 1.5h-8.5a.75.75 0 0 1-.75-.75Zm0-8a.75.75 0 0 1 .75-.75h8.5a.75.75 0 1 1 0 1.5h-8.5a.75.75 0 0 1-.75-.75Zm0 4a.75.75 0 0 1 .75-.75h8.5a.75.75 0 1 1 0 1.5h-8.5a.75.75 0 0 1-.75-.75Z"/></svg>
                     <span>MyPage</span>
                 </a>
             </li>
             <li class="sidebar-list-item" id="side-profile">
                 <a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                         class="feather feather-inbox">
-                        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
-                        <path
-                                d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2Z"/><path d="M4.271 18.346S6.5 15.5 12 15.5s7.73 2.846 7.73 2.846M12 12a3 3 0 1 0 0-6a3 3 0 0 0 0 6Z"/></g></svg>
                     <span>MyProfile</span>
-                </a>
-            </li>
-            <li class="sidebar-list-item" id="side-chat" style="display: none;">
-                <a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                         class="feather feather-bell">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                    </svg>
-                    <span>Chat : display none</span>
                 </a>
             </li>
         </ul>
@@ -278,13 +284,17 @@
         <div class="app-content-header">
             <h1 class="app-content-headerText">모임 찾기</h1>
             <button class="app-content-headerButton btn-open-popup" data-bs-toggle="modal"
-                    data-bs-target="#newMoimModal" onclick="relayoutMap()">새
-                모임 추가하기
+                    data-bs-target="#newMoimModal" onclick="relayoutMap()">새 모임 추가하기
             </button>
         </div>
         <div class="app-content-actions">
             <input class="search-bar" id="search-name" placeholder="Search..." type="text" onKeypress="javascript:if(event.keyCode==13) {showSearch($('#search-name').val())}">
-            <input type="button" onclick="showSearch($('#search-name').val())" value="검색">
+            <button type="button" class="btn-find-moim" onclick="showSearch($('#search-name').val())">
+                검색
+            </button>
+            <button type="button" class="btn-find-moim" data-bs-toggle="modal" data-bs-target="#map_search_modal">
+                지도 검색
+            </button>
             <div class="app-content-actions-wrapper">
                 <div class="filter-button-wrapper">
                     <button class="action-button filter jsFilter"><span>Filter</span>
@@ -318,10 +328,10 @@
                 </div>
             </div>
         </div>
-        <h3 style="font-size: 30px;">모임 보기</h3>
+        <h3 style="font-size: 30px; margin-bottom: 5px;">모임 보기</h3>
         <div class="app-content-section gridView" id="find-content">
         </div>
-        <h3 style="font-size: 30px; margin-top: 10px;">인기 모임</h3>
+        <h3 style="font-size: 30px; margin: 10px 0 5px 0;">인기 모임</h3>
         <div class="app-content-section gridView" id="popular-content" style="overflow: hidden;">
         </div>
     </div>
@@ -332,36 +342,28 @@
             <h1 class="app-content-headerText">마이페이지</h1>
         </div>
         <div class="mypageTable">
-            <div>
+            <div class="table_left">
                 <h3 style="font-size: 30px;">참가 신청 받은 목록</h3>
                 <div style="height: 150px; overflow-y: scroll;">
-                    <table class="fixed_headers" style="width: 100%;">
-                        <thead>
-                        <tr>
-                            <th>모임 이름</th>
-                            <th>참가 신청자 이름</th>
-                            <th>신청 상태</th>
-                        </tr>
-                        </thead>
-                        <tbody id="requested-group">
-                        </tbody>
-                    </table>
+                    <div class="list-head">
+                        <div class="list-title">모임 이름</div>
+                        <div class="list-name">신청자</div>
+                        <div class="list-button">신청 상태</div>
+                    </div class="list-wrap">
+                    <div id="requested-group">
+                    </div>
                 </div>
             </div>
-            <div>
+            <div class="table_right">
                 <h3 style="font-size: 30px;">참가 신청한 목록</h3>
                 <div style="height: 150px; overflow-y: scroll;">
-                    <table class="fixed_headers" style="width: 100%;">
-                        <thead>
-                        <tr>
-                            <th>모임 이름</th>
-                            <th>모임 리더 이름</th>
-                            <th>신청 상태</th>
-                        </tr>
-                        </thead>
-                        <tbody id="applied-group">
-                        </tbody>
-                    </table>
+                    <div class="list-head">
+                        <div class="list-title">모임 이름</div>
+                        <div class="list-name">모임장</div>
+                        <div class="list-button">신청 상태</div>
+                    </div class="list-wrap">
+                    <div id="applied-group">
+                    </div>
                 </div>
             </div>
         </div>
@@ -388,7 +390,7 @@
                     <button type="button" class="btn btn-secondary" onclick="toggleProfileEdit()">프로필 수정</button>
                 </div>
                 <div class="edit_profile hide" style="margin: 25px 0;">
-                    <h3>소개글 수정</h3>
+                    <h3>프로필 수정</h3>
                     <div class="mb-3">
                         <label for="inputContent" class="col-form-label">소개글</label>
                         <input type="text" class="form-control" id="inputContent">
@@ -409,26 +411,29 @@
             </div>
         </div>
     </div>
-</div>
-<div class="app-content chat" id="side-chat-content">
-    <div class="app-content-header">
-        <h1 class="app-content-headerText">채팅 목록</h1>
-    </div>
-    <div style="overflow-y: scroll;">
-        <div class="app-content-section gridView" style="overflow: hidden;">
-            <div class="products-row" onclick="gotochat()">
-                <div class="product-cell image" style="text-align: center;">
-                    <img src="../static/images/bill_gates.jpg" alt="" style="max-width: 150px;">
-                    <div>ㅇㅇㅇ 님과의 대화방</div>
-                </div>
-            </div>
-            <div class="products-row" onclick="gotochat()">
-                <div class="product-cell image" style="text-align: center;">
-                    <img src="../static/images/steve_jobs.jpg" alt="" style="max-width: 150px;">
-                    <div>ㅇㅇㅇ 님과의 대화방</div>
-                </div>
-            </div>
+    <div class="app-content wish" id="side-wish-content">
+        <div class="app-content-header">
+            <h1 class="app-content-headerText">내가 찜한 모임</h1>
         </div>
+        <h3 style="font-size: 30px;">찜 목록</h3>
+        <div class="app-content-section gridView" id="wish-content" style="align-self: flex-start;">
+        </div>
+        <!-- <div style="overflow-y: scroll;">
+            <div class="app-content-section gridView" style="overflow: hidden;">
+                <div class="products-row" onclick="gotochat()">
+                    <div class="product-cell image" style="text-align: center;">
+                        <img src="../static/images/default_profile.jpg" alt="" style="max-width: 150px;">
+                        <div>ㅇㅇㅇ 님과의 대화방</div>
+                    </div>
+                </div>
+                <div class="products-row" onclick="gotochat()">
+                    <div class="product-cell image" style="text-align: center;">
+                        <img src="../static/images/default_profile.jpg" alt="" style="max-width: 150px;">
+                        <div>ㅇㅇㅇ 님과의 대화방</div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
     </div>
 </div>
 </body>

@@ -234,7 +234,7 @@ a:visited {
 
 .find.active {
     display: grid;
-    grid-template-rows: 50px 1fr;
+    grid-template-rows: 50px 60px 1fr;
 }
 
 .mypage.active {
@@ -247,16 +247,16 @@ a:visited {
     grid-template-rows: 50px 1fr;
 }
 
-.chat.active {
+.wish.active {
     display: grid;
-    grid-template-rows: 50px 1fr;
+    grid-template-rows: 50px 40px 1fr;
 }
 
 .app-content-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 4px;
+    padding: 0;
 }
 
 .app-content-headerText {
@@ -286,15 +286,16 @@ a:visited {
 
 .app-content-actions {
     display: flex;
-    justify-content: space-between;
+    flex-direction: row;
+    justify-content: flex-start;
     align-items: center;
-    padding: 16px 4px;
+    padding: 8px 4px;
 }
 
 .app-content-actions-wrapper {
     display: flex;
     align-items: center;
-    margin-left: auto;
+    /* margin-left: auto; */
 }
 
 @media screen and (max-width: 520px) {
@@ -490,7 +491,7 @@ a:visited {
 
 .app-content-section {
     width: 100%;
-    /* max-height: 100%; */
+    max-height: 100%;
     overflow: auto;
     padding: 0 4px;
     overflow-y: scroll;
@@ -534,6 +535,7 @@ a:visited {
     display: flex;
     flex-wrap: wrap;
     margin: 0 -8px;
+    align-items: flex-start;
 }
 
 @media screen and (max-width: 520px) {
@@ -683,11 +685,33 @@ a:visited {
     background-color: #f5f5f5;
 }
 
-th {
-    text-decoration: underline;
+.list-head {
+    background-color: #eee;
+    padding: 5px 0;
+}
+.list-head,
+.list-body {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+}
+.list-wrap {
+    display: flex;
+    flex-direction: column;
 }
 
-th, td {
+.list-title {
+    flex-basis: 75%;
+}
+.list-name {
+    flex-basis: 15%;
+}
+.list-button {
+    flex-basis: 20%;
+}
+
+/* th, td {
     padding: 5px;
     text-align: left;
 }
@@ -701,7 +725,11 @@ td:nth-child(2), th:nth-child(2) {
 }
 
 td:nth-child(3), th:nth-child(3) {
-    width: 350px;
+    width: 70px;
+}
+
+td:nth-child(4), th:nth-child(3) {
+    width: 70px;
 }
 
 thead {
@@ -734,7 +762,7 @@ tr:nth-child(even) {
 
 tbody {
     height: auto;
-}
+} */
 
 .button_hide {
     display: none;
@@ -800,6 +828,15 @@ p {
     flex-direction: row;
     justify-content: space-between;
 }
+.mypageTable hr {
+    margin: 2px;
+}
+.table_left {
+    flex-basis: 50%;
+}
+.table_right {
+    flex-basis: 50%;
+}
 
 .modal__tag__title,
 .modal__introduce__title {
@@ -839,4 +876,19 @@ p {
 
 .closed_moimDetail {
     filter: brightness(70%);
+}
+
+.btn-find-moim {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    margin-left: 5px;
+    background-color: #f0f0f0;
+    transition: 0.3s;
+}
+.btn-find-moim:hover {
+    background-color: #dddddd;
+}
+.moim_detail_buttons button {
+    width: 120px;
 }
