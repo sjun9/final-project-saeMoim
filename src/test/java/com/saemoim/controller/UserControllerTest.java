@@ -23,14 +23,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.generate.RestDocumentationGenerator;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
@@ -447,25 +451,32 @@ class UserControllerTest {
 	@DisplayName("내 정보 수정")
 	void updateProfile() throws Exception {
 		// given
-		ProfileRequestDto request = new ProfileRequestDto("content");
+		MockMultipartFile image = new MockMultipartFile("img", "image.png", "image/png",
+			"<<png data>>".getBytes());
+		MockMultipartFile request = new MockMultipartFile("requestDto", "",
+			"application/json", "{ \"content\": \"1.0\"}".getBytes());
 		User user = User.builder()
 			.id(1L)
 			.banCount(0)
-			.content("asdfasfsdfsaf")
-			.email("aaaaa@naver.com")
-			.password("aaasdf1234!")
+			.content("안녕하시렵니까")
+			.email("email@naver.com")
+			.password("Pass1234!")
 			.role(UserRoleEnum.USER)
-			.username("장성준")
+			.username("닉넹미")
+			.imagePath("imgPath")
 			.build();
 		ProfileResponseDto responseDto = new ProfileResponseDto(user);
 		when(userService.updateProfile(anyLong(), any(ProfileRequestDto.class), any(MultipartFile.class))).thenReturn(
 			responseDto);
 		// when
-		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.put("/profile")
-			.param("img", "image file")
+		MockMultipartHttpServletRequestBuilder mockMultipartHttpServletRequestBuilder = (MockMultipartHttpServletRequestBuilder)multipart(
+			HttpMethod.PUT, "/profile")
+			.requestAttr(RestDocumentationGenerator.ATTRIBUTE_NAME_URL_TEMPLATE, "/profile");
+		ResultActions resultActions = mockMvc.perform(mockMultipartHttpServletRequestBuilder
+			.file(image).file(request)
 			.header(JwtUtil.AUTHORIZATION_HEADER, "Bearer accessToken")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(new Gson().toJson(request)));
+			.accept(MediaType.APPLICATION_JSON));
+정
 		// then
 		resultActions.andExpect(status().isOk())
 			.andDo(document("user/profile",
@@ -473,9 +484,6 @@ class UserControllerTest {
 				preprocessResponse(prettyPrint()),
 				requestPartFields("requestDto",
 					fieldWithPath("content").description("소개글")
-				),
-				pathParameters(
-					parameterWithName("img").description("이미지 파일")
 				),
 				requestHeaders(
 					headerWithName("Authorization").description("엑세스토큰")
