@@ -7,7 +7,7 @@
 // const tempGroupId = "1"
 // const tempUserId = "2"
 
-const origin = `http://52.79.169.105:8080`
+const origin = `https://api.saemoim.site`
 
 let Authorization = localStorage.getItem("Authorization")
 let Refresh_Token = localStorage.getItem("Refresh_Token")
