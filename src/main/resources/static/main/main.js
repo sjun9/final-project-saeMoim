@@ -802,12 +802,9 @@ function showRequestedGroup() {
             [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
         success: function (response) {
-            console.log('before')
+            console.log("response")
             console.log(response)
             response = response['data']
-            alert('hi')
-            console.log('after')
-            console.log(response)
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
@@ -816,7 +813,7 @@ function showRequestedGroup() {
 
                 let temp_html = `<div class="list-body">
                                     <div class="list-title">${groupName}</div>
-                                    <div class="list-name">${userName}</div>
+                                    <div class="list-name">${username}</div>
                                     <div class="list-button">
                                         <span>${status}</span>
                                         <input type="button" onclick="permitApplication(${id})" value="승인">

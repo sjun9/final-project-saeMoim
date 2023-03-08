@@ -1,4 +1,3 @@
-// const origin = `http://52.79.169.105:8080`
 // const origin = `http://localhost:8080`
 const origin = `https://api.saemoim.site`
 

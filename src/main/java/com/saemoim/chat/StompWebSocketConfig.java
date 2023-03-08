@@ -25,7 +25,7 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 			.setAllowedOriginPatterns("http://52.79.169.105:8080")
 			.setAllowedOriginPatterns("http://52.79.169.105:63342") // for intelliJ
 			.setAllowedOriginPatterns("https://api.saemoim.site:8080")
-			.setAllowedOriginPatterns("https://api.saemoim.site:63342")
+			.setAllowedOriginPatterns("https://api.saemoim.site:63342") // for intelliJ
 			.withSockJS();
 	}
 

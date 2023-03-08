@@ -879,7 +879,7 @@ function addLikeFeatureToButtons() {
 
   like_buttons.forEach((button) => {
     button.addEventListener("click", function (e) {
-      console.log('hi')
+      // console.log('hi')
       e.preventDefault();
       this.classList.toggle("active"); // 좋아요 상태를 변경
 
