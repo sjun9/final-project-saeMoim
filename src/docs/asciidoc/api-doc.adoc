@@ -128,3 +128,17 @@ operation::report/getAll[snippets='path-parameters,http-request,request-headers,
 === 5-3. 신고내역 삭제
 
 operation::report/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 6. Email API
+
+=== 6-1. 이메일 인증코드 발송
+
+operation::email/send-code[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 6-2. 이메일 인증코드 확인
+
+operation::email/check-code[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 6-3. 임시 비밀번호 발송
+
+operation::email/send-pwd[snippets='http-request,request-fields,http-response,response-fields']
