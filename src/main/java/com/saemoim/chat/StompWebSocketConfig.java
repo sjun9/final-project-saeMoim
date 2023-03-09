@@ -31,15 +31,6 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 				"https://api.saemoim.site"
 			)
-
-			// .setAllowedOriginPatterns("http://localhost:8080")
-			// .setAllowedOriginPatterns("http://*:8080", "http://*.*.*.*:8080")
-			// .setAllowedOriginPatterns("http://*:63342", "http://*.*.*.*:63342") // for intelliJ
-			// .setAllowedOriginPatterns("http://52.79.169.105:8080")
-			// .setAllowedOriginPatterns("http://52.79.169.105:63342") // for intelliJ
-
-
-
 			.withSockJS();
 	}
 
