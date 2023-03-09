@@ -482,7 +482,7 @@ class UserControllerTest {
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				requestPartFields("requestDto",
-					fieldWithPath("content").description("소개글")
+					fieldWithPath("content").description("소개글").type(JsonFieldType.STRING)
 				),
 				requestHeaders(
 					headerWithName("Authorization").description("엑세스토큰")

@@ -146,6 +146,9 @@ class ReportControllerTest {
 				requestHeaders(
 					headerWithName("Authorization").description("엑세스토큰")
 				),
+				pathParameters(
+					parameterWithName("subjectUserId").description("신고 할 유저 id")
+				),
 				requestFields(
 					fieldWithPath("content").description("신고 내용").type(JsonFieldType.STRING)
 				),
