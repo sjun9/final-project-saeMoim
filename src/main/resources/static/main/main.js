@@ -1,6 +1,8 @@
 const origin = `http://localhost:8080`
 // const origin = `https://api.saemoim.site`
 
+// import {origin} from "../config/config.js";
+
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
 
@@ -1500,27 +1502,24 @@ function changeStatus(id) {
         changeStatusTo = 'open'
     }
 
-    console.log(moimStatus)
     var settings = {
         "url": `${origin}/groups/${id}/${changeStatusTo}`,
         "method": "PATCH",
         "timeout": 0,
         "headers": {
-            "Authorization": localStorage.getItem('Authorization')
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
     };
 
     $.ajax(settings).done(function (response) {
-        console.log(response);
         alert(response['data'])
         location.reload()
     }).fail(function (e) {
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(gotoBoard(id), 150)
+            setTimeout(changeStatus(id), 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
@@ -1533,24 +1532,20 @@ function getMySmallProfileImg() {
     $.ajax({
         type: "post",
         url: `${origin}/profile`,
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success:
             function (response) {
                 let imagePath = response['imagePath']
                 $('#small_profile_image')[0].src = imagePath
-            }, error: function (e) {
-            console.log(e)
-        }
+            }
     }).fail(function (e) {
-        console.log(e)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(getMyProfile, 150)
+            setTimeout(getMySmallProfileImg, 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
@@ -1580,10 +1575,7 @@ function getMyProfile() {
                 $('#profileContent').append(content)
                 // $('#profile-image').append(imagePath)
                 $('#profile-image')[0].src = imagePath
-                console.log(response)
-            }, error: function (e) {
-            console.log(e)
-        }
+            }
     }).fail(function (e) {
         if (e.status === 400) {
             alert(e.responseJSON['data'])
@@ -1692,7 +1684,7 @@ $(document).ready(function () {
     $('#search-field').keypress(function (event) {
         if (event.which == '13') {
             if (($(this).val() != '') && ($(".tags .addedTag:contains('" + $(this).val() + "') ").length == 0)) {
-                temp_html = `<li class="addedTag" id="added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
+                let temp_html = `<li class="addedTag" id="added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
                <input type="hidden" value="` + $(this).val() + `" name="tagsA">
              </li>`
                 $('#tatag').append(temp_html)
@@ -1730,7 +1722,7 @@ $(document).ready(function () {
     $('#modify-field').keypress(function (event) {
         if (event.which == '13') {
             if (($(this).val() != '') && ($(".tags .addedTag:contains('" + $(this).val() + "') ").length == 0)) {
-                temp_html = `<li class="addedTag" id="modify-added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
+                let temp_html = `<li class="addedTag" id="modify-added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
                <input type="hidden" value="` + $(this).val() + `" name="tagsM">
              </li>`
                 $('#modify-tatag').append(temp_html)

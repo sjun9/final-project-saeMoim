@@ -3,8 +3,7 @@ package com.saemoim.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -47,7 +46,7 @@ public class Group extends TimeStamped {
 	@JoinColumn(name = "category_id")
 	private Category category;
 
-	@Fetch(FetchMode.SUBSELECT)
+	@BatchSize(size = 500)
 	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Tag> tags = new ArrayList<>();
 
@@ -62,7 +61,7 @@ public class Group extends TimeStamped {
 
 	@Column(nullable = false)
 	private String firstRegion;
-	
+
 	@Column(nullable = false)
 	private String secondRegion;
 
