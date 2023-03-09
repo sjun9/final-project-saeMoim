@@ -1,5 +1,5 @@
-const origin = `https://api.saemoim.site`
-// const origin = `http://localhost:8080`
+const origin = `http://localhost:8080`
+// const origin = `https://api.saemoim.site`
 
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
@@ -742,9 +742,17 @@ function showFilter(categoryId, status) {
 }
 
 
-function showReview(id) {
-    $('#moimDetail_reviews').empty().append(`<textarea style="margin-bottom: 10px; width:100%;" rows="3" cols="30" id="reviewText" value=""> </textarea>
-                                     <button type="button" style="margin-top: 10px;" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">후기 등록</button>`);
+function showReview(id, isLeader) {
+    let review_form;
+    if (isLeader) {
+        review_form = `<span>모임 개설자는 후기를 달 수 없습니다</span>`
+    } else {
+        review_form = `<textarea style="margin-bottom: 10px; width:100%;" rows="3" cols="30" id="reviewText" value=""> </textarea>
+                        <button type="button" style="margin-top: 10px;" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">
+                        후기 등록
+                        </button>`
+    }
+    $('#moimDetail_reviews').empty().append(review_form);
 
     $.ajax({
         type: "GET",
@@ -947,10 +955,43 @@ function cancelApplication(applicationId) {
 
 
 function showMoimDetail(event, id) {
+    let isLeader = false;
+    let userId;
     $.ajax({
         type: "get",
-        url: `${origin}/groups/${id}`
+        url: `${origin}/user`,
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+        async: false,
+        success:
+            function (response) {
+                userId = String(response["id"])
+            }, error: function (e) {
+            console.log(e)
+        }
+    }).fail(function (e) {
+        console.log(e)
+        if (e.status === 400) {
+            console.log("=================")
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(getMyProfile, 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
+    });
+
+    let groupLeaderId;
+    $.ajax({
+        type: "get",
+        url: `${origin}/groups/${id}`,
+        async: false
     }).done(function (data) {
+        console.log(data)
+        groupLeaderId = String(data.userId)
         // data.imagePath
         document.getElementById("moimDetail_Image").src = data.imagePath;
         document.querySelector('#moimDetail_Title').innerText = data.groupName;
@@ -1009,7 +1050,9 @@ function showMoimDetail(event, id) {
     }).fail(function (e) {
         alert(e.responseJSON['data'])
     });
-    showReview(id);
+
+    if (userId === groupLeaderId) { isLeader = true }
+    showReview(id, isLeader);
 }
 
 
@@ -1240,6 +1283,8 @@ function deleteWishMoim(id) {
 
 
 function addReviewMoim(id) {
+    console.log(id)
+    
     let jsonData = {
         "content": $('#reviewText').val()
     }
@@ -1257,13 +1302,13 @@ function addReviewMoim(id) {
             alert(data['data'])
         }
     }).done(function () {
-        showReview(id)
+        showReview(id, false)
     }).fail(function (e) {
         if (e.status === 400) {
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(addReviewMoim(id), 150)
+            setTimeout(addReviewMoim(id, false), 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
@@ -1429,7 +1474,7 @@ function changeStatus(id) {
 
     console.log(moimStatus)
     var settings = {
-        "url": `http://localhost:8080/groups/${id}/${changeStatusTo}`,
+        "url": `${origin}/groups/${id}/${changeStatusTo}`,
         "method": "PATCH",
         "timeout": 0,
         "headers": {
@@ -1459,7 +1504,7 @@ function changeStatus(id) {
 function getMySmallProfileImg() {
     $.ajax({
         type: "post",
-        url: "http://localhost:8080/profile",
+        url: `${origin}/profile`,
         headers: {'Authorization': localStorage.getItem('Authorization')},
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
