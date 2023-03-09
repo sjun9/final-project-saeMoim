@@ -267,7 +267,9 @@ function gotochat() {
 }
 
 function logout() {
-    if (!confirm("로그아웃 하시겠습니까?")) { return }
+    if (!confirm("로그아웃 하시겠습니까?")) {
+        return
+    }
     $.ajax({
         type: "POST",
         url: `${origin}/log-out`,
@@ -435,8 +437,9 @@ function showAllMoim() {
 
                 let moim_status = ''
                 let closed = ''
-                if (status === "OPEN") { moim_status = "active" }
-                else {
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
                     moim_status = "disabled"
                     closed = 'closed'
                 }
@@ -485,8 +488,9 @@ function showPopularMoim() {
 
                     let moim_status = ''
                     let closed = ''
-                    if (status === "OPEN") { moim_status = "active" }
-                    else {
+                    if (status === "OPEN") {
+                        moim_status = "active"
+                    } else {
                         moim_status = "disabled"
                         closed = 'closed'
                     }
@@ -540,8 +544,9 @@ function showLeaderMoim() {
 
                 let moim_status = ''
                 let closed = ''
-                if (status === "OPEN") { moim_status = "active" }
-                else {
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
                     moim_status = "disabled"
                     closed = 'closed'
                 }
@@ -603,8 +608,9 @@ function showParticipantMoim() { // 참여중인 모임 조회
 
                 let moim_status = ''
                 let closed = ''
-                if (status === "OPEN") { moim_status = "active" }
-                else {
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
                     moim_status = "disabled"
                     closed = 'closed'
                 }
@@ -641,7 +647,6 @@ function showParticipantMoim() { // 참여중인 모임 조회
 }
 
 
-
 function showWishMoim() {
     let contentId = '#wish-content';
     let url = `${origin}/group/wish`;
@@ -668,8 +673,9 @@ function showWishMoim() {
 
                 let moim_status = ''
                 let closed = ''
-                if (status === "OPEN") { moim_status = "active" }
-                else {
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
                     moim_status = "disabled"
                     closed = 'closed'
                 }
@@ -696,8 +702,6 @@ function showWishMoim() {
         alert(e.responseJSON['data'])
     });
 }
-
-
 
 
 function showFilter(categoryId, status) {
@@ -753,7 +757,7 @@ function showReview(id, isLeader) {
                         </button>`
     }
     $('#moimDetail_reviews').empty().append(review_form);
-    
+
     $.ajax({
         type: "GET",
         url: `${origin}/groups/${id}/review`,
@@ -1003,10 +1007,10 @@ function showMoimDetail(event, id) {
         document.getElementById('moimDetailId').value = data.id;
         $('#detailAddress').empty().append(`<h5 style="margin-top: 20px; font-weight: bold;">모임 장소</h5>
                                     <h6>${data.address}</h6>`)
-        
+
         if (data.status === 'OPEN') {
             document.querySelector('#moimDetailContentId').classList.remove('closed_moimDetail')
-            
+
             document.querySelector('#moimStatus').innerText = '모임 닫기'
 
             if (document.querySelector('#moimStatus').classList.contains('btn-success')) {
@@ -1018,12 +1022,12 @@ function showMoimDetail(event, id) {
             document.querySelector('#moimApplication').classList.add('btn-primary')
             document.querySelector('#moimGoToBoard').classList.add('btn-primary')
             document.querySelector('#moimStatus').classList.add('btn-secondary')
-            
-            
+
+
         }
         if (data.status === 'CLOSE') {
             document.querySelector('#moimDetailContentId').classList.add('closed_moimDetail')
-            
+
             document.querySelector('#moimStatus').innerText = '모임 열기'
 
             if (document.querySelector('#moimStatus').classList.contains('btn-secondary')) {
@@ -1035,9 +1039,9 @@ function showMoimDetail(event, id) {
             document.querySelector('#moimApplication').classList.add('btn-secondary')
             document.querySelector('#moimGoToBoard').classList.add('btn-secondary')
             document.querySelector('#moimStatus').classList.add('btn-success')
-            
+
         }
-        
+
         console.log(data.address)
         let detailLatLng = new kakao.maps.LatLng(data.latitude, data.longitude);
 
@@ -1054,7 +1058,9 @@ function showMoimDetail(event, id) {
         alert(e.responseJSON['data'])
     });
 
-    if (userId === groupLeaderId) { isLeader = true }
+    if (userId === groupLeaderId) {
+        isLeader = true
+    }
     showReview(id, isLeader);
 }
 
@@ -1292,7 +1298,7 @@ function addReviewMoim(id) {
     var blank_pattern = /^\s+|\s+$/g;
     if (reviewText.replace(blank_pattern, '') == "") {
         alert('공백만 입력되었습니다');
-        return ;
+        return;
     }
 
     let jsonData = {
@@ -1335,7 +1341,7 @@ function editReview(id) {
     var blank_pattern = /^\s+|\s+$/g;
     if (reviewText.replace(blank_pattern, '') == "") {
         alert('공백만 입력되었습니다');
-        return ;
+        return;
     }
 
     let jsonData = {
@@ -1551,6 +1557,7 @@ function getMySmallProfileImg() {
         }
     });
 }
+
 getMySmallProfileImg();
 
 
@@ -1568,7 +1575,7 @@ function getMyProfile() {
                 let username = response['username']
                 let content = response['content']
                 let imagePath = response['imagePath']
-                
+
                 $('#profileName').append(username)
                 $('#profileContent').append(content)
                 // $('#profile-image').append(imagePath)
