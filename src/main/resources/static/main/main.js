@@ -1,6 +1,8 @@
 const origin = `https://api.saemoim.site`
 // const origin = `http://localhost:8080`
 
+// import {origin} from "../config/config.js";
+
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
 
@@ -267,7 +269,9 @@ function gotochat() {
 }
 
 function logout() {
-    if (!confirm("로그아웃 하시겠습니까?")) { return }
+    if (!confirm("로그아웃 하시겠습니까?")) {
+        return
+    }
     $.ajax({
         type: "POST",
         url: `${origin}/log-out`,
@@ -435,8 +439,9 @@ function showAllMoim() {
 
                 let moim_status = ''
                 let closed = ''
-                if (status === "OPEN") { moim_status = "active" }
-                else {
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
                     moim_status = "disabled"
                     closed = 'closed'
                 }
@@ -485,8 +490,9 @@ function showPopularMoim() {
 
                     let moim_status = ''
                     let closed = ''
-                    if (status === "OPEN") { moim_status = "active" }
-                    else {
+                    if (status === "OPEN") {
+                        moim_status = "active"
+                    } else {
                         moim_status = "disabled"
                         closed = 'closed'
                     }
@@ -540,8 +546,9 @@ function showLeaderMoim() {
 
                 let moim_status = ''
                 let closed = ''
-                if (status === "OPEN") { moim_status = "active" }
-                else {
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
                     moim_status = "disabled"
                     closed = 'closed'
                 }
@@ -603,8 +610,9 @@ function showParticipantMoim() { // 참여중인 모임 조회
 
                 let moim_status = ''
                 let closed = ''
-                if (status === "OPEN") { moim_status = "active" }
-                else {
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
                     moim_status = "disabled"
                     closed = 'closed'
                 }
@@ -641,7 +649,6 @@ function showParticipantMoim() { // 참여중인 모임 조회
 }
 
 
-
 function showWishMoim() {
     let contentId = '#wish-content';
     let url = `${origin}/group/wish`;
@@ -668,8 +675,9 @@ function showWishMoim() {
 
                 let moim_status = ''
                 let closed = ''
-                if (status === "OPEN") { moim_status = "active" }
-                else {
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
                     moim_status = "disabled"
                     closed = 'closed'
                 }
@@ -696,8 +704,6 @@ function showWishMoim() {
         alert(e.responseJSON['data'])
     });
 }
-
-
 
 
 function showFilter(categoryId, status) {
@@ -959,10 +965,10 @@ function showMoimDetail(event, id) {
         document.getElementById('moimDetailId').value = data.id;
         $('#detailAddress').empty().append(`<h5 style="margin-top: 20px; font-weight: bold;">모임 장소</h5>
                                     <h6>${data.address}</h6>`)
-        
+
         if (data.status === 'OPEN') {
             document.querySelector('#moimDetailContentId').classList.remove('closed_moimDetail')
-            
+
             document.querySelector('#moimStatus').innerText = '모임 닫기'
 
             if (document.querySelector('#moimStatus').classList.contains('btn-success')) {
@@ -974,12 +980,12 @@ function showMoimDetail(event, id) {
             document.querySelector('#moimApplication').classList.add('btn-primary')
             document.querySelector('#moimGoToBoard').classList.add('btn-primary')
             document.querySelector('#moimStatus').classList.add('btn-secondary')
-            
-            
+
+
         }
         if (data.status === 'CLOSE') {
             document.querySelector('#moimDetailContentId').classList.add('closed_moimDetail')
-            
+
             document.querySelector('#moimStatus').innerText = '모임 열기'
 
             if (document.querySelector('#moimStatus').classList.contains('btn-secondary')) {
@@ -991,9 +997,9 @@ function showMoimDetail(event, id) {
             document.querySelector('#moimApplication').classList.add('btn-secondary')
             document.querySelector('#moimGoToBoard').classList.add('btn-secondary')
             document.querySelector('#moimStatus').classList.add('btn-success')
-            
+
         }
-        
+
         console.log(data.address)
         let detailLatLng = new kakao.maps.LatLng(data.latitude, data.longitude);
 
@@ -1427,27 +1433,24 @@ function changeStatus(id) {
         changeStatusTo = 'open'
     }
 
-    console.log(moimStatus)
     var settings = {
-        "url": `http://localhost:8080/groups/${id}/${changeStatusTo}`,
+        "url": `${origin}/groups/${id}/${changeStatusTo}`,
         "method": "PATCH",
         "timeout": 0,
         "headers": {
-            "Authorization": localStorage.getItem('Authorization')
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
     };
 
     $.ajax(settings).done(function (response) {
-        console.log(response);
         alert(response['data'])
         location.reload()
     }).fail(function (e) {
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(gotoBoard(id), 150)
+            setTimeout(changeStatus(id), 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
@@ -1459,31 +1462,28 @@ function changeStatus(id) {
 function getMySmallProfileImg() {
     $.ajax({
         type: "post",
-        url: "http://localhost:8080/profile",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/profile`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success:
             function (response) {
                 let imagePath = response['imagePath']
                 $('#small_profile_image')[0].src = imagePath
-            }, error: function (e) {
-            console.log(e)
-        }
+            }
     }).fail(function (e) {
-        console.log(e)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(getMyProfile, 150)
+            setTimeout(getMySmallProfileImg, 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
         }
     });
 }
+
 getMySmallProfileImg();
 
 
@@ -1501,15 +1501,12 @@ function getMyProfile() {
                 let username = response['username']
                 let content = response['content']
                 let imagePath = response['imagePath']
-                
+
                 $('#profileName').append(username)
                 $('#profileContent').append(content)
                 // $('#profile-image').append(imagePath)
                 $('#profile-image')[0].src = imagePath
-                console.log(response)
-            }, error: function (e) {
-            console.log(e)
-        }
+            }
     }).fail(function (e) {
         if (e.status === 400) {
             alert(e.responseJSON['data'])
@@ -1618,7 +1615,7 @@ $(document).ready(function () {
     $('#search-field').keypress(function (event) {
         if (event.which == '13') {
             if (($(this).val() != '') && ($(".tags .addedTag:contains('" + $(this).val() + "') ").length == 0)) {
-                temp_html = `<li class="addedTag" id="added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
+                let temp_html = `<li class="addedTag" id="added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
                <input type="hidden" value="` + $(this).val() + `" name="tagsA">
              </li>`
                 $('#tatag').append(temp_html)
@@ -1656,7 +1653,7 @@ $(document).ready(function () {
     $('#modify-field').keypress(function (event) {
         if (event.which == '13') {
             if (($(this).val() != '') && ($(".tags .addedTag:contains('" + $(this).val() + "') ").length == 0)) {
-                temp_html = `<li class="addedTag" id="modify-added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
+                let temp_html = `<li class="addedTag" id="modify-added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
                <input type="hidden" value="` + $(this).val() + `" name="tagsM">
              </li>`
                 $('#modify-tatag').append(temp_html)
