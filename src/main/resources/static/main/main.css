@@ -862,11 +862,11 @@ p {
     width: 50%;
 }
 
-.edit_profile.hide {
+.edit_profile.hideEdit {
     display: none;
 }
 
-.content_title.hide {
+.content_title.hideEdit {
     display: none;
 }
 

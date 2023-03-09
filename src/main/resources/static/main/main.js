@@ -1,5 +1,5 @@
-const origin = `https://api.saemoim.site`
 // const origin = `http://localhost:8080`
+const origin = `https://api.saemoim.site`
 
 // import {origin} from "../config/config.js";
 
@@ -748,14 +748,25 @@ function showFilter(categoryId, status) {
 }
 
 
-function showReview(id) {
-    $('#moimDetail_reviews').empty().append(`<textarea style="margin-bottom: 10px; width:100%;" rows="3" cols="30" id="reviewText" value=""> </textarea>
-                                     <button type="button" style="margin-top: 10px;" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">후기 등록</button>`);
+function showReview(id, isLeader) {
+    let review_form;
+    if (isLeader) {
+        review_form = `<span>모임 개설자는 후기를 달 수 없습니다</span>`
+    } else {
+        review_form = `<textarea style="margin-bottom: 10px; width:100%;" rows="3" cols="30" id="reviewText"> </textarea>
+                        <button type="button" style="margin-top: 10px;" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">
+                        후기 등록
+                        </button>`
+    }
+    $('#moimDetail_reviews').empty().append(review_form);
 
     $.ajax({
         type: "GET",
         url: `${origin}/groups/${id}/review`,
         success: function (response) {
+            console.log(response)
+            response = response["data"]["content"]
+            $('#moimDetail_reviews').append(`<hr>`)
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let content = response[i]['content']
@@ -765,15 +776,11 @@ function showReview(id) {
                                     <form id="reivewListForm" name="reivewListForm" method="post">
                                       <div id="reivewList">
                                         <table class='table'>
-                                          <h6><strong>작성자 : ${username}</strong></h6>
-                                          <p style="overflow: hidden; word-wrap: break-word;">
+                                          <h6 style="text-align: left;"><strong>${username}</strong></h6>
+                                          <p style="overflow: hidden; word-wrap: break-word; color: black; text-align: left;">
                                             ${content}
                                           </p>
-                                          <tr>
-                                            <td></td>
-                                          </tr>
-                                          <textarea class="button_hide" style="width:150
-                                         %" rows="3" cols="30" id="review"
+                                          <textarea class="button_hide" style="width: 100%;" rows="3" id="review_${id}"
                                             name="review"></textarea>
                                           <div class="edit_delete">
                                             <button type="button" class="btn btn-danger" style="float: right;" onclick="deleteReview(${id})">삭제</button>
@@ -788,7 +795,8 @@ function showReview(id) {
                                         </table>
                                       </div>
                                     </form>
-                                  </div>`
+                                  </div>
+                                  <hr>`
                 $('#moimDetail_reviews').append(temp_html)
             }
         }
@@ -953,14 +961,50 @@ function cancelApplication(applicationId) {
 
 
 function showMoimDetail(event, id) {
+    let isLeader = false;
+    let userId;
+    localStorage.setItem('current_moim_id', id)
     $.ajax({
         type: "get",
-        url: `${origin}/groups/${id}`
+        url: `${origin}/user`,
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+        async: false,
+        success:
+            function (response) {
+                userId = String(response["id"])
+            }, error: function (e) {
+            console.log(e)
+        }
+    }).fail(function (e) {
+        console.log(e)
+        if (e.status === 400) {
+            console.log("=================")
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(getMyProfile, 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
+    });
+
+    let groupLeaderId;
+    $.ajax({
+        type: "get",
+        url: `${origin}/groups/${id}`,
+        async: false
     }).done(function (data) {
+        console.log(data)
+        groupLeaderId = String(data.userId)
         // data.imagePath
         document.getElementById("moimDetail_Image").src = data.imagePath;
         document.querySelector('#moimDetail_Title').innerText = data.groupName;
-        document.querySelector('#moimTag').innerText = data.tags;
+        let tagsToString = ''
+        data.tags.forEach(tag => tagsToString += '#' + tag + ' ')
+        document.querySelector('#moimTag').innerText = tagsToString
         document.querySelector('#moimDetail_introduce').innerText = data.content;
         document.getElementById('moimDetailId').value = data.id;
         $('#detailAddress').empty().append(`<h5 style="margin-top: 20px; font-weight: bold;">모임 장소</h5>
@@ -1015,7 +1059,11 @@ function showMoimDetail(event, id) {
     }).fail(function (e) {
         alert(e.responseJSON['data'])
     });
-    showReview(id);
+
+    if (userId === groupLeaderId) {
+        isLeader = true
+    }
+    showReview(id, isLeader);
 }
 
 
@@ -1246,8 +1294,17 @@ function deleteWishMoim(id) {
 
 
 function addReviewMoim(id) {
+    const reviewText = $('#reviewText').val()
+
+
+    var blank_pattern = /^\s+|\s+$/g;
+    if (reviewText.replace(blank_pattern, '') == "") {
+        alert('공백만 입력되었습니다');
+        return;
+    }
+
     let jsonData = {
-        "content": $('#reviewText').val()
+        "content": reviewText
     }
     $.ajax({
         type: "post",
@@ -1260,16 +1317,17 @@ function addReviewMoim(id) {
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success: function (data) {
-            alert(data['data'])
+            console.log(data)
+            alert('작성 완료')
         }
     }).done(function () {
-        showReview(id)
+        showReview(id, false)
     }).fail(function (e) {
         if (e.status === 400) {
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(addReviewMoim(id), 150)
+            setTimeout(addReviewMoim(id, false), 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
@@ -1279,9 +1337,19 @@ function addReviewMoim(id) {
 
 
 function editReview(id) {
+    const current_moim_id = localStorage.getItem('current_moim_id')
+    const reviewText = $(`#review_${id}`).val()
+
+    var blank_pattern = /^\s+|\s+$/g;
+    if (reviewText.replace(blank_pattern, '') == "") {
+        alert('공백만 입력되었습니다');
+        return;
+    }
+
     let jsonData = {
-        "content": $('#review').val()
-    };
+        "content": reviewText
+    }
+
     $.ajax({
         type: "put",
         url: `${origin}/reviews/${id}`,
@@ -1293,8 +1361,9 @@ function editReview(id) {
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success: function (data) {
-            alert(data['data'])
-            location.reload()
+            console.log(data)
+            alert('수정 완료')
+            showReview(current_moim_id, false)
         }
     }).fail(function (e) {
         if (e.status === 400) {
@@ -1580,10 +1649,10 @@ function updateProfile(content) {
 
 
 function toggleProfileEdit() {
-    document.querySelector(".edit_profile").classList.toggle("hide")
-    document.querySelector(".content_title").classList.toggle("hide")
+    document.querySelector(".edit_profile").classList.toggle("hideEdit")
+    document.querySelector(".content_title").classList.toggle("hideEdit")
 
-    if (document.querySelector(".content_title").classList.contains("hide")) {
+    if (document.querySelector(".content_title").classList.contains("hideEdit")) {
         document.querySelector("#inputContent").value = document.querySelector("#profileContent").innerText
     }
 }
@@ -1668,3 +1737,8 @@ $(document).ready(function () {
         }
     });
 });
+
+function fillEditMoim() {
+    document.querySelector("#modifyMoim-title").value = document.querySelector("#moimDetail_Title").innerText
+    document.querySelector("#modifyMoim-content").value = document.querySelector("#moimDetail_introduce").innerText
+}

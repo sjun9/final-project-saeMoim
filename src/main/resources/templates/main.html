@@ -17,14 +17,13 @@
             integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-1.11.2.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="../static/main/main.css">
-
 </head>
 
 <body>
 
 <!-- map search Modal -->
 <div class="modal fade" id="map_search_modal" tabindex="-1" aria-labelledby="map_search_modalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="map_search_modalLabel">지도 검색</h5>
@@ -76,7 +75,7 @@
                 </div>
                 <div class="moim_detail_buttons">
                     <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal"
-                            onclick="relayoutMap()">모임 수정
+                            onclick="relayoutMap(); fillEditMoim();">모임 수정
                     </button>
                     <button type="button" class="btn" id="moimStatus"
                             onclick="changeStatus(document.getElementById('moimDetailId').value)">
@@ -104,7 +103,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">새 모임 생성</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="location.reload()"></button>
             </div>
             <div class="modal-body">
                 <form>
@@ -158,14 +157,14 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="location.reload()">닫기</button>
                 <button type="button" class="btn btn-primary" onclick="saveMoim()">새 모임 추가</button>
             </div>
         </div>
     </div>
 </div>
 
-
+<!-- edit moim -->
 <div class="modal fade" id="modifyMoimModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
      aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -390,7 +389,7 @@
                     <p id="profileContent" style="text-align: left;"></p>
                     <button type="button" class="btn btn-secondary" onclick="toggleProfileEdit()">프로필 수정</button>
                 </div>
-                <div class="edit_profile hide" style="margin: 25px 0;">
+                <div class="edit_profile hideEdit" style="margin: 25px 0;">
                     <h3>프로필 수정</h3>
                     <div class="mb-3">
                         <label for="inputContent" class="col-form-label">소개글</label>
@@ -405,7 +404,7 @@
                         수정
                     </button>
                     <button type="submit" class="btn btn-secondary"
-                            onclick="toggleProfileEdit(); alert('수정이 취소되었습니다.');">
+                            onclick="toggleProfileEdit();">
                         취소
                     </button>
                 </div>

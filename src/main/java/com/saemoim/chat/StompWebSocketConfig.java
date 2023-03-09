@@ -19,12 +19,18 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/stomp/chat") // 여기로 웹소켓 생성
-			// .setAllowedOriginPatterns("http://localhost:8080")
-			// .setAllowedOriginPatterns("http://*:8080", "http://*.*.*.*:8080")
-			// .setAllowedOriginPatterns("http://*:63342", "http://*.*.*.*:63342") // for intelliJ
-			.setAllowedOriginPatterns("http://52.79.169.105:8080")
-			.setAllowedOriginPatterns("http://52.79.169.105:63342") // for intelliJ
-			.setAllowedOriginPatterns("https://api.saemoim.site")
+
+			.setAllowedOriginPatterns( // for intelliJ
+				"http://localhost:8080",
+				"http://127.0.0.1:8080",
+				"http://43.201.17.85:8080",
+
+				"http://localhost:63342",
+				"http://127.0.0.1:63342",
+				"http://43.201.17.85:63342",
+
+				"https://api.saemoim.site"
+			)
 			.withSockJS();
 	}
 
@@ -35,7 +41,7 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	}
 
 	@Override
-	public void configureClientInboundChannel(ChannelRegistration registration){
+	public void configureClientInboundChannel(ChannelRegistration registration) {
 		// 들어오는 메세지들(Inbound)이 이 곳을 거치며 토큰값을 확인한다
 		// 토큰 불일치 시 예외 발생으로 통신 불가
 		registration.interceptors(stompHandler);

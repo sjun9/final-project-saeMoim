@@ -153,23 +153,45 @@ public class GroupServiceImpl implements GroupService {
 		if (category.getParentId() == null) {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
+
+		// String imagePath;
+		// if (multipartFile == null) {
+		// 	Group newGroup = new Group(requestDto, category, user);
+		// 	groupRepository.save(newGroup);
+		//
+		// 	return new GroupResponseDto(newGroup);
+		// }
+		//
+		// try {
+		// 	imagePath = awsS3Uploader.upload(multipartFile, dirName);
+		// } catch (IOException e) {
+		// 	throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+		// }
+		// Group newGroup = new Group(requestDto, category, user, imagePath);
+		// groupRepository.save(newGroup);
+
 		String imagePath;
+		Group newGroup;
+		Group savedGroup;
+
 		if (multipartFile == null) {
-			Group newGroup = new Group(requestDto, category, user);
-			groupRepository.save(newGroup);
-
-			return new GroupResponseDto(newGroup);
+			newGroup = new Group(requestDto, category, user);
+		}
+		else {
+			try {
+				imagePath = awsS3Uploader.upload(multipartFile, dirName);
+			} catch (IOException e) {
+				throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+			}
+			newGroup = new Group(requestDto, category, user, imagePath);
 		}
 
-		try {
-			imagePath = awsS3Uploader.upload(multipartFile, dirName);
-		} catch (IOException e) {
-			throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
-		}
-		Group newGroup = new Group(requestDto, category, user, imagePath);
-		groupRepository.save(newGroup);
+		savedGroup = groupRepository.save(newGroup);
 
-		return new GroupResponseDto(newGroup);
+		Participant participant = new Participant(user, savedGroup);
+		participantRepository.save(participant);
+
+		return new GroupResponseDto(savedGroup);
 	}
 
 	@Override
