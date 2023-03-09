@@ -1,5 +1,5 @@
-// const origin = `http://localhost:8080`
-const origin = `https://api.saemoim.site`
+const origin = `http://localhost:8080`
+// const origin = `https://api.saemoim.site`
 
 // import {origin} from "../config/config.js";
 
@@ -1025,7 +1025,9 @@ function showMoimDetail(event, id) {
             document.querySelector('#moimGoToBoard').classList.add('btn-primary')
             document.querySelector('#moimStatus').classList.add('btn-secondary')
 
-
+            if (!document.querySelector('#closed_overlay').classList.contains('hide_overlay')) {
+                document.querySelector('#closed_overlay').classList.add('hide_overlay')
+            }
         }
         if (data.status === 'CLOSE') {
             document.querySelector('#moimDetailContentId').classList.add('closed_moimDetail')
@@ -1036,12 +1038,16 @@ function showMoimDetail(event, id) {
                 document.querySelector('#moimApplication').classList.remove('btn-primary')
                 document.querySelector('#moimGoToBoard').classList.remove('btn-primary')
                 document.querySelector('#moimStatus').classList.remove('btn-secondary')
+                document.querySelector('#moim_closed_info').classList.remove('hide-info')
             }
 
             document.querySelector('#moimApplication').classList.add('btn-secondary')
             document.querySelector('#moimGoToBoard').classList.add('btn-secondary')
             document.querySelector('#moimStatus').classList.add('btn-success')
 
+            if (document.querySelector('#closed_overlay').classList.contains('hide_overlay')) {
+                document.querySelector('#closed_overlay').classList.remove('hide_overlay')
+            }
         }
 
         console.log(data.address)
