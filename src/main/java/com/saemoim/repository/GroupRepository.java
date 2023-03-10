@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
+import com.saemoim.domain.enums.GroupStatusEnum;
 
 public interface GroupRepository extends JpaRepository<Group, Long> {
 	boolean existsByName(String name);
@@ -23,6 +24,8 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
 	@Query("select g from sae_group g where g.category = :category and g.status = 'CLOSE'")
 	Slice<Group> findByCategoryAndStatusIsClose(@Param("category") Category category, Pageable pageable);
+
+	Slice<Group> findByStatus(GroupStatusEnum status, Pageable pageable);
 
 	Slice<Group> findByCategory(Category category, Pageable pageable);
 
