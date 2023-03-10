@@ -1,3 +1,5 @@
+import {origin} from "../config/config.js";
+
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
 

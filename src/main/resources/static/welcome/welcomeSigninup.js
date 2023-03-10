@@ -1,4 +1,5 @@
-// const origin = `http://localhost:8080`
+import { origin } from "../config/config.js"
+
 /**
  * Variables
  */
