@@ -42,7 +42,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		cookie2.setPath("/");
 		response.addCookie(cookie);
 		response.addCookie(cookie2);
-		response.sendRedirect("http://localhost:63342/project_saeMoim/project_saemoim.main/templates/main.html");
+		response.sendRedirect("https://d1axe8zrfcr62g.cloudfront.net/resources/templates/main.html");
 	}
 
 	private String _issueRefreshToken(Long userId, String accessToken) {
