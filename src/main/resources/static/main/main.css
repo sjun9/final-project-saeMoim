@@ -702,13 +702,13 @@ a:visited {
 }
 
 .list-title {
-    flex-basis: 75%;
+    flex-basis: 70%;
 }
 .list-name {
     flex-basis: 15%;
 }
 .list-button {
-    flex-basis: 20%;
+    flex-basis: 25%;
 }
 
 /* th, td {
@@ -891,4 +891,24 @@ p {
 }
 .moim_detail_buttons button {
     width: 120px;
+}
+.moim_closed_overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    width: 500px;
+    height: 250px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.35);
+    border-radius: 7px;
+    z-index: 3;
+}
+.moim_closed_overlay.hide_overlay {
+    display: none;
 }

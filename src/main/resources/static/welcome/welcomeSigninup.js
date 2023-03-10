@@ -1,8 +1,3 @@
-// const origin = `http://localhost:8080`
-const origin = `https://api.saemoim.site`
-
-// import {origin} from "../config/config.js";
-
 /**
  * Variables
  */
@@ -31,8 +26,6 @@ goback = () => {
     document.querySelector(".et-hero-tabs-title").classList.toggle("remove");
     document.querySelector(".et-hero-tabs-content").classList.toggle("remove");
     document.querySelector(".et-hero-tabs-button").classList.toggle("remove");
-    // document.querySelector(".et-hero-tabs-container").classList.toggle("remove");
-    // document.querySelector(".et-main").classList.toggle("remove");
 
     document.querySelector(".user").classList.toggle("remove");
 }

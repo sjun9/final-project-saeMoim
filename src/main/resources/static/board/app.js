@@ -1,17 +1,3 @@
-/**
- * 임시 정보
- */
-// const Authorization = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiTmFtZSI6ImJiYiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjc3MTY3NDg4LCJpYXQiOjE2NzcxNjYyODh9.sMYFSF56Hobd0qsCvuENY6cxlGIGylIU1dfj5aOT_ns"
-// const Refresh_Token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiZXhwIjoxNjc3MTY5ODg4LCJpYXQiOjE2NzcxNjYyODh9.OxXhznYD-J6_VcEAIW3WROaitYp59bWOJopLB7jB2Ms"
-
-// const tempGroupId = "1"
-// const tempUserId = "2"
-
-// const origin = `http://localhost:8080`
-const origin = `https://api.saemoim.site`
-
-// import {origin} from "../config/config.js";
-
 let Authorization = localStorage.getItem("Authorization")
 let Refresh_Token = localStorage.getItem("Refresh_Token")
 
@@ -187,9 +173,7 @@ function openProfile(event) {
 
         localStorage.setItem("target_profile_id", response["id"])
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -232,11 +216,9 @@ function report(id, content) { // 신고할 사람id, 신고내용
     };
 
     $.ajax(settings).done(function (response) {
-        console.log(response);
         alert(response['data'])
     }).fail(function (e) {
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -281,7 +263,6 @@ function newPost() {
     // const imageUrl  = 이미지 경로 추가
     let file = $('#newPost-image')[0].files[0];
     let formData = new FormData;
-    console.log(file)
     formData.append("img", file)
 
     let jsonData =
@@ -305,9 +286,7 @@ function newPost() {
         alert('작성 완료!');
         location.reload();
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -324,7 +303,6 @@ function newPost() {
 // 클릭된 target의 id 값을 가져온 후
 // localStorage에 저장된 게시글 리스트 중 id가 일치하는 게시글을 가져와서
 // 모달창에 표시
-// 추후 게시글 이미지 url 추가 필요함
 function openBody(event) {
 
     const postArray = JSON.parse(localStorage.getItem("pagedPostList"))
@@ -375,13 +353,10 @@ function editPost(event) {
         mimeType: "multipart/form-data",
         processData: false
     }).done(function (response) {
-        console.log(response);
         alert("수정 완료")
         location.reload();
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -391,13 +366,6 @@ function editPost(event) {
         }
     });
 }
-
-// 게시글 최신화 (임시로 겉보기만...)
-// document.querySelector('#readPostModalLabel').innerText = new_title
-// document.querySelector('#readPostModalContent').innerText = new_content
-
-// document.querySelector("#closeEditPostModal").click() // 수정 모달창 닫고
-// document.querySelector("#openRead").click() // 읽기 모달창 열고
 
 
 // 게시글 수정 모달창 열기
@@ -451,9 +419,7 @@ function deletePost(event) {
         alert("삭제 되었습니다.");
         location.reload()
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -497,7 +463,7 @@ const buttons = document.querySelector(".buttons");
 let numOfContent = localStorage.getItem("postsCount");// 전체 게시글 갯수
 const maxContent = 15; // 표시할 게시글 갯수
 const maxButton = 5; // 표시할 버튼 갯수
-let maxPage = Math.ceil(numOfContent / maxContent);
+let maxPage
 let page = 1; // 새로고침 시 1페이지부터 시작
 
 
@@ -512,11 +478,10 @@ function getPosts(pageNum, sizeNum) {
         },
         async: false, // 비동기 해제
         success: function (data) {
-            console.log(data)
             localStorage.setItem("postsCount", data["totalElements"])
 
             localStorage.setItem("pagedPostList", JSON.stringify(data["content"]));
-            // const postArray = JSON.parse(localStorage.getItem("pagedPostList"))
+            maxPage = data["totalPages"]
         }
     });
 }
@@ -627,7 +592,6 @@ const renderButton = (page) => {
     for (let i = page; i < page + maxButton && i <= maxPage; i++) {
         buttons.appendChild(makeButton(i));
     }
-    // console.log(page)
     buttons.children[0].classList.add("active"); // 첫 로딩시 가장 왼쪽 페이지 선택
 
     const createdButtons = document.querySelectorAll('.button');
@@ -689,7 +653,6 @@ function renderComments(currentPostId) {
 
     $.ajax(settings).done(function (response) {
         let commentList = response["data"]
-        // console.log(response)
         var cCnt = commentList.length;
         document.querySelector("#cCnt").innerText = cCnt;
 
@@ -756,9 +719,7 @@ function writeComment() {
         document.querySelector("#comment").value = ""
         renderComments(currentPostId) // 댓글목록 새로 불러오기
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -793,9 +754,7 @@ function editComment(event) {
         alert("수정 완료")
         renderComments(currentPostId)
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -849,9 +808,7 @@ function deleteComment(event) {
         alert("삭제 완료")
         renderComments(currentPostId)
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -882,7 +839,6 @@ function addLikeFeatureToButtons() {
 
     like_buttons.forEach((button) => {
         button.addEventListener("click", function (e) {
-            // console.log('hi')
             e.preventDefault();
             this.classList.toggle("active"); // 좋아요 상태를 변경
 
@@ -933,7 +889,6 @@ function doLike(postId) {
     };
 
     $.ajax(settings).done(function (response) {
-        console.log(response);
     }).fail(function (e) {
         if (e.status === 400) {
             alert("like failed")
@@ -961,7 +916,6 @@ function unLike(postId) {
     };
 
     $.ajax(settings).done(function (response) {
-        console.log(response);
     }).fail(function () {
         if (e.status === 400) {
             alert("unlike failed")
@@ -1030,10 +984,6 @@ function chat() {
             }
         ))
     });
-
-    // stomp.disconnect(function() {
-    //   alert("See you next time!");
-    // });
 
 
     function send() {
