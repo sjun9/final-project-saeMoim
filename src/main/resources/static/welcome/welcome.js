@@ -1,4 +1,3 @@
-const origin = `http://localhost:8080`
 class StickyNavigation {
 	
     constructor() {

@@ -1,6 +1,6 @@
 let Authorization = localStorage.getItem("Authorization")
 let Refresh_Token = localStorage.getItem("Refresh_Token")
-const origin = `http://localhost:8080`
+
 let tempGroupId = localStorage.getItem("current_group_id")
 let tempUserId = localStorage.getItem("current_user_id")
 

@@ -1,4 +1,3 @@
-const origin = `http://localhost:8080`
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
 
