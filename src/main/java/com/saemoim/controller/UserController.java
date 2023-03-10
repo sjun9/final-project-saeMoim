@@ -112,7 +112,7 @@ public class UserController {
 	}
 
 	// 내 정보 조회 - 마이페이지
-	@PostMapping("/profile")
+	@GetMapping("/profile")
 	public ResponseEntity<ProfileResponseDto> getMyProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ResponseEntity.ok()
 			.body(userService.getMyProfile(userDetails.getId()));

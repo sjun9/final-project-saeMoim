@@ -273,9 +273,6 @@ function logout() {
         headers: {
             [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
             [Refresh_TOKEN_KEY]: localStorage.getItem(STORAGE_Refresh_TOKEN_KEY)
-        },
-        success: function (response) {
-            console.log(response)
         }
     }).done(function (response, status, xhr) {
         localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader(STORAGE_ACCESS_TOKEN_KEY))
@@ -298,7 +295,7 @@ function showUsername() {
     $('#username').empty()
     $.ajax({
         type: "get",
-        url: `${origin}/user`,
+        url: `${origin}/profile`,
         headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
             let username = data['username']
@@ -390,11 +387,9 @@ function reissue() {
         },
     };
     $.ajax(settings).done(function (response, status, xhr) {
-        console.log("토큰 재발급 성공")
         localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader(STORAGE_ACCESS_TOKEN_KEY))
         localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, xhr.getResponseHeader(STORAGE_Refresh_TOKEN_KEY))
     }).fail(function (e) {
-        console.log("토큰 재발급 실패")
         alert("다시 로그인 해주세요.")
         localStorage.removeItem(STORAGE_ACCESS_TOKEN_KEY)
         localStorage.removeItem(STORAGE_Refresh_TOKEN_KEY)
