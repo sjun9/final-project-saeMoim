@@ -1,3 +1,4 @@
+const origin = `http://localhost:8080`
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
 
@@ -258,11 +259,6 @@ function changeModifyValue(event) {
     document.querySelector('#modifyMoim-category').value = event.target.innerText
 }
 
-function gotochat() {
-    alert('채팅 기록을 불러옵니다. 추후 구현 예정')
-    window.open('./chattingPage.html');
-}
-
 function logout() {
     if (!confirm("로그아웃 하시겠습니까?")) {
         return
@@ -286,7 +282,6 @@ function logout() {
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
             setTimeout(logout(), 150)
-            setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
         }
@@ -342,7 +337,14 @@ function showCategory() {
             }
         }
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showCategory, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -383,7 +385,14 @@ function showSearch(name) {
             }
         }
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showSearch(name), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -455,7 +464,14 @@ function showAllMoim() {
             }
         }
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showAllMoim, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -507,7 +523,14 @@ function showPopularMoim() {
             }
         }
     ).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showPopularMoim, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -567,7 +590,6 @@ function showLeaderMoim() {
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
             setTimeout(showLeaderMoim, 150)
-            setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
         }
@@ -686,9 +708,21 @@ function showWishMoim() {
                                 </div>`
                 $(contentId).append(temp_html)
             }
+            if (document.querySelector("#wish-content").childElementCount === 0) {
+                let temp_html = `<span class="wish_empty">찜 목록이 비어있습니다.</span>`
+                $(contentId).append(temp_html)
+            }
         }
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showWishMoim, 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -730,7 +764,15 @@ function showFilter(categoryId, status) {
             }
         }
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showFilter(categoryId, status), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -787,7 +829,15 @@ function showReview(id, isLeader) {
             }
         }
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showReview(id, isLeader), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -965,7 +1015,7 @@ function showMoimDetail(event, id) {
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(getMyProfile, 150)
+            setTimeout(showMoimDetail(event, id), 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
@@ -1018,7 +1068,6 @@ function showMoimDetail(event, id) {
                 document.querySelector('#moimApplication').classList.remove('btn-primary')
                 document.querySelector('#moimGoToBoard').classList.remove('btn-primary')
                 document.querySelector('#moimStatus').classList.remove('btn-secondary')
-                document.querySelector('#moim_closed_info').classList.remove('hide-info')
             }
 
             document.querySelector('#moimApplication').classList.add('btn-secondary')
@@ -1042,7 +1091,15 @@ function showMoimDetail(event, id) {
             detailMap.relayout();
         }, 200);
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showMoimDetail(event, id), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 
     if (userId === groupLeaderId) {
@@ -1268,7 +1325,7 @@ function deleteWishMoim(id) {
                 alert(e.responseJSON['data'])
             } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
                 reissue()
-                setTimeout(wishMoim(id), 150)
+                setTimeout(deleteWishMoim(id), 150)
                 setTimeout(showUsername, 150)
             } else {
                 alert(e.responseJSON['data'])
@@ -1311,7 +1368,7 @@ function addReviewMoim(id) {
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(addReviewMoim(id, false), 150)
+            setTimeout(addReviewMoim(id), 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])

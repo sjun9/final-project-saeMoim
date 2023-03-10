@@ -81,8 +81,5 @@ public class Application extends TimeStamped {
 	public void reject() {
 		this.status = ApplicationStatusEnum.REJECT;
 	}
-
-	public boolean isWait() {
-		return this.status.equals(ApplicationStatusEnum.WAIT);
-	}
+	
 }
