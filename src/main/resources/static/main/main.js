@@ -9,21 +9,18 @@ sidebarListItems.forEach((sidebarListItem) => {
     })
 })
 
-
 document.querySelector("#side-find").addEventListener("click", () => {
     document.querySelector("#side-find-content").classList.add("active");
     showCategory()
     showAllMoim()
     showPopularMoim()
-    showUsername()
 })
 document.querySelector("#side-mypage").addEventListener("click", () => {
     document.querySelector("#side-mypage-content").classList.add("active");
-    showUsername()
     showLeaderMoim()
+    showAppliedGroup()
     showParticipantMoim()
     showRequestedGroup()
-    showAppliedGroup()
 })
 document.querySelector("#side-profile").addEventListener("click", () => {
     document.querySelector("#side-profile-content").classList.add("active");
@@ -273,8 +270,6 @@ function logout() {
         headers: {
             [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
             [Refresh_TOKEN_KEY]: localStorage.getItem(STORAGE_Refresh_TOKEN_KEY)
-        },
-        success: function (response) {
         }
     }).done(function (response, status, xhr) {
         localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader(STORAGE_ACCESS_TOKEN_KEY))
@@ -306,15 +301,6 @@ function showUsername() {
             document.getElementById('profile-image').src = imagePath
         }, error: function (e) {
             $('#username').append(`로그인이 필요합니다`)
-        }
-    }).fail(function (e) {
-        if (e.status === 400) {
-            alert(e.responseJSON['data'])
-        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-            reissue()
-            setTimeout(showUsername, 150)
-        } else {
-            alert(e.responseJSON['data'])
         }
     });
 }
@@ -518,6 +504,7 @@ function showLeaderMoim() {
     $.ajax({
         type: "GET",
         url: url,
+        async: false,
         headers: {
             'Content-Type': 'application/json',
             [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
@@ -581,6 +568,7 @@ function showParticipantMoim() { // 참여중인 모임 조회
     $.ajax({
         type: "GET",
         url: url,
+        async: false,
         headers: {
             'Content-Type': 'application/json',
             [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
@@ -645,7 +633,7 @@ function showWishMoim() {
     $.ajax({
         type: "GET",
         url: url,
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success: function (response) {
@@ -688,7 +676,15 @@ function showWishMoim() {
             }
         }
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showWishMoim, 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -797,6 +793,7 @@ function showRequestedGroup() {
     $.ajax({
         type: "GET",
         url: `${origin}/leader/application`,
+        async: false,
         headers: {
             'Content-Type': 'application/json',
             [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
@@ -841,6 +838,7 @@ function showAppliedGroup() {
     $.ajax({
         type: "GET",
         url: `${origin}/participant/application`,
+        async: false,
         headers: {
             'Content-Type': 'application/json',
             [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)

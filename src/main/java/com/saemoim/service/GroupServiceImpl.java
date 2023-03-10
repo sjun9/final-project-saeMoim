@@ -84,9 +84,15 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional(readOnly = true)
 	public Slice<GroupResponseDto> getGroupsByCategoryAndStatus(Long categoryId, String status,
 		Pageable pageable) {
-		Slice<Group> groups;
-		if (categoryId == 0L) {
+		Slice<Group> groups = null;
+		if (categoryId == 0L && status.equals("all")) {
 			groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
+		} else if (categoryId == 0L) {
+			if (status.equals(GroupStatusEnum.OPEN.toString())) {
+				groups = groupRepository.findByStatus(GroupStatusEnum.OPEN, pageable);
+			} else if (status.equals(GroupStatusEnum.CLOSE.toString())) {
+				groups = groupRepository.findByStatus(GroupStatusEnum.CLOSE, pageable);
+			}
 		} else {
 			Category category = categoryRepository.findById(categoryId).orElseThrow(
 				() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_CATEGORY.getMessage())
@@ -176,8 +182,7 @@ public class GroupServiceImpl implements GroupService {
 
 		if (multipartFile == null) {
 			newGroup = new Group(requestDto, category, user);
-		}
-		else {
+		} else {
 			try {
 				imagePath = awsS3Uploader.upload(multipartFile, dirName);
 			} catch (IOException e) {
