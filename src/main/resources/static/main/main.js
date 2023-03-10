@@ -1046,6 +1046,8 @@ function showMoimDetail(event, id) {
 
             if (!document.querySelector('#closed_overlay').classList.contains('hide_overlay')) {
                 document.querySelector('#closed_overlay').classList.add('hide_overlay')
+                document.querySelector('#moimApplication').classList.remove('closed_button')
+                document.querySelector('#moimGoToBoard').classList.remove('closed_button')
             }
         }
         if (data.status === 'CLOSE') {
@@ -1065,6 +1067,8 @@ function showMoimDetail(event, id) {
 
             if (document.querySelector('#closed_overlay').classList.contains('hide_overlay')) {
                 document.querySelector('#closed_overlay').classList.remove('hide_overlay')
+                document.querySelector('#moimApplication').classList.add('closed_button')
+                document.querySelector('#moimGoToBoard').classList.add('closed_button')
             }
         }
 

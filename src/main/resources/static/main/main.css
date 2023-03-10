@@ -919,3 +919,6 @@ p {
     transform: translate(-50%, -50%);
     font-size: 24px;
 }
+.closed_button {
+    visibility: hidden;
+}
