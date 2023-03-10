@@ -17,10 +17,12 @@ document.querySelector("#side-find").addEventListener("click", () => {
 })
 document.querySelector("#side-mypage").addEventListener("click", () => {
     document.querySelector("#side-mypage-content").classList.add("active");
-    showLeaderMoim()
-    showAppliedGroup()
-    showParticipantMoim()
-    showRequestedGroup()
+    if (localStorage.getItem(ACCESS_TOKEN_KEY) !== null) {
+        showLeaderMoim()
+        showAppliedGroup()
+        showParticipantMoim()
+        showRequestedGroup()
+    }
 })
 document.querySelector("#side-profile").addEventListener("click", () => {
     document.querySelector("#side-profile-content").classList.add("active");
