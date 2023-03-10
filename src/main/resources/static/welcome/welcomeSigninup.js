@@ -1,5 +1,3 @@
-import { origin } from "../config/config.js"
-
 /**
  * Variables
  */

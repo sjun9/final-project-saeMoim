@@ -1,5 +1,3 @@
-import {origin} from "../config/config.js"
-
 let Authorization = localStorage.getItem("Authorization")
 let Refresh_Token = localStorage.getItem("Refresh_Token")
 
@@ -1041,11 +1039,6 @@ function chat() {
         ))
     });
 
-    stomp.disconnect(function () {
-        alert('chat disconnected')
-    })
-
-
     function send() {
         var msg = document.getElementById("msg");
 
@@ -1060,7 +1053,6 @@ function chat() {
         ));
         msg.value = '';
     }
-
 
     $("#button-send").on("click", send);
     window.addEventListener('keydown', (e) => {
