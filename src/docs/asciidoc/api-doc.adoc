@@ -202,3 +202,17 @@ operation::group/open[snippets='path-parameters,http-request,request-headers,htt
 === 8-1. 태그 목록 조회
 
 operation::tag/getAll[snippets='http-request,http-response,response-fields']
+
+== 9. Wish API
+
+=== 9-1. 관심모임 조회
+
+operation::wish/getAll[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 9-2. 관심모임 추가
+
+operation::wish/wish[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 9-3. 관심모임 삭제
+
+operation::wish/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
