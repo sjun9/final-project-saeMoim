@@ -405,7 +405,6 @@ function showAllMoim() {
         type: "GET",
         url: url,
         success: function (response) {
-            console.log(response)
             response = response['data']['content']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -416,7 +415,6 @@ function showAllMoim() {
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
                 let imgPath = response[i]['imagePath']
-                console.log(imgPath)
 
                 let moim_status = ''
                 let closed = ''
@@ -550,7 +548,6 @@ function showLeaderMoim() {
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
                 $(contentId).append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
@@ -641,7 +638,6 @@ function showWishMoim() {
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success: function (response) {
-            console.log(response)
             response = response['data']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -652,7 +648,6 @@ function showWishMoim() {
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
                 let imgPath = response[i]['imagePath']
-                console.log(imgPath)
 
                 let moim_status = ''
                 let closed = ''
@@ -745,7 +740,6 @@ function showReview(id, isLeader) {
         type: "GET",
         url: `${origin}/groups/${id}/review`,
         success: function (response) {
-            console.log(response)
             response = response["data"]["content"]
             $('#moimDetail_reviews').append(`<hr>`)
             for (let i = 0; i < response.length; i++) {
@@ -797,8 +791,6 @@ function showRequestedGroup() {
             [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
         success: function (response) {
-            console.log("response")
-            console.log(response)
             response = response['data']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
@@ -954,14 +946,11 @@ function showMoimDetail(event, id) {
         async: false,
         success:
             function (response) {
-                userId = String(response["id"])
+                userId = String(response["data"])
             }, error: function (e) {
-            console.log(e)
         }
     }).fail(function (e) {
-        console.log(e)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -978,7 +967,6 @@ function showMoimDetail(event, id) {
         url: `${origin}/groups/${id}`,
         async: false
     }).done(function (data) {
-        console.log(data)
         groupLeaderId = String(data.userId)
         // data.imagePath
         document.getElementById("moimDetail_Image").src = data.imagePath;
@@ -1006,7 +994,9 @@ function showMoimDetail(event, id) {
             document.querySelector('#moimGoToBoard').classList.add('btn-primary')
             document.querySelector('#moimStatus').classList.add('btn-secondary')
 
-
+            if (!document.querySelector('#closed_overlay').classList.contains('hide_overlay')) {
+                document.querySelector('#closed_overlay').classList.add('hide_overlay')
+            }
         }
         if (data.status === 'CLOSE') {
             document.querySelector('#moimDetailContentId').classList.add('closed_moimDetail')
@@ -1017,15 +1007,18 @@ function showMoimDetail(event, id) {
                 document.querySelector('#moimApplication').classList.remove('btn-primary')
                 document.querySelector('#moimGoToBoard').classList.remove('btn-primary')
                 document.querySelector('#moimStatus').classList.remove('btn-secondary')
+                document.querySelector('#moim_closed_info').classList.remove('hide-info')
             }
 
             document.querySelector('#moimApplication').classList.add('btn-secondary')
             document.querySelector('#moimGoToBoard').classList.add('btn-secondary')
             document.querySelector('#moimStatus').classList.add('btn-success')
 
+            if (document.querySelector('#closed_overlay').classList.contains('hide_overlay')) {
+                document.querySelector('#closed_overlay').classList.remove('hide_overlay')
+            }
         }
 
-        console.log(data.address)
         let detailLatLng = new kakao.maps.LatLng(data.latitude, data.longitude);
 
         kakao.maps.event.addListener(detailMap, 'tilesloaded', function () {
@@ -1298,7 +1291,6 @@ function addReviewMoim(id) {
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success: function (data) {
-            console.log(data)
             alert('작성 완료')
         }
     }).done(function () {
@@ -1342,7 +1334,6 @@ function editReview(id) {
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success: function (data) {
-            console.log(data)
             alert('수정 완료')
             showReview(current_moim_id, false)
         }
@@ -1397,7 +1388,7 @@ function gotoBoard(id) {
         headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         async: false,
         success: function (data) {
-            myId = data['id']
+            myId = data['data']
         }
     }).done(function () {
         $.ajax({ // 그룹 정보 가져오기
@@ -1459,7 +1450,6 @@ function gotoBoard(id) {
 
 function gotoEditReview(event) {
     const original_review = event.currentTarget.parentNode.previousSibling.previousSibling.innerText;
-    console.log(event.currentTarget.parentNode.previousSibling)
     event.currentTarget.parentNode.previousSibling.value = original_review;
     event.currentTarget.parentNode.classList.toggle('button_hide');
     event.currentTarget.parentNode.nextSibling.classList.toggle('button_hide');
@@ -1509,39 +1499,11 @@ function changeStatus(id) {
 }
 
 
-function getMySmallProfileImg() {
-    $.ajax({
-        type: "post",
-        url: `${origin}/profile`,
-        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
-        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
-        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
-        success:
-            function (response) {
-                let imagePath = response['imagePath']
-                $('#small_profile_image')[0].src = imagePath
-            }
-    }).fail(function (e) {
-        if (e.status === 400) {
-            alert(e.responseJSON['data'])
-        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-            reissue()
-            setTimeout(getMySmallProfileImg, 150)
-            setTimeout(showUsername, 150)
-        } else {
-            alert(e.responseJSON['data'])
-        }
-    });
-}
-
-getMySmallProfileImg();
-
-
 function getMyProfile() {
     $('#profileName').empty()
     $('#profileContent').empty()
     $.ajax({
-        type: "post",
+        type: "get",
         url: `${origin}/profile`,
         headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
@@ -1670,8 +1632,6 @@ $(document).ready(function () {
              </li>`
                 $('#tatag').append(temp_html)
 
-                console.log($('[name="tagsA"]').val())
-
                 $(this).val('');
             } else {
                 $(this).val('');
@@ -1707,8 +1667,6 @@ $(document).ready(function () {
                <input type="hidden" value="` + $(this).val() + `" name="tagsM">
              </li>`
                 $('#modify-tatag').append(temp_html)
-
-                console.log($('[name="tagsM"]').val())
 
                 $(this).val('');
             } else {
