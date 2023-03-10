@@ -196,3 +196,9 @@ operation::group/close[snippets='path-parameters,http-request,request-headers,ht
 === 7-13. 모임 상태 변경 - OPEN
 
 operation::group/open[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 8. Tag API
+
+=== 8-1. 태그 목록 조회
+
+operation::tag/getAll[snippets='http-request,http-response,response-fields']
