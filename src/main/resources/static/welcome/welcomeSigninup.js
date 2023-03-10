@@ -1,8 +1,3 @@
-// const origin = `http://localhost:8080`
-const origin = `https://api.saemoim.site`
-
-// import {origin} from "../config/config.js";
-
 /**
  * Variables
  */

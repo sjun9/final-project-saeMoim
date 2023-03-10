@@ -1,8 +1,3 @@
-// const origin = `http://localhost:8080`
-const origin = `https://api.saemoim.site`
-
-// import {origin} from "../config/config.js";
-
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
 
@@ -312,15 +307,6 @@ function showUsername() {
             document.getElementById('profile-image').src = imagePath
         }, error: function (e) {
             $('#username').append(`로그인이 필요합니다`)
-        }
-    }).fail(function (e) {
-        if (e.status === 400) {
-            alert(e.responseJSON['data'])
-        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-            reissue()
-            setTimeout(showUsername, 150)
-        } else {
-            alert(e.responseJSON['data'])
         }
     });
 }

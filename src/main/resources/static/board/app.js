@@ -7,11 +7,6 @@
 // const tempGroupId = "1"
 // const tempUserId = "2"
 
-// const origin = `http://localhost:8080`
-const origin = `https://api.saemoim.site`
-
-// import {origin} from "../config/config.js";
-
 let Authorization = localStorage.getItem("Authorization")
 let Refresh_Token = localStorage.getItem("Refresh_Token")
 
