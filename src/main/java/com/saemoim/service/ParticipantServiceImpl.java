@@ -30,7 +30,7 @@ public class ParticipantServiceImpl implements ParticipantService {
 		Participant participant = participantRepository.findByGroup_IdAndUser_Id(groupId, userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_PARTICIPANT.getMessage())
 		);
-		participantRepository.delete(participant);
 		participant.getGroup().subtractParticipantCount();
+		participantRepository.delete(participant);
 	}
 }
