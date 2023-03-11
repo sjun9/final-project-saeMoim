@@ -61,7 +61,7 @@ public class Review extends TimeStamped {
 		this.content = content;
 	}
 
-	public boolean isReviewWriter(String username) {
-		return this.user.getUsername().equals(username);
+	public boolean isReviewWriter(Long userId) {
+		return this.user.getId().equals(userId);
 	}
 }

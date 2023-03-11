@@ -97,7 +97,7 @@ public class PostServiceImpl implements PostService {
 
 	@Transactional
 	@Override
-	public PostResponseDto createPost(Long groupId, PostRequestDto requestDto, Long userId, MultipartFile multipartFile) {
+	public void createPost(Long groupId, PostRequestDto requestDto, Long userId, MultipartFile multipartFile) {
 		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
@@ -106,10 +106,9 @@ public class PostServiceImpl implements PostService {
 		);
 
 		String imagePath;
-		if(multipartFile == null){
+		if (multipartFile == null) {
 			Post post = new Post(group, requestDto.getTitle(), requestDto.getContent(), user);
-			Post savedPost = postRepository.save(post);
-			return new PostResponseDto(savedPost);
+			postRepository.save(post);
 		}
 
 		try {
@@ -117,32 +116,30 @@ public class PostServiceImpl implements PostService {
 		} catch (IOException e) {
 			throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
 		}
-
-		Post savedPost = postRepository.save(new Post(group, requestDto.getTitle(), requestDto.getContent(), user, imagePath));
-		return new PostResponseDto(savedPost);
+		postRepository.save(new Post(group, requestDto.getTitle(), requestDto.getContent(), user, imagePath));
 	}
 
 	@Transactional
 	@Override
-	public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, Long userId, MultipartFile multipartFile) {
+	public void updatePost(Long postId, PostRequestDto requestDto, Long userId, MultipartFile multipartFile) {
 		Post savedPost = _getPostById(postId);
 
 		if (!savedPost.isWriter(userId)) {
 			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
 		}
 		String imagePath;
-		if(multipartFile == null){
+		if (multipartFile == null) {
 			savedPost.update(requestDto.getTitle(), requestDto.getContent());
-		}else {
+		} else {
 			try {
 				imagePath = awsS3Uploader.upload(multipartFile, dirName);
 				awsS3Uploader.delete(savedPost.getImagePath());
-				savedPost.update(requestDto.getTitle(), requestDto.getContent(),imagePath);
+				savedPost.update(requestDto.getTitle(), requestDto.getContent(), imagePath);
 			} catch (IOException e) {
 				throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
 			}
 		}
-		return new PostResponseDto(savedPost);
+		postRepository.save(savedPost);
 	}
 
 	@Transactional

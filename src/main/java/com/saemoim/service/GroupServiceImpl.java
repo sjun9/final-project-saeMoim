@@ -145,7 +145,7 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional
-	public GroupResponseDto createGroup(GroupRequestDto requestDto, Long userId, MultipartFile multipartFile) {
+	public void createGroup(GroupRequestDto requestDto, Long userId, MultipartFile multipartFile) {
 		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
@@ -195,13 +195,12 @@ public class GroupServiceImpl implements GroupService {
 
 		Participant participant = new Participant(user, savedGroup);
 		participantRepository.save(participant);
-
-		return new GroupResponseDto(savedGroup);
+		savedGroup.addParticipantCount();
 	}
 
 	@Override
 	@Transactional
-	public GroupResponseDto updateGroup(Long groupId, GroupRequestDto requestDto, Long userId,
+	public void updateGroup(Long groupId, GroupRequestDto requestDto, Long userId,
 		MultipartFile multipartFile) {
 		Category category = categoryRepository.findByName(requestDto.getCategoryName()).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_CATEGORY.getMessage())
@@ -224,8 +223,6 @@ public class GroupServiceImpl implements GroupService {
 			}
 		}
 		groupRepository.save(group);
-
-		return new GroupResponseDto(group);
 	}
 
 	@Override
