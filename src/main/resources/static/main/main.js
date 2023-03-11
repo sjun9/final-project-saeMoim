@@ -1209,7 +1209,6 @@ function editMoim(id) {
             alert(e.responseJSON['data'])
         }
     });
-
 }
 
 function deleteMoim(id) {
@@ -1262,7 +1261,6 @@ function deleteWishMoim(id) {
         headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
             alert(data['data'])
-            location.reload()
         },
         error: function (e) {
             if (e.status === 400) {
