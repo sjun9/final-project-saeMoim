@@ -821,10 +821,12 @@ function showFilter(categoryId, status) {
 }
 
 
-function showReview(id, isLeader) {
+function showReview(id, isLeader, is_in_group) {
     let review_form;
     if (isLeader) {
         review_form = `<span>모임 개설자는 후기를 달 수 없습니다</span>`
+    } else if (is_in_group === 'false') {
+        review_form = `<span>모임 참여자만 후기를 달 수 있습니다</span>`
     } else {
         review_form = `<textarea style="margin-bottom: 10px; width:100%;" rows="3" cols="30" id="reviewText"> </textarea>
                         <button type="button" style="margin-top: 10px;" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">
@@ -877,7 +879,7 @@ function showReview(id, isLeader) {
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(showReview(id, isLeader), 150)
+            setTimeout(showReview(id, isLeader, is_in_group), 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
@@ -1056,7 +1058,7 @@ function showMoimDetail(id) {
 
     let isLeader = false;
     let userId;
-    localStorage.setItem('current_moim_id', id)
+    localStorage.setItem('current_moim_id', id) // for edit moim review
     $.ajax({
         type: "get",
         url: `${origin}/user`,
@@ -1080,6 +1082,36 @@ function showMoimDetail(id) {
             alert(e.responseJSON['data'])
         }
     });
+    
+    $.ajax({
+        type: "get",
+        url: `${origin}/participant/groups/${id}`,
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+        async: false,
+        success:
+            function (response) {
+                let is_in_group = 'false';
+                response['data'].forEach((user) => {
+                    if (String(user['userId']) === userId) {
+                        is_in_group = 'true'
+                    }
+                })
+                localStorage.setItem("is_in_group", is_in_group)
+            }, error: function (e) {
+        }
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showMoimDetail(id), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
+    });
 
     let groupLeaderId;
     $.ajax({
@@ -1087,6 +1119,7 @@ function showMoimDetail(id) {
         url: `${origin}/groups/${id}`,
         async: false
     }).done(function (data) {
+        console.log(data)
         groupLeaderId = String(data.userId)
         // data.imagePath
         document.getElementById("moimDetail_Image").src = data.imagePath;
@@ -1168,7 +1201,7 @@ function showMoimDetail(id) {
     if (userId === groupLeaderId) {
         isLeader = true
     }
-    showReview(id, isLeader);
+    showReview(id, isLeader, localStorage.getItem("is_in_group"));
 }
 
 
@@ -1423,7 +1456,7 @@ function addReviewMoim(id) {
             alert('작성 완료')
         }
     }).done(function () {
-        showReview(id, false)
+        showReview(id, false, localStorage.getItem("is_in_group"))
     }).fail(function (e) {
         if (e.status === 400) {
             alert(e.responseJSON['data'])
@@ -1464,7 +1497,7 @@ function editReview(id) {
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success: function (data) {
             alert('수정 완료')
-            showReview(current_moim_id, false)
+            showReview(current_moim_id, false, localStorage.getItem("is_in_group"))
         }
     }).fail(function (e) {
         if (e.status === 400) {
