@@ -1,0 +1,330 @@
+= SaeMoim API 명세
+:toc: left
+:toclevels: 2
+:source-highlighter: highlightjs
+
+== 1. Admin API
+
+=== 1-1. 관리자 로그인
+
+operation::admin/sign-in[snippets = 'http-request,request-fields,http-response,response-headers,response-fields']
+
+=== 1-2. 관리자 계정 목록 조회
+
+operation::admin/getAll[snippets = 'http-request,request-headers,http-response,response-fields']
+
+=== 1-3. 관리자 계정 생성
+
+operation::admin/create[snippets = 'http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 1-4. 관리자 계정 삭제
+
+operation::admin/delete[snippets = 'path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 1-5. 관리자 토큰 연장
+
+operation::admin/reissue[snippets = 'http-request,request-headers,http-response,response-headers,response-fields']
+
+== 2. Blacklist API
+
+=== 2-1. 블랙리스트 조회
+
+operation::blacklist/getAll[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 2-2. 블랙리스트 등록
+
+operation::blacklist/add[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 2-3. 블랙리스트 영구 등록
+
+operation::blacklist/addPermanent[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 2-4. 블랙리스트 해제
+
+operation::blacklist/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 3. Category API
+
+=== 3-1. 카테고리 조회
+
+operation::category/getAll[snippets='http-request,http-response,response-fields']
+
+=== 3-2. 상위카테고리 생성
+
+operation::category/createParent[snippets='http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 3-3. 하위 카테고리 생성
+
+operation::category/createChild[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 3-4. 카테고리 수정
+
+operation::category/update[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 3-5. 카테고리 삭제
+
+operation::category/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 4. User API
+
+=== 4-1. 회원가입
+
+operation::user/sign-up[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 4-2. 이메일 중복 검사
+
+operation::user/email-check[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 4-3. 닉네임 중복 검사
+
+operation::user/username-check[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 4-4. 로그인
+
+operation::user/login[snippets='http-request,request-fields,http-response,response-headers,response-fields']
+
+=== 4-5. 로그아웃
+
+operation::user/logout[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 4-6. 토큰 재발급
+
+operation::user/reissue[snippets='http-request,request-headers,http-response,response-headers,response-fields']
+
+=== 4-7. 내 정보 조회
+
+operation::user/myProfile[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 4-8. 내 정보 수정
+
+operation::user/update-profile[snippets='http-request,request-headers,request-part-requestDto-fields,http-response,response-fields']
+
+=== 4-9. 사용자 정보 조회
+
+operation::user/user-id[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 4-10. 회원 프로필 조회
+
+operation::user/profile[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 4-11. 전체 회원 조회
+
+operation::user/getAll[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 4-12. 회원 탈퇴
+
+operation::user/withdrawal[snippets='http-request,request-headers,request-fields,http-response,response-fields']
+
+== 5. Report API
+
+=== 5-1. 사용자 신고
+
+operation::report/do[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 5-2. 신고내역 조회
+
+operation::report/getAll[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 5-3. 신고내역 삭제
+
+operation::report/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 6. Email API
+
+=== 6-1. 이메일 인증코드 발송
+
+operation::email/send-code[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 6-2. 이메일 인증코드 확인
+
+operation::email/check-code[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 6-3. 임시 비밀번호 발송
+
+operation::email/send-pwd[snippets='http-request,request-fields,http-response,response-fields']
+
+== 7. Group API
+
+=== 7-1. 전체 모임 조회
+
+operation::group/getAll[snippets='http-request,http-response,response-fields']
+
+=== 7-2. 특정 모임 조회
+
+operation::group/get[snippets='path-parameters,http-request,http-response,response-fields']
+
+=== 7-3. 인기 모임 조회
+
+operation::group/get-popular[snippets='http-request,http-response,response-fields']
+
+=== 7-4. 카테고리/상태 필터로 모임 조회
+
+operation::group/filter[snippets='path-parameters,query-parameters,http-request,http-response,response-fields']
+
+=== 7-5. 이름으로 모임 검색
+
+operation::group/name[snippets='query-parameters,http-request,http-response,response-fields']
+
+=== 7-6. 태그로 모임 검색
+
+operation::group/tag[snippets='query-parameters,http-request,http-response,response-fields']
+
+=== 7-7. 내가 만든 모임 조회
+
+operation::group/leader[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 7-8. 참여중인 모임 조회
+
+operation::group/participant[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 7-9. 모임 생성
+
+operation::group/create[snippets='http-request,request-headers,request-part-requestDto-fields,http-response,response-fields']
+
+=== 7-10. 모임 수정
+
+operation::group/update[snippets='http-request,request-headers,request-part-requestDto-fields,http-response,response-fields']
+
+=== 7-11. 모임 삭제
+
+operation::group/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 7-12. 모임 상태 변경 - CLOSE
+
+operation::group/close[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 7-13. 모임 상태 변경 - OPEN
+
+operation::group/open[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 8. Tag API
+
+=== 8-1. 태그 목록 조회
+
+operation::tag/getAll[snippets='http-request,http-response,response-fields']
+
+== 9. Wish API
+
+=== 9-1. 관심모임 조회
+
+operation::wish/getAll[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 9-2. 관심모임 추가
+
+operation::wish/wish[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 9-3. 관심모임 삭제
+
+operation::wish/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 10. Application API
+
+=== 10-1. 나의 참여신청내역 조회
+
+operation::application/getAllMine[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 10-2. 신청받은 내역 조회
+
+operation::application/getAll[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 10-3. 모임 참여 신청
+
+operation::application/apply[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 10-4. 참여 신청 취소
+
+operation::application/cancel[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 10-5. 참여 신청 승인
+
+operation::application/permit[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 10-6. 참여 신청 거절
+
+operation::application/reject[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 11. Post API
+
+=== 11-1. 전체 게시글 조회
+
+operation::post/getAll[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 11-2. 특정 게시글 조회
+
+operation::post/get[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 11-3. 게시글 생성
+
+operation::post/create[snippets='path-parameters,http-request,request-headers,request-part-requestDto-fields,http-response,response-fields']
+
+=== 11-4. 게시글 수정
+
+operation::post/update[snippets='path-parameters,http-request,request-headers,request-part-requestDto-fields,http-response,response-fields']
+
+=== 11-5. 게시글 삭제
+
+operation::post/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 11-6. 관리자 - 게시글 삭제
+
+operation::post/delete-admin[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 12. Participant API
+
+=== 12-1. 참가자 조회
+
+operation::participant/getAll[snippets='path-parameters,http-request,http-response,response-fields']
+
+=== 12-2. 모임 탈퇴
+
+operation::participant/withdraw[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 13. Review API
+
+=== 13-1. 모임 후기 조회
+
+operation::review/getAll[snippets='path-parameters,http-request,http-response,response-fields']
+
+=== 13-2. 후기 생성
+
+operation::review/create[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 13-3. 후기 수정
+
+operation::review/update[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 13-4. 후기 삭제
+
+operation::review/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 13-5. 관리자 - 후기 삭제
+
+operation::review/delete-admin[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 14. Like API
+
+=== 14-1. 게시글 좋아요
+
+operation::like/do[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 14-2. 게시글 좋아요 취소
+
+operation::like/cancel[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 15. Comment API
+
+=== 15-1. 댓글 조회
+
+operation::comment/getAll[snippets='path-parameters,http-request,http-response,response-fields']
+
+=== 15-2. 댓글 생성
+
+operation::comment/create[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 15-3. 댓글 수정
+
+operation::comment/update[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 15-4. 댓글 삭제
+
+operation::comment/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']

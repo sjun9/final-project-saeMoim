@@ -9,12 +9,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Category extends TimeStamped {
 	@Id
@@ -26,7 +29,6 @@ public class Category extends TimeStamped {
 
 	private Long parentId;
 
-	@Builder
 	public Category(String name, Long parentId) {
 		this.name = name;
 		this.parentId = parentId;
