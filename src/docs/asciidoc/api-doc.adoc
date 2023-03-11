@@ -310,3 +310,21 @@ operation::like/do[snippets='path-parameters,http-request,request-headers,http-r
 === 14-2. 게시글 좋아요 취소
 
 operation::like/cancel[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 15. Comment API
+
+=== 15-1. 댓글 조회
+
+operation::comment/getAll[snippets='path-parameters,http-request,http-response,response-fields']
+
+=== 15-2. 댓글 생성
+
+operation::comment/create[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 15-3. 댓글 수정
+
+operation::comment/update[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 15-4. 댓글 삭제
+
+operation::comment/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
