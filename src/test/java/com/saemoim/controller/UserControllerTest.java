@@ -385,7 +385,7 @@ class UserControllerTest {
 		when(userService.getMyProfile(anyLong())).thenReturn(response);
 
 		// when
-		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.post("/profile")
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.get("/profile")
 			.header(JwtUtil.AUTHORIZATION_HEADER, "Bearer accessToken"));
 
 		// then

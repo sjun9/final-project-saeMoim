@@ -33,7 +33,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.saemoim.annotation.WithCustomMockUser;
 import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.dto.response.GroupResponseDto;
-import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.oauth.CustomOAuth2UserService;
 import com.saemoim.oauth.OAuth2AuthenticationSuccessHandler;
@@ -49,8 +48,6 @@ class WishControllerTest {
 	private MockMvc mockMvc;
 	@MockBean
 	private WishService wishService;
-	@MockBean
-	private AWSS3Uploader awsS3Uploader;
 	@MockBean
 	private JwtUtil jwtUtil;
 	@MockBean
