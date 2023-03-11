@@ -82,15 +82,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 		}
 		if (participantRepository.existsByUser_Id(application.getUserId())) {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_PARTICIPANT.getMessage());
-		} else {
-			application.permit();
-			applicationRepository.save(application);
-
-			// 모임 참여자 추가
-			User user = _getUserById(application.getUserId());
-			Participant participant = new Participant(user, group);
-			participantRepository.save(participant);
 		}
+		application.permit();
+		applicationRepository.save(application);
+
+		// 모임 참여자 추가
+		User user = _getUserById(application.getUserId());
+		Participant participant = new Participant(user, group);
+		participantRepository.save(participant);
 	}
 
 	@Transactional
@@ -103,20 +102,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 		if (!group.isLeader(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
-		if (!participantRepository.existsByUser_Id(application.getUserId())) {
+		if (!application.isWait()) {
 			throw new IllegalArgumentException(ErrorCode.ALREADY_PROCESSED.getMessage());
-		} else {
-			application.reject();
-			applicationRepository.save(application);
-
-			// 모임 참여자 삭제
-			Participant participant = participantRepository.findByGroup_IdAndUser_Id(application.getGroupId(),
-					application.getUserId())
-				.orElseThrow(
-					() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_PARTICIPANT.getMessage())
-				);
-			participantRepository.delete(participant);
 		}
+		application.reject();
+		applicationRepository.save(application);
 	}
 
 	private User _getUserById(Long userId) {
