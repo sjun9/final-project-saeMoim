@@ -216,3 +216,29 @@ operation::wish/wish[snippets='path-parameters,http-request,request-headers,http
 === 9-3. 관심모임 삭제
 
 operation::wish/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 10. Application API
+
+=== 10-1. 나의 참여신청내역 조회
+
+operation::application/getAllMine[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 10-2. 신청받은 내역 조회
+
+operation::application/getAll[snippets='http-request,request-headers,http-response,response-fields']
+
+=== 10-3. 모임 참여 신청
+
+operation::application/apply[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 10-4. 참여 신청 취소
+
+operation::application/cancel[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 10-5. 참여 신청 승인
+
+operation::application/permit[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 10-6. 참여 신청 거절
+
+operation::application/reject[snippets='path-parameters,http-request,request-headers,http-response,response-fields']

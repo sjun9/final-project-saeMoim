@@ -3,10 +3,14 @@ package com.saemoim.dto.response;
 import com.saemoim.domain.Application;
 import com.saemoim.domain.enums.ApplicationStatusEnum;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class ApplicationResponseDto {
 	private Long id;
