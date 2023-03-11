@@ -47,7 +47,7 @@
         <div class="modal-content" id="moimDetailContentId">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="moimDetail_Title">모임 제목이 여기에 들어갑니다</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" id="close_moim_detail" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body moimDetailModalBody">
                 <img id="moimDetail_Image" src="" alt="">
@@ -277,7 +277,7 @@
                         onclick="goToHome()" alt="Account">
             </div>
             <div class="account-info-name" id="username"></div>
-            <img class="account-info-more" src="../static/images/logout.png" alt="" onclick="logout()" style="padding: 7px;">
+            <img class="account-info-more" id="logout_image" src="../static/images/logout.png" alt="" onclick="logout()" style="padding: 7px;">
         </div>
     </div>
 

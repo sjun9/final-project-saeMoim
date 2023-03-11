@@ -922,3 +922,6 @@ p {
 .closed_button {
     visibility: hidden;
 }
+.hide_logout_button {
+    display: none;
+}

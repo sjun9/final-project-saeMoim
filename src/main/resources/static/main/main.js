@@ -293,8 +293,14 @@ function showUsername() {
             let imagePath = data['imagePath']
             $('#username').append(`${username}`)
             document.getElementById('profile-image').src = imagePath
+            if (document.querySelector('#logout_image').classList.contains('hide_logout_button')) {
+                document.querySelector('#logout_image').classList.remove('hide_logout_button')
+            }
         }, error: function (e) {
             $('#username').append(`로그인이 필요합니다`)
+            if (!document.querySelector('#logout_image').classList.contains('hide_logout_button')) {
+                document.querySelector('#logout_image').classList.add('hide_logout_button')
+            }
         }
     });
 }
@@ -351,8 +357,22 @@ function showSearch(name) {
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
                 let imagePath = response[i]['imagePath']
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -360,7 +380,7 @@ function showSearch(name) {
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
@@ -430,8 +450,12 @@ function showAllMoim() {
                     closed = 'closed'
                 }
 
-                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src="${imgPath}" alt="">
                                             <span>${groupName}</span>
@@ -488,8 +512,12 @@ function showPopularMoim() {
                         closed = 'closed'
                     }
 
-                    let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                    let modal_toggle = ''
+                    if (localStorage.getItem("is_logged_in") === 'true') {
+                        modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                    }
+
+                    let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -552,8 +580,12 @@ function showLeaderMoim() {
                     closed = 'closed'
                 }
 
-                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -615,8 +647,12 @@ function showParticipantMoim() { // 참여중인 모임 조회
                     closed = 'closed'
                 }
 
-                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -678,8 +714,12 @@ function showWishMoim() {
                     closed = 'closed'
                 }
 
-                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src="${imgPath}" alt="">
                                             <span>${groupName}</span>
@@ -732,8 +772,21 @@ function showFilter(categoryId, status) {
                 let status = response[i]['status']
                 let imagePath = response[i]['imagePath']
 
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -741,7 +794,7 @@ function showFilter(categoryId, status) {
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
@@ -990,7 +1043,12 @@ function cancelApplication(applicationId) {
 }
 
 
-function showMoimDetail(event, id) {
+function showMoimDetail(id) {
+    if (localStorage.getItem("is_logged_in") === 'false') {
+        alert('로그인 한 사용자만 열람이 가능합니다.\n이전 페이지로 돌아가서 로그인 해주세요.')
+        return
+    }
+
     let isLeader = false;
     let userId;
     localStorage.setItem('current_moim_id', id)
@@ -1011,7 +1069,7 @@ function showMoimDetail(event, id) {
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(showMoimDetail(event, id), 150)
+            setTimeout(showMoimDetail(id), 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
@@ -1095,7 +1153,7 @@ function showMoimDetail(event, id) {
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(showMoimDetail(event, id), 150)
+            setTimeout(showMoimDetail(id), 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])

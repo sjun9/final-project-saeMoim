@@ -86,6 +86,7 @@ function login() {
         localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
         localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
 
+        localStorage.setItem("is_logged_in", 'true')
         location.replace('./main.html')
     }).fail(function (response) {
         alert(response.responseJSON['data'])
@@ -273,3 +274,8 @@ window.addEventListener("keyup", e => {
         modal.style.display = "none"
     }
 })
+
+function gotoMain() {
+    localStorage.setItem("is_logged_in", 'false')
+    location.href = './main.html'
+}
