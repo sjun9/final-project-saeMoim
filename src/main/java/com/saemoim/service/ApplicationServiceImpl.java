@@ -80,7 +80,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		if (!group.isLeader(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
-		if (participantRepository.existsByUser_Id(application.getUserId())) {
+		if (participantRepository.existsByUser_IdAndGroup_Id(application.getUserId(), group.getId())) {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_PARTICIPANT.getMessage());
 		}
 		application.permit();
@@ -90,6 +90,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		User user = _getUserById(application.getUserId());
 		Participant participant = new Participant(user, group);
 		participantRepository.save(participant);
+		group.addParticipantCount();
 	}
 
 	@Transactional

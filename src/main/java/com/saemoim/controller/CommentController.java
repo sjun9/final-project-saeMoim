@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saemoim.dto.request.CommentRequestDto;
-import com.saemoim.dto.response.CommentResponseDto;
 import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.security.UserDetailsImpl;
 import com.saemoim.service.CommentService;
@@ -33,17 +32,19 @@ public class CommentController {
 
 	// 댓글 작성
 	@PostMapping("/posts/{postId}/comment")
-	public ResponseEntity<CommentResponseDto> createComment(@PathVariable Long postId,
+	public ResponseEntity<GenericsResponseDto> createComment(@PathVariable Long postId,
 		@Validated @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+		commentService.createComment(postId, requestDto, userDetails.getId());
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(commentService.createComment(postId, requestDto, userDetails.getId()));
+			.body(new GenericsResponseDto("댓글 작성이 완료 되었습니다."));
 	}
 
 	// 댓글 수정
 	@PutMapping("/comments/{commentId}")
-	public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long commentId,
+	public ResponseEntity<GenericsResponseDto> updateComment(@PathVariable Long commentId,
 		@Validated @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(commentService.updateComment(commentId, requestDto, userDetails.getId()));
+		commentService.updateComment(commentId, requestDto, userDetails.getId());
+		return ResponseEntity.ok().body(new GenericsResponseDto("댓글 수정이 완료 되었습니다."));
 	}
 
 	// 댓글 삭제
@@ -51,6 +52,6 @@ public class CommentController {
 	public ResponseEntity<GenericsResponseDto> deleteComment(@PathVariable Long commentId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		commentService.deleteComment(commentId, userDetails.getId());
-		return ResponseEntity.ok().body(new GenericsResponseDto("삭제 완료"));
+		return ResponseEntity.ok().body(new GenericsResponseDto("댓글 삭제가 완료 되었습니다."));
 	}
 }

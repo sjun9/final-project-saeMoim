@@ -1,3 +1,5 @@
+let origin = `https://api.saemoim.site`;
+
 let Authorization = localStorage.getItem("Authorization")
 let Refresh_Token = localStorage.getItem("Refresh_Token")
 

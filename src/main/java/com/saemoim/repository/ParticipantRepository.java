@@ -14,5 +14,5 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
 	Optional<Participant> findByGroup_IdAndUser_Id(Long groupId, Long userId);
 
-	boolean existsByUser_Id(Long userId);
+	boolean existsByUser_IdAndGroup_Id(Long userId, Long GroupId);
 }

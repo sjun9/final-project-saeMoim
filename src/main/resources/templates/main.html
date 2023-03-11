@@ -145,7 +145,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="newMoim-image" class="col-form-label">이미지 업로드</label>
-                        <input type="file" class="form-control" id="newMoim-image">
+                        <input type="file" accept="image/*" class="form-control" id="newMoim-image">
                     </div>
                     <div class="mb-3">
                         <label for="newMoim-content" class="col-form-label">한줄소개</label>
@@ -212,7 +212,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="modifyMoim-image" class="col-form-label">이미지 업로드</label>
-                        <input type="file" class="form-control" id="modifyMoim-image"/>
+                        <input type="file" accept="image/*" class="form-control" id="modifyMoim-image"/>
                     </div>
                     <div class="mb-3">
                         <label for="modifyMoim-content" class="col-form-label">한줄소개</label>
@@ -401,7 +401,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="img" class="col-form-label">프로필 이미지 업로드</label>
-                        <input type="file" class="form-control" id="img" accept="image/*" multiple>
+                        <input type="file" accept="image/*" class="form-control" id="img" accept="image/*" multiple>
                     </div>
                     <button type="submit" class="btn btn-primary"
                             onclick="updateProfile($('#inputContent').val())">

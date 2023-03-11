@@ -35,6 +35,9 @@ public enum ErrorCode {
 	DUPLICATED_REPORT("이미 신고한 사용자 입니다."),
 	NOT_FOUND_REPORT("신고 내용이 존재하지 않습니다."),
 
+	// 후기
+	DUPLICATED_REVIEW("이미 후기를 등록하였습니다."),
+
 	// 블랙리스트
 	DUPLICATED_BLACKLIST("이미 블랙리스트에 등록되어 있습니다."),
 	NOT_FOUND_BLACKLIST("해당 블랙리스트가 존재하지 않습니다."),

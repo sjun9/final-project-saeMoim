@@ -26,7 +26,6 @@ import com.saemoim.domain.User;
 import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.GroupRequestDto;
-import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
@@ -82,10 +81,8 @@ class GroupServiceImplTest {
 		}
 
 		// when
-		GroupResponseDto response = groupService.createGroup(request, id, multipartFile);
+		groupService.createGroup(request, id, multipartFile);
 		// then
-		assertThat(response.getGroupName()).isEqualTo("name");
-		assertThat(response.getUsername()).isEqualTo("name");
 		verify(categoryRepository).findByName(anyString());
 		verify(groupRepository).save(any(Group.class));
 	}
@@ -118,10 +115,10 @@ class GroupServiceImplTest {
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
 
 		// when
-		GroupResponseDto response = groupService.updateGroup(id, request, userId, imgPath);
+		groupService.updateGroup(id, request, userId, imgPath);
 
 		// then
-		assertThat(response.getGroupName()).isEqualTo(group.getName());
+		verify(groupRepository).save(any(Group.class));
 	}
 
 	@Test

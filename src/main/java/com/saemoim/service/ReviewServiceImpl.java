@@ -30,32 +30,33 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Transactional
 	@Override
-	public ReviewResponseDto createReview(Long groupId, ReviewRequestDto requestDto, Long userId) {
+	public void createReview(Long groupId, ReviewRequestDto requestDto, Long userId) {
 		Participant participant = participantRepository.findByGroup_IdAndUser_Id(groupId, userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage())
 		);
+		if (reviewRepository.existsByGroup_IdAndUser_Id(groupId, userId)) {
+			throw new IllegalArgumentException(ErrorCode.DUPLICATED_REVIEW.getMessage());
+		}
 		Review review = new Review(participant, requestDto.getContent());
 		reviewRepository.save(review);
-		return new ReviewResponseDto(review);
 	}
 
 	@Transactional
 	@Override
-	public ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto requestDto, String username) {
+	public void updateReview(Long reviewId, ReviewRequestDto requestDto, Long userId) {
 		Review review = _getReviewById(reviewId);
-		if (!review.isReviewWriter(username)) {
+		if (!review.isReviewWriter(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
 		review.update(requestDto.getContent());
 		reviewRepository.save(review);
-		return new ReviewResponseDto(review);
 	}
 
 	@Transactional
 	@Override
-	public void deleteReview(Long reviewId, String username) {
+	public void deleteReview(Long reviewId, Long userId) {
 		Review review = _getReviewById(reviewId);
-		if (!review.isReviewWriter(username)) {
+		if (!review.isReviewWriter(userId)) {
 			throw new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage());
 		}
 		reviewRepository.delete(review);
