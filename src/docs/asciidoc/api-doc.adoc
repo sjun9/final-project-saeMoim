@@ -269,24 +269,34 @@ operation::post/delete[snippets='path-parameters,http-request,request-headers,ht
 
 operation::post/delete-admin[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
 
-== 12. Review API
+== 12. Participant API
 
-=== 12-1. 모임 후기 조회
+=== 12-1. 참가자 조회
+
+operation::participant/getAll[snippets='path-parameters,http-request,http-response,response-fields']
+
+=== 12-2. 모임 탈퇴
+
+operation::participant/withdraw[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 13. Review API
+
+=== 13-1. 모임 후기 조회
 
 operation::review/getAll[snippets='path-parameters,http-request,http-response,response-fields']
 
-=== 12-2. 후기 생성
+=== 13-2. 후기 생성
 
 operation::review/create[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
 
-=== 12-3. 후기 수정
+=== 13-3. 후기 수정
 
 operation::review/update[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
 
-=== 12-4. 후기 삭제
+=== 13-4. 후기 삭제
 
 operation::review/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
 
-=== 12-5. 관리자 - 후기 삭제
+=== 13-5. 관리자 - 후기 삭제
 
 operation::review/delete-admin[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
