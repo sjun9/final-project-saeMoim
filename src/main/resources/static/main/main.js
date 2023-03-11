@@ -847,13 +847,20 @@ function showRequestedGroup() {
                 let username = response[i]['username']
                 let status = response[i]['status']
 
+                let button_status = 'inline'
+                if (status === "PERMIT" || status === "REJECT") {
+                    button_status = 'none'
+                }
+
                 let temp_html = `<div class="list-body">
                                     <div class="list-title">${groupName}</div>
                                     <div class="list-name">${username}</div>
                                     <div class="list-button">
                                         <span>${status}</span>
-                                        <input type="button" onclick="permitApplication(${id})" value="승인">
-                                        <input type="button" onclick="rejectApplication(${id})" value="거절">
+                                        <div style="display: ${button_status};">
+                                            <input type="button" onclick="permitApplication(${id})" value="승인">
+                                            <input type="button" onclick="rejectApplication(${id})" value="거절">
+                                        </div>
                                     </div>
                                   </div>
                                   <hr>
