@@ -17,10 +17,12 @@ document.querySelector("#side-find").addEventListener("click", () => {
 })
 document.querySelector("#side-mypage").addEventListener("click", () => {
     document.querySelector("#side-mypage-content").classList.add("active");
-    showLeaderMoim()
-    showAppliedGroup()
-    showParticipantMoim()
-    showRequestedGroup()
+    if (localStorage.getItem(ACCESS_TOKEN_KEY) !== null) {
+        showLeaderMoim()
+        showAppliedGroup()
+        showParticipantMoim()
+        showRequestedGroup()
+    }
 })
 document.querySelector("#side-profile").addEventListener("click", () => {
     document.querySelector("#side-profile-content").classList.add("active");
@@ -228,12 +230,14 @@ function getCookieValue(cookieName) {
 }
 
 function setLocalStorageToken() {
-    let accessToken = getCookieValue(STORAGE_ACCESS_TOKEN_KEY);
-    let refreshToken = getCookieValue(STORAGE_Refresh_TOKEN_KEY);
+    let accessToken = getCookieValue(ACCESS_TOKEN_KEY);
+    let refreshToken = getCookieValue(Refresh_TOKEN_KEY);
     // 쿠키 값을 가져왔다면 localStorage에 값을 저장합니다.
     if (accessToken) {
         localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, "Bearer " + accessToken);
         localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, "Bearer " + refreshToken);
+        console.log("accessToken")
+        console.log(accessToken)
     }
     document.cookie = STORAGE_ACCESS_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = STORAGE_Refresh_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -269,7 +273,7 @@ function logout() {
     }).done(function (response, status, xhr) {
         localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader(STORAGE_ACCESS_TOKEN_KEY))
         localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, xhr.getResponseHeader(STORAGE_Refresh_TOKEN_KEY))
-        location.replace("./welcome.html")
+        location.replace("./")
     }).fail(function (e) {
         if (e.status === 400) {
             alert(e.responseJSON['data'])
@@ -367,12 +371,17 @@ function showSearch(name) {
                     closed = 'closed'
                 }
 
+<<<<<<< HEAD
                 let modal_toggle = ''
                 if (localStorage.getItem("is_logged_in") === 'true') {
                     modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
                 }
 
                 let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
+=======
+                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+                                    onClick="showMoimDetail(event, ${id})">
+>>>>>>> ca44159a15de4dba0e8c5e09440a920dc4b6cfc1
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -418,7 +427,7 @@ function reissue() {
         alert("다시 로그인 해주세요.")
         localStorage.removeItem(STORAGE_ACCESS_TOKEN_KEY)
         localStorage.removeItem(STORAGE_Refresh_TOKEN_KEY)
-        window.location.replace('./welcome.html');
+        window.location.replace('./');
     });
 }
 
@@ -781,12 +790,17 @@ function showFilter(categoryId, status) {
                     closed = 'closed'
                 }
 
+<<<<<<< HEAD
                 let modal_toggle = ''
                 if (localStorage.getItem("is_logged_in") === 'true') {
                     modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
                 }
 
                 let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
+=======
+                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+                                    onClick="showMoimDetail(event, ${id})">
+>>>>>>> ca44159a15de4dba0e8c5e09440a920dc4b6cfc1
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -987,6 +1001,7 @@ function permitApplication(applicationId) {
     }).done(function (data) {
         alert(data['data'])
         showRequestedGroup()
+        showLeaderMoim()
     }).fail(function (e) {
         if (e.status === 400) {
             alert(e.responseJSON['data'])
@@ -1323,7 +1338,6 @@ function editMoim(id) {
             alert(e.responseJSON['data'])
         }
     });
-
 }
 
 function deleteMoim(id) {
@@ -1376,7 +1390,6 @@ function deleteWishMoim(id) {
         headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
             alert(data['data'])
-            location.reload()
         },
         error: function (e) {
             if (e.status === 400) {
@@ -1501,7 +1514,7 @@ function deleteReview(id) {
 
 
 function goToHome() {
-    location.replace('./welcome.html')
+    location.replace('./')
 }
 
 

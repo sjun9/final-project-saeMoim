@@ -1,8 +1,9 @@
 package com.saemoim.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,7 +27,6 @@ import com.saemoim.domain.Group;
 import com.saemoim.domain.Participant;
 import com.saemoim.domain.Review;
 import com.saemoim.domain.User;
-import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.ReviewRequestDto;
 import com.saemoim.dto.response.ReviewResponseDto;
 import com.saemoim.repository.ParticipantRepository;
@@ -82,18 +82,16 @@ class ReviewServiceImplTest {
 		// given
 		Long id = 1L;
 		ReviewRequestDto request = ReviewRequestDto.builder().content("내용").build();
-		String username = "name";
-		Review review = Review.builder()
-			.user(new User("e", "p", "name", UserRoleEnum.USER))
-			.content("아냐")
-			.build();
+		Long userId = 1L;
+		Review review = mock(Review.class);
 
+		when(review.isReviewWriter(userId)).thenReturn(true);
+		doNothing().when(review).update(anyString());
 		when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
 
 		// when
-		ReviewResponseDto response = reviewService.updateReview(id, request, username);
+		reviewService.updateReview(id, request, userId);
 		// then
-		assertThat(response.getContent()).isEqualTo("내용");
 		verify(reviewRepository).save(review);
 	}
 
@@ -102,12 +100,13 @@ class ReviewServiceImplTest {
 	void deleteReview() {
 		// given
 		var id = 1L;
-		var username = "name";
-		var review = Review.builder().user(new User("e", "p", "name", UserRoleEnum.USER))
-			.build();
+		var userId = 1L;
+		var review = mock(Review.class);
+
+		when(review.isReviewWriter(userId)).thenReturn(true);
 		when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
 		// when
-		reviewService.deleteReview(id, username);
+		reviewService.deleteReview(id, userId);
 		// then
 		verify(reviewRepository).delete(review);
 	}
