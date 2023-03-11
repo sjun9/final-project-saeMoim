@@ -230,12 +230,14 @@ function getCookieValue(cookieName) {
 }
 
 function setLocalStorageToken() {
-    let accessToken = getCookieValue(STORAGE_ACCESS_TOKEN_KEY);
-    let refreshToken = getCookieValue(STORAGE_Refresh_TOKEN_KEY);
+    let accessToken = getCookieValue(ACCESS_TOKEN_KEY);
+    let refreshToken = getCookieValue(Refresh_TOKEN_KEY);
     // 쿠키 값을 가져왔다면 localStorage에 값을 저장합니다.
     if (accessToken) {
         localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, "Bearer " + accessToken);
         localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, "Bearer " + refreshToken);
+        console.log("accessToken")
+        console.log(accessToken)
     }
     document.cookie = STORAGE_ACCESS_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = STORAGE_Refresh_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -276,7 +278,7 @@ function logout() {
     }).done(function (response, status, xhr) {
         localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader(STORAGE_ACCESS_TOKEN_KEY))
         localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, xhr.getResponseHeader(STORAGE_Refresh_TOKEN_KEY))
-        location.replace("./welcome.html")
+        location.replace("./")
     }).fail(function (e) {
         if (e.status === 400) {
             alert(e.responseJSON['data'])
@@ -352,7 +354,17 @@ function showSearch(name) {
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
                 let imagePath = response[i]['imagePath']
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
@@ -392,7 +404,7 @@ function reissue() {
         alert("다시 로그인 해주세요.")
         localStorage.removeItem(STORAGE_ACCESS_TOKEN_KEY)
         localStorage.removeItem(STORAGE_Refresh_TOKEN_KEY)
-        window.location.replace('./welcome.html');
+        window.location.replace('./');
     });
 }
 
@@ -709,7 +721,16 @@ function showFilter(categoryId, status) {
                 let status = response[i]['status']
                 let imagePath = response[i]['imagePath']
 
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
                                     onClick="showMoimDetail(event, ${id})">
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
@@ -1385,7 +1406,7 @@ function deleteReview(id) {
 
 
 function goToHome() {
-    location.replace('./welcome.html')
+    location.replace('./')
 }
 
 
