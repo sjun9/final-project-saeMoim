@@ -90,6 +90,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		User user = _getUserById(application.getUserId());
 		Participant participant = new Participant(user, group);
 		participantRepository.save(participant);
+		group.addParticipantCount();
 	}
 
 	@Transactional

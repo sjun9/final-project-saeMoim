@@ -169,6 +169,14 @@ public class Group extends TimeStamped {
 		this.status = GroupStatusEnum.CLOSE;
 	}
 
+	public void addParticipantCount() {
+		this.participantCount++;
+	}
+
+	public void subtractParticipantCount() {
+		this.participantCount--;
+	}
+
 	public void addWishCount() {
 		this.wishCount++;
 	}

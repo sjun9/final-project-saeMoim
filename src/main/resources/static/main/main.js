@@ -888,6 +888,7 @@ function permitApplication(applicationId) {
     }).done(function (data) {
         alert(data['data'])
         showRequestedGroup()
+        showLeaderMoim()
     }).fail(function (e) {
         if (e.status === 400) {
             alert(e.responseJSON['data'])

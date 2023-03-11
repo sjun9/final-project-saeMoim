@@ -31,5 +31,6 @@ public class ParticipantServiceImpl implements ParticipantService {
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_PARTICIPANT.getMessage())
 		);
 		participantRepository.delete(participant);
+		participant.getGroup().subtractParticipantCount();
 	}
 }
