@@ -4,12 +4,15 @@ import java.time.LocalDateTime;
 
 import com.saemoim.domain.Report;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class ReportResponseDto {
 	private Long id;
 	private Long subjectUserId;
@@ -18,7 +21,6 @@ public class ReportResponseDto {
 	private String content;
 	private LocalDateTime createdAt;
 
-	@Builder
 	public ReportResponseDto(Report report) {
 		this.id = report.getId();
 		this.subjectUserId = report.getSubjectId();
