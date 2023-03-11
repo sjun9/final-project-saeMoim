@@ -9,11 +9,11 @@ import com.saemoim.dto.response.ReviewResponseDto;
 public interface ReviewService {
 	Page<ReviewResponseDto> getReviews(Long groupId, Pageable pageable);
 
-	ReviewResponseDto createReview(Long groupId, ReviewRequestDto requestDto, Long userId);
+	void createReview(Long groupId, ReviewRequestDto requestDto, Long userId);
 
-	ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto requestDto, String username);
+	void updateReview(Long reviewId, ReviewRequestDto requestDto, Long userId);
 
-	void deleteReview(Long reviewId, String username);
+	void deleteReview(Long reviewId, Long userId);
 
 	void deleteReviewByAdmin(Long reviewId);
 }

@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
 		);
 
 		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-			throw new IllegalAccessError(ErrorCode.INVALID_PASSWORD.getMessage());
+			throw new IllegalArgumentException(ErrorCode.INVALID_PASSWORD.getMessage());
 		}
 
 		if (user.isBanned()) {

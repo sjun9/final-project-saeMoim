@@ -19,7 +19,6 @@ import com.saemoim.domain.Comment;
 import com.saemoim.domain.Post;
 import com.saemoim.domain.User;
 import com.saemoim.dto.request.CommentRequestDto;
-import com.saemoim.dto.response.CommentResponseDto;
 import com.saemoim.repository.CommentRepository;
 import com.saemoim.repository.PostRepository;
 import com.saemoim.repository.UserRepository;
@@ -56,7 +55,7 @@ class CommentServiceImplTest {
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 		when(postRepository.findById(anyLong())).thenReturn(Optional.of(post));
 		//when
-		CommentResponseDto testComment = commentService.createComment(1L, requestDto, user.getId());
+		commentService.createComment(1L, requestDto, user.getId());
 		// then
 		verify(commentRepository).save(any(Comment.class));
 	}

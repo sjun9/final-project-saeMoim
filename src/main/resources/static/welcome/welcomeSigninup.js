@@ -54,7 +54,7 @@ function checkUsernameDuplication() {
         isCheckUsernameDuplication = true;
     }).fail(function (response) {
         if (response.responseJSON.httpStatus === 'BAD_REQUEST') {
-            alert(response.responseJSON['message'])
+            alert(response.responseJSON['data'])
             isCheckUsernameDuplication = false;
         } else {
             alert("서버에 문제가 발생 했습니다. 잠시 후 다시 시도 해주세요.")
@@ -128,10 +128,10 @@ function checkAndSendCode() {
         })
     }).fail(function (response) {
         if (response.responseJSON.httpStatus === 'BAD_REQUEST') {
-            alert(response.responseJSON['message'])
+            alert(response.responseJSON['data'])
             ischeckemailDuplication = false;
         } else {
-            alert("서버에 문제가 발생 했습니다. 잠시 후 다시 시도 해주세요.")
+            alert(response.responseJSON['data'])
             ischeckemailDuplication = false;
         }
     });
@@ -199,7 +199,7 @@ function signup() {
             userForms.classList.remove('bounceLeft')
             userForms.classList.add('bounceRight')
         }).fail(function (response) {
-            alert(response.responseJSON['message'])
+            alert(response.responseJSON['data'])
 
         });
     } else {
@@ -231,7 +231,7 @@ function sendPasswordToEmail() {
     $.ajax(settings).done(function (response) {
         alert("해당 이메일로 임시번호가 발송 되었습니다.")
     }).fail(function (response) {
-        alert(response.responseJSON['message'])
+        alert(response.responseJSON['data'])
     });
 }
 
