@@ -245,26 +245,48 @@ operation::application/reject[snippets='path-parameters,http-request,request-hea
 
 == 11. Post API
 
-== 11-1. 전체 게시글 조회
+=== 11-1. 전체 게시글 조회
 
 operation::post/getAll[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
 
-== 11-2. 특정 게시글 조회
+=== 11-2. 특정 게시글 조회
 
 operation::post/get[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
 
-== 11-3. 게시글 생성
+=== 11-3. 게시글 생성
 
 operation::post/create[snippets='path-parameters,http-request,request-headers,request-part-requestDto-fields,http-response,response-fields']
 
-== 11-4. 게시글 수정
+=== 11-4. 게시글 수정
 
 operation::post/update[snippets='path-parameters,http-request,request-headers,request-part-requestDto-fields,http-response,response-fields']
 
-== 11-5. 게시글 삭제
+=== 11-5. 게시글 삭제
 
 operation::post/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
 
-== 11-6. 관리자 - 게시글 삭제
+=== 11-6. 관리자 - 게시글 삭제
 
 operation::post/delete-admin[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 12. Review API
+
+=== 12-1. 모임 후기 조회
+
+operation::review/getAll[snippets='path-parameters,http-request,http-response,response-fields']
+
+=== 12-2. 후기 생성
+
+operation::review/create[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 12-3. 후기 수정
+
+operation::review/update[snippets='path-parameters,http-request,request-headers,request-fields,http-response,response-fields']
+
+=== 12-4. 후기 삭제
+
+operation::review/delete[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 12-5. 관리자 - 후기 삭제
+
+operation::review/delete-admin[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
