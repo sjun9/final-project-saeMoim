@@ -84,9 +84,15 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional(readOnly = true)
 	public Slice<GroupResponseDto> getGroupsByCategoryAndStatus(Long categoryId, String status,
 		Pageable pageable) {
-		Slice<Group> groups;
-		if (categoryId == 0L) {
+		Slice<Group> groups = null;
+		if (categoryId == 0L && status.equals("all")) {
 			groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
+		} else if (categoryId == 0L) {
+			if (status.equals(GroupStatusEnum.OPEN.toString())) {
+				groups = groupRepository.findByStatus(GroupStatusEnum.OPEN, pageable);
+			} else if (status.equals(GroupStatusEnum.CLOSE.toString())) {
+				groups = groupRepository.findByStatus(GroupStatusEnum.CLOSE, pageable);
+			}
 		} else {
 			Category category = categoryRepository.findById(categoryId).orElseThrow(
 				() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_CATEGORY.getMessage())
@@ -153,23 +159,44 @@ public class GroupServiceImpl implements GroupService {
 		if (category.getParentId() == null) {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
+
+		// String imagePath;
+		// if (multipartFile == null) {
+		// 	Group newGroup = new Group(requestDto, category, user);
+		// 	groupRepository.save(newGroup);
+		//
+		// 	return new GroupResponseDto(newGroup);
+		// }
+		//
+		// try {
+		// 	imagePath = awsS3Uploader.upload(multipartFile, dirName);
+		// } catch (IOException e) {
+		// 	throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+		// }
+		// Group newGroup = new Group(requestDto, category, user, imagePath);
+		// groupRepository.save(newGroup);
+
 		String imagePath;
+		Group newGroup;
+		Group savedGroup;
+
 		if (multipartFile == null) {
-			Group newGroup = new Group(requestDto, category, user);
-			groupRepository.save(newGroup);
-
-			return new GroupResponseDto(newGroup);
+			newGroup = new Group(requestDto, category, user);
+		} else {
+			try {
+				imagePath = awsS3Uploader.upload(multipartFile, dirName);
+			} catch (IOException e) {
+				throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+			}
+			newGroup = new Group(requestDto, category, user, imagePath);
 		}
 
-		try {
-			imagePath = awsS3Uploader.upload(multipartFile, dirName);
-		} catch (IOException e) {
-			throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
-		}
-		Group newGroup = new Group(requestDto, category, user, imagePath);
-		groupRepository.save(newGroup);
+		savedGroup = groupRepository.save(newGroup);
 
-		return new GroupResponseDto(newGroup);
+		Participant participant = new Participant(user, savedGroup);
+		participantRepository.save(participant);
+
+		return new GroupResponseDto(savedGroup);
 	}
 
 	@Override

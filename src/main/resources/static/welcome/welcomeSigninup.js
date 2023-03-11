@@ -1,5 +1,3 @@
-let origin = `http://52.79.169.105:8080`
-
 /**
  * Variables
  */
@@ -28,8 +26,6 @@ goback = () => {
     document.querySelector(".et-hero-tabs-title").classList.toggle("remove");
     document.querySelector(".et-hero-tabs-content").classList.toggle("remove");
     document.querySelector(".et-hero-tabs-button").classList.toggle("remove");
-    // document.querySelector(".et-hero-tabs-container").classList.toggle("remove");
-    // document.querySelector(".et-main").classList.toggle("remove");
 
     document.querySelector(".user").classList.toggle("remove");
 }
@@ -154,6 +150,7 @@ function checkAuthCode() {
     };
 
     $.ajax(settings).done(function (response) {
+        ischeckAuthCode = true;
         alert(response.data)
     }).fail(function (response) {
         alert(response.responseJSON['data'])

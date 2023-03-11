@@ -20,13 +20,6 @@ import lombok.AllArgsConstructor;
 public class LikeController {
 	private final LikeService likeService;
 
-	// 게시글 좋아요 여부 확인
-	// @GetMapping("/posts/{postId}/like")
-	// public ResponseEntity<GenericsResponseDto> checkLike(@PathVariable Long postId,
-	// 	@AuthenticationPrincipal UserDetailsImpl userDetails) {
-	// 	return ResponseEntity.ok().body(new GenericsResponseDto(likeService.checkLike(postId, userDetails.getId())));
-	// }
-
 	// 게시글 좋아요
 	@PostMapping("/posts/{postId}/like")
 	public ResponseEntity<GenericsResponseDto> addLike(@PathVariable Long postId,

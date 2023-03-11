@@ -113,15 +113,14 @@ public class UserController {
 	}
 
 	// 내 정보 조회 - 마이페이지
-	@PostMapping("/profile")
+	@GetMapping("/profile")
 	public ResponseEntity<ProfileResponseDto> getMyProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok()
-			.body(userService.getMyProfile(userDetails.getId()));
+		return ResponseEntity.ok().body(userService.getMyProfile(userDetails.getId()));
 	}
 
 	@GetMapping("/user")
-	public ResponseEntity<ProfileResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(userService.getProfile(userDetails.getId()));
+	public ResponseEntity<GenericsResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ResponseEntity.ok().body(new GenericsResponseDto(userDetails.getId()));
 	}
 
 	// 내 정보 수정 - 마이페이지

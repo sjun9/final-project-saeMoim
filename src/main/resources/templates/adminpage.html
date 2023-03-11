@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <script src="https://kit.fontawesome.com/13a08ca775.js" crossorigin="anonymous"></script>
     <title>Document</title>
     <script src="https://code.jquery.com/jquery-3.6.3.min.js"
@@ -225,9 +226,8 @@
     </div>
 </div>
 </body>
-
+<script src="../static/config/config.js"></script>
 <script>
-    let origin = `http://52.79.169.105:8080`
 
     const STORAGE_ACCESS_TOKEN_KEY = "accessToken";
     const ACCESS_TOKEN_KEY = "Authorization";
