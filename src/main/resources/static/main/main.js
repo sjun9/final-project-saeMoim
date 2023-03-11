@@ -371,17 +371,12 @@ function showSearch(name) {
                     closed = 'closed'
                 }
 
-<<<<<<< HEAD
                 let modal_toggle = ''
                 if (localStorage.getItem("is_logged_in") === 'true') {
                     modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
                 }
 
                 let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
-=======
-                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
->>>>>>> ca44159a15de4dba0e8c5e09440a920dc4b6cfc1
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -790,17 +785,12 @@ function showFilter(categoryId, status) {
                     closed = 'closed'
                 }
 
-<<<<<<< HEAD
                 let modal_toggle = ''
                 if (localStorage.getItem("is_logged_in") === 'true') {
                     modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
                 }
 
                 let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
-=======
-                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
->>>>>>> ca44159a15de4dba0e8c5e09440a920dc4b6cfc1
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
