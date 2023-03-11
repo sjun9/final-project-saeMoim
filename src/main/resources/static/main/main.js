@@ -297,13 +297,13 @@ function showUsername() {
             let imagePath = data['imagePath']
             $('#username').append(`${username}`)
             document.getElementById('profile-image').src = imagePath
-            if (document.querySelector('#logout_image').classList.contains('hide_logout_button')) {
-                document.querySelector('#logout_image').classList.remove('hide_logout_button')
+            if (document.querySelector('#logout_image').classList.contains('hide_moim_button')) {
+                document.querySelector('#logout_image').classList.remove('hide_moim_button')
             }
         }, error: function (e) {
             $('#username').append(`로그인이 필요합니다`)
-            if (!document.querySelector('#logout_image').classList.contains('hide_logout_button')) {
-                document.querySelector('#logout_image').classList.add('hide_logout_button')
+            if (!document.querySelector('#logout_image').classList.contains('hide_moim_button')) {
+                document.querySelector('#logout_image').classList.add('hide_moim_button')
             }
         }
     });
@@ -1138,19 +1138,12 @@ function showMoimDetail(id) {
             document.querySelector('#moimStatus').innerText = '모임 닫기'
 
             if (document.querySelector('#moimStatus').classList.contains('btn-success')) {
-                document.querySelector('#moimApplication').classList.remove('btn-secondary')
-                document.querySelector('#moimGoToBoard').classList.remove('btn-secondary')
                 document.querySelector('#moimStatus').classList.remove('btn-success')
             }
-
-            document.querySelector('#moimApplication').classList.add('btn-primary')
-            document.querySelector('#moimGoToBoard').classList.add('btn-primary')
             document.querySelector('#moimStatus').classList.add('btn-secondary')
 
             if (!document.querySelector('#closed_overlay').classList.contains('hide_overlay')) {
                 document.querySelector('#closed_overlay').classList.add('hide_overlay')
-                document.querySelector('#moimApplication').classList.remove('closed_button')
-                document.querySelector('#moimGoToBoard').classList.remove('closed_button')
             }
         }
         if (data.status === 'CLOSE') {
@@ -1159,19 +1152,13 @@ function showMoimDetail(id) {
             document.querySelector('#moimStatus').innerText = '모임 열기'
 
             if (document.querySelector('#moimStatus').classList.contains('btn-secondary')) {
-                document.querySelector('#moimApplication').classList.remove('btn-primary')
-                document.querySelector('#moimGoToBoard').classList.remove('btn-primary')
                 document.querySelector('#moimStatus').classList.remove('btn-secondary')
             }
 
-            document.querySelector('#moimApplication').classList.add('btn-secondary')
-            document.querySelector('#moimGoToBoard').classList.add('btn-secondary')
             document.querySelector('#moimStatus').classList.add('btn-success')
 
             if (document.querySelector('#closed_overlay').classList.contains('hide_overlay')) {
                 document.querySelector('#closed_overlay').classList.remove('hide_overlay')
-                document.querySelector('#moimApplication').classList.add('closed_button')
-                document.querySelector('#moimGoToBoard').classList.add('closed_button')
             }
         }
 
@@ -1200,7 +1187,19 @@ function showMoimDetail(id) {
 
     if (userId === groupLeaderId) {
         isLeader = true
+        if (document.querySelector("#moim_edit_button").classList.contains('hide_moim_button')) {
+            document.querySelector("#moim_edit_button").classList.remove('hide_moim_button')
+            document.querySelector("#moimStatus").classList.remove('hide_moim_button')
+            document.querySelector("#moim_delete_button").classList.remove('hide_moim_button')
+        }
+    } else {
+        if (!document.querySelector("#moim_edit_button").classList.contains('hide_moim_button')) {
+            document.querySelector("#moim_edit_button").classList.add('hide_moim_button')
+            document.querySelector("#moimStatus").classList.add('hide_moim_button')
+            document.querySelector("#moim_delete_button").classList.add('hide_moim_button')
+        }
     }
+    
     showReview(id, isLeader, localStorage.getItem("is_in_group"));
 }
 

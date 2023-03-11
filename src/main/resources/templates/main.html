@@ -70,24 +70,24 @@
                     <button type="button" class="btn btn-warning"
                             onclick="deleteWishMoim(document.getElementById('moimDetailId').value)">찜 해제
                     </button>
-                    <button type="button" class="btn" id="moimApplication"
+                    <button type="button" class="btn btn-primary" id="moimApplication"
                             onclick="attendMoim(document.getElementById('moimDetailId').value)">참여 신청
                     </button>
-                    <button type="button" class="btn" id="moimGoToBoard"
+                    <button type="button" class="btn btn-primary" id="moimGoToBoard"
                             onclick="gotoBoard(document.getElementById('moimDetailId').value)">게시판 입장
                     </button>
                 </div>
                 <div class="moim_detail_buttons">
-                    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal"
+                    <button id="moim_edit_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal"
                             onclick="relayoutMap(); fillEditMoim();">모임 수정
                     </button>
                     <button type="button" class="btn" id="moimStatus"
                             onclick="changeStatus(document.getElementById('moimDetailId').value)">
                     </button>
-                    <button type="button" class="btn btn-danger"
+                    <button id="moim_quit_button" type="button" class="btn btn-danger"
                             onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴
                     </button>
-                    <button type="button" class="btn btn-danger"
+                    <button id="moim_delete_button" type="button" class="btn btn-danger"
                             onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제
                     </button>
                 </div>
