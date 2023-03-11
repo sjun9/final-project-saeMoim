@@ -34,6 +34,9 @@ public class ReviewServiceImpl implements ReviewService {
 		Participant participant = participantRepository.findByGroup_IdAndUser_Id(groupId, userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.INVALID_USER.getMessage())
 		);
+		if (reviewRepository.existsByGroup_IdAndUser_Id(groupId, userId)) {
+			throw new IllegalArgumentException(ErrorCode.DUPLICATED_REVIEW.getMessage());
+		}
 		Review review = new Review(participant, requestDto.getContent());
 		reviewRepository.save(review);
 		return new ReviewResponseDto(review);
