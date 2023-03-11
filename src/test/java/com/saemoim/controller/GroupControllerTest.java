@@ -37,11 +37,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.annotation.WithCustomMockUser;
 import com.saemoim.domain.enums.GroupStatusEnum;
-import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.fileUpload.AWSS3Uploader;
@@ -611,27 +609,6 @@ class GroupControllerTest {
 			+ "\"latitude\": \"위도\","
 			+ "\"longitude\": \"경도\","
 			+ "\"recruitNumber\": 4}").getBytes());
-		var response = GroupResponseDto.builder()
-			.id(1L)
-			.tags(new ArrayList<>())
-			.categoryName("category")
-			.groupName("놀자")
-			.userId(1L)
-			.username("leader")
-			.content("모임소개글")
-			.address("서울시 종로구 혜화동")
-			.firstRegion("서울시")
-			.secondRegion("종로구")
-			.latitude("위도")
-			.longitude("경도")
-			.status(GroupStatusEnum.OPEN)
-			.wishCount(2)
-			.recruitNumber(4)
-			.participantCount(1)
-			.imagePath("image path")
-			.build();
-		when(groupService.createGroup(any(GroupRequestDto.class), anyLong(), any(MultipartFile.class))).thenReturn(
-			response);
 
 		// when
 		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.multipart("/group")
@@ -660,25 +637,7 @@ class GroupControllerTest {
 					fieldWithPath("recruitNumber").description("모집인원").type(JsonFieldType.NUMBER)
 				),
 				responseFields(
-					fieldWithPath("id").description("모임 id").type(JsonFieldType.NUMBER),
-					subsectionWithPath("tags").description("모임태그목록").type(JsonFieldType.ARRAY),
-					fieldWithPath("categoryName").description("카테고리 이름").type(JsonFieldType.STRING),
-					fieldWithPath("groupName").description("모임 이름").type(JsonFieldType.STRING),
-					fieldWithPath("userId").description("모임 리더 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("username").description("모임 리더 닉네임").type(JsonFieldType.STRING),
-					fieldWithPath("content").description("모임 소개글").type(JsonFieldType.STRING),
-					fieldWithPath("address").description("모임 장소").type(JsonFieldType.STRING),
-					fieldWithPath("firstRegion").description("장소 세부; 시/도").type(JsonFieldType.STRING),
-					fieldWithPath("secondRegion").description("장소 세부; 시/군/구")
-						.type(JsonFieldType.STRING),
-					fieldWithPath("latitude").description("장소 세부; 위도").type(JsonFieldType.STRING),
-					fieldWithPath("longitude").description("장소 세부; 경도").type(JsonFieldType.STRING),
-					fieldWithPath("status").description("장소 상태(OPEN, CLOSE)")
-						.type(JsonFieldType.STRING),
-					fieldWithPath("wishCount").description("찜당한 횟수").type(JsonFieldType.NUMBER),
-					fieldWithPath("recruitNumber").description("모집인원").type(JsonFieldType.NUMBER),
-					fieldWithPath("participantCount").description("참여인원").type(JsonFieldType.NUMBER),
-					fieldWithPath("imagePath").description("이미지 파일 저장 경로").type(JsonFieldType.STRING)
+					fieldWithPath("data").description("결과메세지")
 				)
 			));
 	}
@@ -701,28 +660,7 @@ class GroupControllerTest {
 			+ "\"latitude\": \"위도\","
 			+ "\"longitude\": \"경도\","
 			+ "\"recruitNumber\": 4}").getBytes());
-		var response = GroupResponseDto.builder()
-			.id(1L)
-			.tags(new ArrayList<>())
-			.categoryName("category")
-			.groupName("놀자")
-			.userId(1L)
-			.username("leader")
-			.content("모임소개글")
-			.address("서울시 종로구 혜화동")
-			.firstRegion("서울시")
-			.secondRegion("종로구")
-			.latitude("위도")
-			.longitude("경도")
-			.status(GroupStatusEnum.OPEN)
-			.wishCount(2)
-			.recruitNumber(4)
-			.participantCount(1)
-			.imagePath("image path")
-			.build();
-		when(groupService.updateGroup(anyLong(), any(GroupRequestDto.class), anyLong(),
-			any(MultipartFile.class))).thenReturn(
-			response);
+
 		var groupId = 1L;
 		// when
 		MockMultipartHttpServletRequestBuilder mockMultipartHttpServletRequestBuilder = (MockMultipartHttpServletRequestBuilder)multipart(
@@ -757,25 +695,7 @@ class GroupControllerTest {
 					fieldWithPath("recruitNumber").description("모집인원").type(JsonFieldType.NUMBER)
 				),
 				responseFields(
-					fieldWithPath("id").description("모임 id").type(JsonFieldType.NUMBER),
-					subsectionWithPath("tags").description("모임태그목록").type(JsonFieldType.ARRAY),
-					fieldWithPath("categoryName").description("카테고리 이름").type(JsonFieldType.STRING),
-					fieldWithPath("groupName").description("모임 이름").type(JsonFieldType.STRING),
-					fieldWithPath("userId").description("모임 리더 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("username").description("모임 리더 닉네임").type(JsonFieldType.STRING),
-					fieldWithPath("content").description("모임 소개글").type(JsonFieldType.STRING),
-					fieldWithPath("address").description("모임 장소").type(JsonFieldType.STRING),
-					fieldWithPath("firstRegion").description("장소 세부; 시/도").type(JsonFieldType.STRING),
-					fieldWithPath("secondRegion").description("장소 세부; 시/군/구")
-						.type(JsonFieldType.STRING),
-					fieldWithPath("latitude").description("장소 세부; 위도").type(JsonFieldType.STRING),
-					fieldWithPath("longitude").description("장소 세부; 경도").type(JsonFieldType.STRING),
-					fieldWithPath("status").description("장소 상태(OPEN, CLOSE)")
-						.type(JsonFieldType.STRING),
-					fieldWithPath("wishCount").description("찜당한 횟수").type(JsonFieldType.NUMBER),
-					fieldWithPath("recruitNumber").description("모집인원").type(JsonFieldType.NUMBER),
-					fieldWithPath("participantCount").description("참여인원").type(JsonFieldType.NUMBER),
-					fieldWithPath("imagePath").description("이미지 파일 저장 경로").type(JsonFieldType.STRING)
+					fieldWithPath("data").description("결과메세지")
 				)
 			));
 	}

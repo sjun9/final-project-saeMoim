@@ -116,15 +116,6 @@ class CommentControllerTest {
 		// given
 		var postId = 1L;
 		CommentRequestDto request = CommentRequestDto.builder().comment("so good").build();
-		var response = CommentResponseDto.builder()
-			.id(1L)
-			.userId(1L)
-			.username("writer")
-			.comment("so good")
-			.createdAt(LocalDateTime.now())
-			.modifiedAt(LocalDateTime.now())
-			.build();
-		when(commentService.createComment(anyLong(), any(CommentRequestDto.class), anyLong())).thenReturn(response);
 		// when
 		ResultActions resultActions = mockMvc.perform(
 			RestDocumentationRequestBuilders.post("/posts/{postId}/comment", postId)
@@ -146,12 +137,7 @@ class CommentControllerTest {
 					fieldWithPath("comment").description("댓글 내용").type(JsonFieldType.STRING)
 				),
 				responseFields(
-					fieldWithPath("id").description("댓글 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("userId").description("작성자 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("username").description("작성자 닉네임").type(JsonFieldType.STRING),
-					fieldWithPath("comment").description("댓글 내용").type(JsonFieldType.STRING),
-					fieldWithPath("createdAt").description("작성일").type(JsonFieldType.STRING),
-					fieldWithPath("modifiedAt").description("수정일").type(JsonFieldType.STRING)
+					fieldWithPath("data").description("결과메세지")
 				)
 			));
 	}
@@ -163,15 +149,6 @@ class CommentControllerTest {
 		// given
 		var commentId = 1L;
 		CommentRequestDto request = CommentRequestDto.builder().comment("so good").build();
-		var response = CommentResponseDto.builder()
-			.id(1L)
-			.userId(1L)
-			.username("writer")
-			.comment("so good")
-			.createdAt(LocalDateTime.now())
-			.modifiedAt(LocalDateTime.now())
-			.build();
-		when(commentService.updateComment(anyLong(), any(CommentRequestDto.class), anyLong())).thenReturn(response);
 		// when
 		ResultActions resultActions = mockMvc.perform(
 			RestDocumentationRequestBuilders.put("/comments/{commentId}", commentId)
@@ -193,12 +170,7 @@ class CommentControllerTest {
 					fieldWithPath("comment").description("댓글 내용").type(JsonFieldType.STRING)
 				),
 				responseFields(
-					fieldWithPath("id").description("댓글 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("userId").description("작성자 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("username").description("작성자 닉네임").type(JsonFieldType.STRING),
-					fieldWithPath("comment").description("댓글 내용").type(JsonFieldType.STRING),
-					fieldWithPath("createdAt").description("작성일").type(JsonFieldType.STRING),
-					fieldWithPath("modifiedAt").description("수정일").type(JsonFieldType.STRING)
+					fieldWithPath("data").description("결과메세지")
 				)
 			));
 	}

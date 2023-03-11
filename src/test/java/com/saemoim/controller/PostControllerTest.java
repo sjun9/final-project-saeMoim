@@ -40,11 +40,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.annotation.WithCustomMockUser;
 import com.saemoim.domain.enums.UserRoleEnum;
-import com.saemoim.dto.request.PostRequestDto;
 import com.saemoim.dto.response.PostResponseDto;
 import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.jwt.JwtUtil;
@@ -209,22 +207,6 @@ class PostControllerTest {
 		MockMultipartFile request = new MockMultipartFile("requestDto", "",
 			"application/json", ("{ \"title\": \"title of post\","
 			+ "\"content\": \"content of post\" }").getBytes());
-		var response = PostResponseDto.builder()
-			.id(1L)
-			.title("title of post")
-			.userId(1L)
-			.username("writer")
-			.content("content of post")
-			.createdAt(LocalDateTime.now())
-			.modifiedAt(LocalDateTime.now())
-			.likeCount(0)
-			.isLikeChecked(false)
-			.imagePath("image path")
-			.build();
-		when(postService.createPost(anyLong(), any(PostRequestDto.class), anyLong(),
-			any(MultipartFile.class))).thenReturn(
-			response);
-
 		// when
 		ResultActions resultActions = mockMvc.perform(
 			RestDocumentationRequestBuilders.multipart("/groups/{groupId}/post", groupId)
@@ -248,17 +230,7 @@ class PostControllerTest {
 					fieldWithPath("content").description("게시글 내용").type(JsonFieldType.STRING)
 				),
 				responseFields(
-					fieldWithPath("id").description("게시글 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("title").description("게시글 제목").type(JsonFieldType.STRING),
-					fieldWithPath("userId").description("작성자 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("username").description("작성자 닉네임").type(JsonFieldType.STRING),
-					fieldWithPath("content").description("게시글 내용").type(JsonFieldType.STRING),
-					fieldWithPath("createdAt").description("작성일").type(JsonFieldType.STRING),
-					fieldWithPath("modifiedAt").description("수정일").type(JsonFieldType.STRING),
-					fieldWithPath("likeCount").description("좋아요 수").type(JsonFieldType.NUMBER),
-					fieldWithPath("likeChecked").description("사용자가 좋아요 누른 게시글인지 확인")
-						.type(JsonFieldType.BOOLEAN),
-					fieldWithPath("imagePath").description("이미지 파일 저장 경로").type(JsonFieldType.STRING)
+					fieldWithPath("data").description("결과메세지")
 				)
 			));
 	}
@@ -274,22 +246,6 @@ class PostControllerTest {
 		MockMultipartFile request = new MockMultipartFile("requestDto", "",
 			"application/json", ("{ \"title\": \"title of post\","
 			+ "\"content\": \"content of post\" }").getBytes());
-		var response = PostResponseDto.builder()
-			.id(1L)
-			.title("title of post")
-			.userId(1L)
-			.username("writer")
-			.content("content of post")
-			.createdAt(LocalDateTime.now())
-			.modifiedAt(LocalDateTime.now())
-			.likeCount(0)
-			.isLikeChecked(false)
-			.imagePath("image path")
-			.build();
-		when(postService.updatePost(anyLong(), any(PostRequestDto.class), anyLong(),
-			any(MultipartFile.class))).thenReturn(
-			response);
-
 		// when
 		MockMultipartHttpServletRequestBuilder mockMultipartHttpServletRequestBuilder = (MockMultipartHttpServletRequestBuilder)multipart(
 			HttpMethod.PUT, "/posts/{postId}", postId)
@@ -316,17 +272,7 @@ class PostControllerTest {
 					fieldWithPath("content").description("게시글 내용").type(JsonFieldType.STRING)
 				),
 				responseFields(
-					fieldWithPath("id").description("게시글 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("title").description("게시글 제목").type(JsonFieldType.STRING),
-					fieldWithPath("userId").description("작성자 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("username").description("작성자 닉네임").type(JsonFieldType.STRING),
-					fieldWithPath("content").description("게시글 내용").type(JsonFieldType.STRING),
-					fieldWithPath("createdAt").description("작성일").type(JsonFieldType.STRING),
-					fieldWithPath("modifiedAt").description("수정일").type(JsonFieldType.STRING),
-					fieldWithPath("likeCount").description("좋아요 수").type(JsonFieldType.NUMBER),
-					fieldWithPath("likeChecked").description("사용자가 좋아요 누른 게시글인지 확인")
-						.type(JsonFieldType.BOOLEAN),
-					fieldWithPath("imagePath").description("이미지 파일 저장 경로").type(JsonFieldType.STRING)
+					fieldWithPath("data").description("결과메세지")
 				)
 			));
 	}

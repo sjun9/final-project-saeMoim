@@ -101,7 +101,7 @@ operation::user/update-profile[snippets='http-request,request-headers,request-pa
 
 === 4-9. 사용자 정보 조회
 
-operation::user/user-info[snippets='http-request,request-headers,http-response,response-fields']
+operation::user/user-id[snippets='http-request,request-headers,http-response,response-fields']
 
 === 4-10. 회원 프로필 조회
 

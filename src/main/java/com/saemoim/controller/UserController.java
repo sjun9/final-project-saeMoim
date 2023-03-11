@@ -119,7 +119,7 @@ public class UserController {
 	}
 
 	@GetMapping("/user")
-	public ResponseEntity<GenericsResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+	public ResponseEntity<GenericsResponseDto> getUserId(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		return ResponseEntity.ok().body(new GenericsResponseDto(userDetails.getId()));
 	}
 

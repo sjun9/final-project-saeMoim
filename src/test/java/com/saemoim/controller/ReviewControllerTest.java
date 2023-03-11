@@ -117,13 +117,6 @@ class ReviewControllerTest {
 		// given
 		var groupId = 1L;
 		ReviewRequestDto request = ReviewRequestDto.builder().content("so good").build();
-		var response = ReviewResponseDto.builder()
-			.id(1L)
-			.userId(1L)
-			.username("writer")
-			.content("so good")
-			.build();
-		when(reviewService.createReview(anyLong(), any(ReviewRequestDto.class), anyLong())).thenReturn(response);
 		// when
 		ResultActions resultActions = mockMvc.perform(
 			RestDocumentationRequestBuilders.post("/groups/{groupId}/review", groupId)
@@ -145,10 +138,7 @@ class ReviewControllerTest {
 					fieldWithPath("content").description("후기 내용").type(JsonFieldType.STRING)
 				),
 				responseFields(
-					fieldWithPath("id").description("게시글 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("userId").description("작성자 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("username").description("작성자 닉네임").type(JsonFieldType.STRING),
-					fieldWithPath("content").description("게시글 내용").type(JsonFieldType.STRING)
+					fieldWithPath("data").description("결과메세지")
 				)
 			));
 	}
@@ -160,13 +150,6 @@ class ReviewControllerTest {
 		// given
 		var reviewId = 1L;
 		ReviewRequestDto request = ReviewRequestDto.builder().content("so so good").build();
-		var response = ReviewResponseDto.builder()
-			.id(1L)
-			.userId(1L)
-			.username("writer")
-			.content("so so good")
-			.build();
-		when(reviewService.updateReview(anyLong(), any(ReviewRequestDto.class), anyString())).thenReturn(response);
 		// when
 		ResultActions resultActions = mockMvc.perform(
 			RestDocumentationRequestBuilders.put("/reviews/{reviewId}", reviewId)
@@ -188,10 +171,7 @@ class ReviewControllerTest {
 					fieldWithPath("content").description("후기 수정 내용").type(JsonFieldType.STRING)
 				),
 				responseFields(
-					fieldWithPath("id").description("게시글 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("userId").description("작성자 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("username").description("작성자 닉네임").type(JsonFieldType.STRING),
-					fieldWithPath("content").description("게시글 내용").type(JsonFieldType.STRING)
+					fieldWithPath("data").description("결과메세지")
 				)
 			));
 	}
