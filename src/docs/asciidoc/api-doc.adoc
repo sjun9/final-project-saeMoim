@@ -300,3 +300,13 @@ operation::review/delete[snippets='path-parameters,http-request,request-headers,
 === 13-5. 관리자 - 후기 삭제
 
 operation::review/delete-admin[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+== 14. Like API
+
+=== 14-1. 게시글 좋아요
+
+operation::like/do[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
+
+=== 14-2. 게시글 좋아요 취소
+
+operation::like/cancel[snippets='path-parameters,http-request,request-headers,http-response,response-fields']
