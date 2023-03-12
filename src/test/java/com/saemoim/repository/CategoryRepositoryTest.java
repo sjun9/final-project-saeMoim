@@ -18,7 +18,7 @@ class CategoryRepositoryTest {
 	void createCategory() {
 		//given
 		Category category = Category.builder()
-			.name("여행")
+			.name("공부")
 			.build();
 		//when
 		Category savedCategory = categoryRepository.save(category);
