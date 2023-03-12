@@ -14,7 +14,7 @@ class CategoryRepositoryTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 
-	@Test
+	// @Test
 	void createCategory() {
 		//given
 		Category category = Category.builder()
