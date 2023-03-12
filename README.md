@@ -118,6 +118,9 @@ ___
 </summary><img src="src/main/documents/ERD.png">
 </details>
 
+### API 문서
+[새모임 API명세](https://d1axe8zrfcr62g.cloudfront.net/resources/static/docs/api-doc.html)
+
 ___
 ### 팀소개 
 
