@@ -21,17 +21,16 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		registry.addEndpoint("/stomp/chat") // 여기로 웹소켓 생성
 
 			.setAllowedOriginPatterns( // for intelliJ
-				"http://localhost:8080",
-				"http://127.0.0.1:8080",
-				"http://43.201.17.85:8080",
-
-				"http://localhost:63342",
-				"http://127.0.0.1:63342",
-				"http://43.201.17.85:63342",
-
-				"https://api.saemoim.site",
-
-				"https://d1axe8zrfcr62g.cloudfront.net"
+				"http://*",
+				"https://*"
+				// "http://localhost:8080",
+				// "http://127.0.0.1:8080",
+				// "http://43.201.17.85:8080",
+				// "http://localhost:63342",
+				// "http://127.0.0.1:63342",
+				// "http://43.201.17.85:63342",
+				// "https://api.saemoim.site",
+				// "https://d1axe8zrfcr62g.cloudfront.net"
 			)
 			.withSockJS();
 	}
