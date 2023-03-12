@@ -40,7 +40,6 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserService userService;
-	private final AWSS3Uploader awsS3Uploader;
 
 	// 회원 가입
 	@PostMapping("/sign-up")
