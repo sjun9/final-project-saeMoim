@@ -160,22 +160,6 @@ public class GroupServiceImpl implements GroupService {
 			throw new IllegalArgumentException(ErrorCode.NOT_PARENT_CATEGORY.getMessage());
 		}
 
-		// String imagePath;
-		// if (multipartFile == null) {
-		// 	Group newGroup = new Group(requestDto, category, user);
-		// 	groupRepository.save(newGroup);
-		//
-		// 	return new GroupResponseDto(newGroup);
-		// }
-		//
-		// try {
-		// 	imagePath = awsS3Uploader.upload(multipartFile, dirName);
-		// } catch (IOException e) {
-		// 	throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
-		// }
-		// Group newGroup = new Group(requestDto, category, user, imagePath);
-		// groupRepository.save(newGroup);
-
 		String imagePath;
 		Group newGroup;
 		Group savedGroup;

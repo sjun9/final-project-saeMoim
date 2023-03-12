@@ -1,8 +1,13 @@
 package com.saemoim.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -214,7 +219,7 @@ class UserServiceImplTest {
 		assertThat(response.getUsername()).isEqualTo("name");
 	}
 
-	// @Test
+	@Test
 	@DisplayName("내 정보 수정")
 	void updateProfile() throws IOException {
 		// given
@@ -224,16 +229,18 @@ class UserServiceImplTest {
 		var image = mock(MultipartFile.class);
 		String imagePath = "new/path/to/image";
 
-		doNothing().when(awsS3Uploader).delete(anyString());
-		when(awsS3Uploader.upload(any(MultipartFile.class), anyString())).thenThrow(IOException.class);
 		when(userRepository.save(user)).thenReturn(user);
+		when(user.getImagePath()).thenReturn(imagePath);
+		doNothing().when(awsS3Uploader).delete(anyString());
+		when(request.getContent()).thenReturn("content");
+		when(awsS3Uploader.upload(any(MultipartFile.class), anyString())).thenReturn(imagePath);
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 		// when
 		userService.updateProfile(userId, request, image);
 
 		// then
 		verify(userRepository).save(user);
-		verify(user).updateProfile(request.getContent());
+		verify(user).updateProfile(request.getContent(), imagePath);
 	}
 
 	@Test
