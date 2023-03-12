@@ -68,11 +68,11 @@ test {
     outputs.dir snippetsDir
 }
 asciidoctor {
+    inputs.dir snippetsDir
     inProcess = JAVA_EXEC
     forkOptions {
         jvmArgs("--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED", "--add-opens", "java.base/java.io=ALL-UNNAMED")
     }
-    inputs.dir snippetsDir
     configurations 'asciidoctorExt'
     dependsOn test
 }
