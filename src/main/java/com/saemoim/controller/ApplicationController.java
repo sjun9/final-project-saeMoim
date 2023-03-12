@@ -39,7 +39,7 @@ public class ApplicationController {
 	}
 
 	// 참가자가 모임 신청 취소
-	@DeleteMapping("applications/{applicationId}")
+	@DeleteMapping("/applications/{applicationId}")
 	public ResponseEntity<GenericsResponseDto> cancelApplication(@PathVariable Long applicationId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		applicationService.deleteApplication(applicationId, userDetails.getId());

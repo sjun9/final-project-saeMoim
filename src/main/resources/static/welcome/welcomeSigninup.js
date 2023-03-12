@@ -26,8 +26,6 @@ goback = () => {
     document.querySelector(".et-hero-tabs-title").classList.toggle("remove");
     document.querySelector(".et-hero-tabs-content").classList.toggle("remove");
     document.querySelector(".et-hero-tabs-button").classList.toggle("remove");
-    // document.querySelector(".et-hero-tabs-container").classList.toggle("remove");
-    // document.querySelector(".et-main").classList.toggle("remove");
 
     document.querySelector(".user").classList.toggle("remove");
 }
@@ -40,7 +38,7 @@ let ischeckpassword = false;
 // 닉네임 중복 확인
 function checkUsernameDuplication() {
     const settings = {
-        "url": "http://localhost:8080/sign-up/username",
+        "url": `${origin}/sign-up/username`,
         "method": "POST",
         "timeout": 0,
         "headers": {
@@ -53,11 +51,10 @@ function checkUsernameDuplication() {
 
     $.ajax(settings).done(function (response) {
         alert("사용 가능한 닉네임 입니다.")
-        console.log(response)
         isCheckUsernameDuplication = true;
     }).fail(function (response) {
         if (response.responseJSON.httpStatus === 'BAD_REQUEST') {
-            alert(response.responseJSON['message'])
+            alert(response.responseJSON['data'])
             isCheckUsernameDuplication = false;
         } else {
             alert("서버에 문제가 발생 했습니다. 잠시 후 다시 시도 해주세요.")
@@ -70,7 +67,7 @@ function checkUsernameDuplication() {
 // 로그인
 function login() {
     const settings = {
-        "url": "http://localhost:8080/sign-in",
+        "url": `${origin}/sign-in`,
         "method": "POST",
         "timeout": 0,
         "headers": {
@@ -89,6 +86,7 @@ function login() {
         localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
         localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
 
+        localStorage.setItem("is_logged_in", 'true')
         location.replace('./main.html')
     }).fail(function (response) {
         alert(response.responseJSON['data'])
@@ -98,7 +96,7 @@ function login() {
 // 이메일(Id) 중복 확인 빛 인증 메일 발송
 function checkAndSendCode() {
     const checkEmailDuplicationSettings = {
-        "url": "http://localhost:8080/sign-up/email",
+        "url": `${origin}/sign-up/email`,
         "method": "POST",
         "timeout": 0,
         "headers": {
@@ -111,7 +109,7 @@ function checkAndSendCode() {
 
     $.ajax(checkEmailDuplicationSettings).done(function (response) {
         const sendAuthenticationCodesettings = {
-            "url": "http://localhost:8080/email",
+            "url": `${origin}/email`,
             "method": "POST",
             "timeout": 0,
             "headers": {
@@ -131,10 +129,10 @@ function checkAndSendCode() {
         })
     }).fail(function (response) {
         if (response.responseJSON.httpStatus === 'BAD_REQUEST') {
-            alert(response.responseJSON['message'])
+            alert(response.responseJSON['data'])
             ischeckemailDuplication = false;
         } else {
-            alert("서버에 문제가 발생 했습니다. 잠시 후 다시 시도 해주세요.")
+            alert(response.responseJSON['data'])
             ischeckemailDuplication = false;
         }
     });
@@ -143,7 +141,7 @@ function checkAndSendCode() {
 // 메일로 보낸 인증 코드 확인
 function checkAuthCode() {
     var settings = {
-        "url": "http://localhost:8080/email/auth-code",
+        "url": `${origin}/email/auth-code`,
         "method": "POST",
         "timeout": 0,
         "headers": {
@@ -153,10 +151,9 @@ function checkAuthCode() {
     };
 
     $.ajax(settings).done(function (response) {
+        ischeckAuthCode = true;
         alert(response.data)
-        console.log(response)
     }).fail(function (response) {
-        console.log(response)
         alert(response.responseJSON['data'])
     });
 }
@@ -184,7 +181,7 @@ $('.pwd-validation').focusout(function () {
 
 function signup() {
     var settings = {
-        "url": "http://localhost:8080/sign-up",
+        "url": `${origin}/sign-up`,
         "method": "POST",
         "timeout": 0,
         "headers": {
@@ -203,7 +200,7 @@ function signup() {
             userForms.classList.remove('bounceLeft')
             userForms.classList.add('bounceRight')
         }).fail(function (response) {
-            alert(response.responseJSON['message'])
+            alert(response.responseJSON['data'])
 
         });
     } else {
@@ -221,7 +218,7 @@ function signup() {
 
 function sendPasswordToEmail() {
     var settings = {
-        "url": "http://localhost:8080/email/password",
+        "url": `${origin}/email/password`,
         "method": "PUT",
         "timeout": 0,
         "headers": {
@@ -233,10 +230,9 @@ function sendPasswordToEmail() {
     };
 
     $.ajax(settings).done(function (response) {
-        console.log(response);
         alert("해당 이메일로 임시번호가 발송 되었습니다.")
     }).fail(function (response) {
-        alert(response.responseJSON['message'])
+        alert(response.responseJSON['data'])
     });
 }
 
@@ -278,3 +274,8 @@ window.addEventListener("keyup", e => {
         modal.style.display = "none"
     }
 })
+
+function gotoMain() {
+    localStorage.setItem("is_logged_in", 'false')
+    location.href = './main.html'
+}

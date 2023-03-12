@@ -1,7 +1,6 @@
 const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
 const appContents = document.querySelectorAll(".app-content");
 
-
 sidebarListItems.forEach((sidebarListItem) => {
     sidebarListItem.addEventListener('click', () => {
         sidebarListItems.forEach((selectedItem) => selectedItem.classList.remove('active'));
@@ -9,7 +8,6 @@ sidebarListItems.forEach((sidebarListItem) => {
         sidebarListItem.classList.add('active');
     })
 })
-
 
 document.querySelector("#side-find").addEventListener("click", () => {
     document.querySelector("#side-find-content").classList.add("active");
@@ -19,17 +17,20 @@ document.querySelector("#side-find").addEventListener("click", () => {
 })
 document.querySelector("#side-mypage").addEventListener("click", () => {
     document.querySelector("#side-mypage-content").classList.add("active");
-    showLeaderMoim()
-    showParticipantMoim()
-    showRequestedGroup()
-    showAppliedGroup()
+    if (localStorage.getItem(ACCESS_TOKEN_KEY) !== null) {
+        showLeaderMoim()
+        showAppliedGroup()
+        showParticipantMoim()
+        showRequestedGroup()
+    }
 })
 document.querySelector("#side-profile").addEventListener("click", () => {
     document.querySelector("#side-profile-content").classList.add("active");
     getMyProfile()
 })
-document.querySelector("#side-chat").addEventListener("click", () => {
-    document.querySelector("#side-chat-content").classList.add("active");
+document.querySelector("#side-wish").addEventListener("click", () => {
+    document.querySelector("#side-wish-content").classList.add("active");
+    showWishMoim()
 })
 
 
@@ -214,6 +215,8 @@ function relayoutMap() {
 
 const STORAGE_ACCESS_TOKEN_KEY = "Authorization";
 const STORAGE_Refresh_TOKEN_KEY = "Refresh_Token";
+const ACCESS_TOKEN_KEY = "Authorization";
+const Refresh_TOKEN_KEY = "Refresh_Token";
 
 function getCookieValue(cookieName) {
     const cookies = document.cookie.split(";");
@@ -227,12 +230,14 @@ function getCookieValue(cookieName) {
 }
 
 function setLocalStorageToken() {
-    let accessToken = getCookieValue(STORAGE_ACCESS_TOKEN_KEY);
-    let refreshToken = getCookieValue(STORAGE_Refresh_TOKEN_KEY);
+    let accessToken = getCookieValue(ACCESS_TOKEN_KEY);
+    let refreshToken = getCookieValue(Refresh_TOKEN_KEY);
     // 쿠키 값을 가져왔다면 localStorage에 값을 저장합니다.
     if (accessToken) {
         localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, "Bearer " + accessToken);
         localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, "Bearer " + refreshToken);
+        console.log("accessToken")
+        console.log(accessToken)
     }
     document.cookie = STORAGE_ACCESS_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = STORAGE_Refresh_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -254,34 +259,27 @@ function changeModifyValue(event) {
     document.querySelector('#modifyMoim-category').value = event.target.innerText
 }
 
-function gotochat() {
-    alert('채팅 기록을 불러옵니다. 추후 구현 예정')
-    window.open('./chattingPage.html');
-}
-
 function logout() {
+    if (!confirm("로그아웃 하시겠습니까?")) {
+        return
+    }
     $.ajax({
         type: "POST",
-        url: "http://localhost:8080/log-out",
+        url: `${origin}/log-out`,
         headers: {
-            'Authorization': localStorage.getItem('Authorization'),
-            'Refresh_Token': localStorage.getItem('Refresh_Token')
-        },
-        success: function (response) {
-            console.log(response)
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
+            [Refresh_TOKEN_KEY]: localStorage.getItem(STORAGE_Refresh_TOKEN_KEY)
         }
     }).done(function (response, status, xhr) {
-        localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
-        localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
-        location.replace("./welcome.html")
+        localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader(STORAGE_ACCESS_TOKEN_KEY))
+        localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, xhr.getResponseHeader(STORAGE_Refresh_TOKEN_KEY))
+        location.replace("./")
     }).fail(function (e) {
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
             setTimeout(logout(), 150)
-            setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
         }
@@ -292,15 +290,21 @@ function showUsername() {
     $('#username').empty()
     $.ajax({
         type: "get",
-        url: "http://localhost:8080/user",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/profile`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
             let username = data['username']
             let imagePath = data['imagePath']
             $('#username').append(`${username}`)
             document.getElementById('profile-image').src = imagePath
+            if (document.querySelector('#logout_image').classList.contains('hide_moim_button')) {
+                document.querySelector('#logout_image').classList.remove('hide_moim_button')
+            }
         }, error: function (e) {
             $('#username').append(`로그인이 필요합니다`)
+            if (!document.querySelector('#logout_image').classList.contains('hide_moim_button')) {
+                document.querySelector('#logout_image').classList.add('hide_moim_button')
+            }
         }
     });
 }
@@ -312,7 +316,7 @@ function showCategory() {
     $('#modifyCategoryMenu').empty()
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/category"
+        url: `${origin}/category`
     }).done(function (response) {
         for (let i = 0; i < response['data'].length; i++) {
             let categories = response['data'][i]
@@ -328,14 +332,11 @@ function showCategory() {
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
             setTimeout(showCategory, 150)
-            setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
         }
@@ -347,49 +348,57 @@ function showSearch(name) {
     $('#find-content').empty()
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/group/name",
+        url: `${origin}/group/name`,
         data: {groupName: name}, //전송 데이터
         success: function (response) {
             response = response['data']['content']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
-                let content = response[i]['content']
                 let categoryName = response[i]['categoryName']
                 let participantCount = response[i]['participantCount']
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
                 let imagePath = response[i]['imagePath']
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
-                                            <input type="hidden" value=${content}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
                 $('#find-content').append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
             setTimeout(showSearch(name), 150)
-            setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
         }
@@ -398,85 +407,81 @@ function showSearch(name) {
 
 function reissue() {
     var settings = {
-        "url": "http://localhost:8080/reissue",
+        "url": `${origin}/reissue`,
         "method": "POST",
         "timeout": 0,
         "headers": {
-            "Refresh_Token": localStorage.getItem('Refresh_Token'),
-            "Authorization": localStorage.getItem('Authorization')
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
+            [Refresh_TOKEN_KEY]: localStorage.getItem(STORAGE_Refresh_TOKEN_KEY)
         },
     };
     $.ajax(settings).done(function (response, status, xhr) {
-        console.log("성공성공")
-        localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
-        localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
+        localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader(STORAGE_ACCESS_TOKEN_KEY))
+        localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, xhr.getResponseHeader(STORAGE_Refresh_TOKEN_KEY))
     }).fail(function (e) {
-        console.log("실패실패")
-        console.log(e)
         alert("다시 로그인 해주세요.")
-        localStorage.removeItem('Authorization')
-        localStorage.removeItem('Refresh_Token')
-        window.location.replace('./welcome.html');
+        localStorage.removeItem(STORAGE_ACCESS_TOKEN_KEY)
+        localStorage.removeItem(STORAGE_Refresh_TOKEN_KEY)
+        window.location.replace('./');
     });
 }
 
 function showAllMoim() {
     let contentId = '#find-content';
-    let url = "http://localhost:8080/group";
+    let url = `${origin}/group`;
     $(contentId).empty()
     $.ajax({
         type: "GET",
         url: url,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
         success: function (response) {
-            console.log(response)
             response = response['data']['content']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
-                let content = response[i]['content']
                 let categoryName = response[i]['categoryName']
                 let participantCount = response[i]['participantCount']
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
-                let tags = response[i]['tags']
-                let leaderId = response[i]['userId']
-                let leaderName = response[i]['username']
                 let imgPath = response[i]['imagePath']
-                console.log(imgPath)
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src="${imgPath}" alt="">
                                             <span>${groupName}</span>
-                                            <input type="hidden" value=${content}>
-                                            <input type="hidden" value=${tags}>
-                                            <input type="hidden" value=${leaderName}>
-                                            <input type="hidden" value=${leaderId}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
                 $(contentId).append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
             setTimeout(showAllMoim, 150)
-            setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
         }
@@ -485,14 +490,12 @@ function showAllMoim() {
 
 function showPopularMoim() {
     let contentId = '#popular-content';
-    let url = "http://localhost:8080/group/popular";
+    let url = `${origin}/group/popular`;
     $(contentId).empty()
     $.ajax({
             type: "GET",
             url: url,
-            headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
             success: function (response) {
-                console.log(response)
                 response = response['data']
                 for (let i = 0; i < response.length; i++) {
                     let id = response[i]['id']
@@ -502,37 +505,46 @@ function showPopularMoim() {
                     let recruitNumber = response[i]['recruitNumber']
                     let wishCount = response[i]['wishCount']
                     let status = response[i]['status']
-                    let imgPath = response[i]['imagePath']
+                    let imagePath = response[i]['imagePath']
 
-                    let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                    let moim_status = ''
+                    let closed = ''
+                    if (status === "OPEN") {
+                        moim_status = "active"
+                    } else {
+                        moim_status = "disabled"
+                        closed = 'closed'
+                    }
+
+                    let modal_toggle = ''
+                    if (localStorage.getItem("is_logged_in") === 'true') {
+                        modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                    }
+
+                    let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
-                                        <img src=${imgPath} alt="">
+                                        <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
                     $(contentId).append(temp_html)
-                    console.log(response)
                 }
             }
         }
     ).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
             setTimeout(showPopularMoim, 150)
-            setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
         }
@@ -541,61 +553,65 @@ function showPopularMoim() {
 
 function showLeaderMoim() {
     let contentId = '#made-group';
-    let url = "http://localhost:8080/leader/group";
+    let url = `${origin}/leader/group`;
     $(contentId).empty()
     $.ajax({
         type: "GET",
         url: url,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        async: false,
+        headers: {
+            'Content-Type': 'application/json',
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
         success: function (response) {
-            console.log(response)
             response = response['data']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
-                let content = response[i]['content']
                 let categoryName = response[i]['categoryName']
                 let participantCount = response[i]['participantCount']
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
-                let tags = response[i]['tags']
-                let leaderId = response[i]['userId']
-                let leaderName = response[i]['username']
                 let imagePath = response[i]['imagePath']
 
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
-                                            <input type="hidden" value=${content}>
-                                            <input type="hidden" value=${tags}>
-                                            <input type="hidden" value=${leaderName}>
-                                            <input type="hidden" value=${leaderId}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
                 $(contentId).append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
             setTimeout(showLeaderMoim, 150)
-            setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
         }
@@ -604,56 +620,61 @@ function showLeaderMoim() {
 
 function showParticipantMoim() { // 참여중인 모임 조회
     let contentId = '#participant-group';
-    let url = "http://localhost:8080/participant/group";
+    let url = `${origin}/participant/group`;
     $(contentId).empty()
     $.ajax({
         type: "GET",
         url: url,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        async: false,
+        headers: {
+            'Content-Type': 'application/json',
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
         success: function (response) {
-            console.log(response)
             response = response['data']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
-                let content = response[i]['content']
                 let categoryName = response[i]['categoryName']
                 let participantCount = response[i]['participantCount']
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
-                let tags = response[i]['tags']
-                let leaderId = response[i]['userId']
-                let leaderName = response[i]['username']
                 let imagePath = response[i]['imagePath']
 
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
-                                            <input type="hidden" value=${content}>
-                                            <input type="hidden" value=${tags}>
-                                            <input type="hidden" value=${leaderName}>
-                                            <input type="hidden" value=${leaderId}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
                 $(contentId).append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -666,53 +687,69 @@ function showParticipantMoim() { // 참여중인 모임 조회
 }
 
 
-function showFilter(categoryId, status) {
-    $('#find-content').empty()
+function showWishMoim() {
+    let contentId = '#wish-content';
+    let url = `${origin}/group/wish`;
+    $(contentId).empty()
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/group/categories/" + categoryId,
-        data: {status: status}, //전송 데이터
+        url: url,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success: function (response) {
-            console.log(response)
-            response = response['data']['content']
+            response = response['data']
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let groupName = response[i]['groupName']
-                let content = response[i]['content']
                 let categoryName = response[i]['categoryName']
                 let participantCount = response[i]['participantCount']
                 let recruitNumber = response[i]['recruitNumber']
                 let wishCount = response[i]['wishCount']
                 let status = response[i]['status']
+                let imgPath = response[i]['imagePath']
 
-                let temp_html = `<div class="products-row" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
-                                        <img src="../static/images/main-running.jpg" alt="">
+                                        <img src="${imgPath}" alt="">
                                             <span>${groupName}</span>
-                                            <input type="hidden" value=${content}>
                                     </div>
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
-                $('#find-content').append(temp_html)
-                console.log(response)
+                $(contentId).append(temp_html)
+            }
+            if (document.querySelector("#wish-content").childElementCount === 0) {
+                let temp_html = `<span class="wish_empty">찜 목록이 비어있습니다.</span>`
+                $(contentId).append(temp_html)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(showFilter, 150)
+            setTimeout(showWishMoim, 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
@@ -721,14 +758,89 @@ function showFilter(categoryId, status) {
 }
 
 
-function showReview(id) {
-    $('#moimDetail_reviews').empty().append(`<textarea style="width:100%" rows="3" cols="30" id="reviewText" value=""> </textarea>
-                                     <button type="button" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">후기 등록</button>`);
+function showFilter(categoryId, status) {
+    $('#find-content').empty()
+    $.ajax({
+        type: "GET",
+        url: `${origin}/group/categories/${categoryId}`,
+        data: {status: status}, //전송 데이터
+        success: function (response) {
+            response = response['data']['content']
+            for (let i = 0; i < response.length; i++) {
+                let id = response[i]['id']
+                let groupName = response[i]['groupName']
+                let categoryName = response[i]['categoryName']
+                let participantCount = response[i]['participantCount']
+                let recruitNumber = response[i]['recruitNumber']
+                let wishCount = response[i]['wishCount']
+                let status = response[i]['status']
+                let imagePath = response[i]['imagePath']
+
+                let moim_status = ''
+                let closed = ''
+                if (status === "OPEN") {
+                    moim_status = "active"
+                } else {
+                    moim_status = "disabled"
+                    closed = 'closed'
+                }
+
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
+                                    <div class="product-cell image">
+                                        <img src=${imagePath} alt="">
+                                            <span>${groupName}</span>
+                                    </div>
+                                    <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
+                                    <div class="product-cell status-cell">
+                                        <span class="cell-label">모임상태:</span>
+                                        <span class="status ${moim_status}">${status}</span>
+                                    </div>
+                                    <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
+                                    <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
+                                    <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
+                                </div>`
+                $('#find-content').append(temp_html)
+            }
+        }
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showFilter(categoryId, status), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
+    });
+}
+
+
+function showReview(id, isLeader, is_in_group) {
+    let review_form;
+    if (isLeader) {
+        review_form = `<span>모임 개설자는 후기를 달 수 없습니다</span>`
+    } else if (is_in_group === 'false') {
+        review_form = `<span>모임 참여자만 후기를 달 수 있습니다</span>`
+    } else {
+        review_form = `<textarea style="margin-bottom: 10px; width:100%;" rows="3" cols="30" id="reviewText"> </textarea>
+                        <button type="button" style="margin-top: 10px;" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">
+                        후기 등록
+                        </button>`
+    }
+    $('#moimDetail_reviews').empty().append(review_form);
 
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/groups/" + id + "/review",
+        url: `${origin}/groups/${id}/review`,
         success: function (response) {
+            response = response["data"]["content"]
+            $('#moimDetail_reviews').append(`<hr>`)
             for (let i = 0; i < response.length; i++) {
                 let id = response[i]['id']
                 let content = response[i]['content']
@@ -738,15 +850,11 @@ function showReview(id) {
                                     <form id="reivewListForm" name="reivewListForm" method="post">
                                       <div id="reivewList">
                                         <table class='table'>
-                                          <h6><strong>작성자 : ${username}</strong></h6>
-                                          <p style="overflow: hidden; word-wrap: break-word;">
+                                          <h6 style="text-align: left;"><strong>${username}</strong></h6>
+                                          <p style="overflow: hidden; word-wrap: break-word; color: black; text-align: left;">
                                             ${content}
                                           </p>
-                                          <tr>
-                                            <td></td>
-                                          </tr>
-                                          <textarea class="button_hide" style="width:150
-                                         %" rows="3" cols="30" id="review"
+                                          <textarea class="button_hide" style="width: 100%;" rows="3" id="review_${id}"
                                             name="review"></textarea>
                                           <div class="edit_delete">
                                             <button type="button" class="btn btn-danger" style="float: right;" onclick="deleteReview(${id})">삭제</button>
@@ -761,19 +869,17 @@ function showReview(id) {
                                         </table>
                                       </div>
                                     </form>
-                                  </div>`
+                                  </div>
+                                  <hr>`
                 $('#moimDetail_reviews').append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(showReview(id), 150)
+            setTimeout(showReview(id, isLeader, is_in_group), 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
@@ -786,8 +892,12 @@ function showRequestedGroup() {
     $('#requested-group').empty();
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/leader/application",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/leader/application`,
+        async: false,
+        headers: {
+            'Content-Type': 'application/json',
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
         success: function (response) {
             response = response['data']
             for (let i = 0; i < response.length; i++) {
@@ -796,21 +906,29 @@ function showRequestedGroup() {
                 let username = response[i]['username']
                 let status = response[i]['status']
 
-                let temp_html = `<tr>
-                                    <td>${groupName}</td>
-                                    <td>${username}</td>
-                                    <td>${status}</td>
-                                    <td><input type="button" onclick="permitApplication(${id})">승인</td>
-                                    <td><input type="button" onclick="rejectApplication(${id})">거절</td>
-                                  </tr>`
+                let button_status = 'inline'
+                if (status === "PERMIT" || status === "REJECT") {
+                    button_status = 'none'
+                }
+
+                let temp_html = `<div class="list-body">
+                                    <div class="list-title">${groupName}</div>
+                                    <div class="list-name">${username}</div>
+                                    <div class="list-button">
+                                        <span>${status}</span>
+                                        <div style="display: ${button_status};">
+                                            <input type="button" onclick="permitApplication(${id})" value="승인">
+                                            <input type="button" onclick="rejectApplication(${id})" value="거절">
+                                        </div>
+                                    </div>
+                                  </div>
+                                  <hr>
+                                  `
                 $('#requested-group').append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -826,8 +944,12 @@ function showAppliedGroup() {
     $('#applied-group').empty()
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/participant/application",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/participant/application`,
+        async: false,
+        headers: {
+            'Content-Type': 'application/json',
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
         success: function (response) {
             response = response['data']
             for (let i = 0; i < response.length; i++) {
@@ -836,20 +958,21 @@ function showAppliedGroup() {
                 let leaderName = response[i]['leaderName']
                 let status = response[i]['status']
 
-                let temp_html = `<tr>
-                                    <td>${groupName}</td>
-                                    <td>${leaderName}</td>
-                                    <td>${status}</td>
-                                    <td><input type="button" onclick="cancelApplication(${id})">삭제</td>
-                                  </tr>`
+                let temp_html = `<div class="list-body">
+                                    <div class="list-title">${groupName}</div>
+                                    <div class="list-name">${leaderName}</div>
+                                    <div class="list-button">
+                                        <span>${status}</span>
+                                        <input type="button" onclick="cancelApplication(${id})" value="삭제">
+                                    </div>
+                                  </div>
+                                  <hr>
+                                  `
                 $('#applied-group').append(temp_html)
-                console.log(response)
             }
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -865,16 +988,14 @@ function showAppliedGroup() {
 function permitApplication(applicationId) {
     $.ajax({
         type: "PUT",
-        url: "http://localhost:8080/applications/" + applicationId + "/permit",
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        url: `${origin}/applications/${applicationId}/permit`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
         alert(data['data'])
-        console.log(data);
         showRequestedGroup()
+        showLeaderMoim()
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -889,16 +1010,13 @@ function permitApplication(applicationId) {
 function rejectApplication(applicationId) {
     $.ajax({
         type: "PUT",
-        url: "http://localhost:8080/applications/" + applicationId + "/reject",
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        url: `${origin}/applications/${applicationId}/reject`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
         alert(data['data'])
-        console.log(data);
         showRequestedGroup()
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -913,16 +1031,13 @@ function rejectApplication(applicationId) {
 function cancelApplication(applicationId) {
     $.ajax({
         type: "DELETE",
-        url: "http://localhost:8080/applications/" + applicationId,
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        url: `${origin}/applications/${applicationId}`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
         alert(data['data'])
-        console.log(data);
         showAppliedGroup()
     }).fail(function (e) {
-        console.log(e)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -935,25 +1050,119 @@ function cancelApplication(applicationId) {
 }
 
 
-function showMoimDetail(event, id) {
+function showMoimDetail(id) {
+    if (localStorage.getItem("is_logged_in") === 'false') {
+        alert('로그인 한 사용자만 열람이 가능합니다.\n이전 페이지로 돌아가서 로그인 해주세요.')
+        return
+    }
+
+    let isLeader = false;
+    let userId;
+    localStorage.setItem('current_moim_id', id) // for edit moim review
     $.ajax({
         type: "get",
-        url: "http://localhost:8080/groups/" + id
+        url: `${origin}/user`,
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+        async: false,
+        success:
+            function (response) {
+                userId = String(response["data"])
+            }, error: function (e) {
+        }
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showMoimDetail(id), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
+    });
+    
+    $.ajax({
+        type: "get",
+        url: `${origin}/participant/groups/${id}`,
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+        async: false,
+        success:
+            function (response) {
+                let is_in_group = 'false';
+                response['data'].forEach((user) => {
+                    if (String(user['userId']) === userId) {
+                        is_in_group = 'true'
+                    }
+                })
+                localStorage.setItem("is_in_group", is_in_group)
+            }, error: function (e) {
+        }
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showMoimDetail(id), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
+    });
+
+    let groupLeaderId;
+    $.ajax({
+        type: "get",
+        url: `${origin}/groups/${id}`,
+        async: false
     }).done(function (data) {
+        console.log(data)
+        groupLeaderId = String(data.userId)
         // data.imagePath
         document.getElementById("moimDetail_Image").src = data.imagePath;
         document.querySelector('#moimDetail_Title').innerText = data.groupName;
-        document.querySelector('#moimStatus').innerText = data.status;
-        document.querySelector('#moimTag').innerText = data.tags;
+        let tagsToString = ''
+        data.tags.forEach(tag => tagsToString += '#' + tag + ' ')
+        document.querySelector('#moimTag').innerText = tagsToString
         document.querySelector('#moimDetail_introduce').innerText = data.content;
         document.getElementById('moimDetailId').value = data.id;
-        $('#detailAddress').empty().append(`<h5>모임장소</h5>
+        $('#detailAddress').empty().append(`<h5 style="margin-top: 20px; font-weight: bold;">모임 장소</h5>
                                     <h6>${data.address}</h6>`)
-        console.log(data.address)
+
+        if (data.status === 'OPEN') {
+            document.querySelector('#moimDetailContentId').classList.remove('closed_moimDetail')
+
+            document.querySelector('#moimStatus').innerText = '모임 닫기'
+
+            if (document.querySelector('#moimStatus').classList.contains('btn-success')) {
+                document.querySelector('#moimStatus').classList.remove('btn-success')
+            }
+            document.querySelector('#moimStatus').classList.add('btn-secondary')
+
+            if (!document.querySelector('#closed_overlay').classList.contains('hide_overlay')) {
+                document.querySelector('#closed_overlay').classList.add('hide_overlay')
+            }
+        }
+        if (data.status === 'CLOSE') {
+            document.querySelector('#moimDetailContentId').classList.add('closed_moimDetail')
+
+            document.querySelector('#moimStatus').innerText = '모임 열기'
+
+            if (document.querySelector('#moimStatus').classList.contains('btn-secondary')) {
+                document.querySelector('#moimStatus').classList.remove('btn-secondary')
+            }
+
+            document.querySelector('#moimStatus').classList.add('btn-success')
+
+            if (document.querySelector('#closed_overlay').classList.contains('hide_overlay')) {
+                document.querySelector('#closed_overlay').classList.remove('hide_overlay')
+            }
+        }
+
         let detailLatLng = new kakao.maps.LatLng(data.latitude, data.longitude);
-        // detailMarker.setPosition(detailLatLng);
-        // detailMarker.setMap(detailMap);
-        // detailMap.setCenter(detailLatLng);
 
         kakao.maps.event.addListener(detailMap, 'tilesloaded', function () {
             detailMap.setCenter(detailLatLng);
@@ -965,16 +1174,39 @@ function showMoimDetail(event, id) {
             detailMap.relayout();
         }, 200);
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showMoimDetail(id), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
-    showReview(id);
+
+    if (userId === groupLeaderId) {
+        isLeader = true
+        if (document.querySelector("#moim_edit_button").classList.contains('hide_moim_button')) {
+            document.querySelector("#moim_edit_button").classList.remove('hide_moim_button')
+            document.querySelector("#moimStatus").classList.remove('hide_moim_button')
+            document.querySelector("#moim_delete_button").classList.remove('hide_moim_button')
+        }
+    } else {
+        if (!document.querySelector("#moim_edit_button").classList.contains('hide_moim_button')) {
+            document.querySelector("#moim_edit_button").classList.add('hide_moim_button')
+            document.querySelector("#moimStatus").classList.add('hide_moim_button')
+            document.querySelector("#moim_delete_button").classList.add('hide_moim_button')
+        }
+    }
+
+    showReview(id, isLeader, localStorage.getItem("is_in_group"));
 }
 
 
 //미완 - 모임생성
 function saveMoim() {
     let file = $('#newMoim-image')[0].files[0];
-    console.log(file)
     let formData = new FormData();
     formData.append("img", file);
 
@@ -1007,8 +1239,8 @@ function saveMoim() {
 
     $.ajax({
         type: "post",
-        url: "http://localhost:8080/group",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/group`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         data: formData, //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: false, //헤더의 Content-Type을 설정
@@ -1018,9 +1250,7 @@ function saveMoim() {
         alert("작성 완료")
         location.reload()
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1036,17 +1266,13 @@ function saveMoim() {
 function attendMoim(id) {
     $.ajax({
         type: "post",
-        url: "http://localhost:8080/groups/" + id + "/application",
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        url: `${origin}/groups/${id}/application`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
-        console.log(data);
         alert(data['data'])
         location.reload()
     }).fail(function (e) {
-        console.log(e.status)
-        console.log(e.responseJSON)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1061,18 +1287,13 @@ function attendMoim(id) {
 function withdrawMoim(id) {
     $.ajax({
         type: "delete",
-        url: "http://localhost:8080/participant/groups/" + id,
-        headers: {'Authorization': localStorage.getItem('Authorization')}
+        url: `${origin}/participant/groups/${id}`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)}
     }).done(function (data) {
-        console.log(data);
         alert(data['data'])
-        showParticipantMoim()
-        showAllMoim()
-        showPopularMoim()
+        location.reload()
     }).fail(function (e) {
-        console.log(e)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1113,27 +1334,23 @@ function editMoim(id) {
 
     let file = $('#modifyMoim-image')[0].files[0];
     let formData = new FormData;
-    console.log(file)
     formData.append("img", file)
     formData.append("requestDto", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
     $.ajax({
         type: "put",
-        url: "http://localhost:8080/groups/" + id,
+        url: `${origin}/groups/${id}`,
         timeOut: 0,
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         data: formData,
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: false, //헤더의 Content-Type을 설정
         mimeType: "multipart/form-data",
         processData: false
     }).done(function (data) {
-        console.log(data);
         alert("작성 완료")
         location.reload()
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1143,25 +1360,18 @@ function editMoim(id) {
             alert(e.responseJSON['data'])
         }
     });
-
 }
 
 function deleteMoim(id) {
     $.ajax({
         type: "delete",
-        url: "http://localhost:8080/groups/" + id,
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/groups/${id}`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
     }).done(function (data) {
-        console.log(data)
-        console.log(data['data']);
         alert(data['data'])
-        showAllMoim()
-        showPopularMoim()
-        showLeaderMoim()
+        location.reload()
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1176,17 +1386,13 @@ function deleteMoim(id) {
 function wishMoim(id) {
     $.ajax({
         type: "post",
-        url: "http://localhost:8080/groups/" + id + "/wish",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
-        ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
+        url: `${origin}/groups/${id}/wish`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
-            console.log(data);
             alert(data['data'])
         },
         error: function (e) {
-            console.log(e.responseJSON.data)
             if (e.status === 400) {
-                console.log("=================")
                 alert(e.responseJSON['data'])
             } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
                 reissue()
@@ -1197,33 +1403,61 @@ function wishMoim(id) {
             }
         }
     });
+}
 
-    //alert('찜 등록 후 페이지 새로고침\n마이페이지에 찜목록 보기 추가예정')
+function deleteWishMoim(id) {
+    $.ajax({
+        type: "delete",
+        url: `${origin}/groups/${id}/wish`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
+        success: function (data) {
+            alert(data['data'])
+        },
+        error: function (e) {
+            if (e.status === 400) {
+                alert(e.responseJSON['data'])
+            } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+                reissue()
+                setTimeout(deleteWishMoim(id), 150)
+                setTimeout(showUsername, 150)
+            } else {
+                alert(e.responseJSON['data'])
+            }
+        }
+    });
 }
 
 
 function addReviewMoim(id) {
+    const reviewText = $('#reviewText').val()
+
+
+    var blank_pattern = /^\s+|\s+$/g;
+    if (reviewText.replace(blank_pattern, '') == "") {
+        alert('공백만 입력되었습니다');
+        return;
+    }
+
     let jsonData = {
-        "content": $('#reviewText').val()
+        "content": reviewText
     }
     $.ajax({
         type: "post",
-        url: "http://localhost:8080/groups/" + id + "/review",
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/groups/${id}/review`,
+        headers: {
+            'Content-Type': 'application/json',
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
-        ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
-            console.log(data);
-            alert(data['data'])
+            alert('작성 완료')
         }
     }).done(function () {
-        showReview(id)
+        showReview(id, false, localStorage.getItem("is_in_group"))
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1233,31 +1467,39 @@ function addReviewMoim(id) {
             alert(e.responseJSON['data'])
         }
     });
-    //alert('찜 등록 후 페이지 새로고침\n마이페이지에 찜목록 보기 추가예정')
 }
 
 
 function editReview(id) {
+    const current_moim_id = localStorage.getItem('current_moim_id')
+    const reviewText = $(`#review_${id}`).val()
+
+    var blank_pattern = /^\s+|\s+$/g;
+    if (reviewText.replace(blank_pattern, '') == "") {
+        alert('공백만 입력되었습니다');
+        return;
+    }
+
     let jsonData = {
-        "content": $('#review').val()
-    };
+        "content": reviewText
+    }
+
     $.ajax({
         type: "put",
-        url: "http://localhost:8080/reviews/" + id,
-        headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/reviews/${id}`,
+        headers: {
+            'Content-Type': 'application/json',
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
         data: JSON.stringify(jsonData), //전송 데이터
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
-        ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
         success: function (data) {
-            console.log(data);
-            alert(data['data'])
-            window.location = './main.html'
+            alert('수정 완료')
+            showReview(current_moim_id, false, localStorage.getItem("is_in_group"))
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1273,18 +1515,14 @@ function editReview(id) {
 function deleteReview(id) {
     $.ajax({
         type: "delete",
-        url: "http://localhost:8080/reviews/" + id,
-        headers: {'Authorization': localStorage.getItem('Authorization')},
-        ///보낼 데이터를 JSON.stringify()로 감싸주어야 함
+        url: `${origin}/reviews/${id}`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         success: function (data) {
-            console.log(data);
             alert(data['data'])
-            window.location = './main.html'
+            location.reload()
         }
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1298,7 +1536,7 @@ function deleteReview(id) {
 
 
 function goToHome() {
-    location.replace('./welcome.html')
+    location.replace('./')
 }
 
 
@@ -1307,31 +1545,30 @@ function gotoBoard(id) {
     let isParticipant = false
     $.ajax({ // 유저 정보 가져오기
         type: "get",
-        url: "http://localhost:8080/user",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        url: `${origin}/user`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         async: false,
         success: function (data) {
-            myId = data['id']
+            myId = data['data']
         }
     }).done(function () {
         $.ajax({ // 그룹 정보 가져오기
             type: "get",
-            url: "http://localhost:8080/groups/" + id,
-            headers: {'Authorization': localStorage.getItem('Authorization')},
+            url: `${origin}/groups/${id}`,
+            headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
             async: false,
             success: function (data) {
                 if (myId === data['userId']) { // 페이지 이동 조건 (done)
-
                     // data에서 리더 정보 가져와서 localStorage에 넣어준다 -> 프로필 최상단 리더프로필 고정용
                     localStorage.setItem("current_group_id", id)
                     localStorage.setItem("current_user_id", myId)
-                    alert('게시판으로 이동합니다.')
+                    // alert('게시판으로 이동합니다.')
                     window.location = './board.html'
                 } else {
                     $.ajax({ // 특정 모임 참여자 조회
                         type: "get",
-                        url: "http://localhost:8080/participant/groups/" + id,
-                        headers: {'Authorization': localStorage.getItem('Authorization')},
+                        url: `${origin}/participant/groups/${id}`,
+                        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
                         async: false,
                         success: function (data) {
                             data = data['data']
@@ -1341,7 +1578,7 @@ function gotoBoard(id) {
                                 }
                             }
                             if (isParticipant) {
-                                alert('게시판으로 이동합니다.')
+                                // alert('게시판으로 이동합니다.')
                                 localStorage.setItem("current_group_id", id)
                                 localStorage.setItem("current_user_id", myId)
                                 window.location = './board.html'
@@ -1351,20 +1588,16 @@ function gotoBoard(id) {
                         },
                         error: function (e) {
                             alert(e.responseJSON['data'])
-                            console.log(e.responseJSON['data'])
                         }
                     });
                 }
             },
             error: function (e) {
                 alert(e.responseJSON['data'])
-                console.log(e.responseJSON['data'])
             }
         })
     }).fail(function (e) {
-        console.log(e.status)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1378,7 +1611,6 @@ function gotoBoard(id) {
 
 function gotoEditReview(event) {
     const original_review = event.currentTarget.parentNode.previousSibling.previousSibling.innerText;
-    console.log(event.currentTarget.parentNode.previousSibling)
     event.currentTarget.parentNode.previousSibling.value = original_review;
     event.currentTarget.parentNode.classList.toggle('button_hide');
     event.currentTarget.parentNode.nextSibling.classList.toggle('button_hide');
@@ -1394,89 +1626,62 @@ function gotoDeleteReview(event) {
 }
 
 function changeStatus(id) {
-    let status = document.querySelector('#moimStatus').innerText
-    console.log(moimStatus)
-    if (status === "CLOSE") {
-        var settings = {
-            "url": "http://localhost:8080/groups/" + id + "/open",
-            "method": "PATCH",
-            "timeout": 0,
-            "headers": {
-                "Authorization": localStorage.getItem('Authorization')
-            },
-        };
-
-        $.ajax(settings).done(function (response) {
-            console.log(response);
-            alert(response['data'])
-            location.reload()
-        }).fail(function (e) {
-            if (e.status === 400) {
-                console.log("=================")
-                alert(e.responseJSON['data'])
-            } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-                reissue()
-                setTimeout(gotoBoard(id), 150)
-                setTimeout(showUsername, 150)
-            } else {
-                alert(e.responseJSON['data'])
-            }
-        });
-    } else if (status === "OPEN") {
-        var settings = {
-            "url": "http://localhost:8080/groups/" + id + "/close",
-            "method": "PATCH",
-            "timeout": 0,
-            "headers": {
-                "Authorization": localStorage.getItem('Authorization')
-            },
-        };
-
-        $.ajax(settings).done(function (response) {
-            console.log(response);
-            alert(response['data'])
-            location.reload()
-        }).fail(function (e) {
-            if (e.status === 400) {
-                console.log("=================")
-                alert(e.responseJSON['data'])
-            } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
-                reissue()
-                setTimeout(gotoBoard(id), 150)
-                setTimeout(showUsername, 150)
-            } else {
-                alert(e.responseJSON['data'])
-            }
-        });
+    let changeStatusTo
+    if (document.querySelector('#moimStatus').innerText === '모임 닫기') {
+        changeStatusTo = 'close'
     }
+    if (document.querySelector('#moimStatus').innerText === '모임 열기') {
+        changeStatusTo = 'open'
+    }
+
+    var settings = {
+        "url": `${origin}/groups/${id}/${changeStatusTo}`,
+        "method": "PATCH",
+        "timeout": 0,
+        "headers": {
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
+        },
+    };
+
+    $.ajax(settings).done(function (response) {
+        alert(response['data'])
+        location.reload()
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(changeStatus(id), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
+    });
 }
+
 
 function getMyProfile() {
     $('#profileName').empty()
     $('#profileContent').empty()
     $.ajax({
-        type: "post",
-        url: "http://localhost:8080/profile",
-        headers: {'Authorization': localStorage.getItem('Authorization')},
+        type: "get",
+        url: `${origin}/profile`,
+        headers: {[ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)},
         dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success:
             function (response) {
-                console.log(response)
                 let username = response['username']
                 let content = response['content']
                 let imagePath = response['imagePath']
+
                 $('#profileName').append(username)
                 $('#profileContent').append(content)
-                $('#profile-image').append(imagePath)
-                console.log(response)
-            }, error: function (e) {
-            console.log(e)
-        }
+                // $('#profile-image').append(imagePath)
+                $('#profile-image')[0].src = imagePath
+            }
     }).fail(function (e) {
-        console.log(e)
         if (e.status === 400) {
-            console.log("=================")
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1508,7 +1713,6 @@ $('.pw').focusout(function () {
 
 function updateProfile(content) {
     var file = $('#img')[0].files[0];
-    console.log(file);
     var form = new FormData();
 
     let jsonData =
@@ -1519,11 +1723,11 @@ function updateProfile(content) {
     form.append("img", file);
 
     var settings = {
-        "url": "http://localhost:8080/profile",
+        "url": `${origin}/profile`,
         "method": "PUT",
         "timeout": 0,
         "headers": {
-            "Authorization": localStorage.getItem("Authorization")
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         },
         "processData": false,
         "mimeType": "multipart/form-data",
@@ -1532,13 +1736,10 @@ function updateProfile(content) {
     };
 
     $.ajax(settings).done(function (response) {
-        console.log(response);
         alert("프로필 수정이 완료되었습니다.")
-        window.location.reload()
+        location.reload()
     }).fail(function (e) {
-        console.log(JSON.parse(e.responseText).data)
         if (e.status === 400) {
-            console.log("=================")
             alert(JSON.parse(e.responseText).data)
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -1551,17 +1752,20 @@ function updateProfile(content) {
 }
 
 
-function showP() {
-    document.querySelector(".babackground").className = "background show";
+function toggleProfileEdit() {
+    document.querySelector(".edit_profile").classList.toggle("hideEdit")
+    document.querySelector(".content_title").classList.toggle("hideEdit")
+
+    if (document.querySelector(".content_title").classList.contains("hideEdit")) {
+        document.querySelector("#inputContent").value = document.querySelector("#profileContent").innerText
+    }
 }
 
-function closeP() {
-    document.querySelector(".background show").className = "background";
-}
 
-document.querySelector("#showProfile").addEventListener("click", showP);
-// 작동안됨..
-document.querySelector("#closeP").addEventListener("click", closeP);
+function toggleProfileWithdraw() {
+    document.querySelector(".withdraw_profile").classList.toggle("hideEdit")
+    document.querySelector(".content_title").classList.toggle("hideEdit")
+}
 
 
 $.expr[":"].contains = $.expr.createPseudo(function (arg) {
@@ -1590,12 +1794,10 @@ $(document).ready(function () {
     $('#search-field').keypress(function (event) {
         if (event.which == '13') {
             if (($(this).val() != '') && ($(".tags .addedTag:contains('" + $(this).val() + "') ").length == 0)) {
-                temp_html = `<li class="addedTag" id="added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
+                let temp_html = `<li class="addedTag" id="added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
                <input type="hidden" value="` + $(this).val() + `" name="tagsA">
              </li>`
                 $('#tatag').append(temp_html)
-
-                console.log($('[name="tagsA"]').val())
 
                 $(this).val('');
             } else {
@@ -1628,12 +1830,10 @@ $(document).ready(function () {
     $('#modify-field').keypress(function (event) {
         if (event.which == '13') {
             if (($(this).val() != '') && ($(".tags .addedTag:contains('" + $(this).val() + "') ").length == 0)) {
-                temp_html = `<li class="addedTag" id="modify-added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
+                let temp_html = `<li class="addedTag" id="modify-added">` + $(this).val() + `<span class="tagRemove" onclick="$(this).parent().remove();">x</span>
                <input type="hidden" value="` + $(this).val() + `" name="tagsM">
              </li>`
                 $('#modify-tatag').append(temp_html)
-
-                console.log($('[name="tagsM"]').val())
 
                 $(this).val('');
             } else {
@@ -1643,3 +1843,40 @@ $(document).ready(function () {
         }
     });
 });
+
+function fillEditMoim() {
+    document.querySelector("#modifyMoim-title").value = document.querySelector("#moimDetail_Title").innerText
+    document.querySelector("#modifyMoim-content").value = document.querySelector("#moimDetail_introduce").innerText
+}
+
+function withdrawUser(password) {
+    if (confirm('새모임을 탈퇴하시겠습니까?')) {
+        if (confirm('정말로 탈퇴하시겠습니까?')) {
+            doWithdraw(password)
+        }
+    }
+}
+
+function doWithdraw(password) {
+    var settings = {
+        "url": `${origin}/withdrawal`,
+        "method": "DELETE",
+        "timeout": 0,
+        "headers": {
+          "Authorization": localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
+          "Refresh_Token": localStorage.getItem(STORAGE_Refresh_TOKEN_KEY),
+          "Content-Type": "application/json"
+        },
+        "data": JSON.stringify({
+          "password": password
+        }),
+      };
+      
+      $.ajax(settings).done(function (response) {
+        alert('회원 탈퇴가 완료되었습니다.')
+        location.replace('./index.html')
+      }).fail(function (e) {
+        console.log(e);
+        alert(e.responseJSON['data'])
+    })
+}

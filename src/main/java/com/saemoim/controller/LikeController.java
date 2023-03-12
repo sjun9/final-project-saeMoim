@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,13 +18,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class LikeController {
 	private final LikeService likeService;
-
-	// 게시글 좋아요 여부 확인
-	// @GetMapping("/posts/{postId}/like")
-	// public ResponseEntity<GenericsResponseDto> checkLike(@PathVariable Long postId,
-	// 	@AuthenticationPrincipal UserDetailsImpl userDetails) {
-	// 	return ResponseEntity.ok().body(new GenericsResponseDto(likeService.checkLike(postId, userDetails.getId())));
-	// }
 
 	// 게시글 좋아요
 	@PostMapping("/posts/{postId}/like")

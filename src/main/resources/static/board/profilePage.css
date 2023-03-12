@@ -152,3 +152,7 @@ footer h4 a {
   text-decoration: none;
   color: #3498db;
 }
+
+.disable {
+  visibility: hidden;
+}

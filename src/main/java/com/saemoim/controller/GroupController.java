@@ -88,23 +88,25 @@ public class GroupController {
 
 	// 모임 생성
 	@PostMapping(value = "/group", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<GroupResponseDto> createGroup(
+	public ResponseEntity<GenericsResponseDto> createGroup(
 		@Validated @RequestPart("requestDto") GroupRequestDto requestDto,
 		@RequestPart(required = false, name = "img") MultipartFile multipartFile,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		groupService.createGroup(requestDto, userDetails.getId(), multipartFile);
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(groupService.createGroup(requestDto, userDetails.getId(), multipartFile));
+			.body(new GenericsResponseDto("모임 생성이 완료 되었습니다."));
 	}
 
 	// 모임 수정
 	@PutMapping(value = "/groups/{groupId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,
 		MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<GroupResponseDto> updateGroup(@PathVariable Long groupId,
+	public ResponseEntity<GenericsResponseDto> updateGroup(@PathVariable Long groupId,
 		@Validated @RequestPart GroupRequestDto requestDto,
 		@RequestPart(required = false, name = "img") MultipartFile multipartFile,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		groupService.updateGroup(groupId, requestDto, userDetails.getId(), multipartFile);
 		return ResponseEntity.ok()
-			.body(groupService.updateGroup(groupId, requestDto, userDetails.getId(), multipartFile));
+			.body(new GenericsResponseDto("모임 수정이 완료 되었습니다."));
 	}
 
 	// 모임 삭제

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <script src="https://kit.fontawesome.com/13a08ca775.js" crossorigin="anonymous"></script>
     <title>Document</title>
     <script src="https://code.jquery.com/jquery-3.6.3.min.js"
@@ -14,6 +15,8 @@
             crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="../static/admin/adminpage.css">
+    <link rel="shortcut icon" href="../static/images/favicon.png" type="image/x-icon">
+    <link rel="icon" href="../static/images/favicon.png" type="image/x-icon">
 
 </head>
 
@@ -225,10 +228,13 @@
     </div>
 </div>
 </body>
-
+<script src="../static/config/config.js"></script>
 <script>
+    const STORAGE_ACCESS_TOKEN_KEY = "accessToken";
+    const ACCESS_TOKEN_KEY = "Authorization";
+
     $(window.document).ready(function () {
-        aaa()
+        getUsers()
     })
     const sidebarListItems = document.querySelectorAll(".sidebar-list-item");
     const appContents = document.querySelectorAll(".app-content");
@@ -241,13 +247,13 @@
         })
     })
 
-    function aaa() {
+    function getUsers() {
         var settings = {
-            "url": "http://localhost:8080/admin/user",
+            "url": `${origin}/admin/user`,
             "method": "GET",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken')
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
         $.ajax(settings).done(function (response) {
@@ -273,7 +279,7 @@
     // userlist
     document.querySelector("#side-find").addEventListener("click", () => {
         document.querySelector("#side-find-content").classList.add("active");
-        aaa()
+        getUsers()
     })
 
     // report & blacklist
@@ -287,15 +293,14 @@
     function getReport() {
         // report
         var settings = {
-            "url": "http://localhost:8080/admin/report",
+            "url": `${origin}/admin/report`,
             "method": "GET",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken')
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
         $.ajax(settings).done(function (response) {
-            console.log(response)
             $('#report-list').empty()
             let rows = response['data']['content']
             for (let i = 0; i < rows.length; i++) {
@@ -320,25 +325,23 @@
                 $('#report-list').append(temp_html)
             }
         }).fail(function (response) {
-            console.log(response.responseJSON);
             alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-            window.location.href = './adminlogin.html';
+            location.replace('./adminlogin.html')
         });
     }
 
     function getBlacklist() {
         // blacklist
         var settingss = {
-            "url": "http://localhost:8080/admin/blacklist",
+            "url": `${origin}/admin/blacklist`,
             "method": "GET",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken')
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
 
         $.ajax(settingss).done(function (response) {
-            console.log(response)
             $('#blacklist').empty()
             let rows = response['data']
             for (let i = 0; i < rows.length; i++) {
@@ -366,9 +369,8 @@
                 $('#blacklist').append(temp_html)
             }
         }).fail(function (response) {
-            console.log(response.responseJSON);
             alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-            window.location.href = './adminlogin.html';
+            location.replace('./adminlogin.html')
         });
     }
 
@@ -380,7 +382,7 @@
 
     function getCate() {
         var settings = {
-            "url": "http://localhost:8080/category",
+            "url": `${origin}/category`,
             "method": "GET",
             "timeout": 0,
         };
@@ -423,16 +425,15 @@
 
     function getAdmin() {
         var settings = {
-            "url": "http://localhost:8080/admin",
+            "url": `${origin}/admin`,
             "method": "GET",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken')
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
 
         $.ajax(settings).done(function (response) {
-            console.log(response);
             $('#aadminn').empty()
             let rows = response['data']
             for (let i = 0; i < rows.length; i++) {
@@ -490,27 +491,24 @@
 
     function reissue() {
         var settings = {
-            "url": "http://localhost:8080/admin/reissue",
+            "url": `${origin}/admin/reissue`,
             "method": "POST",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken')
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
 
         $.ajax(settings).done(function (response, status, xhr) {
-            console.log(response);
             alert('재로그인 성공');
-            console.log(xhr.getResponseHeader('Authorization'));
-            localStorage.setItem('accessToken', xhr.getResponseHeader('Authorization'))
+            localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader('Authorization'))
             let time = new Date();
             time.setMinutes(time.getMinutes() + 20);
             localStorage.setItem('time', time)
             window.location.reload();
         }).fail(function (response) {
-            console.log(response.responseJSON);
             alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-            window.location.href = './adminlogin.html';
+            location.replace('./adminlogin.html');
         });
 
     }
@@ -532,11 +530,11 @@
 
     function deleteRP(id) {
         var settings = {
-            "url": "http://localhost:8080/admin/reports/" + id,
+            "url": `${origin}/admin/reports/${id}`,
             "method": "DELETE",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken')
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
 
@@ -544,19 +542,18 @@
             alert(response['data']);
             getReport()
         }).fail(function (response) {
-            console.log(response.responseJSON);
             alert('로그인 유효시간이 지났습니다. 다시 로그인 해주세요.');
-            window.location.href = './adminlogin.html';
+            location.replace('./adminlogin.html');
         });
     }
 
     function addBK(userId) {
         var settings = {
-            "url": "http://localhost:8080/admin/blacklist/users/" + userId,
+            "url": `${origin}/admin/blacklist/users/${userId}`,
             "method": "POST",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken')
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
 
@@ -564,7 +561,6 @@
             alert(response['data']);
             getBlacklist()
         }).fail(function (response) {
-            console.log(response.responseJSON);
             alert(response.responseJSON['data'])
         });
 
@@ -573,11 +569,11 @@
 
     function deleteBK(bkId) {
         var settings = {
-            "url": "http://localhost:8080/admin/blacklists/" + bkId,
+            "url": `${origin}/admin/blacklists/${bkId}`,
             "method": "DELETE",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken')
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
 
@@ -585,18 +581,17 @@
             alert(response['data']);
             getBlacklist()
         }).fail(function (response) {
-            console.log(response.responseJSON);
             alert(response.responseJSON['data'])
         });
     }
 
     function perman(blacklistId) {
         var settings = {
-            "url": "http://localhost:8080/admin/blacklists/" + blacklistId,
+            "url": `${origin}/admin/blacklists/${blacklistId}`,
             "method": "PATCH",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken')
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
 
@@ -605,18 +600,17 @@
             getBlacklist()
             getReport()
         }).fail(function (response) {
-            console.log(response.responseJSON);
             alert(response.responseJSON['data'])
         });
     }
 
     function deleteCate(categoryId) {
         var settings = {
-            "url": "http://localhost:8080/admin/categories/" + categoryId,
+            "url": `${origin}/admin/categories/${categoryId}`,
             "method": "DELETE",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken')
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
             },
         };
 
@@ -624,18 +618,17 @@
             alert(response['data']);
             getCate()
         }).fail(function (response) {
-            console.log(response.responseJSON);
             alert(response.responseJSON['data'])
         });
     }
 
     function addChildCate(papaId, newName) {
         var settings = {
-            "url": "http://localhost:8080/admin/categories/" + papaId,
+            "url": `${origin}/admin/categories/${papaId}`,
             "method": "POST",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken'),
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
                 "Content-Type": "application/json"
             },
             "data": JSON.stringify({
@@ -647,18 +640,17 @@
             alert(response['data']);
             getCate()
         }).fail(function (response) {
-            console.log(response.responseJSON);
             alert(response.responseJSON['data'])
         });
     }
 
     function addPapaCate(newPapa) {
         var settings = {
-            "url": "http://localhost:8080/admin/category",
+            "url": `${origin}/admin/category`,
             "method": "POST",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken'),
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
                 "Content-Type": "application/json"
             },
             "data": JSON.stringify({
@@ -670,18 +662,17 @@
             alert(response['data']);
             getCate()
         }).fail(function (response) {
-            console.log(response.responseJSON);
             alert(response.responseJSON['data'])
         });
     }
 
     function updateCate(id, name) {
         var settings = {
-            "url": "http://localhost:8080/admin/categories/" + id,
+            "url": `${origin}/admin/categories/${id}`,
             "method": "PUT",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken'),
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
                 "Content-Type": "application/json"
             },
             "data": JSON.stringify({
@@ -693,18 +684,17 @@
             alert(response['data']);
             getCate()
         }).fail(function (response) {
-            console.log(response.responseJSON);
             alert(response.responseJSON['data'])
         });
     }
 
     function deleteAdmin(idd) {
         var settings = {
-            "url": "http://localhost:8080/admins/" + idd,
+            "url": `${origin}/admins/${idd}`,
             "method": "DELETE",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken'),
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
             },
         };
 
@@ -712,7 +702,6 @@
             alert(response['data']);
             getAdmin()
         }).fail(function (response) {
-            console.log(response);
             alert(response.responseJSON['data']);
         });
 
@@ -720,11 +709,11 @@
 
     function createAdmin(name, pass) {
         var settings = {
-            "url": "http://localhost:8080/admin",
+            "url": `${origin}/admin`,
             "method": "POST",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken'),
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
                 "Content-Type": "application/json"
             },
             "data": JSON.stringify({
@@ -738,27 +727,25 @@
             close()
             getAdmin()
         }).fail(function (response) {
-            console.log(response);
             alert(response.responseJSON['data']);
         });
     }
 
     function logout() {
         var settings = {
-            "url": "http://localhost:8080/admin/log-out",
+            "url": `${origin}/admin/log-out`,
             "method": "POST",
             "timeout": 0,
             "headers": {
-                "Authorization": localStorage.getItem('accessToken'),
+                [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
             },
         };
 
         $.ajax(settings).done(function (response, status, xhr) {
             alert(response['data']);
-            localStorage.setItem('accessToken', xhr.getResponseHeader('Authorization'))
-            window.location.href = './adminlogin.html'
+            localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader(ACCESS_TOKEN_KEY))
+            location.replace('./adminlogin.html')
         }).fail(function (response) {
-            console.log(response)
             alert(response.responseJSON['data']);
         });
     }

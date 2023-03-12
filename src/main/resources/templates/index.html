@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>Document</title>
     <script src="https://code.jquery.com/jquery-3.6.3.js"
             integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="../static/welcome/welcomeSigninup.css">
     <link rel="stylesheet" href="../static/welcome/welcome.css">
+    <link rel="shortcut icon" href="../static/images/favicon.png" type="image/x-icon">
+    <link rel="icon" href="../static/images/favicon.png" type="image/x-icon">
 
     <script src="http://code.jquery.com/jquery-latest.js"></script>
 </head>
@@ -69,8 +72,7 @@
                     <form class="forms_form">
                         <fieldset class="forms_fieldset">
                             <div class="forms_field">
-                                <input type="email" placeholder="Email" class="forms_field-input" id="signin-email"
-                                       required autofocus/>
+                                <input type="email" placeholder="Email" class="forms_field-input" id="signin-email"/>
                             </div>
                             <div class="forms_field">
                                 <input type="password" placeholder="Password" class="forms_field-input"
@@ -79,7 +81,7 @@
                         </fieldset>
                         <div class="forms_buttons">
                             <input type="button" value="로그인" class="forms_buttons-action" onclick="login()">
-                            <a href=http://localhost:8080/oauth2/authorization/kakao>
+                            <a href=https://api.saemoim.site/oauth2/authorization/kakao>
                                 <img src="../static/images/kakao.png" height="45" width="183"/>
                             </a>
                         </div>
@@ -90,13 +92,14 @@
                     <div id="modal" class="modal-overlay">
                         <div class="modal-window">
                             <div class="title">
-                                <h2>모달</h2>
+                                <h2>비밀번호 찾기</h2>
                             </div>
                             <div class="close-area">X</div>
                             <div class="content">
-                                <input id="findPwd-email" type="email" placeholder="Email" class="forms_field-input"
+                                <input id="findPwd-email" type="email" placeholder="이메일을 입력해주세요."
+                                       class="forms_field-input"
                                        style="width: 84%; float: left;" required/>
-                                <input type="button" value="메일 보내기" class="forms_buttons-action"
+                                <input type="button" value="send" class="forms_buttons-action"
                                        onclick="sendPasswordToEmail()"
                                        style="display: inline; float: right; width: 15%; margin-top: 0px; padding: 6px 0px;">
                             </div>
@@ -122,7 +125,7 @@
                                        style="display: inline; float: right; width: 15%; height: 31px; padding: 0px; text-align: center;">
                             </div>
                             <div class="forms_field">
-                                <input id="username" type="text" placeholder="닉네임" class="forms_field-input"
+                                <input id="username" type="text" placeholder="닉네임 2자 ~ 15자" class="forms_field-input"
                                        onchange="changeUsernameDetection()" style="width: 84%; float: left;" required/>
                                 <input type="button" value="중복확인" class="forms_buttons-action"
                                        onclick="checkUsernameDuplication()"
@@ -143,7 +146,7 @@
                                 비밀번호가 일치하지 않습니다.
                             </div>
                             <div class="alert alert-danger" id="alert-match-rex" style=" color: gray;">8자 이상 15자 이하로
-                                영문,숫자, 특수 문자를 혼합 해주세요.
+                                영문,숫자, 특수 문자!@#$%^&*()를 혼합 해주세요.
                             </div>
                         </fieldset>
                         <div class="forms_buttons">
@@ -170,7 +173,7 @@
     </div>
     <div class="et-hero-tabs-button toggleRemove">
         <button class="user_goback" style="top: 10%" onclick="gotoLogin()">새 모임 시작하기</button>
-        <a class="go-main" style="color: azure; font-size: 17px;" href="./main.html">둘러보기</a>
+        <span class="go-main" style="color: azure; font-size: 17px; cursor: pointer;" onclick="gotoMain()">둘러보기</span>
     </div>
     <div class="et-hero-tabs-container toggleRemove">
         <a class="et-hero-tab" href="#tab-es6">모임</a>
@@ -235,8 +238,7 @@
 </main>
 </body>
 
+<script src="../static/config/config.js"></script>
 <script src="../static/welcome/welcome.js"></script>
 <script src="../static/welcome/welcomeSigninup.js"></script>
-
-
 </html>

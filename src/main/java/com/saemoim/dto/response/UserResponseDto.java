@@ -4,11 +4,14 @@ import java.time.LocalDateTime;
 
 import com.saemoim.domain.User;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class UserResponseDto {
 	private Long id;
@@ -17,7 +20,6 @@ public class UserResponseDto {
 	private int banCount;
 	private LocalDateTime createdAt;
 
-	@Builder
 	public UserResponseDto(User user) {
 		this.id = user.getId();
 		this.username = user.getUsername();

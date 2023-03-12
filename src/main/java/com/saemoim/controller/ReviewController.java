@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.saemoim.dto.request.ReviewRequestDto;
 import com.saemoim.dto.response.GenericsResponseDto;
-import com.saemoim.dto.response.ReviewResponseDto;
 import com.saemoim.security.UserDetailsImpl;
 import com.saemoim.service.ReviewService;
 
@@ -35,26 +34,28 @@ public class ReviewController {
 
 	// 모임 후기 작성
 	@PostMapping("/groups/{groupId}/review")
-	public ResponseEntity<ReviewResponseDto> createReview(@PathVariable Long groupId,
+	public ResponseEntity<GenericsResponseDto> createReview(@PathVariable Long groupId,
 		@Validated @RequestBody ReviewRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		reviewService.createReview(groupId, requestDto, userDetails.getId());
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(reviewService.createReview(groupId, requestDto, userDetails.getId()));
+			.body(new GenericsResponseDto("후기 작성이 완료 되었습니다."));
 	}
 
 	// 모임 후기 수정
 	@PutMapping("/reviews/{reviewId}")
-	public ResponseEntity<ReviewResponseDto> updateReview(@PathVariable Long reviewId,
+	public ResponseEntity<GenericsResponseDto> updateReview(@PathVariable Long reviewId,
 		@Validated @RequestBody ReviewRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(reviewService.updateReview(reviewId, requestDto, userDetails.getUsername()));
+		reviewService.updateReview(reviewId, requestDto, userDetails.getId());
+		return ResponseEntity.ok().body(new GenericsResponseDto("후기 수정이 완료 되었습니다."));
 	}
 
 	// 모임 후기 삭제
 	@DeleteMapping("/reviews/{reviewId}")
 	public ResponseEntity<GenericsResponseDto> deleteReview(@PathVariable Long reviewId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		reviewService.deleteReview(reviewId, userDetails.getUsername());
+		reviewService.deleteReview(reviewId, userDetails.getId());
 		return new ResponseEntity<>(new GenericsResponseDto("후기 삭제가 성공 하였습니다."), HttpStatus.OK);
 	}
 

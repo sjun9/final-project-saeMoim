@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,15 +23,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
+import com.saemoim.domain.Participant;
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.GroupRequestDto;
-import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
-import com.saemoim.repository.TagRepository;
+import com.saemoim.repository.ParticipantRepository;
 import com.saemoim.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,7 +45,7 @@ class GroupServiceImplTest {
 	@Mock
 	private CategoryRepository categoryRepository;
 	@Mock
-	private TagRepository tagRepository;
+	private ParticipantRepository participantRepository;
 
 	@Mock
 	private AWSS3Uploader awss3Uploader;
@@ -72,9 +73,12 @@ class GroupServiceImplTest {
 		User user = new User("dddd", "ddd", "name", UserRoleEnum.USER);
 		Category category = Category.builder().parentId(1L).name("named").build();
 		MultipartFile multipartFile = mock(MultipartFile.class);
+		Group group = mock(Group.class);
 
 		when(categoryRepository.findByName(anyString())).thenReturn(Optional.of(category));
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+		when(groupRepository.save(any(Group.class))).thenReturn(group);
+		doNothing().when(group).addParticipantCount();
 		try {
 			when(awss3Uploader.upload(multipartFile, "group")).thenReturn("aaaaaa");
 		} catch (IOException e) {
@@ -82,12 +86,11 @@ class GroupServiceImplTest {
 		}
 
 		// when
-		GroupResponseDto response = groupService.createGroup(request, id, multipartFile);
+		groupService.createGroup(request, id, multipartFile);
 		// then
-		assertThat(response.getGroupName()).isEqualTo("name");
-		assertThat(response.getUsername()).isEqualTo("name");
 		verify(categoryRepository).findByName(anyString());
 		verify(groupRepository).save(any(Group.class));
+		verify(participantRepository).save(any(Participant.class));
 	}
 
 	@Test
@@ -118,10 +121,10 @@ class GroupServiceImplTest {
 		when(groupRepository.findById(anyLong())).thenReturn(Optional.of(group));
 
 		// when
-		GroupResponseDto response = groupService.updateGroup(id, request, userId, imgPath);
+		groupService.updateGroup(id, request, userId, imgPath);
 
 		// then
-		assertThat(response.getGroupName()).isEqualTo(group.getName());
+		verify(groupRepository).save(any(Group.class));
 	}
 
 	@Test

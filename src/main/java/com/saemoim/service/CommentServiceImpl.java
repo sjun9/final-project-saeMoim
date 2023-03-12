@@ -36,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
 
 	@Override
 	@Transactional
-	public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, Long userId) {
+	public void createComment(Long postId, CommentRequestDto requestDto, Long userId) {
 		Post post = postRepository.findById(postId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_POST.getMessage())
 		);
@@ -44,14 +44,12 @@ public class CommentServiceImpl implements CommentService {
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
 
-		Comment savedComment = commentRepository.save(new Comment(user, post, requestDto.getComment()));
-
-		return new CommentResponseDto(savedComment);
+		commentRepository.save(new Comment(user, post, requestDto.getComment()));
 	}
 
 	@Transactional
 	@Override
-	public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, Long userId) {
+	public void updateComment(Long commentId, CommentRequestDto requestDto, Long userId) {
 		Comment savedComment = _getCommentById(commentId);
 
 		if (!savedComment.isWriter(userId)) {
@@ -59,7 +57,7 @@ public class CommentServiceImpl implements CommentService {
 		}
 
 		savedComment.update(requestDto.getComment());
-		return new CommentResponseDto(savedComment);
+		commentRepository.save(savedComment);
 	}
 
 	@Transactional

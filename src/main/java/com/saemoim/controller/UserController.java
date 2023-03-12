@@ -3,6 +3,7 @@ package com.saemoim.controller;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -44,7 +45,7 @@ public class UserController {
 	@PostMapping("/sign-up")
 	public ResponseEntity<GenericsResponseDto> signUp(@Validated @RequestBody SignUpRequestDto requestDto) {
 		userService.signUp(requestDto);
-		return ResponseEntity.ok().body(new GenericsResponseDto("회원가입이 완료 되었습니다."));
+		return ResponseEntity.status(HttpStatus.CREATED).body(new GenericsResponseDto("회원가입이 완료 되었습니다."));
 	}
 
 	// 이메일 중복 확인
@@ -111,15 +112,14 @@ public class UserController {
 	}
 
 	// 내 정보 조회 - 마이페이지
-	@PostMapping("/profile")
+	@GetMapping("/profile")
 	public ResponseEntity<ProfileResponseDto> getMyProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok()
-			.body(userService.getMyProfile(userDetails.getId()));
+		return ResponseEntity.ok().body(userService.getMyProfile(userDetails.getId()));
 	}
 
 	@GetMapping("/user")
-	public ResponseEntity<ProfileResponseDto> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(userService.getProfile(userDetails.getId()));
+	public ResponseEntity<GenericsResponseDto> getUserId(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		return ResponseEntity.ok().body(new GenericsResponseDto(userDetails.getId()));
 	}
 
 	// 내 정보 수정 - 마이페이지
