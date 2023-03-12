@@ -859,10 +859,14 @@ p {
 }
 
 .edit_profile {
-    width: 50%;
+    width: 700px;
+}
+.withdraw_profile {
+    width: 300px;
 }
 
-.edit_profile.hideEdit {
+.edit_profile.hideEdit,
+.withdraw_profile.hideEdit {
     display: none;
 }
 

@@ -392,6 +392,7 @@
                     <h3>소개글</h3>
                     <p id="profileContent" style="text-align: left;"></p>
                     <button type="button" class="btn btn-secondary" onclick="toggleProfileEdit()">프로필 수정</button>
+                    <button type="button" class="btn btn-danger" onclick="toggleProfileWithdraw()">회원 탈퇴</button>
                 </div>
                 <div class="edit_profile hideEdit" style="margin: 25px 0;">
                     <h3>프로필 수정</h3>
@@ -409,6 +410,21 @@
                     </button>
                     <button type="submit" class="btn btn-secondary"
                             onclick="toggleProfileEdit();">
+                        취소
+                    </button>
+                </div>
+                <div class="withdraw_profile hideEdit">
+                    <h3>회원 탈퇴</h3>
+                    <div class="mb-3">
+                        <label for="inputWithdrawPassword" class="form-label">비밀번호 입력</label>
+                        <input type="password" class="form-control" id="inputWithdrawPassword">
+                    </div>
+                    <button type="submit" class="btn btn-danger"
+                            onclick="withdrawUser($('#inputWithdrawPassword').val())">
+                        회원 탈퇴
+                    </button>
+                    <button type="submit" class="btn btn-secondary"
+                            onclick="toggleProfileWithdraw();">
                         취소
                     </button>
                 </div>

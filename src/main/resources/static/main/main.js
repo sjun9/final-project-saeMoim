@@ -1199,7 +1199,7 @@ function showMoimDetail(id) {
             document.querySelector("#moim_delete_button").classList.add('hide_moim_button')
         }
     }
-    
+
     showReview(id, isLeader, localStorage.getItem("is_in_group"));
 }
 
@@ -1762,6 +1762,12 @@ function toggleProfileEdit() {
 }
 
 
+function toggleProfileWithdraw() {
+    document.querySelector(".withdraw_profile").classList.toggle("hideEdit")
+    document.querySelector(".content_title").classList.toggle("hideEdit")
+}
+
+
 $.expr[":"].contains = $.expr.createPseudo(function (arg) {
     return function (elem) {
         return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
@@ -1841,4 +1847,36 @@ $(document).ready(function () {
 function fillEditMoim() {
     document.querySelector("#modifyMoim-title").value = document.querySelector("#moimDetail_Title").innerText
     document.querySelector("#modifyMoim-content").value = document.querySelector("#moimDetail_introduce").innerText
+}
+
+function withdrawUser(password) {
+    if (confirm('새모임을 탈퇴하시겠습니까?')) {
+        if (confirm('정말로 탈퇴하시겠습니까?')) {
+            doWithdraw(password)
+        }
+    }
+}
+
+function doWithdraw(password) {
+    var settings = {
+        "url": `${origin}/withdrawal`,
+        "method": "DELETE",
+        "timeout": 0,
+        "headers": {
+          "Authorization": localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
+          "Refresh_Token": localStorage.getItem(STORAGE_Refresh_TOKEN_KEY),
+          "Content-Type": "application/json"
+        },
+        "data": JSON.stringify({
+          "password": password
+        }),
+      };
+      
+      $.ajax(settings).done(function (response) {
+        alert('회원 탈퇴가 완료되었습니다.')
+        location.replace('./index.html')
+      }).fail(function (e) {
+        console.log(e);
+        alert(e.responseJSON['data'])
+    })
 }
