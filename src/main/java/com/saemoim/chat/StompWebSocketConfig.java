@@ -29,7 +29,9 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 				"http://127.0.0.1:63342",
 				"http://43.201.17.85:63342",
 
-				"https://api.saemoim.site"
+				"https://api.saemoim.site",
+
+				"https://d1axe8zrfcr62g.cloudfront.net"
 			)
 			.withSockJS();
 	}
