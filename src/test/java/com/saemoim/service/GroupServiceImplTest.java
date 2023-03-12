@@ -1,10 +1,13 @@
 package com.saemoim.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,7 +53,7 @@ class GroupServiceImplTest {
 	@InjectMocks
 	private GroupServiceImpl groupService;
 
-	// @Test
+	@Test
 	@DisplayName("모임생성")
 	void createGroup() {
 		// given
@@ -70,9 +73,12 @@ class GroupServiceImplTest {
 		User user = new User("dddd", "ddd", "name", UserRoleEnum.USER);
 		Category category = Category.builder().parentId(1L).name("named").build();
 		MultipartFile multipartFile = mock(MultipartFile.class);
+		Group group = mock(Group.class);
 
 		when(categoryRepository.findByName(anyString())).thenReturn(Optional.of(category));
 		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+		when(groupRepository.save(any(Group.class))).thenReturn(group);
+		doNothing().when(group).addParticipantCount();
 		try {
 			when(awss3Uploader.upload(multipartFile, "group")).thenReturn("aaaaaa");
 		} catch (IOException e) {

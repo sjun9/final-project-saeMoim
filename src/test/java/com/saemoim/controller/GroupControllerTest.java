@@ -1,13 +1,27 @@
 package com.saemoim.controller;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -601,13 +615,13 @@ class GroupControllerTest {
 		MockMultipartFile request = new MockMultipartFile("requestDto", "",
 			"application/json", ("{ \"categoryName\": \"category\","
 			+ "\"tagNames\": [\"tag\", \"name\"],"
-			+ "\"name\": \"나와 함께 놀장\","
-			+ "\"content\": \"나와 함께 합시다 어떤가요\","
-			+ "\"address\": \"서울시 종로구 혜화동\","
-			+ "\"firstRegion\": \"서울시\","
-			+ "\"secondRegion\": \"종로구\","
-			+ "\"latitude\": \"위도\","
-			+ "\"longitude\": \"경도\","
+			+ "\"name\": \"group name\","
+			+ "\"content\": \"group content group content\","
+			+ "\"address\": \"group address\","
+			+ "\"firstRegion\": \"group firstRegion\","
+			+ "\"secondRegion\": \"group secondRegion\","
+			+ "\"latitude\": \"group latitude\","
+			+ "\"longitude\": \"group longitude\","
 			+ "\"recruitNumber\": 4}").getBytes());
 
 		// when
@@ -652,13 +666,13 @@ class GroupControllerTest {
 		MockMultipartFile request = new MockMultipartFile("requestDto", "",
 			"application/json", ("{ \"categoryName\": \"category\","
 			+ "\"tagNames\": [\"tag\", \"name\"],"
-			+ "\"name\": \"나와 함께 놀장\","
-			+ "\"content\": \"나와 함께 합시다 어떤가요\","
-			+ "\"address\": \"서울시 종로구 혜화동\","
-			+ "\"firstRegion\": \"서울시\","
-			+ "\"secondRegion\": \"종로구\","
-			+ "\"latitude\": \"위도\","
-			+ "\"longitude\": \"경도\","
+			+ "\"name\": \"group name\","
+			+ "\"content\": \"group content group content\","
+			+ "\"address\": \"group address\","
+			+ "\"firstRegion\": \"group firstRegion\","
+			+ "\"secondRegion\": \"group secondRegion\","
+			+ "\"latitude\": \"group latitude\","
+			+ "\"longitude\": \"group longitude\","
 			+ "\"recruitNumber\": 4}").getBytes());
 
 		var groupId = 1L;
