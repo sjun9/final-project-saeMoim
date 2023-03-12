@@ -259,11 +259,6 @@ function changeModifyValue(event) {
     document.querySelector('#modifyMoim-category').value = event.target.innerText
 }
 
-function gotochat() {
-    alert('채팅 기록을 불러옵니다. 추후 구현 예정')
-    window.open('./chattingPage.html');
-}
-
 function logout() {
     if (!confirm("로그아웃 하시겠습니까?")) {
         return
@@ -285,7 +280,6 @@ function logout() {
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
             setTimeout(logout(), 150)
-            setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
         }
@@ -303,8 +297,14 @@ function showUsername() {
             let imagePath = data['imagePath']
             $('#username').append(`${username}`)
             document.getElementById('profile-image').src = imagePath
+            if (document.querySelector('#logout_image').classList.contains('hide_moim_button')) {
+                document.querySelector('#logout_image').classList.remove('hide_moim_button')
+            }
         }, error: function (e) {
             $('#username').append(`로그인이 필요합니다`)
+            if (!document.querySelector('#logout_image').classList.contains('hide_moim_button')) {
+                document.querySelector('#logout_image').classList.add('hide_moim_button')
+            }
         }
     });
 }
@@ -332,7 +332,14 @@ function showCategory() {
             }
         }
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showCategory, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -364,8 +371,12 @@ function showSearch(name) {
                     closed = 'closed'
                 }
 
-                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -373,7 +384,7 @@ function showSearch(name) {
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
@@ -383,7 +394,14 @@ function showSearch(name) {
             }
         }
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showSearch(name), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -436,8 +454,12 @@ function showAllMoim() {
                     closed = 'closed'
                 }
 
-                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src="${imgPath}" alt="">
                                             <span>${groupName}</span>
@@ -455,7 +477,14 @@ function showAllMoim() {
             }
         }
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showAllMoim, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -487,8 +516,12 @@ function showPopularMoim() {
                         closed = 'closed'
                     }
 
-                    let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                    let modal_toggle = ''
+                    if (localStorage.getItem("is_logged_in") === 'true') {
+                        modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                    }
+
+                    let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -507,7 +540,14 @@ function showPopularMoim() {
             }
         }
     ).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showPopularMoim, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -544,8 +584,12 @@ function showLeaderMoim() {
                     closed = 'closed'
                 }
 
-                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -568,7 +612,6 @@ function showLeaderMoim() {
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
             setTimeout(showLeaderMoim, 150)
-            setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
         }
@@ -608,8 +651,12 @@ function showParticipantMoim() { // 참여중인 모임 조회
                     closed = 'closed'
                 }
 
-                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -671,8 +718,12 @@ function showWishMoim() {
                     closed = 'closed'
                 }
 
-                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src="${imgPath}" alt="">
                                             <span>${groupName}</span>
@@ -686,6 +737,10 @@ function showWishMoim() {
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
                                     <div class="product-cell price"><span class="cell-label">관심 등록 수:</span>${wishCount}</div>
                                 </div>`
+                $(contentId).append(temp_html)
+            }
+            if (document.querySelector("#wish-content").childElementCount === 0) {
+                let temp_html = `<span class="wish_empty">찜 목록이 비어있습니다.</span>`
                 $(contentId).append(temp_html)
             }
         }
@@ -730,8 +785,12 @@ function showFilter(categoryId, status) {
                     closed = 'closed'
                 }
 
-                let temp_html = `<div class="products-row ${closed}" data-bs-toggle="modal" data-bs-target="#moimDetailModal" 
-                                    onClick="showMoimDetail(event, ${id})">
+                let modal_toggle = ''
+                if (localStorage.getItem("is_logged_in") === 'true') {
+                    modal_toggle = `data-bs-toggle="modal" data-bs-target="#moimDetailModal"`
+                }
+
+                let temp_html = `<div class="products-row ${closed}" onClick="showMoimDetail(${id})" ${modal_toggle}>
                                     <div class="product-cell image">
                                         <img src=${imagePath} alt="">
                                             <span>${groupName}</span>
@@ -739,7 +798,7 @@ function showFilter(categoryId, status) {
                                     <div class="product-cell category"><span class="cell-label">카테고리:</span>${categoryName}</div>
                                     <div class="product-cell status-cell">
                                         <span class="cell-label">모임상태:</span>
-                                        <span class="status active">${status}</span>
+                                        <span class="status ${moim_status}">${status}</span>
                                     </div>
                                     <div class="product-cell sales"><span class="cell-label">참가인원:</span>${participantCount}</div>
                                     <div class="product-cell stock"><span class="cell-label">모집인원:</span>${recruitNumber}</div>
@@ -749,15 +808,25 @@ function showFilter(categoryId, status) {
             }
         }
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showFilter(categoryId, status), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
 
-function showReview(id, isLeader) {
+function showReview(id, isLeader, is_in_group) {
     let review_form;
     if (isLeader) {
         review_form = `<span>모임 개설자는 후기를 달 수 없습니다</span>`
+    } else if (is_in_group === 'false') {
+        review_form = `<span>모임 참여자만 후기를 달 수 있습니다</span>`
     } else {
         review_form = `<textarea style="margin-bottom: 10px; width:100%;" rows="3" cols="30" id="reviewText"> </textarea>
                         <button type="button" style="margin-top: 10px;" class="btn btn-warning" onclick="addReviewMoim(document.getElementById('moimDetailId').value)">
@@ -806,7 +875,15 @@ function showReview(id, isLeader) {
             }
         }
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showReview(id, isLeader, is_in_group), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -829,13 +906,20 @@ function showRequestedGroup() {
                 let username = response[i]['username']
                 let status = response[i]['status']
 
+                let button_status = 'inline'
+                if (status === "PERMIT" || status === "REJECT") {
+                    button_status = 'none'
+                }
+
                 let temp_html = `<div class="list-body">
                                     <div class="list-title">${groupName}</div>
                                     <div class="list-name">${username}</div>
                                     <div class="list-button">
                                         <span>${status}</span>
-                                        <input type="button" onclick="permitApplication(${id})" value="승인">
-                                        <input type="button" onclick="rejectApplication(${id})" value="거절">
+                                        <div style="display: ${button_status};">
+                                            <input type="button" onclick="permitApplication(${id})" value="승인">
+                                            <input type="button" onclick="rejectApplication(${id})" value="거절">
+                                        </div>
                                     </div>
                                   </div>
                                   <hr>
@@ -966,10 +1050,15 @@ function cancelApplication(applicationId) {
 }
 
 
-function showMoimDetail(event, id) {
+function showMoimDetail(id) {
+    if (localStorage.getItem("is_logged_in") === 'false') {
+        alert('로그인 한 사용자만 열람이 가능합니다.\n이전 페이지로 돌아가서 로그인 해주세요.')
+        return
+    }
+
     let isLeader = false;
     let userId;
-    localStorage.setItem('current_moim_id', id)
+    localStorage.setItem('current_moim_id', id) // for edit moim review
     $.ajax({
         type: "get",
         url: `${origin}/user`,
@@ -987,7 +1076,37 @@ function showMoimDetail(event, id) {
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(getMyProfile, 150)
+            setTimeout(showMoimDetail(id), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
+    });
+    
+    $.ajax({
+        type: "get",
+        url: `${origin}/participant/groups/${id}`,
+        headers: {'Authorization': localStorage.getItem('Authorization')},
+        dataType: "JSON", //응답받을 데이터 타입 (XML,JSON,TEXT,HTML,JSONP)
+        contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
+        async: false,
+        success:
+            function (response) {
+                let is_in_group = 'false';
+                response['data'].forEach((user) => {
+                    if (String(user['userId']) === userId) {
+                        is_in_group = 'true'
+                    }
+                })
+                localStorage.setItem("is_in_group", is_in_group)
+            }, error: function (e) {
+        }
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showMoimDetail(id), 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
@@ -1000,6 +1119,7 @@ function showMoimDetail(event, id) {
         url: `${origin}/groups/${id}`,
         async: false
     }).done(function (data) {
+        console.log(data)
         groupLeaderId = String(data.userId)
         // data.imagePath
         document.getElementById("moimDetail_Image").src = data.imagePath;
@@ -1018,13 +1138,8 @@ function showMoimDetail(event, id) {
             document.querySelector('#moimStatus').innerText = '모임 닫기'
 
             if (document.querySelector('#moimStatus').classList.contains('btn-success')) {
-                document.querySelector('#moimApplication').classList.remove('btn-secondary')
-                document.querySelector('#moimGoToBoard').classList.remove('btn-secondary')
                 document.querySelector('#moimStatus').classList.remove('btn-success')
             }
-
-            document.querySelector('#moimApplication').classList.add('btn-primary')
-            document.querySelector('#moimGoToBoard').classList.add('btn-primary')
             document.querySelector('#moimStatus').classList.add('btn-secondary')
 
             if (!document.querySelector('#closed_overlay').classList.contains('hide_overlay')) {
@@ -1037,14 +1152,9 @@ function showMoimDetail(event, id) {
             document.querySelector('#moimStatus').innerText = '모임 열기'
 
             if (document.querySelector('#moimStatus').classList.contains('btn-secondary')) {
-                document.querySelector('#moimApplication').classList.remove('btn-primary')
-                document.querySelector('#moimGoToBoard').classList.remove('btn-primary')
                 document.querySelector('#moimStatus').classList.remove('btn-secondary')
-                document.querySelector('#moim_closed_info').classList.remove('hide-info')
             }
 
-            document.querySelector('#moimApplication').classList.add('btn-secondary')
-            document.querySelector('#moimGoToBoard').classList.add('btn-secondary')
             document.querySelector('#moimStatus').classList.add('btn-success')
 
             if (document.querySelector('#closed_overlay').classList.contains('hide_overlay')) {
@@ -1064,13 +1174,33 @@ function showMoimDetail(event, id) {
             detailMap.relayout();
         }, 200);
     }).fail(function (e) {
-        alert(e.responseJSON['data'])
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(showMoimDetail(id), 150)
+            setTimeout(showUsername, 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 
     if (userId === groupLeaderId) {
         isLeader = true
+        if (document.querySelector("#moim_edit_button").classList.contains('hide_moim_button')) {
+            document.querySelector("#moim_edit_button").classList.remove('hide_moim_button')
+            document.querySelector("#moimStatus").classList.remove('hide_moim_button')
+            document.querySelector("#moim_delete_button").classList.remove('hide_moim_button')
+        }
+    } else {
+        if (!document.querySelector("#moim_edit_button").classList.contains('hide_moim_button')) {
+            document.querySelector("#moim_edit_button").classList.add('hide_moim_button')
+            document.querySelector("#moimStatus").classList.add('hide_moim_button')
+            document.querySelector("#moim_delete_button").classList.add('hide_moim_button')
+        }
     }
-    showReview(id, isLeader);
+
+    showReview(id, isLeader, localStorage.getItem("is_in_group"));
 }
 
 
@@ -1288,7 +1418,7 @@ function deleteWishMoim(id) {
                 alert(e.responseJSON['data'])
             } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
                 reissue()
-                setTimeout(wishMoim(id), 150)
+                setTimeout(deleteWishMoim(id), 150)
                 setTimeout(showUsername, 150)
             } else {
                 alert(e.responseJSON['data'])
@@ -1325,13 +1455,13 @@ function addReviewMoim(id) {
             alert('작성 완료')
         }
     }).done(function () {
-        showReview(id, false)
+        showReview(id, false, localStorage.getItem("is_in_group"))
     }).fail(function (e) {
         if (e.status === 400) {
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
-            setTimeout(addReviewMoim(id, false), 150)
+            setTimeout(addReviewMoim(id), 150)
             setTimeout(showUsername, 150)
         } else {
             alert(e.responseJSON['data'])
@@ -1366,7 +1496,7 @@ function editReview(id) {
         contentType: "application/json; charset=utf-8", //헤더의 Content-Type을 설정
         success: function (data) {
             alert('수정 완료')
-            showReview(current_moim_id, false)
+            showReview(current_moim_id, false, localStorage.getItem("is_in_group"))
         }
     }).fail(function (e) {
         if (e.status === 400) {
@@ -1632,6 +1762,12 @@ function toggleProfileEdit() {
 }
 
 
+function toggleProfileWithdraw() {
+    document.querySelector(".withdraw_profile").classList.toggle("hideEdit")
+    document.querySelector(".content_title").classList.toggle("hideEdit")
+}
+
+
 $.expr[":"].contains = $.expr.createPseudo(function (arg) {
     return function (elem) {
         return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
@@ -1711,4 +1847,36 @@ $(document).ready(function () {
 function fillEditMoim() {
     document.querySelector("#modifyMoim-title").value = document.querySelector("#moimDetail_Title").innerText
     document.querySelector("#modifyMoim-content").value = document.querySelector("#moimDetail_introduce").innerText
+}
+
+function withdrawUser(password) {
+    if (confirm('새모임을 탈퇴하시겠습니까?')) {
+        if (confirm('정말로 탈퇴하시겠습니까?')) {
+            doWithdraw(password)
+        }
+    }
+}
+
+function doWithdraw(password) {
+    var settings = {
+        "url": `${origin}/withdrawal`,
+        "method": "DELETE",
+        "timeout": 0,
+        "headers": {
+          "Authorization": localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
+          "Refresh_Token": localStorage.getItem(STORAGE_Refresh_TOKEN_KEY),
+          "Content-Type": "application/json"
+        },
+        "data": JSON.stringify({
+          "password": password
+        }),
+      };
+      
+      $.ajax(settings).done(function (response) {
+        alert('회원 탈퇴가 완료되었습니다.')
+        location.replace('./index.html')
+      }).fail(function (e) {
+        console.log(e);
+        alert(e.responseJSON['data'])
+    })
 }

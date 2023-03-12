@@ -1,5 +1,3 @@
-let origin = `https://api.saemoim.site`;
-
 let Authorization = localStorage.getItem("Authorization")
 let Refresh_Token = localStorage.getItem("Refresh_Token")
 
@@ -25,6 +23,15 @@ function getGroupInfo(groupId) {
         },
         success: function (response) {
             localStorage.setItem("group_info", JSON.stringify(response))
+        }
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(getGroupInfo(groupId), 150)
+        } else {
+            alert(e.responseJSON['data'])
         }
     });
 }
@@ -57,6 +64,15 @@ function getGroupProfileIdList() {
             })
             document.querySelector("#current_user").innerText = username
         }
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(getGroupProfileIdList(), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -86,6 +102,15 @@ function renderLeaderProfile() {
         </div>
       `
         $('#leader_zone').append(temp_html)
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(renderLeaderProfile(), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -117,6 +142,15 @@ function renderProfileList() {
         $.ajax(settings).done(function (response) {
             appendProfileButton(response["username"], response["imagePath"])
             const imagePath = response["imagePath"]
+        }).fail(function (e) {
+            if (e.status === 400) {
+                alert(e.responseJSON['data'])
+            } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+                reissue()
+                setTimeout(renderProfileList(), 150)
+            } else {
+                alert(e.responseJSON['data'])
+            }
         });
     })
 }
@@ -485,6 +519,15 @@ function getPosts(pageNum, sizeNum) {
             localStorage.setItem("pagedPostList", JSON.stringify(data["content"]));
             maxPage = data["totalPages"]
         }
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(getPosts(pageNum, sizeNum), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 
@@ -694,6 +737,15 @@ function renderComments(currentPostId) {
       </table>
       `
             $('#commentList').append(temp_html)
+        }
+    }).fail(function (e) {
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(renderComments(currentPostId), 150)
+        } else {
+            alert(e.responseJSON['data'])
         }
     });
 }
@@ -987,7 +1039,6 @@ function chat() {
         ))
     });
 
-
     function send() {
         var msg = document.getElementById("msg");
 
@@ -1002,7 +1053,6 @@ function chat() {
         ));
         msg.value = '';
     }
-
 
     $("#button-send").on("click", send);
     window.addEventListener('keydown', (e) => {
@@ -1085,7 +1135,15 @@ function renderChat() {
             $("#msgArea").append(str);
         })
     }).fail(function (e) {
-        alert('채팅기록 불러오기 실패')
+        alert('채팅 불러오기 실패')
+        if (e.status === 400) {
+            alert(e.responseJSON['data'])
+        } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
+            reissue()
+            setTimeout(renderChat(), 150)
+        } else {
+            alert(e.responseJSON['data'])
+        }
     });
 }
 

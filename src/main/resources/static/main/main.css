@@ -859,10 +859,14 @@ p {
 }
 
 .edit_profile {
-    width: 50%;
+    width: 700px;
+}
+.withdraw_profile {
+    width: 300px;
 }
 
-.edit_profile.hideEdit {
+.edit_profile.hideEdit,
+.withdraw_profile.hideEdit {
     display: none;
 }
 
@@ -910,5 +914,18 @@ p {
     z-index: 3;
 }
 .moim_closed_overlay.hide_overlay {
+    display: none;
+}
+.wish_empty {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+}
+.closed_button {
+    visibility: hidden;
+}
+.hide_moim_button {
     display: none;
 }
