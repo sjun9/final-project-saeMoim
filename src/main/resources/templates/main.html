@@ -49,7 +49,7 @@
         <div class="modal-content" id="moimDetailContentId">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="moimDetail_Title">모임 제목이 여기에 들어갑니다</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" id="close_moim_detail" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body moimDetailModalBody">
                 <img id="moimDetail_Image" src="" alt="">
@@ -61,7 +61,7 @@
                 <p class="moimDetailModal_introduce" id="moimDetail_introduce"></p>
                 <div id="detailAddress"></div>
                 <div id="detailMoimMap" style="width:100%; margin: 20px 0; height:400px;">
-                    <div class="moim_closed_overlay" id="closed_overlay">모임이 닫혔습니다.<br>하단의 '모임 열기'를 클릭해주세요.</div>
+                    <div class="moim_closed_overlay hide_overlay" id="closed_overlay">모임이 닫혔습니다.<br>모임장이 하단의 '모임 열기'를 눌러<br>다시 열 수 있습니다.</div>
                 </div>
                 <div class="moim_detail_buttons" style="margin-bottom: 10px;">
                     <button type="button" class="btn btn-warning"
@@ -70,24 +70,24 @@
                     <button type="button" class="btn btn-warning"
                             onclick="deleteWishMoim(document.getElementById('moimDetailId').value)">찜 해제
                     </button>
-                    <button type="button" class="btn" id="moimApplication"
+                    <button type="button" class="btn btn-primary" id="moimApplication"
                             onclick="attendMoim(document.getElementById('moimDetailId').value)">참여 신청
                     </button>
-                    <button type="button" class="btn" id="moimGoToBoard"
+                    <button type="button" class="btn btn-primary" id="moimGoToBoard"
                             onclick="gotoBoard(document.getElementById('moimDetailId').value)">게시판 입장
                     </button>
                 </div>
                 <div class="moim_detail_buttons">
-                    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal"
+                    <button id="moim_edit_button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modifyMoimModal"
                             onclick="relayoutMap(); fillEditMoim();">모임 수정
                     </button>
                     <button type="button" class="btn" id="moimStatus"
                             onclick="changeStatus(document.getElementById('moimDetailId').value)">
                     </button>
-                    <button type="button" class="btn btn-danger"
+                    <button id="moim_quit_button" type="button" class="btn btn-danger"
                             onclick="withdrawMoim(document.getElementById('moimDetailId').value)">모임 탈퇴
                     </button>
-                    <button type="button" class="btn btn-danger"
+                    <button id="moim_delete_button" type="button" class="btn btn-danger"
                             onclick="deleteMoim(document.getElementById('moimDetailId').value)">모임 삭제
                     </button>
                 </div>
@@ -279,7 +279,7 @@
                         onclick="goToHome()" alt="Account">
             </div>
             <div class="account-info-name" id="username"></div>
-            <img class="account-info-more" src="../static/images/logout.png" alt="" onclick="logout()" style="padding: 7px;">
+            <img class="account-info-more" id="logout_image" src="../static/images/logout.png" alt="" onclick="logout()" style="padding: 7px;">
         </div>
     </div>
 
@@ -392,6 +392,7 @@
                     <h3>소개글</h3>
                     <p id="profileContent" style="text-align: left;"></p>
                     <button type="button" class="btn btn-secondary" onclick="toggleProfileEdit()">프로필 수정</button>
+                    <button type="button" class="btn btn-danger" onclick="toggleProfileWithdraw()">회원 탈퇴</button>
                 </div>
                 <div class="edit_profile hideEdit" style="margin: 25px 0;">
                     <h3>프로필 수정</h3>
@@ -412,6 +413,21 @@
                         취소
                     </button>
                 </div>
+                <div class="withdraw_profile hideEdit">
+                    <h3>회원 탈퇴</h3>
+                    <div class="mb-3">
+                        <label for="inputWithdrawPassword" class="form-label">비밀번호 입력</label>
+                        <input type="password" class="form-control" id="inputWithdrawPassword">
+                    </div>
+                    <button type="submit" class="btn btn-danger"
+                            onclick="withdrawUser($('#inputWithdrawPassword').val())">
+                        회원 탈퇴
+                    </button>
+                    <button type="submit" class="btn btn-secondary"
+                            onclick="toggleProfileWithdraw();">
+                        취소
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -422,22 +438,6 @@
         <h3 style="font-size: 30px;">찜 목록</h3>
         <div class="app-content-section gridView" id="wish-content" style="align-self: flex-start;">
         </div>
-        <!-- <div style="overflow-y: scroll;">
-            <div class="app-content-section gridView" style="overflow: hidden;">
-                <div class="products-row" onclick="gotochat()">
-                    <div class="product-cell image" style="text-align: center;">
-                        <img src="../static/images/default_profile.jpg" alt="" style="max-width: 150px;">
-                        <div>ㅇㅇㅇ 님과의 대화방</div>
-                    </div>
-                </div>
-                <div class="products-row" onclick="gotochat()">
-                    <div class="product-cell image" style="text-align: center;">
-                        <img src="../static/images/default_profile.jpg" alt="" style="max-width: 150px;">
-                        <div>ㅇㅇㅇ 님과의 대화방</div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
     </div>
 </div>
 </body>
@@ -446,6 +446,6 @@
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
         crossorigin="anonymous"></script>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script src="../static/main/main.js"></script>
 <script src="../static/config/config.js"></script>
+<script src="../static/main/main.js"></script>
 </html>
