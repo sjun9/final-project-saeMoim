@@ -298,6 +298,16 @@ function newPost() {
     const currentGroupId = Number(localStorage.getItem("current_group_id"))
     // const imageUrl  = 이미지 경로 추가
     let file = $('#newPost-image')[0].files[0];
+    let fileSize = file.size
+
+    const maxSize = 1 * (1024 * 1024)
+
+    if (maxSize < fileSize) {
+        let message = maxSize / (1024 * 1024) + "MB 이하의 파일만 업로드 가능합니다."
+        alert(message)
+        return
+    }
+
     let formData = new FormData;
     formData.append("img", file)
 
