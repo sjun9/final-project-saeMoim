@@ -98,6 +98,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
 			.allowedMethods("GET", "POST", "DELETE", "PUT", "OPTIONS", "PATCH")
-			.exposedHeaders("Authorization", "Refresh_Token");
+			.exposedHeaders("Authorization", "RefreshToken");
 	}
 }
