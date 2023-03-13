@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtUtil {
 
 	public static final String AUTHORIZATION_HEADER = "Authorization";
-	public static final String REFRESH_TOKEN_HEADER = "Refresh_Token";
+	public static final String REFRESH_TOKEN_HEADER = "RefreshToken";
 	public static final String AUTHORIZATION_KEY = "auth";
 	public static final String AUTHORIZATION_NAME = "Name";
 	private static final String BEARER_PREFIX = "Bearer ";
