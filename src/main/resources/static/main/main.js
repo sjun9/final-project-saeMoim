@@ -1536,7 +1536,9 @@ function deleteReview(id) {
 
 
 function goToHome() {
-    location.replace('./')
+    if (confirm('로그인 페이지로 돌아가시겠습니까?')) {
+        location.replace('./')
+    }
 }
 
 
