@@ -106,17 +106,19 @@ public class PostServiceImpl implements PostService {
 		);
 
 		String imagePath;
-		if (multipartFile == null) {
-			Post post = new Post(group, requestDto.getTitle(), requestDto.getContent(), user);
-			postRepository.save(post);
-		}
+		Post post;
 
-		try {
-			imagePath = awsS3Uploader.upload(multipartFile, dirName);
-		} catch (IOException e) {
-			throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+		if (multipartFile == null) {
+			post = new Post(group, requestDto.getTitle(), requestDto.getContent(), user);
+		} else {
+			try {
+				imagePath = awsS3Uploader.upload(multipartFile, dirName);
+				post = new Post(group, requestDto.getTitle(), requestDto.getContent(), user, imagePath);
+			} catch (IOException e) {
+				throw new IllegalArgumentException(ErrorCode.FAIL_IMAGE_UPLOAD.getMessage());
+			}
 		}
-		postRepository.save(new Post(group, requestDto.getTitle(), requestDto.getContent(), user, imagePath));
+		postRepository.save(post);
 	}
 
 	@Transactional
