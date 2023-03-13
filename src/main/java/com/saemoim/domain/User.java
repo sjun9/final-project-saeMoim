@@ -47,7 +47,7 @@ public class User extends TimeStamped {
 	private Long kakaoId;
 
 	@Column(nullable = false)
-	private String imagePath = "../static/images/default_profile.jpg";
+	private String imagePath = "/resources/static/images/default_profile.jpg";
 
 	public User(String email, String password, String username, UserRoleEnum role) {
 		this.email = email;
