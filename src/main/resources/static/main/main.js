@@ -297,6 +297,7 @@ function showUsername() {
             let imagePath = data['imagePath']
             $('#username').append(`${username}`)
             document.getElementById('profile-image').src = imagePath
+            document.getElementById('small_profile_image').src = imagePath
             if (document.querySelector('#logout_image').classList.contains('hide_moim_button')) {
                 document.querySelector('#logout_image').classList.remove('hide_moim_button')
             }
