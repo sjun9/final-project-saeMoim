@@ -20,9 +20,8 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/stomp/chat") // 여기로 웹소켓 생성
 
-			.setAllowedOriginPatterns( // for intelliJ
-				"http://*",
-				"https://*"
+			.setAllowedOriginPatterns(
+				"*"
 				// "http://localhost:8080",
 				// "http://127.0.0.1:8080",
 				// "http://43.201.17.85:8080",
