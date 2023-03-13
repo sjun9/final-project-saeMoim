@@ -1,5 +1,5 @@
 let Authorization = localStorage.getItem("Authorization")
-let Refresh_Token = localStorage.getItem("Refresh_Token")
+let RefreshToken = localStorage.getItem("RefreshToken")
 
 let tempGroupId = localStorage.getItem("current_group_id")
 let tempUserId = localStorage.getItem("current_user_id")
@@ -1135,7 +1135,7 @@ function renderChat() {
         "timeout": 0,
         "headers": {
             "Authorization": Authorization,
-            "Refresh_Token": Refresh_Token
+            "RefreshToken": RefreshToken
         },
     };
 

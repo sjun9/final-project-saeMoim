@@ -33,6 +33,10 @@ jobs:
     # (1) 기본 체크아웃
     - name: Checkout
       uses: actions/checkout@v3
+    - name: Install AWS CLI
+      run: |
+        sudo apt-get update && sudo apt-get install -y python3-pip
+        pip3 install awscli --upgrade --user
 
     # (2) JDK 17 세팅
     - name: Set up JDK 17
@@ -83,4 +87,5 @@ jobs:
           --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
           --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-          --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
+          --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip \
+          --file-exists-behavior=OVERWRITE

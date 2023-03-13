@@ -1,14 +1,30 @@
 package com.saemoim.controller;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.doNothing;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -197,7 +213,7 @@ class UserControllerTest {
 		//then
 		resultActions.andExpect(status().isOk())
 			.andExpect(header().string("Authorization", "Bearer accessToken"))
-			.andExpect(header().string("Refresh_Token", "Bearer refreshToken"))
+			.andExpect(header().string("RefreshToken", "Bearer refreshToken"))
 			.andExpect(jsonPath("data").value("로그인이 완료 되었습니다."))
 			.andDo(document("user/login",
 				preprocessRequest(prettyPrint()),
@@ -208,7 +224,7 @@ class UserControllerTest {
 				),
 				responseHeaders(
 					headerWithName("Authorization").description("엑세스토큰"),
-					headerWithName("Refresh_Token").description("리프레시토큰")
+					headerWithName("RefreshToken").description("리프레시토큰")
 				),
 				responseFields(
 					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
@@ -238,7 +254,7 @@ class UserControllerTest {
 				preprocessResponse(prettyPrint()),
 				requestHeaders(
 					headerWithName("Authorization").description("엑세스토큰"),
-					headerWithName("Refresh_Token").description("리프레시토큰")
+					headerWithName("RefreshToken").description("리프레시토큰")
 				),
 				responseFields(
 					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)
@@ -272,7 +288,7 @@ class UserControllerTest {
 				preprocessResponse(prettyPrint()),
 				requestHeaders(
 					headerWithName("Authorization").description("엑세스토큰"),
-					headerWithName("Refresh_Token").description("리프레시토큰")
+					headerWithName("RefreshToken").description("리프레시토큰")
 				),
 				requestFields(
 					fieldWithPath("password").description("비밀번호").type(JsonFieldType.STRING)
@@ -502,11 +518,11 @@ class UserControllerTest {
 				preprocessResponse(prettyPrint()),
 				requestHeaders(
 					headerWithName("Authorization").description("엑세스토큰"),
-					headerWithName("Refresh_Token").description("리프레시토큰")
+					headerWithName("RefreshToken").description("리프레시토큰")
 				),
 				responseHeaders(
 					headerWithName("Authorization").description("엑세스토큰"),
-					headerWithName("Refresh_Token").description("리프레시토큰")
+					headerWithName("RefreshToken").description("리프레시토큰")
 				),
 				responseFields(
 					fieldWithPath("data").description("결과메세지").type(JsonFieldType.STRING)

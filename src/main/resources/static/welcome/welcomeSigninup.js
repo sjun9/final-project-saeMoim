@@ -84,7 +84,7 @@ function login() {
         // alert("로그인 성공");
 
         localStorage.setItem('Authorization', xhr.getResponseHeader('Authorization'))
-        localStorage.setItem('Refresh_Token', xhr.getResponseHeader('Refresh_Token'))
+        localStorage.setItem('RefreshToken', xhr.getResponseHeader('RefreshToken'))
 
         localStorage.setItem("is_logged_in", 'true')
         location.replace('./main.html')

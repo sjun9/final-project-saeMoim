@@ -214,9 +214,9 @@ function relayoutMap() {
 }
 
 const STORAGE_ACCESS_TOKEN_KEY = "Authorization";
-const STORAGE_Refresh_TOKEN_KEY = "Refresh_Token";
+const STORAGE_REFRESH_TOKEN_KEY = "RefreshToken";
 const ACCESS_TOKEN_KEY = "Authorization";
-const Refresh_TOKEN_KEY = "Refresh_Token";
+const REFRESH_TOKEN_KEY = "RefreshToken";
 
 function getCookieValue(cookieName) {
     const cookies = document.cookie.split(";");
@@ -231,16 +231,14 @@ function getCookieValue(cookieName) {
 
 function setLocalStorageToken() {
     let accessToken = getCookieValue(ACCESS_TOKEN_KEY);
-    let refreshToken = getCookieValue(Refresh_TOKEN_KEY);
+    let refreshToken = getCookieValue(REFRESH_TOKEN_KEY);
     // 쿠키 값을 가져왔다면 localStorage에 값을 저장합니다.
     if (accessToken) {
         localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, "Bearer " + accessToken);
-        localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, "Bearer " + refreshToken);
-        console.log("accessToken")
-        console.log(accessToken)
+        localStorage.setItem(STORAGE_REFRESH_TOKEN_KEY, "Bearer " + refreshToken);
     }
     document.cookie = STORAGE_ACCESS_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie = STORAGE_Refresh_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = STORAGE_REFRESH_TOKEN_KEY + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
 $(document).ready(function () {
@@ -267,15 +265,16 @@ function logout() {
         type: "POST",
         url: `${origin}/log-out`,
         headers: {
-            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
-            [Refresh_TOKEN_KEY]: localStorage.getItem(STORAGE_Refresh_TOKEN_KEY)
+            [REFRESH_TOKEN_KEY]: localStorage.getItem(STORAGE_REFRESH_TOKEN_KEY),
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY)
         }
     }).done(function (response, status, xhr) {
         localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader(STORAGE_ACCESS_TOKEN_KEY))
-        localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, xhr.getResponseHeader(STORAGE_Refresh_TOKEN_KEY))
+        localStorage.setItem(STORAGE_REFRESH_TOKEN_KEY, xhr.getResponseHeader(STORAGE_REFRESH_TOKEN_KEY))
         location.replace("./")
     }).fail(function (e) {
         if (e.status === 400) {
+            console.log(e)
             alert(e.responseJSON['data'])
         } else if (e.responseJSON.body['data'] === "UNAUTHORIZED_TOKEN") {
             reissue()
@@ -413,16 +412,16 @@ function reissue() {
         "timeout": 0,
         "headers": {
             [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
-            [Refresh_TOKEN_KEY]: localStorage.getItem(STORAGE_Refresh_TOKEN_KEY)
+            [REFRESH_TOKEN_KEY]: localStorage.getItem(STORAGE_REFRESH_TOKEN_KEY)
         },
     };
     $.ajax(settings).done(function (response, status, xhr) {
         localStorage.setItem(STORAGE_ACCESS_TOKEN_KEY, xhr.getResponseHeader(STORAGE_ACCESS_TOKEN_KEY))
-        localStorage.setItem(STORAGE_Refresh_TOKEN_KEY, xhr.getResponseHeader(STORAGE_Refresh_TOKEN_KEY))
+        localStorage.setItem(STORAGE_REFRESH_TOKEN_KEY, xhr.getResponseHeader(STORAGE_REFRESH_TOKEN_KEY))
     }).fail(function (e) {
         alert("다시 로그인 해주세요.")
         localStorage.removeItem(STORAGE_ACCESS_TOKEN_KEY)
-        localStorage.removeItem(STORAGE_Refresh_TOKEN_KEY)
+        localStorage.removeItem(STORAGE_REFRESH_TOKEN_KEY)
         window.location.replace('./');
     });
 }
@@ -1083,7 +1082,7 @@ function showMoimDetail(id) {
             alert(e.responseJSON['data'])
         }
     });
-    
+
     $.ajax({
         type: "get",
         url: `${origin}/participant/groups/${id}`,
@@ -1864,19 +1863,19 @@ function doWithdraw(password) {
         "method": "DELETE",
         "timeout": 0,
         "headers": {
-          "Authorization": localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
-          "Refresh_Token": localStorage.getItem(STORAGE_Refresh_TOKEN_KEY),
-          "Content-Type": "application/json"
+            [ACCESS_TOKEN_KEY]: localStorage.getItem(STORAGE_ACCESS_TOKEN_KEY),
+            [REFRESH_TOKEN_KEY]: localStorage.getItem(STORAGE_REFRESH_TOKEN_KEY),
+            "Content-Type": "application/json"
         },
         "data": JSON.stringify({
-          "password": password
+            "password": password
         }),
-      };
-      
-      $.ajax(settings).done(function (response) {
+    };
+
+    $.ajax(settings).done(function (response) {
         alert('회원 탈퇴가 완료되었습니다.')
         location.replace('./index.html')
-      }).fail(function (e) {
+    }).fail(function (e) {
         console.log(e);
         alert(e.responseJSON['data'])
     })
