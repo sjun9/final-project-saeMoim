@@ -56,6 +56,7 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional(readOnly = true)
 	public GroupResponseDto getGroup(Long groupId) {
 		Group group = _getGroupById(groupId);
+		group.addViews();
 		return new GroupResponseDto(group);
 	}
 
@@ -67,7 +68,10 @@ public class GroupServiceImpl implements GroupService {
 		PriorityQueue<GroupResponseDto> queue = new PriorityQueue<>();
 		for (Group group : groups) {
 			if (queue.size() > 3) {
-				if (queue.peek().getWishCount() < group.getWishCount()) {
+				GroupResponseDto peekGroup = queue.peek();
+				int minPopularScore = (peekGroup.getWishCount() * 10) + peekGroup.getViews();
+				int curPopularScore = (group.getWishCount() * 10) + group.getViews();
+				if (minPopularScore < curPopularScore) {
 					queue.poll();
 					queue.add(new GroupResponseDto(group));
 				}

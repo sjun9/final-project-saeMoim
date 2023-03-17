@@ -33,6 +33,7 @@ public class GroupResponseDto implements Comparable<GroupResponseDto> {
 	private int recruitNumber;
 	private int participantCount;
 	private String imagePath;
+	private int views;
 
 	public GroupResponseDto(Group group) {
 		this.id = group.getId();
@@ -52,6 +53,7 @@ public class GroupResponseDto implements Comparable<GroupResponseDto> {
 		this.recruitNumber = group.getRecruitNumber();
 		this.participantCount = group.getParticipantCount();
 		this.imagePath = group.getImagePath();
+		this.views = group.getViews();
 	}
 
 	@Override

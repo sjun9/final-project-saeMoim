@@ -87,6 +87,9 @@ public class Group extends TimeStamped {
 	@Column(nullable = false)
 	private String imagePath = "/resources/static/images/bird.png";
 
+	@Column(nullable = false)
+	private int views = 0;
+
 	public Group(GroupRequestDto request, Category category, User user, String imgPath) {
 		this.user = user;
 		this.category = category;
@@ -183,6 +186,10 @@ public class Group extends TimeStamped {
 
 	public void subtractWishCount() {
 		this.wishCount--;
+	}
+
+	public void addViews() {
+		this.views++;
 	}
 
 	public boolean isOpen() {
