@@ -58,9 +58,11 @@ public class GroupResponseDto implements Comparable<GroupResponseDto> {
 
 	@Override
 	public int compareTo(GroupResponseDto o) {
-		if (this.wishCount < o.getWishCount()) {
+		Integer x = (this.wishCount * 10) + this.views;
+		Integer y = (o.wishCount * 10) + o.views;
+		if (x < y) {
 			return -1;
-		} else if (this.wishCount.equals(o.getWishCount())) {
+		} else if (x.equals(y)) {
 			return 0;
 		} else {
 			return 1;
