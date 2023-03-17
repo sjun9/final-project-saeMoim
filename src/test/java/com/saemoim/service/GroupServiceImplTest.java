@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -19,39 +20,158 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
 import com.saemoim.domain.Participant;
+import com.saemoim.domain.Tag;
 import com.saemoim.domain.User;
 import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.domain.enums.UserRoleEnum;
 import com.saemoim.dto.request.GroupRequestDto;
+import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.repository.CategoryRepository;
 import com.saemoim.repository.GroupRepository;
 import com.saemoim.repository.ParticipantRepository;
+import com.saemoim.repository.TagRepository;
 import com.saemoim.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 class GroupServiceImplTest {
-
 	@Mock
 	private GroupRepository groupRepository;
-
 	@Mock
 	private UserRepository userRepository;
 	@Mock
 	private CategoryRepository categoryRepository;
 	@Mock
 	private ParticipantRepository participantRepository;
-
+	@Mock
+	private TagRepository tagRepository;
 	@Mock
 	private AWSS3Uploader awss3Uploader;
-
 	@InjectMocks
 	private GroupServiceImpl groupService;
+
+	@Test
+	@DisplayName("전체 모임 조회")
+	void getAllGroups() {
+		//given
+		PageRequest pageable = PageRequest.of(0, 5);
+		Slice<Group> groups = new SliceImpl<>(new ArrayList<>(), pageable, true);
+
+		when(groupRepository.findAllByOrderByCreatedAtDesc(pageable)).thenReturn(groups);
+		//when
+		Slice<GroupResponseDto> response = groupService.getAllGroups(pageable);
+		//then
+		verify(groupRepository).findAllByOrderByCreatedAtDesc(pageable);
+	}
+
+	@Test
+	@DisplayName("상세 모임 조회")
+	void getGroup() {
+		//given
+		Long groupId = 1L;
+		Group group = mock(Group.class);
+		when(group.getName()).thenReturn("농구하자");
+		when(groupRepository.findById(groupId)).thenReturn(Optional.of(group));
+		//when
+		GroupResponseDto response = groupService.getGroup(groupId);
+		//then
+		assertThat(response.getGroupName()).isEqualTo("농구하자");
+	}
+
+	@Test
+	@DisplayName("인기 모임 조회")
+	void getGroupByPopularity() {
+		//given
+		Group group1 = mock(Group.class);
+		Group group2 = mock(Group.class);
+		Group group3 = mock(Group.class);
+		List<Group> groups = new ArrayList<>();
+		groups.add(group1);
+		groups.add(group2);
+		groups.add(group3);
+		when(groupRepository.findAll()).thenReturn(groups);
+		when(group1.getWishCount()).thenReturn(1);
+		when(group2.getWishCount()).thenReturn(2);
+		when(group3.getWishCount()).thenReturn(3);
+		when(group1.getViews()).thenReturn(20);
+		when(group2.getViews()).thenReturn(25);
+		when(group3.getViews()).thenReturn(10);
+		when(group1.getName()).thenReturn("group1");
+		when(group2.getName()).thenReturn("group2");
+		when(group3.getName()).thenReturn("group3");
+		//when
+		List<GroupResponseDto> response = groupService.getGroupByPopularity();
+		//then
+		assertThat(response.get(0).getGroupName()).isEqualTo("group2");
+		assertThat(response.get(1).getGroupName()).isEqualTo("group3");
+		assertThat(response.get(2).getGroupName()).isEqualTo("group1");
+	}
+
+	@Test
+	@DisplayName("태그 모임 조회")
+	void searchGroupsByTag() {
+		//given
+		String tagName = "tag";
+		PageRequest pageable = PageRequest.of(0, 5);
+		Slice<Tag> tags = new SliceImpl<>(new ArrayList<>(), pageable, true);
+
+		when(tagRepository.findAllByNameContaining(tagName, pageable)).thenReturn(tags);
+		//when
+		Slice<GroupResponseDto> response = groupService.searchGroupsByTag(tagName, pageable);
+		//then
+		verify(tagRepository).findAllByNameContaining(tagName, pageable);
+	}
+
+	@Test
+	@DisplayName("검색 모임 조회")
+	void searchGroups() {
+		//given
+		String groupName = "group";
+		PageRequest pageable = PageRequest.of(0, 5);
+		Slice<Group> groups = new SliceImpl<>(new ArrayList<>(), pageable, true);
+
+		when(groupRepository.findAllByNameContainingOrderByCreatedAtDesc(groupName, pageable)).thenReturn(groups);
+		//when
+		Slice<GroupResponseDto> response = groupService.searchGroups(groupName, pageable);
+		//then
+		verify(groupRepository).findAllByNameContainingOrderByCreatedAtDesc(groupName, pageable);
+	}
+
+	@Test
+	@DisplayName("내가 생성한 모임 조회")
+	void getMyGroupsByLeader() {
+		//given
+		Long userId = 1L;
+		List<Group> groups = new ArrayList<>();
+
+		when(groupRepository.findAllByUser_IdOrderByCreatedAtDesc(userId)).thenReturn(groups);
+		//when
+		List<GroupResponseDto> response = groupService.getMyGroupsByLeader(userId);
+		//then
+		verify(groupRepository).findAllByUser_IdOrderByCreatedAtDesc(userId);
+	}
+
+	@Test
+	@DisplayName("내가 참여한 모임 조회")
+	void getMyGroupsByParticipant() {
+		//given
+		Long userId = 1L;
+		List<Participant> participants = new ArrayList<>();
+
+		when(participantRepository.findAllByUser_IdOrderByCreatedAtDesc(userId)).thenReturn(participants);
+		//when
+		List<GroupResponseDto> response = groupService.getMyGroupsByParticipant(userId);
+		//then
+		verify(participantRepository).findAllByUser_IdOrderByCreatedAtDesc(userId);
+	}
 
 	@Test
 	@DisplayName("모임생성")

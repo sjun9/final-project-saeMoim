@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -36,12 +38,21 @@ class CommentServiceImplTest {
 	private CommentServiceImpl commentService;
 
 	@Test
-	@DisplayName("댓글 작성")
-	public void createCommentTest() throws Exception {
-		// 목적 : createComment() 정상동작 확인
-		// 방법 : service.createComment() 실행한 결과값과 기대값 대조하여 확인
-		// 실행한 결과값은 ? CommentResponseDto (id ,comment ,userId ,username ,createdAt ,modifiedAt)
+	@DisplayName("댓글 조회")
+	public void getComments() {
+		//given
+		Long postId = 1L;
+		List<Comment> list = new ArrayList<>();
+		when(commentRepository.findAllByPostIdOrderByCreatedAtDesc(anyLong())).thenReturn(list);
+		//when
+		commentService.getComments(postId);
+		//then
+		verify(commentRepository).findAllByPostIdOrderByCreatedAtDesc(postId);
+	}
 
+	@Test
+	@DisplayName("댓글 작성")
+	public void createCommentTest() {
 		// given
 		CommentRequestDto requestDto = CommentRequestDto.builder()
 			.comment("댓글입니다.")
@@ -58,6 +69,39 @@ class CommentServiceImplTest {
 		commentService.createComment(1L, requestDto, user.getId());
 		// then
 		verify(commentRepository).save(any(Comment.class));
+	}
+
+	@Test
+	@DisplayName("댓글 수정")
+	public void updateComment() {
+		//given
+		Long commentId = 1L;
+		Long userId = 1L;
+		CommentRequestDto requestDto = mock(CommentRequestDto.class);
+		Comment comment = mock(Comment.class);
+
+		when(commentRepository.findById(anyLong())).thenReturn(Optional.of(comment));
+		when(comment.isWriter(anyLong())).thenReturn(true);
+		//when
+		commentService.updateComment(commentId, requestDto, userId);
+		//then
+		verify(commentRepository).save(comment);
+	}
+
+	@Test
+	@DisplayName("댓글 삭제")
+	public void deleteComment() {
+		//given
+		Long commentId = 1L;
+		Long userId = 1L;
+		Comment comment = mock(Comment.class);
+
+		when(commentRepository.findById(anyLong())).thenReturn(Optional.of(comment));
+		when(comment.isWriter(anyLong())).thenReturn(true);
+		//when
+		commentService.deleteComment(commentId, userId);
+		//then
+		verify(commentRepository).delete(comment);
 	}
 }
 

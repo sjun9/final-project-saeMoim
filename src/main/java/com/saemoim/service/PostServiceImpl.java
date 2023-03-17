@@ -153,8 +153,8 @@ public class PostServiceImpl implements PostService {
 			throw new IllegalArgumentException(ErrorCode.NOT_MATCH_USER.getMessage());
 		}
 
-		postRepository.delete(savedPost);
 		awsS3Uploader.delete(savedPost.getImagePath());
+		postRepository.delete(savedPost);
 	}
 
 	@Transactional
@@ -162,8 +162,8 @@ public class PostServiceImpl implements PostService {
 	public void deletePostByAdmin(Long postId) {
 		Post post = _getPostById(postId);
 
-		postRepository.delete(post);
 		awsS3Uploader.delete(post.getImagePath());
+		postRepository.delete(post);
 	}
 
 	private Post _getPostById(Long postId) {
