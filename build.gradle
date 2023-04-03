@@ -59,6 +59,8 @@ dependencies {
 
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
+    implementation 'org.hibernate.orm:hibernate-core:6.2.0.CR4'
 }
 
 ext {
