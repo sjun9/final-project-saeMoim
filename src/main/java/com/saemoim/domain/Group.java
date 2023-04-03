@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Group extends TimeStamped {
+public class Group extends TimeStamped implements Comparable<Group> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -46,7 +46,7 @@ public class Group extends TimeStamped {
 	@JoinColumn(name = "category_id")
 	private Category category;
 
-	@BatchSize(size = 500)
+	@BatchSize(size = 100)
 	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Tag> tags = new ArrayList<>();
 
@@ -198,5 +198,18 @@ public class Group extends TimeStamped {
 
 	public boolean isClose() {
 		return this.status.equals(GroupStatusEnum.CLOSE);
+	}
+
+	@Override
+	public int compareTo(Group o) {
+		Integer x = (this.wishCount * 10) + this.views;
+		Integer y = (o.wishCount * 10) + o.views;
+		if (x < y) {
+			return -1;
+		} else if (x.equals(y)) {
+			return 0;
+		} else {
+			return 1;
+		}
 	}
 }

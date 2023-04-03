@@ -65,21 +65,21 @@ public class GroupServiceImpl implements GroupService {
 	@Cacheable(value = "popularGroup")
 	public List<GroupResponseDto> getGroupByPopularity() {
 		List<Group> groups = groupRepository.findAll();
-		PriorityQueue<GroupResponseDto> queue = new PriorityQueue<>();
+		PriorityQueue<Group> queue = new PriorityQueue<>();
 		for (Group group : groups) {
 			if (queue.size() > 3) {
-				GroupResponseDto peekGroup = queue.peek();
+				Group peekGroup = queue.peek();
 				int minPopularScore = (peekGroup.getWishCount() * 10) + peekGroup.getViews();
 				int curPopularScore = (group.getWishCount() * 10) + group.getViews();
 				if (minPopularScore < curPopularScore) {
 					queue.poll();
-					queue.add(new GroupResponseDto(group));
+					queue.add(group);
 				}
 			} else {
-				queue.add(new GroupResponseDto(group));
+				queue.add(group);
 			}
 		}
-		List<GroupResponseDto> list = new ArrayList<>(queue);
+		List<GroupResponseDto> list = new ArrayList<>(queue.stream().map(GroupResponseDto::new).toList());
 		list.sort(Collections.reverseOrder());
 		return list;
 	}
