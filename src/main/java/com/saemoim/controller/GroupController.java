@@ -33,8 +33,8 @@ public class GroupController {
 
 	// 모든 모임 조회
 	@GetMapping("/group")
-	public ResponseEntity<GenericsResponseDto> getAllGroups(Pageable pageable) {
-		return ResponseEntity.ok().body(new GenericsResponseDto<>(groupService.getAllGroups(pageable)));
+	public ResponseEntity<GenericsResponseDto> getAllGroups(@RequestParam Long groupId, Pageable pageable) {
+		return ResponseEntity.ok().body(new GenericsResponseDto<>(groupService.getAllGroups(groupId, pageable)));
 	}
 
 	// 선택 모임 조회

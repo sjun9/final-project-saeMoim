@@ -47,8 +47,8 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Slice<GroupResponseDto> getAllGroups(Pageable pageable) {
-		Slice<Group> groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
+	public Slice<GroupResponseDto> getAllGroups(Long groupId, Pageable pageable) {
+		Slice<Group> groups = groupRepository.findAllByOrderByCreatedAtDesc(groupId, pageable);
 		return groups.map(GroupResponseDto::new);
 	}
 
@@ -90,7 +90,7 @@ public class GroupServiceImpl implements GroupService {
 		Pageable pageable) {
 		Slice<Group> groups = null;
 		if (categoryId == 0L && status.equals("all")) {
-			groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
+			//groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
 		} else if (categoryId == 0L) {
 			if (status.equals(GroupStatusEnum.OPEN.toString())) {
 				groups = groupRepository.findByStatus(GroupStatusEnum.OPEN, pageable);

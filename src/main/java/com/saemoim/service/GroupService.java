@@ -10,7 +10,7 @@ import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 
 public interface GroupService {
-	Slice<GroupResponseDto> getAllGroups(Pageable pageable);
+	Slice<GroupResponseDto> getAllGroups(Long cursorId, Pageable pageable);
 
 	GroupResponseDto getGroup(Long groupId);
 

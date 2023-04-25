@@ -12,11 +12,11 @@ import com.saemoim.domain.Category;
 import com.saemoim.domain.Group;
 import com.saemoim.domain.enums.GroupStatusEnum;
 
-public interface GroupRepository extends JpaRepository<Group, Long> {
+public interface GroupRepository extends JpaRepository<Group, Long>, GroupRepositoryCustom {
 	boolean existsByName(String name);
 
-	@Query("select distinct g from sae_group g join fetch g.user join fetch g.category order by g.createdAt desc ")
-	Slice<Group> findAllByOrderByCreatedAtDesc(Pageable pageable);
+	// @Query("select distinct g from sae_group g join fetch g.user join fetch g.category order by g.createdAt desc, g.id desc")
+	// Slice<Group> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
 	List<Group> findAllByUser_IdOrderByCreatedAtDesc(Long userId);
 

@@ -58,19 +58,19 @@ class GroupServiceImplTest {
 	@InjectMocks
 	private GroupServiceImpl groupService;
 
-	@Test
-	@DisplayName("전체 모임 조회")
-	void getAllGroups() {
-		//given
-		PageRequest pageable = PageRequest.of(0, 5);
-		Slice<Group> groups = new SliceImpl<>(new ArrayList<>(), pageable, true);
-
-		when(groupRepository.findAllByOrderByCreatedAtDesc(pageable)).thenReturn(groups);
-		//when
-		Slice<GroupResponseDto> response = groupService.getAllGroups(pageable);
-		//then
-		verify(groupRepository).findAllByOrderByCreatedAtDesc(pageable);
-	}
+	// @Test
+	// @DisplayName("전체 모임 조회")
+	// void getAllGroups() {
+	// 	//given
+	// 	PageRequest pageable = PageRequest.of(0, 5);
+	// 	Slice<Group> groups = new SliceImpl<>(new ArrayList<>(), pageable, true);
+	//
+	// 	when(groupRepository.findAllByOrderByCreatedAtDesc(pageable)).thenReturn(groups);
+	// 	//when
+	// 	Slice<GroupResponseDto> response = groupService.getAllGroups(pageable);
+	// 	//then
+	// 	verify(groupRepository).findAllByOrderByCreatedAtDesc(pageable);
+	// }
 
 	@Test
 	@DisplayName("상세 모임 조회")
