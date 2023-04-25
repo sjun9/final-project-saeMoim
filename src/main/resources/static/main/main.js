@@ -244,7 +244,7 @@ function setLocalStorageToken() {
 $(document).ready(function () {
     setLocalStorageToken()
     showUsername()
-    showAllMoim(0)
+    showAllMoim()
     showPopularMoim()
     showCategory()
 });
@@ -426,9 +426,9 @@ function reissue() {
     });
 }
 
-function showAllMoim(groupId) {
+function showAllMoim() {
     let contentId = '#find-content';
-    let url = `${origin}/group?groupId=${groupId}`;
+    let url = `${origin}/group`;
     $(contentId).empty()
     $.ajax({
         type: "GET",

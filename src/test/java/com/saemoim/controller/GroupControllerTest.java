@@ -92,66 +92,66 @@ class GroupControllerTest {
 			.apply(documentationConfiguration(restDocumentation)).build();
 	}
 
-	// @Test
-	// @DisplayName("전체 모임조회")
-	// void getAllGroups() throws Exception {
-	// 	// given
-	// 	var response = GroupResponseDto.builder()
-	// 		.id(1L)
-	// 		.tags(new ArrayList<>())
-	// 		.categoryName("category")
-	// 		.groupName("moim")
-	// 		.userId(1L)
-	// 		.username("leader")
-	// 		.content("모임소개글")
-	// 		.address("서울시 종로구 혜화동")
-	// 		.firstRegion("서울시")
-	// 		.secondRegion("종로구")
-	// 		.latitude("위도")
-	// 		.longitude("경도")
-	// 		.status(GroupStatusEnum.OPEN)
-	// 		.wishCount(2)
-	// 		.recruitNumber(3)
-	// 		.participantCount(1)
-	// 		.imagePath("image path")
-	// 		.build();
-	// 	List<GroupResponseDto> list = new ArrayList<>();
-	// 	list.add(response);
-	// 	Slice<GroupResponseDto> sliceDto = new SliceImpl<>(list);
-	//
-	// 	when(groupService.getAllGroups(any(Pageable.class))).thenReturn(sliceDto);
-	// 	// when
-	// 	ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.get("/group"));
-	// 	// then
-	// 	resultActions.andExpect(status().isOk())
-	// 		.andDo(document("group/getAll",
-	// 			preprocessRequest(prettyPrint()),
-	// 			preprocessResponse(prettyPrint()),
-	// 			responseFields(
-	// 				subsectionWithPath("data").description("결과값"),
-	// 				subsectionWithPath("data.content").description("모임목록"),
-	// 				fieldWithPath("data.content.[].id").description("모임 id").type(JsonFieldType.NUMBER),
-	// 				subsectionWithPath("data.content.[].tags").description("모임태그목록"),
-	// 				fieldWithPath("data.content.[].categoryName").description("카테고리 이름").type(JsonFieldType.STRING),
-	// 				fieldWithPath("data.content.[].groupName").description("모임 이름").type(JsonFieldType.STRING),
-	// 				fieldWithPath("data.content.[].userId").description("모임 리더 id").type(JsonFieldType.NUMBER),
-	// 				fieldWithPath("data.content.[].username").description("모임 리더 닉네임").type(JsonFieldType.STRING),
-	// 				fieldWithPath("data.content.[].content").description("모임 소개글").type(JsonFieldType.STRING),
-	// 				fieldWithPath("data.content.[].address").description("모임 장소").type(JsonFieldType.STRING),
-	// 				fieldWithPath("data.content.[].firstRegion").description("장소 세부; 시/도").type(JsonFieldType.STRING),
-	// 				fieldWithPath("data.content.[].secondRegion").description("장소 세부; 시/군/구")
-	// 					.type(JsonFieldType.STRING),
-	// 				fieldWithPath("data.content.[].latitude").description("장소 세부; 위도").type(JsonFieldType.STRING),
-	// 				fieldWithPath("data.content.[].longitude").description("장소 세부; 경도").type(JsonFieldType.STRING),
-	// 				fieldWithPath("data.content.[].status").description("장소 상태(OPEN, CLOSE)")
-	// 					.type(JsonFieldType.STRING),
-	// 				fieldWithPath("data.content.[].wishCount").description("찜당한 횟수").type(JsonFieldType.NUMBER),
-	// 				fieldWithPath("data.content.[].recruitNumber").description("모집인원").type(JsonFieldType.NUMBER),
-	// 				fieldWithPath("data.content.[].participantCount").description("참여인원").type(JsonFieldType.NUMBER),
-	// 				fieldWithPath("data.content.[].imagePath").description("이미지 파일 저장 경로").type(JsonFieldType.STRING)
-	// 			)
-	// 		));
-	// }
+	@Test
+	@DisplayName("전체 모임조회")
+	void getAllGroups() throws Exception {
+		// given
+		var response = GroupResponseDto.builder()
+			.id(1L)
+			.tags(new ArrayList<>())
+			.categoryName("category")
+			.groupName("moim")
+			.userId(1L)
+			.username("leader")
+			.content("모임소개글")
+			.address("서울시 종로구 혜화동")
+			.firstRegion("서울시")
+			.secondRegion("종로구")
+			.latitude("위도")
+			.longitude("경도")
+			.status(GroupStatusEnum.OPEN)
+			.wishCount(2)
+			.recruitNumber(3)
+			.participantCount(1)
+			.imagePath("image path")
+			.build();
+		List<GroupResponseDto> list = new ArrayList<>();
+		list.add(response);
+		Slice<GroupResponseDto> sliceDto = new SliceImpl<>(list);
+		
+		when(groupService.getAllGroups(any(), any(Pageable.class))).thenReturn(sliceDto);
+		// when
+		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.get("/group"));
+		// then
+		resultActions.andExpect(status().isOk())
+			.andDo(document("group/getAll",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				responseFields(
+					subsectionWithPath("data").description("결과값"),
+					subsectionWithPath("data.content").description("모임목록"),
+					fieldWithPath("data.content.[].id").description("모임 id").type(JsonFieldType.NUMBER),
+					subsectionWithPath("data.content.[].tags").description("모임태그목록"),
+					fieldWithPath("data.content.[].categoryName").description("카테고리 이름").type(JsonFieldType.STRING),
+					fieldWithPath("data.content.[].groupName").description("모임 이름").type(JsonFieldType.STRING),
+					fieldWithPath("data.content.[].userId").description("모임 리더 id").type(JsonFieldType.NUMBER),
+					fieldWithPath("data.content.[].username").description("모임 리더 닉네임").type(JsonFieldType.STRING),
+					fieldWithPath("data.content.[].content").description("모임 소개글").type(JsonFieldType.STRING),
+					fieldWithPath("data.content.[].address").description("모임 장소").type(JsonFieldType.STRING),
+					fieldWithPath("data.content.[].firstRegion").description("장소 세부; 시/도").type(JsonFieldType.STRING),
+					fieldWithPath("data.content.[].secondRegion").description("장소 세부; 시/군/구")
+						.type(JsonFieldType.STRING),
+					fieldWithPath("data.content.[].latitude").description("장소 세부; 위도").type(JsonFieldType.STRING),
+					fieldWithPath("data.content.[].longitude").description("장소 세부; 경도").type(JsonFieldType.STRING),
+					fieldWithPath("data.content.[].status").description("장소 상태(OPEN, CLOSE)")
+						.type(JsonFieldType.STRING),
+					fieldWithPath("data.content.[].wishCount").description("찜당한 횟수").type(JsonFieldType.NUMBER),
+					fieldWithPath("data.content.[].recruitNumber").description("모집인원").type(JsonFieldType.NUMBER),
+					fieldWithPath("data.content.[].participantCount").description("참여인원").type(JsonFieldType.NUMBER),
+					fieldWithPath("data.content.[].imagePath").description("이미지 파일 저장 경로").type(JsonFieldType.STRING)
+				)
+			));
+	}
 
 	@Test
 	@DisplayName("특정 모임 조회")

@@ -68,7 +68,7 @@ public class GroupRepositoryCustomImpl implements GroupRepositoryCustom {
 	}
 
 	private BooleanExpression ltGroupId(Long groupId) {
-		if (groupId.equals(0L)) {
+		if (groupId == null) {
 			return null;
 		}
 		return QGroup.group.id.lt(groupId);
