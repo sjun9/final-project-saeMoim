@@ -18,7 +18,6 @@ import com.saemoim.domain.Group;
 import com.saemoim.domain.Participant;
 import com.saemoim.domain.Tag;
 import com.saemoim.domain.User;
-import com.saemoim.domain.enums.GroupStatusEnum;
 import com.saemoim.dto.request.GroupRequestDto;
 import com.saemoim.dto.response.GroupResponseDto;
 import com.saemoim.exception.ErrorCode;
@@ -88,30 +87,8 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional(readOnly = true)
 	public Slice<GroupResponseDto> getGroupsByCategoryAndStatus(Long categoryId, String status,
 		Pageable pageable) {
-		Slice<Group> groups = null;
-		if (categoryId == 0L && status.equals("all")) {
-			//groups = groupRepository.findAllByOrderByCreatedAtDesc(pageable);
-		} else if (categoryId == 0L) {
-			if (status.equals(GroupStatusEnum.OPEN.toString())) {
-				groups = groupRepository.findByStatus(GroupStatusEnum.OPEN, pageable);
-			} else if (status.equals(GroupStatusEnum.CLOSE.toString())) {
-				groups = groupRepository.findByStatus(GroupStatusEnum.CLOSE, pageable);
-			}
-		} else {
-			Category category = categoryRepository.findById(categoryId).orElseThrow(
-				() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_CATEGORY.getMessage())
-			);
-			if (category.getParentId() == null) {
-				throw new IllegalArgumentException(ErrorCode.NOT_CHILD_CATEGORY.getMessage());
-			}
-			if (status.equals(GroupStatusEnum.OPEN.toString())) {
-				groups = groupRepository.findByCategoryAndStatusIsOpen(category, pageable);
-			} else if (status.equals(GroupStatusEnum.CLOSE.toString())) {
-				groups = groupRepository.findByCategoryAndStatusIsClose(category, pageable);
-			} else {
-				groups = groupRepository.findByCategory(category, pageable);
-			}
-		}
+		Slice<Group> groups = groupRepository.findByCategoryAndStatusByOrderByCreateAtDesc(categoryId, status,
+			pageable);
 
 		return groups.map(GroupResponseDto::new);
 	}

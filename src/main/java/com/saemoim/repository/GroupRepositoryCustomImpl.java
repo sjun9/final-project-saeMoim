@@ -13,6 +13,7 @@ import com.saemoim.domain.Group;
 import com.saemoim.domain.QCategory;
 import com.saemoim.domain.QGroup;
 import com.saemoim.domain.QUser;
+import com.saemoim.domain.enums.GroupStatusEnum;
 
 import lombok.RequiredArgsConstructor;
 
@@ -43,10 +44,47 @@ public class GroupRepositoryCustomImpl implements GroupRepositoryCustom {
 		return new SliceImpl<>(content, pageable, hasNext);
 	}
 
+	@Override
+	public Slice<Group> findByCategoryAndStatusByOrderByCreateAtDesc(Long categoryId, String status,
+		Pageable pageable) {
+		List<Group> content = jpaQueryFactory.selectFrom(QGroup.group)
+			.join(QGroup.group.user, QUser.user)
+			.fetchJoin()
+			.join(QGroup.group.category, QCategory.category)
+			.fetchJoin()
+			.distinct()
+			.where(eqCategoryId(categoryId), eqStatus(status))
+			.orderBy(QGroup.group.createdAt.desc(), QGroup.group.id.desc())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		boolean hasNext = false;
+		if (content.size() > pageable.getPageSize()) {
+			content.remove(pageable.getPageSize());
+			hasNext = true;
+		}
+
+		return new SliceImpl<>(content, pageable, hasNext);
+	}
+
 	private BooleanExpression ltGroupId(Long groupId) {
 		if (groupId.equals(0L)) {
 			return null;
 		}
 		return QGroup.group.id.lt(groupId);
+	}
+
+	private BooleanExpression eqCategoryId(Long categoryId) {
+		if (categoryId.equals(0L)) {
+			return null;
+		}
+		return QGroup.group.category.id.eq(categoryId);
+	}
+
+	private BooleanExpression eqStatus(String status) {
+		if (status.equals("")) {
+			return null;
+		}
+		return QGroup.group.status.eq(GroupStatusEnum.valueOf(status));
 	}
 }
