@@ -23,7 +23,7 @@ public class GroupRepositoryCustomImpl implements GroupRepositoryCustom {
 	private final JPAQueryFactory jpaQueryFactory;
 
 	@Override
-	public Slice<Group> findAllByOrderByCreatedAtDesc(Long groupId, Pageable pageable) {
+	public Slice<Group> findAllByOrderByGroupIdDesc(Long groupId, Pageable pageable) {
 		List<Group> content = jpaQueryFactory.selectFrom(QGroup.group)
 			.join(QGroup.group.user, QUser.user)
 			.fetchJoin()
@@ -31,7 +31,7 @@ public class GroupRepositoryCustomImpl implements GroupRepositoryCustom {
 			.fetchJoin()
 			.distinct()
 			.where(ltGroupId(groupId))
-			.orderBy(QGroup.group.createdAt.desc(), QGroup.group.id.desc())
+			.orderBy(QGroup.group.id.desc())
 			.limit(pageable.getPageSize())
 			.fetch();
 

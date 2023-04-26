@@ -13,8 +13,8 @@ import com.saemoim.domain.Group;
 public interface GroupRepository extends JpaRepository<Group, Long>, GroupRepositoryCustom {
 	boolean existsByName(String name);
 
-	// @Query("select distinct g from sae_group g join fetch g.user join fetch g.category order by g.createdAt desc, g.id desc")
-	// Slice<Group> findAllByOrderByCreatedAtDesc(Pageable pageable);
+	// @Query("select distinct g from sae_group g join fetch g.user join fetch g.category order by g.id desc")
+	// Slice<Group> findAllByOrderByGroupIdDesc(Pageable pageable);
 
 	List<Group> findAllByUser_IdOrderByCreatedAtDesc(Long userId);
 

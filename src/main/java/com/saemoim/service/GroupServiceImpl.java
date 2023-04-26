@@ -47,7 +47,7 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	@Transactional(readOnly = true)
 	public Slice<GroupResponseDto> getAllGroups(Long groupId, Pageable pageable) {
-		Slice<Group> groups = groupRepository.findAllByOrderByCreatedAtDesc(groupId, pageable);
+		Slice<Group> groups = groupRepository.findAllByOrderByGroupIdDesc(groupId, pageable);
 		return groups.map(GroupResponseDto::new);
 	}
 

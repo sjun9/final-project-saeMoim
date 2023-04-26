@@ -66,11 +66,11 @@ class GroupServiceImplTest {
 		PageRequest pageable = PageRequest.of(0, 5);
 		Slice<Group> groups = new SliceImpl<>(new ArrayList<>(), pageable, true);
 
-		when(groupRepository.findAllByOrderByCreatedAtDesc(groupId, pageable)).thenReturn(groups);
+		when(groupRepository.findAllByOrderByGroupIdDesc(groupId, pageable)).thenReturn(groups);
 		//when
 		Slice<GroupResponseDto> response = groupService.getAllGroups(groupId, pageable);
 		//then
-		verify(groupRepository).findAllByOrderByCreatedAtDesc(groupId, pageable);
+		verify(groupRepository).findAllByOrderByGroupIdDesc(groupId, pageable);
 	}
 
 	@Test
