@@ -35,6 +35,15 @@ public enum ErrorCode {
 	DUPLICATED_REPORT("이미 신고한 사용자 입니다."),
 	NOT_FOUND_REPORT("신고 내용이 존재하지 않습니다."),
 
+	// 이벤트
+	DUPLICATED_EVENT("이미 존재하는 이벤트 입니다."),
+	NOT_FOUND_EVENT("해당 이벤트가 존재하지 않습니다."),
+	DUPLICATED_EVENT_USER("이미 신청한 이벤트 입니다."),
+	FINISHED_EVENT("이벤트가 종료 되었습니다."),
+
+	// 선물
+	NOT_FOUND_GIFT("해당 당첨 내역이 존재하지 않습니다."),
+
 	// 후기
 	DUPLICATED_REVIEW("이미 후기를 등록하였습니다."),
 
