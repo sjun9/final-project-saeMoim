@@ -4,10 +4,6 @@ import java.time.LocalDateTime;
 
 import com.saemoim.domain.Event;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class EventResponseDto {
 	private Long id;
+	private String adminName;
 	private String name;
 	private String content;
 	private LocalDateTime startTime;
@@ -28,6 +25,7 @@ public class EventResponseDto {
 
 	public EventResponseDto(Event event) {
 		this.id = event.getId();
+		this.adminName = event.getAdminName();
 		this.name = event.getName();
 		this.content = event.getContent();
 		this.startTime = event.getStartTime();

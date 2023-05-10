@@ -6,9 +6,13 @@ import com.saemoim.dto.request.EventRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +20,16 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Event extends TimeStamped {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "admin_id")
+	private Admin admin;
 
 	@Column(nullable = false, unique = true)
 	private String name;
@@ -39,16 +49,6 @@ public class Event extends TimeStamped {
 	@Column(nullable = false)
 	private boolean finished;
 
-	@Builder
-	public Event(String name, String content, LocalDateTime startTime, LocalDateTime endTime, int quantity, boolean finished) {
-		this.name = name;
-		this.content = content;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.quantity = quantity;
-		this.finished = finished;
-	}
-
 	public void updateEvent(EventRequestDto requestDto) {
 		this.name = requestDto.getName();
 		this.content = requestDto.getContent();
@@ -56,6 +56,10 @@ public class Event extends TimeStamped {
 		this.endTime = requestDto.getEndTime();
 		this.quantity = requestDto.getQuantity();
 		this.finished = requestDto.isFinished();
+	}
+
+	public String getAdminName() {
+		return this.admin.getUsername();
 	}
 
 	public void decreaseQuantity() {

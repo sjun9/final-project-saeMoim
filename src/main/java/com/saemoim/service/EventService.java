@@ -8,7 +8,7 @@ import com.saemoim.dto.response.EventResponseDto;
 public interface EventService {
 	List<EventResponseDto> getEvents();
 
-	void createEvent(EventRequestDto requestDto);
+	void createEvent(EventRequestDto requestDto, Long adminId);
 
 	void updateEvent(Long eventId, EventRequestDto requestDto);
 

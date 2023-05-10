@@ -5,18 +5,21 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.saemoim.domain.Admin;
 import com.saemoim.domain.Event;
 import com.saemoim.dto.request.EventRequestDto;
 import com.saemoim.dto.response.EventResponseDto;
 import com.saemoim.exception.ErrorCode;
+import com.saemoim.repository.AdminRepository;
 import com.saemoim.repository.EventRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class EventServiceImpl implements EventService{
+public class EventServiceImpl implements EventService {
 	private final EventRepository eventRepository;
+	private final AdminRepository adminRepository;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -27,15 +30,21 @@ public class EventServiceImpl implements EventService{
 
 	@Override
 	@Transactional
-	public void createEvent(EventRequestDto requestDto) {
+	public void createEvent(EventRequestDto requestDto, Long adminId) {
+		Admin admin = adminRepository.findById(adminId).orElseThrow(
+			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_ADMIN.getMessage())
+		);
+
 		if (eventRepository.existsByName(requestDto.getName())) {
 			throw new IllegalArgumentException(ErrorCode.DUPLICATED_EVENT.getMessage());
 		}
 
 		Event event = Event.builder()
+			.admin(admin)
 			.name(requestDto.getName())
 			.content(requestDto.getContent())
 			.startTime(requestDto.getStartTime())
+			.endTime(requestDto.getEndTime())
 			.quantity(requestDto.getQuantity())
 			.finished(requestDto.isFinished())
 			.build();
