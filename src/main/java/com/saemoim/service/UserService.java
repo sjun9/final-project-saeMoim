@@ -31,8 +31,6 @@ public interface UserService {
 
 	ProfileResponseDto getProfile(Long userId);
 
-	ProfileResponseDto getMyProfile(Long id);
-
 	ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto, MultipartFile multipartFile);
 
 	TokenResponseDto reissueToken(String accessToken, String refreshToken);

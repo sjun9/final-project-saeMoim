@@ -145,12 +145,6 @@ public class UserServiceImpl implements UserService {
 		return new ProfileResponseDto(user);
 	}
 
-	@Transactional(readOnly = true)
-	@Override
-	public ProfileResponseDto getMyProfile(Long userId) {
-		return new ProfileResponseDto(_getUserById(userId));
-	}
-
 	@Transactional
 	@Override
 	public ProfileResponseDto updateProfile(Long userId, ProfileRequestDto requestDto, MultipartFile multipartFile) {

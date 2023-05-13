@@ -27,7 +27,6 @@ import com.saemoim.dto.request.WithdrawRequestDto;
 import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.dto.response.ProfileResponseDto;
 import com.saemoim.dto.response.TokenResponseDto;
-import com.saemoim.fileUpload.AWSS3Uploader;
 import com.saemoim.jwt.JwtUtil;
 import com.saemoim.security.UserDetailsImpl;
 import com.saemoim.service.UserService;
@@ -114,7 +113,7 @@ public class UserController {
 	// 내 정보 조회 - 마이페이지
 	@GetMapping("/profile")
 	public ResponseEntity<ProfileResponseDto> getMyProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		return ResponseEntity.ok().body(userService.getMyProfile(userDetails.getId()));
+		return ResponseEntity.ok().body(userService.getProfile(userDetails.getId()));
 	}
 
 	@GetMapping("/user")
