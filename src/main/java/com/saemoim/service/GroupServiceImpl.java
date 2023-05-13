@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -52,7 +52,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public GroupResponseDto getGroup(Long groupId) {
 		Group group = _getGroupById(groupId);
 		group.addViews();
@@ -61,9 +61,9 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional(readOnly = true)
-	@Cacheable(value = "popularGroup")
 	public List<GroupResponseDto> getGroupByPopularity() {
-		List<Group> groups = groupRepository.findAll();
+		Pageable pageable = PageRequest.of(0, 30);
+		List<Group> groups = groupRepository.findAllByOrderByWishCountDesc(pageable);
 		PriorityQueue<Group> queue = new PriorityQueue<>();
 		for (Group group : groups) {
 			if (queue.size() > 3) {
@@ -210,8 +210,8 @@ public class GroupServiceImpl implements GroupService {
 		group.updateStatusToOpen();
 	}
 
-	@Transactional
 	@Override
+	@Transactional
 	public void closeGroup(Long groupId, Long userId) {
 		Group group = _getGroupById(groupId);
 		if (group.isClose()) {

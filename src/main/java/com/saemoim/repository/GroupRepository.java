@@ -21,8 +21,8 @@ public interface GroupRepository extends JpaRepository<Group, Long>, GroupReposi
 	@Query("select distinct g from sae_group g join fetch g.user join fetch g.category where g.name like %:name% order by g.createdAt desc ")
 	Slice<Group> findAllByNameContainingOrderByCreatedAtDesc(@Param("name") String groupName, Pageable pageable);
 
-	@Query(value = "select distinct g from sae_group g join fetch g.user join fetch g.category")
-	List<Group> findAll();
+	@Query(value = "select distinct g from sae_group g join fetch g.user join fetch g.category order by g.wishCount desc ")
+	List<Group> findAllByOrderByWishCountDesc(Pageable pageable);
 
 	@Query(value = "select distinct g from sae_group g where g.user.id = :userId")
 	List<Group> findByUser_userId(@Param("userId") Long userId);
