@@ -1,12 +1,10 @@
 package com.saemoim.service;
 
-import java.util.List;
-
 import com.saemoim.dto.request.CategoryRequestDto;
-import com.saemoim.dto.response.CategoryResponseDto;
+import com.saemoim.dto.response.GenericsResponseDto;
 
 public interface CategoryService {
-	List<CategoryResponseDto> getCategories();
+	GenericsResponseDto getCategories();
 
 	void createParentCategory(CategoryRequestDto requestDto);
 

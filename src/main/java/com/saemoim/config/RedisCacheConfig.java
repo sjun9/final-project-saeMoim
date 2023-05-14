@@ -50,7 +50,7 @@ public class RedisCacheConfig {
 
 	private Map<String, RedisCacheConfiguration> confMap() {
 		Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
-		cacheConfigurations.put("popularGroup", defaultConfig().entryTtl(Duration.ofSeconds(30L)));
+		cacheConfigurations.put("category", defaultConfig().entryTtl(Duration.ofMinutes(20L)));
 		return cacheConfigurations;
 	}
 }

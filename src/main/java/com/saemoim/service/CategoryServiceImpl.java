@@ -2,12 +2,14 @@ package com.saemoim.service;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.saemoim.domain.Category;
 import com.saemoim.dto.request.CategoryRequestDto;
-import com.saemoim.dto.response.CategoryResponseDto;
+import com.saemoim.dto.response.GenericsResponseDto;
 import com.saemoim.exception.ErrorCode;
 import com.saemoim.repository.CategoryRepository;
 
@@ -20,17 +22,19 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<CategoryResponseDto> getCategories() {
+	@Cacheable(value = "category")
+	public GenericsResponseDto getCategories() {
 		List<Category> categories = categoryRepository.findAll();
 		List<Category> childCategories = categories.stream().filter(c -> c.getParentId() != null).toList();
-		return categories.stream()
+		return new GenericsResponseDto(categories.stream()
 			.filter(c -> c.getParentId() == null)
 			.map(c -> c.toCategoryResponseDto(childCategories))
-			.toList();
+			.toList());
 	}
 
 	@Transactional
 	@Override
+	@CacheEvict(value = "category", allEntries = true)
 	public void createParentCategory(CategoryRequestDto requestDto) {
 		_isExistsCategory(requestDto);
 
@@ -43,6 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Transactional
 	@Override
+	@CacheEvict(value = "category", allEntries = true)
 	public void createChildCategory(Long parentId, CategoryRequestDto requestDto) {
 		_isExistsCategory(requestDto);
 
@@ -61,6 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Transactional
 	@Override
+	@CacheEvict(value = "category", allEntries = true)
 	public void updateCategory(Long categoryId, CategoryRequestDto requestDto) {
 		_isExistsCategory(requestDto);
 
@@ -72,6 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Transactional
 	@Override
+	@CacheEvict(value = "category", allEntries = true)
 	public void deleteCategory(Long categoryId) {
 		if (categoryRepository.existsByParentId(categoryId)) {
 			throw new IllegalArgumentException(ErrorCode.NOT_EMPTY_CATEGORY.getMessage());

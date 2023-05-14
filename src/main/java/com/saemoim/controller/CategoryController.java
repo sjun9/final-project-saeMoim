@@ -26,7 +26,7 @@ public class CategoryController {
 	// 카테고리 조회
 	@GetMapping("/category")
 	public ResponseEntity<GenericsResponseDto> getCategories() {
-		return ResponseEntity.ok().body(new GenericsResponseDto(categoryService.getCategories()));
+		return ResponseEntity.ok().body(categoryService.getCategories());
 	}
 
 	// 카테고리 생성
