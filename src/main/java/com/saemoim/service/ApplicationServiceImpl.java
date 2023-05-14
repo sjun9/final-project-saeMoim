@@ -64,7 +64,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<ApplicationResponseDto> getApplications(Long userId) {
-		List<Group> groups = groupRepository.findByUser_userId(userId);
+		List<Group> groups = groupRepository.findAllByUser_Id(userId);
 		List<Application> applications = applicationRepository.findAllByGroups(groups);
 
 		return applications.stream().map(ApplicationResponseDto::new).toList();

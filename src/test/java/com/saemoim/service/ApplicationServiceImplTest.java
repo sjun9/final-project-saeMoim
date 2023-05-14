@@ -102,7 +102,7 @@ class ApplicationServiceImplTest {
 		var group = Group.builder().user(new User("e", "p", "nana", UserRoleEnum.USER)).build();
 		List<Group> list = new ArrayList<>();
 		list.add(group);
-		when(groupRepository.findByUser_userId(anyLong())).thenReturn(list);
+		when(groupRepository.findAllByUser_Id(anyLong())).thenReturn(list);
 
 		// when
 		applicationService.getApplications(userId);
