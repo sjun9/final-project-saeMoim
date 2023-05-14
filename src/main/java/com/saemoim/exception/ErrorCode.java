@@ -39,6 +39,7 @@ public enum ErrorCode {
 	DUPLICATED_EVENT("이미 존재하는 이벤트 입니다."),
 	NOT_FOUND_EVENT("해당 이벤트가 존재하지 않습니다."),
 	DUPLICATED_EVENT_USER("이미 신청한 이벤트 입니다."),
+	NOT_OVER_START_TIME("이벤트 시작 시간 전 입니다"),
 	FINISHED_EVENT("이벤트가 종료 되었습니다."),
 
 	// 선물

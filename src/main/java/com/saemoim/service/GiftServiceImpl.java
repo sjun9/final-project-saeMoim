@@ -1,7 +1,9 @@
 package com.saemoim.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class GiftServiceImpl implements GiftService{
+public class GiftServiceImpl implements GiftService {
 	private final GiftRepository giftRepository;
 	private final EventRepository eventRepository;
 	private final UserRepository userRepository;
@@ -44,6 +46,11 @@ public class GiftServiceImpl implements GiftService{
 		Event event = eventRepository.findByIdWithPessimisticLock(eventId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_EVENT.getMessage())
 		);
+		if (LocalDateTime.now().isBefore(event.getStartTime())) {
+			throw new IllegalArgumentException(ErrorCode.NOT_OVER_START_TIME.getMessage());
+		} else if (LocalDateTime.now().isAfter(event.getEndTime())) {
+			throw new IllegalArgumentException(ErrorCode.FINISHED_EVENT.getMessage());
+		}
 		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_USER.getMessage())
 		);
@@ -72,5 +79,18 @@ public class GiftServiceImpl implements GiftService{
 
 		gift.updateSend(true);
 		giftRepository.save(gift);
+	}
+
+	@Transactional
+	@Scheduled(cron = "${schedules.cron.event}")
+	public void scheduledEvent() {
+		List<Event> events = eventRepository.findAllByFinishedIsFalseOrderByCreatedAtDesc()
+			.stream()
+			.filter(e -> LocalDateTime.now().isAfter(e.getEndTime()))
+			.toList();
+
+		for (Event event : events) {
+			event.finishEvent();
+		}
 	}
 }
