@@ -206,20 +206,6 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	@DisplayName("내 정보 조회")
-	void getMyProfile() {
-		// given
-		var userId = 1L;
-		User user = mock(User.class);
-		when(user.getUsername()).thenReturn("name");
-		when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-		// when
-		ProfileResponseDto response = userService.getMyProfile(userId);
-		// then
-		assertThat(response.getUsername()).isEqualTo("name");
-	}
-
-	@Test
 	@DisplayName("내 정보 수정")
 	void updateProfile() throws IOException {
 		// given

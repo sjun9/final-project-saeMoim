@@ -54,7 +54,8 @@ class CategoryServiceImplTest {
 		when(categoryRepository.findAll()).thenReturn(list);
 
 		//when
-		List<CategoryResponseDto> responseDtoList = categoryService.getCategories();
+		List<CategoryResponseDto> responseDtoList = (List<CategoryResponseDto>)categoryService.getCategories()
+			.getData();
 
 		//then
 		assertThat(responseDtoList.get(0).getName()).isEqualTo("여행");

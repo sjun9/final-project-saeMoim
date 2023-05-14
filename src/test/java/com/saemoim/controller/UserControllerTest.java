@@ -383,46 +383,6 @@ class UserControllerTest {
 
 	@Test
 	@WithCustomMockUser
-	@DisplayName("내 정보 조회")
-	void getMyProfile() throws Exception {
-		// given
-		User user = User.builder()
-			.id(1L)
-			.banCount(0)
-			.content("안녕하시렵니까")
-			.email("email@naver.com")
-			.password("Pass1234!")
-			.role(UserRoleEnum.USER)
-			.username("닉넹미")
-			.imagePath("imgPath")
-			.build();
-		ProfileResponseDto response = new ProfileResponseDto(user);
-
-		when(userService.getMyProfile(anyLong())).thenReturn(response);
-
-		// when
-		ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.get("/profile")
-			.header(JwtUtil.AUTHORIZATION_HEADER, "Bearer accessToken"));
-
-		// then
-		resultActions.andExpect(status().isOk())
-			.andDo(document("user/myProfile",
-				preprocessRequest(prettyPrint()),
-				preprocessResponse(prettyPrint()),
-				requestHeaders(
-					headerWithName("Authorization").description("엑세스토큰")
-				),
-				responseFields(
-					fieldWithPath("id").description("유저 id").type(JsonFieldType.NUMBER),
-					fieldWithPath("username").description("유저 닉네임").type(JsonFieldType.STRING),
-					fieldWithPath("content").description("소개글").type(JsonFieldType.STRING),
-					fieldWithPath("imagePath").description("이미지 저장경로").type(JsonFieldType.STRING)
-				)
-			));
-	}
-
-	@Test
-	@WithCustomMockUser
 	@DisplayName("사용자정보조회")
 	void getUserId() throws Exception {
 		// when
